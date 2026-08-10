@@ -1,0 +1,67 @@
+{
+ "gt_full": {
+  "capped_records": [],
+  "finish_reasons": [
+   "stop"
+  ],
+  "headroom_vs_lowest_cap_pct": 77.9,
+  "max_completion_observed": 7058,
+  "max_tokens_now": 64000,
+  "max_tokens_values_in_records": [
+   32000,
+   64000
+  ],
+  "records": 72,
+  "run_dir": "gt_full",
+  "worst_sid": "decrypt_1704058880_19e34a13a2a199e7_3608XXXXXXXX84_14_06_2025",
+  "worst_txn": 69
+ },
+ "phase1_baseline": {
+  "capped_records": [],
+  "finish_reasons": [
+   "stop"
+  ],
+  "headroom_vs_lowest_cap_pct": 87.8,
+  "max_completion_observed": 11688,
+  "max_tokens_now": 96000,
+  "max_tokens_values_in_records": [
+   96000
+  ],
+  "records": 10,
+  "run_dir": "phase1_baseline",
+  "worst_sid": "decrypt_879728587_18a0b7c020b06bf5_3611XXXXXXXX51_18_08_2023",
+  "worst_txn": 223
+ },
+ "phase2_refined": {
+  "capped_records": [],
+  "finish_reasons": [
+   "stop"
+  ],
+  "headroom_vs_lowest_cap_pct": 88.0,
+  "max_completion_observed": 11553,
+  "max_tokens_now": 96000,
+  "max_tokens_values_in_records": [
+   96000
+  ],
+  "records": 10,
+  "run_dir": "phase2_refined",
+  "worst_sid": "decrypt_879728587_18a0b7c020b06bf5_3611XXXXXXXX51_18_08_2023",
+  "worst_txn": 223
+ },
+ "phase3_refined": {
+  "capped_records": [],
+  "finish_reasons": [
+   "stop"
+  ],
+  "headroom_vs_lowest_cap_pct": 96.8,
+  "max_completion_observed": 3073,
+  "max_tokens_now": 96000,
+  "max_tokens_values_in_records": [
+   96000
+  ],
+  "records": 14,
+  "run_dir": "phase3_refined",
+  "worst_sid": "decrypt_1006624221_19fc3990d36fe58b_6529XXXXXXXXXX03_01_08_2026_802",
+  "worst_txn": 46
+ }
+}

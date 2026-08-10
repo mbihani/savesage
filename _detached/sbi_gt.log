@@ -1,0 +1,1 @@
+arm=gt outdir=/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_gt corpus=300 todo=212 par=1 prompt=GT_PROMPT prompt_chars=8243

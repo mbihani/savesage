@@ -1,0 +1,309 @@
+{
+ "rule": "Score `cards[].cardMeta.network` against the PDF, for all three sources.\n\nNecessary because NO reference is trustworthy on this field: the Opus-5 GT emits a\nnon-null network 3 times and all 3 are unsupported outside the four-network\nfuel-surcharge disclaimer. So the PDF is the only admissible reference here.\n\nGround rule, applied identically to Luna / incumbent / GT: a non-null network is\nSUPPORTED only if the network token occurs somewhere OUTSIDE the sentence\n\"For RuPay/American Express/ Visa/Mastercard Credit Cards: Fuel surcharge ...\",\nwhich names all four networks and therefore identifies no card.",
+ "n_statements": 190,
+ "per_source": {
+  "luna_refined": {
+   "null (correct on this corpus)": 248
+  },
+  "opus_gt": {
+   "null (correct on this corpus)": 241,
+   "non-null UNSUPPORTED (fabrication)": 7,
+   "non-null SUPPORTED by the PDF": 1
+  },
+  "incumbent_csv": {
+   "non-null UNSUPPORTED (fabrication)": 41,
+   "null (correct on this corpus)": 166,
+   "non-null SUPPORTED by the PDF": 1
+  }
+ },
+ "fabrications": [
+  {
+   "statement_id": "19174",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "114630258",
+   "source": "opus_gt",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "215074442",
+   "source": "incumbent_csv",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "227228613",
+   "source": "opus_gt",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "271427972",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "315420710",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "327584995",
+   "source": "incumbent_csv",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "363764441",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "400018882",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "426756205",
+   "source": "opus_gt",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "441380560",
+   "source": "incumbent_csv",
+   "network": "RUPAY",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "453557468",
+   "source": "opus_gt",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "507278435",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "556044487",
+   "source": "incumbent_csv",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1025079069",
+   "source": "opus_gt",
+   "network": "RUPAY",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1025079069",
+   "source": "incumbent_csv",
+   "network": "RuPay",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1065138420",
+   "source": "opus_gt",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1147366257",
+   "source": "incumbent_csv",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1181596852",
+   "source": "incumbent_csv",
+   "network": "American Express",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1202316015",
+   "source": "incumbent_csv",
+   "network": "RuPay",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1223686268",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1255188325",
+   "source": "incumbent_csv",
+   "network": "Amex",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1298263361",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1301167179",
+   "source": "incumbent_csv",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1302697155",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1315106077",
+   "source": "incumbent_csv",
+   "network": "Rupay",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1325399047",
+   "source": "incumbent_csv",
+   "network": "Mastercard",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1381125839",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1438582195",
+   "source": "incumbent_csv",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1444036893",
+   "source": "incumbent_csv",
+   "network": "AMEX",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1444036893",
+   "source": "incumbent_csv",
+   "network": "MASTERCARD",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1470473529",
+   "source": "incumbent_csv",
+   "network": "RuPay",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1503213981",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1508509413",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1524173824",
+   "source": "incumbent_csv",
+   "network": "RUPAY",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1654517489",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1668116914",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1688487628",
+   "source": "incumbent_csv",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1693370060",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1702183290",
+   "source": "incumbent_csv",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1737715836",
+   "source": "incumbent_csv",
+   "network": "Mastercard",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1741489812",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1756183365",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "1766421060",
+   "source": "incumbent_csv",
+   "network": "American Express",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "2054837190",
+   "source": "incumbent_csv",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "2058834292",
+   "source": "incumbent_csv",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "2084798476",
+   "source": "incumbent_csv",
+   "network": "Visa",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  },
+  {
+   "statement_id": "2094858111",
+   "source": "opus_gt",
+   "network": "VISA",
+   "reason": "token appears only inside the four-network fuel-surcharge disclaimer"
+  }
+ ]
+}

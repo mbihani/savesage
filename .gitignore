@@ -1,0 +1,20 @@
+# Client PII — extracted credit-card statement data (names, card numbers, txns)
+*/json/
+*/*/json/
+**/json/
+# Raw client inputs
+*.pdf
+*.PDF
+*.csv
+# Scratch
+__pycache__/
+*.pyc
+*.json.tmp
+.venv/
+# Score/adjudication files embed verbatim transaction descriptions (client PII)
+scores_*.json
+adjudication*.json
+glaring_misses.json
+diagnosis_*.json
+desc_defect_classes.json
+misses*.json

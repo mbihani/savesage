@@ -1,0 +1,111 @@
+# Resume-session incident log (2026-08-10, post IP-ACL restart)
+
+## Sweep interruptions were MAC SLEEP, not rate limiting or model failure
+`opus_gt.log` contains 3 calls with absurd latency (8,465,170ms = 2.35h; 4,058,887ms;
+1,187,627ms) followed by 80 `DRIVER_EXCEPTION ... databricks auth token failed rc=1:
+... OAuth is not supported for this host`. Minting worked immediately afterwards
+(verified `databricks auth token -p fevm-stable` rc=0), so this is the machine
+sleeping mid-run, NOT a workspace/auth/IP problem and NOT a model defect.
+
+Verified consequence: **zero** corrupt records. All 80 failures were skipped without
+persisting, because `run_one` only treats `failure_class in (None,'cap','model')` as
+terminal. Re-running retried exactly the affected statements.
+Both sweeps relaunched under `caffeinate -dimsu`.
+
+I initially misattributed this to token-cache contention from a duplicate process.
+That was wrong: two workers had already run for hours without issue, and the
+multi-hour `latency_ms` values only fit a suspended machine.
+
+## GT truncation audit (brief flagged this as a risk) -- NEGATIVE
+Measured across the completed GT records: max `completion_tokens` = 14,048 against
+`OPUS_MAX_TOKENS = 32000`; **0** records with `finish_reason` in (length, max_tokens)
+and 0 `TRUNCATED*` outcomes. Cost per transaction is flat at ~100-110 completion
+tokens/txn (140 txns -> 14,048; 83 -> 8,581; 59 -> 6,267; 50 -> 5,541), so the
+corpus maximum (150 txns per the CSV) projects to ~15-16k tokens -- roughly half the
+cap. GT truncation is structurally impossible on this corpus, not merely unobserved.
+
+## Two adjudicator bugs found and fixed BEFORE trusting any defect count
+Both inflated Luna's apparent fabrication rate, i.e. the bias flattered the incumbent.
+1. `Pdf.find()` was exact-substring against page text that carries the PDF's own hard
+   line breaks. ICICI prints "Amazon Pay ICICI Bank\nCredit Card", so real values were
+   reported ABSENT and scored as fabrication. Now whitespace-flexible; `search_for`
+   bbox lookup got a fallback chain so confirmed hits keep a coordinate.
+   Isolated on the identical 60 disagreements: exactly 4 verdicts flipped,
+   all `cardDisplayName`, all LUNA_WRONG -> CSV_WRONG.
+2. Network tokens matched inside unrelated words -- "VISA" inside
+   "RAVI RAYS VISAKHAPATNAM IN" made a fabricated network look supported and charged
+   Luna's correct null as LUNA_WRONG. Now word-bounded.
+
+## The co-brand trap: the predicted failure does NOT occur on issuerName
+The brief predicted `issuerName` would be the top defect (as on Axis, 18/94 wrong).
+Measured on ICICI it is the opposite -- nothing gets it wrong:
+  client baseline prompt : ICICI Bank 10/10
+  refined prompt         : ICICI Bank 68/68 (1 null = a NETWORK_ERROR record, infra)
+  opus GT                : ICICI Bank 100/100
+  incumbent CSV          : ICICI Bank 303/304
+Why the Axis result did not transfer: the Axis-legacy generic prompt hard-codes
+'For this corpus that is "Axis Bank"'. Run against ICICI PDFs it emits Axis Bank on
+4/10 -- but that is prompt contamination, not a co-brand confusion, and the CLIENT's
+own production prompt (the actual ICICI baseline) never makes the error.
+Co-branding instead surfaces on `cardDisplayName`, which is a different claim.
+
+## Luna reads the card-art IMAGE (controlled test, `filename_leak_test.json`)
+Confound: the Luna `file` block sends a filename encoding the product
+(`..._Retail_Coral_NORM.pdf`); the Opus `document` block sends none. So the arms are
+not information-equivalent on product name. Control: resend identical bytes as
+`statement.pdf`.
+  121563623  real -> "ICICI Bank Coral Credit Card" | sanitised -> same
+  1255188325 real -> "Sapphiro"                     | sanitised -> same
+  1046763144 real -> null                           | sanitised -> "Adani One ICICI Bank Credit Card"
+"Coral"/"Sapphiro" occur ZERO times in the text layer (checked `get_text` and
+`rawdict` char spans); page 1 carries 4 raster images. So Luna is reading the card
+art, not the filename. These values must NOT be scored as hallucinations against a
+text-only reference -- and the incumbent CSV, which returns null, is the weaker
+answer here.
+
+## ENOSPC incident (disk full) -- NOT caused by this evaluation
+At ~22:20 both sweeps began failing with
+`OSError: [Errno 28] No space left on device: .../<sid>.json.tmp`.
+
+Measured: the whole `bank_eval` tree is ~30MB (icici 6.3MB; largest single record
+64KB). The volume is 460Gi with **434Gi used on /System/Volumes/Data** and free space
+oscillating between 100-260MB. Top consumers are the user's own data
+(`~/.omnigent` 5.7G of which `codex-native` 4.7G, `/private/var/folders` 2.9G,
+VM swap 5.0G, `~/Library` 28G, `~/Downloads` 12G). Visible files (~120G) do not
+account for 434G, so there is additional purgeable/hidden usage. **Nothing here was
+deleted from the user's data** -- that is their call. Only my own regenerable
+artifacts were removed: `scores_phase3.json` (23MB, regenerated by score_phase3.py),
+`__pycache__`, and the superseded pre-restart logs were gzipped.
+
+**Data integrity after ENOSPC: perfect.** 455/455 records readable, all `outcome=OK`,
+**zero** torn `.tmp` files. The atomic-write pattern (`tempfile` + `os.replace`)
+failed the write rather than truncating a good record, and the failed statements were
+not persisted at all, so the idempotent resume simply retried them. ENOSPC is
+correctly surfaced as `DRIVER_EXCEPTION` (infrastructure), never as a model defect.
+
+A guard (`/tmp/spaceguard.sh`, log `spaceguard.log`) now SIGSTOPs the sweeps below
+60MB free and SIGCONTs above 120MB, so a squeeze pauses rather than burns API calls
+whose results cannot be persisted.
+
+**Caveat for the reader:** this machine is one disk-squeeze away from stalling again.
+If the run dies mid-sweep, the resume is idempotent -- just re-run run_arm.py.
+
+## opus_gt died at 283/304: the GT library's directory disappeared
+The sweep stopped with no error in its own log; a restart then failed with
+`ModuleNotFoundError: No module named 'gt298_lib'`. Cause: the whole
+`/Users/mayanck.bihani/Savesage/apev-wt-gt298/` tree (a git WORKTREE, per the `-wt-`
+name) no longer exists -- removed by something outside this session, not by me.
+`icici_lib` hard-codes `GT_DIR` to that path, so the arm could no longer start.
+
+Recovered WITHOUT changing the instrument: the SBI worker keeps its own copy at
+`bank_eval/sbi/gt298_lib.py`, verified byte-equivalent on the things that matter
+before using it --
+  GT_PROMPT sha256 = a14219f1...90ff  == the value pinned in icici_lib
+  MAX_TOKENS       = 32000            == OPUS_MAX_TOKENS
+and, decisively, all 283 already-completed GT records store
+`prompt_sha256 = a14219f1...90ff`, i.e. the SAME instrument the first 283 were run
+with. Copied back to the original path so `icici_lib` needed no edit and the GT stays
+byte-identical across the icici/hdfc/sbi workers.
+
+Risk if this recurs: none to completed records (they are self-describing -- each
+carries its own prompt sha, max_tokens and effort), but the arm cannot start.

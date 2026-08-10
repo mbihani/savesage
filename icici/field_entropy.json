@@ -1,0 +1,114 @@
+{
+ "cards[].cardMeta.cardDisplayName": {
+  "n": 127,
+  "distinct_values": 14,
+  "top_value": "Amazon Pay ICICI Bank Credit Card",
+  "top_value_share": 0.4724,
+  "verdict": "DISCRIMINATING"
+ },
+ "cards[].cardMeta.lastFourDigit": {
+  "n": 127,
+  "distinct_values": 87,
+  "top_value": "9000",
+  "top_value_share": 0.0315,
+  "verdict": "DISCRIMINATING"
+ },
+ "cards[].cardMeta.network": {
+  "n": 127,
+  "distinct_values": 3,
+  "top_value": "None",
+  "top_value_share": 0.9685,
+  "verdict": "TRIVIALLY_SOLVED (near-constant)"
+ },
+ "statementLevelSummary.totalAmountDue": {
+  "n": 100,
+  "distinct_values": 93,
+  "top_value": "0.0",
+  "top_value_share": 0.08,
+  "verdict": "DISCRIMINATING"
+ },
+ "statementLevelSummary.availableCreditLimit": {
+  "n": 100,
+  "distinct_values": 99,
+  "top_value": "0.0",
+  "top_value_share": 0.02,
+  "verdict": "DISCRIMINATING"
+ },
+ "statementLevelSummary.utilisationPercent": {
+  "n": 100,
+  "distinct_values": 1,
+  "top_value": "None",
+  "top_value_share": 1.0,
+  "verdict": "TRIVIALLY_SOLVED (near-constant)"
+ },
+ "statementLevelSummary.totalCreditLimit": {
+  "n": 100,
+  "distinct_values": 59,
+  "top_value": "1000000.0",
+  "top_value_share": 0.05,
+  "verdict": "DISCRIMINATING"
+ },
+ "statementLevelSummary.totalMinimumAmountDue": {
+  "n": 100,
+  "distinct_values": 72,
+  "top_value": "0.0",
+  "top_value_share": 0.13,
+  "verdict": "DISCRIMINATING"
+ },
+ "statementMeta.issuerName": {
+  "n": 100,
+  "distinct_values": 1,
+  "top_value": "ICICI Bank",
+  "top_value_share": 1.0,
+  "verdict": "TRIVIALLY_SOLVED (near-constant)"
+ },
+ "statementMeta.statementDate": {
+  "n": 100,
+  "distinct_values": 51,
+  "top_value": "12/04/2026",
+  "top_value_share": 0.06,
+  "verdict": "DISCRIMINATING"
+ },
+ "statementMeta.dueDate": {
+  "n": 100,
+  "distinct_values": 51,
+  "top_value": "30/04/2026",
+  "top_value_share": 0.06,
+  "verdict": "DISCRIMINATING"
+ },
+ "transactions[].date": {
+  "n": 1401,
+  "distinct_values": 263,
+  "top_value": "31/03/2026",
+  "top_value_share": 0.025,
+  "verdict": "DISCRIMINATING"
+ },
+ "transactions[].description": {
+  "n": 1401,
+  "distinct_values": 678,
+  "top_value": "BBPS Payment received",
+  "top_value_share": 0.0857,
+  "verdict": "DISCRIMINATING"
+ },
+ "transactions[].amount": {
+  "n": 1401,
+  "distinct_values": 1032,
+  "top_value": "400.0",
+  "top_value_share": 0.015,
+  "verdict": "DISCRIMINATING"
+ },
+ "transactions[].direction": {
+  "n": 1401,
+  "distinct_values": 2,
+  "top_value": "DEBIT",
+  "top_value_share": 0.828,
+  "verdict": "LOW_DISCRIMINATION"
+ },
+ "transactions[].currency": {
+  "n": 1401,
+  "distinct_values": 1,
+  "top_value": "INR",
+  "top_value_share": 1.0,
+  "verdict": "TRIVIALLY_SOLVED (near-constant)"
+ }
+}

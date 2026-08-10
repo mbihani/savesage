@@ -1,0 +1,47 @@
+{
+ "sbi": {
+  "csv_rows": 315,
+  "data_blob_bytes": {
+   "mean": 4067.1,
+   "median": 3015,
+   "max": 25618
+  },
+  "raw_csv_line_bytes_mean": 4879.9,
+  "txn_per_statement": {
+   "mean": 11.97,
+   "median": 6,
+   "max": 141,
+   "total": 3769
+  }
+ },
+ "hdfc": {
+  "csv_rows": 300,
+  "data_blob_bytes": {
+   "mean": 5300.4,
+   "median": 3918.0,
+   "max": 40551
+  },
+  "raw_csv_line_bytes_mean": 6252.1,
+  "txn_per_statement": {
+   "mean": 16.19,
+   "median": 10.0,
+   "max": 223,
+   "total": 4857
+  }
+ },
+ "icici": {
+  "csv_rows": 315,
+  "data_blob_bytes": {
+   "mean": 4336.1,
+   "median": 3293,
+   "max": 38224
+  },
+  "raw_csv_line_bytes_mean": 5197.9,
+  "txn_per_statement": {
+   "mean": 12.84,
+   "median": 8.0,
+   "max": 150,
+   "total": 4033
+  }
+ }
+}

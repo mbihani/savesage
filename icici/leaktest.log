@@ -1,0 +1,6 @@
+121563623 real_filename  sent=decrypt_121563623_19ded9b74baf75aa_6528XXXXX -> ['ICICI Bank Coral Credit Card'] 
+121563623 sanitised      sent=statement.pdf                                -> ['ICICI Bank Coral Credit Card', 'ICICI Bank Coral Credit Card'] 
+1255188325 real_filename  sent=decrypt_1255188325_19d6fbdf0a9c3e52_5241XXXX -> ['Sapphiro', None] 
+1255188325 sanitised      sent=statement.pdf                                -> ['Sapphiro', None] 
+1046763144 real_filename  sent=decrypt_1046763144_19af19ce11bedba8_4786XXXX -> [None] 
+1046763144 sanitised      sent=statement.pdf                                -> ['Adani One ICICI Bank Credit Card'] 

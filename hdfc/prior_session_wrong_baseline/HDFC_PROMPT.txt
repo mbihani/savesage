@@ -1,0 +1,77 @@
+You are producing the structured extraction for an Indian credit-card statement. The attached PDF is the ONLY authoritative source — read it directly, including its table layout. Return one JSON object matching the schema exactly. Accuracy matters more than speed; this output will be used to score other models.
+
+RULES
+
+1. issuerName — the ISSUING BANK, i.e. the bank whose licence the card is issued on. For this corpus that is "HDFC Bank". Do NOT return the co-brand partner or the card product name. A card branded "Tata Neu", "Swiggy", "Millennia", "Regalia", "Infinia", "Pixel Play", "MoneyBack", "Diners Club", "IndianOil", "6E Rewards", "Marriott Bonvoy", "UPI RuPay" etc. is still ISSUED BY HDFC Bank — return "HDFC Bank". Only return a different bank if that other bank's name appears as the issuer throughout the statement (letterhead, footer, regulatory text), not merely as a co-brand or a payee.
+
+2. Dates — always DD/MM/YYYY, zero-padded, 4-digit year. Convert any other printed format. statementDate = the statement generation date. dueDate = the payment due date.
+
+3. Amounts — plain JSON numbers. No currency symbol, no thousands separators. Never a string.
+
+4. transactions[].amount — ALWAYS POSITIVE (the magnitude). NEVER negate credits, refunds, reversals or payments. Sign information lives only in `direction`. Example: printed "1,531.00 Cr" -> amount 1531.0, direction "CREDIT". Printed "200.00 Dr" -> amount 200.0, direction "DEBIT".
+
+5. transactions[].direction — exactly "DEBIT" or "CREDIT". HDFC marks a CREDIT in one of two ways depending on the statement layout, and BOTH occur in this corpus:
+   (a) a LEADING PLUS SIGN immediately before the amount, e.g. "+  ₹2,600.00" or "+ ₹49,259.00" — this row is a CREDIT;
+   (b) a TRAILING "Cr" after the amount, e.g. "41,819.16 Cr" — this row is a CREDIT.
+   Trust either marker over your own reading of the description. HDFC does NOT print "Dr" on debits: an ordinary spend row carries NO marker at all, so an unmarked row is a DEBIT. Beware the reward column, which also prints a plus ("+ 300" base points) — a plus in the POINTS column is not a credit marker; only a plus attached to the rupee AMOUNT is. If a row carries no marker, use DEBIT for spend/fees/taxes/interest/EMI and CREDIT for payments received, refunds, reversals and cashback.
+
+6. transactions[].txnType — exactly ONE value from this closed list, or null if genuinely unclear:
+   PURCHASE, PAYMENT, REFUND, REVERSAL, CASHBACK, FEE, TAX, INTEREST, EMI, CASH_ADVANCE, UPI
+   Mapping guidance:
+   - description begins "UPI/" or is plainly a UPI/VPA transfer -> UPI
+   - "PAYMENT RECEIVED", "BBPS PAYMENT", "NEFT", "IMPS", "AUTO DEBIT" repayment of the card -> PAYMENT
+   - "GST", "IGST", "CGST", "SGST", "SERVICE TAX" -> TAX
+   - any "...FEE", "CHARGES", "ANNUAL FEE", "JOINING FEE", "LATE PAYMENT", "OVERLIMIT", "SURCHARGE", "MARKUP" -> FEE
+   - "INTEREST", "FINANCE CHARGE" -> INTEREST
+   - EMI conversion / EMI instalment / EMI principal or interest lines -> EMI
+   - "CASH WITHDRAWAL", "ATM", cash advance -> CASH_ADVANCE
+   - explicit reversal wording -> REVERSAL ; explicit refund/chargeback wording -> REFUND
+   - cashback credited -> CASHBACK
+   - ordinary card spend at a merchant -> PURCHASE
+   Note: an EMI processing fee is FEE, not EMI. GST on a fee is TAX, not FEE.
+
+7. transactions[].description — copy the narration EXACTLY as printed, character for character: same case, same commas, slashes, hyphens, "(Ref# ...)" digits, and the statement's own truncation. You may trim leading/trailing whitespace, nothing else. NEVER shorten, expand, normalise, re-case, translate or summarise. Do NOT append the Purchase-Indicator / PI column value, the reward-points column, or the DATE & TIME column.
+   HDFC-specific, all of which are part of the narration and must be KEPT:
+   - Keep the "(Ref# ...)" reference in full when one is printed on the row.
+   - Keep a leading merchant/aggregator token such as "PM *", "RAZ*", "FSS4", "BPPY", "UPI-", "IMPS PMT" exactly as printed — do not strip it.
+   - Some HDFC layouts print merchant names with BROKEN INTRA-WORD SPACING ("Zom atofood", "Am azon Pay Groceries", "Airtel Paym ents Bank Lim ited", "ZeptoMarketplace Private Lim ited"). Reproduce that spacing EXACTLY as shown. Do NOT silently repair it to "Zomatofood" or "Amazon Pay Groceries" — the printed form is the answer.
+   - When the row prints a separate leading label in the description column above or before the merchant name (most often "EMI"), that label IS part of that row's narration: return "EMI PHARMEASY INMUMBAI", not "PHARMEASY INMUMBAI". The same merchant may also appear on other rows WITHOUT the label; keep each row as printed.
+
+8. transactions — include EVERY row of EVERY transaction table on EVERY page, for ALL cards, in printed order. That includes fees, taxes, interest, EMI lines, payments received, reversals and reward-related debits. EXCLUDE anything that is not a transaction row: the "Previous Balance - Payments - Credits + Purchase ..." arithmetic strip, Account Summary / Payment Summary figures, opening/closing balances, reward-point summary tables, EMI amortisation schedules that merely forecast future instalments, and marketing/offer text.
+   HDFC-specific exclusions, measured on this corpus:
+   - HDFC prints a STANDALONE CARDHOLDER-NAME ROW immediately above the first transaction of each card's group, directly under the "DATE & TIME / TRANSACTION DESCRIPTION / AMOUNT" header (e.g. "SALMAN KHAN S", "SAHIL CHAUDHARY"). It carries NO date and NO amount. It is a group heading, NOT a transaction — do not emit it. Where a statement has several cards, each card's block repeats its own name heading; skip every one. Caution: a genuine merchant row can also look like a bare uppercase name (e.g. "S ENDEAVOUR", "GANESH TRADERS", "YASHWANT") — the test is the presence of a DATE and an AMOUNT on the row, not whether the text resembles a person's name. Never drop a row that has a date and an amount.
+   - Skip the "Domestic Transactions" / "International Transactions" section captions, the per-page column headers, the "Past Dues (if any)" / OVER LIMIT / "3 MONTHS +" / "2 MONTHS" / "1 MONTH" / CURRENT DUES / MINIMUM DUES ageing strip, the "Your Card Control Setting" and "Purchase Indicator / Insights (PI)" panels, and the "IMPORTANT INFORMATION" numbered notices. If the statement genuinely lists no transactions, return [].
+
+9. transactions[].currency — "INR" for rupee amounts (the default). Only use another ISO 4217 code if the amount you are reporting is itself in that foreign currency. If the statement shows a foreign spend converted to rupees, report the rupee amount with "INR".
+
+10. transactions[].rewardPointsOnThisTransaction — null unless the statement prints reward points against that individual transaction row. Do not compute or estimate.
+
+11. cards — one entry per card account on the statement (primary plus any add-on/supplementary cards). lastFourDigit = last four digits only ("653047******9826" -> "9826"). cardDisplayName and productFamily = the CARD PRODUCT name, which HDFC prints in the page header as "<product> Credit Card Statement" (e.g. "Tata Neu Infinity HDFC Bank Credit Card Statement", "Infinia Credit Card Statement", "UPI RuPay Credit Card Statement", "Swiggy HDFC Bank Credit Card"). Return the product name WITHOUT the trailing word "Statement" — e.g. "Infinia Credit Card", "UPI RuPay Credit Card". This is NEVER the cardholder's personal name: "SALMAN KHAN S" is a person, not a product. If only one name is printed use it for both. network = "VISA", "MASTERCARD", "RUPAY", "AMEX" or "DINERS" ONLY when the network name is actually printed as text on the statement; otherwise null. Most HDFC statements print NO network anywhere, so null is the expected answer and an invented network is a scoring error. Specifically: do NOT infer the network from the card BIN or the leading digit; do NOT infer it from the card product name; and note that "Diners Club" / "UPI RuPay" appearing as part of the PRODUCT name (e.g. "Diners Club Privilege", "UPI RuPay Credit Card") IS the printed network for that product and may be used — but "Tata Neu Infinity", "Millennia", "Regalia", "Infinia", "Pixel Play" and "Swiggy" say nothing about the network, so return null for those unless the network is separately printed. isPrimaryCard = true if the statement has exactly one card, or for the primary/main cardholder's card; false for a clearly-marked add-on/supplementary card; null only if the statement genuinely does not distinguish.
+
+12. statementLevelSummary — the whole-statement (all cards combined) figures from the PAYMENT SUMMARY / Account Summary block:
+    - totalAmountDue = "TOTAL AMOUNT DUE" (HDFC's label; not "CURRENT DUES", which excludes past dues)
+    - totalMinimumAmountDue = "MINIMUM DUE" / "MINIMUM AMOUNT DUE" (not "MINIMUM DUES" inside the Past-Dues ageing strip if a separate headline figure is printed)
+    - totalCreditLimit = "TOTAL CREDIT LIMIT (Including Cash)" — the total sanctioned limit, NOT the cash limit
+    - availableCreditLimit = "AVAILABLE CREDIT LIMIT" — NOT "AVAILABLE CASH LIMIT", which HDFC prints immediately beside it in the same three-cell row. Read the cell under the correct heading.
+    Report a Dr (customer owes) figure as a POSITIVE number. Report a Cr figure (credit balance, bank owes the customer) as a NEGATIVE number.
+
+13. rewards — from the reward-points summary block only. programType = the program name exactly as printed (e.g. "Reward Points", "CASHPOINTS", "NeuCoins", "Cash Back"). HDFC labels this block differently per product; map by MEANING, not by label text:
+    - "Opening Balance" -> openingPoints
+    - "Feature + Bonus Reward Points Earned", "Points Earned", "NeuCoins Earned (Base+Bonus)", "Cash Back earned" -> pointsEarnedThisCycle
+    - "Disbursed", "NeuCoins Transferred to Tata Neu", "Points Redeemed" -> pointsRedeemedThisCycle
+    - "Closing Balance", "NeuCoins with Bank", "Total Cash Back" -> closingPoints
+    - "Adjusted/Lapsed" is NEITHER redeemed nor expiring — do not map it to any field.
+    WARNING on bonus points: "Feature + Bonus Reward Points Earned" is a SINGLE COMBINED column heading, not a separate bonus line. When earned and bonus are combined under one heading like that, bonusPointsThisCycle is null and the figure belongs to pointsEarnedThisCycle ONLY. Never copy the earned figure into bonusPointsThisCycle, and never sum the per-category earn breakdown rows ("Reward Points_on_Grocery", "SmartBuy_Bonus_5X_RP_Promo") into a bonus total — those are a breakdown of earned points. Populate bonusPointsThisCycle only from a separately-labelled standalone bonus figure.
+    If closingPoints is not printed directly, leave it null — do NOT compute it as opening + earned − redeemed. openingPoints, pointsEarnedThisCycle, pointsRedeemedThisCycle, closingPoints, pointsExpiringNext30Days, pointsExpiringNext60Days as printed. These are POINT COUNTS, not rupees. If the statement prints only one total/closing/available reward-point figure, that figure is closingPoints and the rest are null. Never derive a missing field by arithmetic.
+
+14. NEVER FABRICATE. Any value not genuinely present in the PDF must be null (or [] for a list). Do not guess, do not infer from convention, do not copy across cards, do not compute totals. A null is correct; an invented value is a scoring error.
+
+15. statementMeta.statementPeriodStart / statementPeriodEnd — from the "Statement Period" cell, normally printed as a single range "DD/MM/YYYY - DD/MM/YYYY". statementPeriodStart is the LEFT date, statementPeriodEnd is the RIGHT date. Output each in DD/MM/YYYY exactly as rule 2 requires. If only one date is printed, or the label is absent, set the missing side to null rather than guessing it from the statement date or the cycle length.
+
+16. statementMeta.rawStatementId — the statement's OWN printed identifier, i.e. a value printed against a label such as "Statement No", "Statement Number", "Statement ID", "Invoice No" or "Document No". This is almost certainly NOT present on an Axis statement: if no such label appears, the correct answer is null. Do NOT repurpose the card number, the customer/account number, a reference number from a transaction row, the cycle dates, or a filename. A value here that is not printed against one of those labels is a fabrication.
+
+17. Per-card limits and bonus points — read only, never derive:
+    - cards[].bigPicture.cardCreditLimit = the credit limit applying to THAT card, and cards[].bigPicture.cardAvailableCreditLimit = the available credit limit applying to THAT card. Axis normally prints ONE limit for the whole statement rather than one per card. When a single shared limit is printed and the statement has one card, that figure is this card's limit. When the statement has several cards sharing one printed limit, put the figure on the PRIMARY card and leave the add-on cards null. NEVER split, apportion or divide a shared limit between cards, and never use the "Available Cash Limit".
+    - rewards.bonusPointsThisCycle = a separately-labelled BONUS points figure (e.g. "Bonus Points"). If the statement prints no separate bonus line, the answer is null. Do NOT reclassify total earned points, closing points, or a promotional-offer mention as bonus points.
+
+Return only the JSON object.

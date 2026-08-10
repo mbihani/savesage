@@ -1,0 +1,2703 @@
+{
+ "n_statements": 10,
+ "per_statement": [
+  {
+   "statement_id": "1010092654",
+   "pdf": "decrypt_1010092654_19fc5aa9f7f8dc3b_6528XXXXXXXX9008_107986_Retail_Coral_NORM.pdf",
+   "outcome": "OK",
+   "product": "Retail_Coral_NORM",
+   "n_txn_luna": 140,
+   "n_txn_csv": 140,
+   "n_cards_luna": 1,
+   "n_cards_csv": 1,
+   "usage": {
+    "completion_tokens": 8455,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 451,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 21094,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 29549
+   },
+   "finish_reason": "stop",
+   "txn": {
+    "n_pred": 140,
+    "n_ref": 140,
+    "matched": 140,
+    "unmatched_pred": 0,
+    "unmatched_ref": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "mean_desc_sim": 0.9999399759903962,
+    "desc_exact_char_for_char": 139,
+    "desc_exact_casefold": 139
+   },
+   "cards": {
+    "n_pred": 1,
+    "n_ref": 1,
+    "count_match": true
+   },
+   "issuerName": {
+    "luna": "ICICI Bank",
+    "csv": "ICICI Bank"
+   },
+   "rewards": {
+    "luna": {
+     "bonusPointsThisCycle": null,
+     "closingPoints": null,
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 495,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "pointsRedeemedThisCycle": null,
+     "programType": "ICICI Bank Rewards"
+    },
+    "csv": {
+     "programType": "Reward Points",
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 495,
+     "pointsRedeemedThisCycle": null,
+     "closingPoints": 495,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "bonusPointsThisCycle": null
+    }
+   },
+   "pdf_reward_labels": [
+    "Closing Balance",
+    "Total Points earned",
+    "total points earned"
+   ],
+   "pdf_has_utilis": false,
+   "pdf_network_tokens": [
+    "American Express",
+    "Mastercard",
+    "RuPay",
+    "Visa"
+   ],
+   "network": {
+    "luna": [
+     null
+    ],
+    "csv": [
+     null
+    ],
+    "pdf_tokens": [
+     "American Express",
+     "Mastercard",
+     "RuPay",
+     "Visa"
+    ]
+   },
+   "disagreements": {
+    "statementMeta.rawStatementId": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "1574020800107986",
+      "ref": null
+     }
+    ],
+    "rewards.programType": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "ICICI Bank Rewards",
+      "ref": "Reward Points"
+     }
+    ],
+    "rewards.closingPoints": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 495
+     }
+    ],
+    "transactions[].description": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "Interest Amount Amortization - <10/24>UPI-133114539429-Amaz",
+      "ref": "Interest Amount Amortization - <10/24>UPI-133114539429-Amazo",
+      "sim": 0.992
+     }
+    ],
+    "transactions[].txnType": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "REFUND",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "REFUND",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "statement_id": "1066621585",
+   "pdf": "decrypt_1066621585_19fd6a7a58d3c9f9_4786XXXXXXXX3003_563261_Retail_AdaniOne_NORM.pdf",
+   "outcome": "OK",
+   "product": "Retail_AdaniOne_NORM",
+   "n_txn_luna": 18,
+   "n_txn_csv": 18,
+   "n_cards_luna": 1,
+   "n_cards_csv": 1,
+   "usage": {
+    "completion_tokens": 1857,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 763,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 15067,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 16924
+   },
+   "finish_reason": "stop",
+   "txn": {
+    "n_pred": 18,
+    "n_ref": 18,
+    "matched": 18,
+    "unmatched_pred": 0,
+    "unmatched_ref": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "mean_desc_sim": 1.0,
+    "desc_exact_char_for_char": 18,
+    "desc_exact_casefold": 18
+   },
+   "cards": {
+    "n_pred": 1,
+    "n_ref": 1,
+    "count_match": true
+   },
+   "issuerName": {
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   "rewards": {
+    "luna": {
+     "bonusPointsThisCycle": null,
+     "closingPoints": null,
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 6900,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "pointsRedeemedThisCycle": null,
+     "programType": null
+    },
+    "csv": {
+     "programType": "Adani One",
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 6900,
+     "pointsRedeemedThisCycle": 13425,
+     "closingPoints": null,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "bonusPointsThisCycle": null
+    }
+   },
+   "pdf_reward_labels": [
+    "Closing Balance"
+   ],
+   "pdf_has_utilis": false,
+   "pdf_network_tokens": [
+    "American Express",
+    "Mastercard",
+    "RuPay",
+    "Visa"
+   ],
+   "network": {
+    "luna": [
+     null
+    ],
+    "csv": [
+     null
+    ],
+    "pdf_tokens": [
+     "American Express",
+     "Mastercard",
+     "RuPay",
+     "Visa"
+    ]
+   },
+   "disagreements": {
+    "statementMeta.issuerName": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "Axis Bank",
+      "ref": "ICICI Bank"
+     }
+    ],
+    "statementMeta.rawStatementId": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "1574050800563261",
+      "ref": null
+     }
+    ],
+    "rewards.programType": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "Adani One"
+     }
+    ],
+    "rewards.pointsRedeemedThisCycle": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 13425
+     }
+    ],
+    "cards[].cardMeta.cardDisplayName": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "ICICI Bank Adani One"
+     }
+    ],
+    "cards[].cardMeta.productFamily": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "Adani One"
+     }
+    ],
+    "transactions[].amount": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 50000,
+      "ref": -50000,
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 50000,
+      "ref": -50000,
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 50000,
+      "ref": -50000,
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 50000,
+      "ref": -50000,
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 50000,
+      "ref": -50000,
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 100000,
+      "ref": -100000,
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 50000,
+      "ref": -50000,
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 35000,
+      "ref": -35000,
+      "sim": 1.0
+     }
+    ],
+    "transactions[].txnType": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "statement_id": "1711342048",
+   "pdf": "decrypt_1711342048_19aaace58ae30899_4073XXXXXXXX9009_311200_Retail_MMT_NORM.pdf",
+   "outcome": "OK",
+   "product": "Retail_MMT_NORM",
+   "n_txn_luna": 19,
+   "n_txn_csv": 19,
+   "n_cards_luna": 1,
+   "n_cards_csv": 1,
+   "usage": {
+    "completion_tokens": 2158,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 875,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 13069,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 15227
+   },
+   "finish_reason": "stop",
+   "txn": {
+    "n_pred": 19,
+    "n_ref": 19,
+    "matched": 19,
+    "unmatched_pred": 0,
+    "unmatched_ref": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "mean_desc_sim": 0.9995577178239717,
+    "desc_exact_char_for_char": 18,
+    "desc_exact_casefold": 18
+   },
+   "cards": {
+    "n_pred": 1,
+    "n_ref": 1,
+    "count_match": true
+   },
+   "issuerName": {
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   "rewards": {
+    "luna": {
+     "bonusPointsThisCycle": null,
+     "closingPoints": null,
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 0,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "pointsRedeemedThisCycle": null,
+     "programType": "MakeMyTrip My Cash"
+    },
+    "csv": {
+     "programType": "MakeMyTrip My Cash",
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 0,
+     "pointsRedeemedThisCycle": 0,
+     "closingPoints": null,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "bonusPointsThisCycle": null
+    }
+   },
+   "pdf_reward_labels": [
+    "Closing Balance"
+   ],
+   "pdf_has_utilis": false,
+   "pdf_network_tokens": [
+    "American Express",
+    "Mastercard",
+    "RuPay",
+    "Visa"
+   ],
+   "network": {
+    "luna": [
+     null
+    ],
+    "csv": [
+     null
+    ],
+    "pdf_tokens": [
+     "American Express",
+     "Mastercard",
+     "RuPay",
+     "Visa"
+    ]
+   },
+   "disagreements": {
+    "statementMeta.issuerName": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "Axis Bank",
+      "ref": "ICICI Bank"
+     }
+    ],
+    "statementMeta.rawStatementId": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "1574211100311200",
+      "ref": null
+     }
+    ],
+    "rewards.pointsRedeemedThisCycle": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 0
+     }
+    ],
+    "statementLevelSummary.utilisationPercent@extracted": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 69.1
+     }
+    ],
+    "transactions[].description": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "Interest Amount Amortization - <2/12>REALME MOBILE TELECOMM",
+      "ref": "Interest Amount Amortization - <2/12>REALME MOBILE TELECOMMU",
+      "sim": 0.992
+     }
+    ],
+    "transactions[].txnType": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "statement_id": "2054837190",
+   "pdf": "decrypt_2054837190_19e71bec5bcaba5a_4315XXXXXXXX0004_249755_Retail_Amazon_NORM.pdf",
+   "outcome": "OK",
+   "product": "Retail_Amazon_NORM",
+   "n_txn_luna": 68,
+   "n_txn_csv": 68,
+   "n_cards_luna": 1,
+   "n_cards_csv": 1,
+   "usage": {
+    "completion_tokens": 4348,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 461,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 18075,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 22423
+   },
+   "finish_reason": "stop",
+   "txn": {
+    "n_pred": 68,
+    "n_ref": 68,
+    "matched": 68,
+    "unmatched_pred": 0,
+    "unmatched_ref": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "mean_desc_sim": 0.994281045751634,
+    "desc_exact_char_for_char": 67,
+    "desc_exact_casefold": 67
+   },
+   "cards": {
+    "n_pred": 1,
+    "n_ref": 1,
+    "count_match": true
+   },
+   "issuerName": {
+    "luna": "ICICI Bank",
+    "csv": "ICICI Bank"
+   },
+   "rewards": {
+    "luna": {
+     "bonusPointsThisCycle": null,
+     "closingPoints": null,
+     "openingPoints": null,
+     "pointsEarnedThisCycle": null,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "pointsRedeemedThisCycle": null,
+     "programType": null
+    },
+    "csv": {
+     "programType": "Amazon Pay balance",
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 485,
+     "pointsRedeemedThisCycle": 485,
+     "closingPoints": null,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "bonusPointsThisCycle": null
+    }
+   },
+   "pdf_reward_labels": [
+    "Closing Balance"
+   ],
+   "pdf_has_utilis": false,
+   "pdf_network_tokens": [
+    "American Express",
+    "Mastercard",
+    "RuPay",
+    "Visa"
+   ],
+   "network": {
+    "luna": [
+     null
+    ],
+    "csv": [
+     "VISA"
+    ],
+    "pdf_tokens": [
+     "American Express",
+     "Mastercard",
+     "RuPay",
+     "Visa"
+    ]
+   },
+   "disagreements": {
+    "statementMeta.rawStatementId": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "1574280500249755",
+      "ref": null
+     }
+    ],
+    "rewards.programType": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "Amazon Pay balance"
+     }
+    ],
+    "rewards.pointsEarnedThisCycle": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 485
+     }
+    ],
+    "rewards.pointsRedeemedThisCycle": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 485
+     }
+    ],
+    "cards[].cardMeta.network": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "VISA"
+     }
+    ],
+    "transactions[].description": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "IGST-CI@18%",
+      "ref": "IGST-CI@18% internal-link",
+      "sim": 0.611
+     }
+    ],
+    "transactions[].amount": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 6.05,
+      "ref": 7.69,
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 7.69,
+      "ref": 1.38,
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": 1.38,
+      "ref": 6.05,
+      "sim": 0.611
+     }
+    ],
+    "transactions[].txnType": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "statement_id": "516479745",
+   "pdf": "decrypt_516479745_19f277fdd9b92cbc_4035XXXXXXXX1003_866620_Retail_HPCL_NORM.pdf",
+   "outcome": "OK",
+   "product": "Retail_HPCL_NORM",
+   "n_txn_luna": 61,
+   "n_txn_csv": 61,
+   "n_cards_luna": 3,
+   "n_cards_csv": 3,
+   "usage": {
+    "completion_tokens": 4771,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 971,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 16672,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 21443
+   },
+   "finish_reason": "stop",
+   "txn": {
+    "n_pred": 61,
+    "n_ref": 61,
+    "matched": 61,
+    "unmatched_pred": 0,
+    "unmatched_ref": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "mean_desc_sim": 0.999802488643097,
+    "desc_exact_char_for_char": 60,
+    "desc_exact_casefold": 60
+   },
+   "cards": {
+    "n_pred": 3,
+    "n_ref": 3,
+    "count_match": true
+   },
+   "issuerName": {
+    "luna": "ICICI Bank",
+    "csv": "ICICI Bank"
+   },
+   "rewards": {
+    "luna": {
+     "bonusPointsThisCycle": null,
+     "closingPoints": null,
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 97,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "pointsRedeemedThisCycle": null,
+     "programType": "ICICI Bank Rewards"
+    },
+    "csv": {
+     "programType": "ICICI Bank Rewards",
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 97,
+     "pointsRedeemedThisCycle": null,
+     "closingPoints": 97,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "bonusPointsThisCycle": null
+    }
+   },
+   "pdf_reward_labels": [
+    "Closing Balance",
+    "Total Points earned",
+    "total points earned"
+   ],
+   "pdf_has_utilis": false,
+   "pdf_network_tokens": [
+    "American Express",
+    "Mastercard",
+    "RuPay",
+    "Visa"
+   ],
+   "network": {
+    "luna": [
+     null,
+     null,
+     null
+    ],
+    "csv": [
+     null,
+     null,
+     null
+    ],
+    "pdf_tokens": [
+     "American Express",
+     "Mastercard",
+     "RuPay",
+     "Visa"
+    ]
+   },
+   "disagreements": {
+    "statementMeta.rawStatementId": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "1574020700866620",
+      "ref": null
+     }
+    ],
+    "rewards.closingPoints": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 97
+     }
+    ],
+    "cards[].cardMeta.cardDisplayName": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "ICICI Bank HPCL Coral Credit Card"
+     }
+    ],
+    "cards[].cardMeta.productFamily": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "HPCL Coral"
+     }
+    ],
+    "cards[].cardMeta.isPrimaryCard": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": true
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": false
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": false
+     }
+    ],
+    "transactions[].description": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "UPI-616125371651-VARSHA S IDARTH VATUD IN",
+      "ref": "UPI-616125371651-VARSHA S IDHARTH VATUD IN",
+      "sim": 0.988
+     }
+    ],
+    "transactions[].txnType": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "CASHBACK",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "statement_id": "524015761",
+   "pdf": "decrypt_524015761_19f2a7000e54de74_6530XXXXXXXX3009_48786_Retail_MMT_NEW_NORM.pdf",
+   "outcome": "OK",
+   "product": "Retail_MMT_NEW_NORM",
+   "n_txn_luna": 8,
+   "n_txn_csv": 8,
+   "n_cards_luna": 2,
+   "n_cards_csv": 2,
+   "usage": {
+    "completion_tokens": 1405,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 659,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 14095,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 13056
+    },
+    "total_tokens": 15500
+   },
+   "finish_reason": "stop",
+   "txn": {
+    "n_pred": 8,
+    "n_ref": 8,
+    "matched": 8,
+    "unmatched_pred": 0,
+    "unmatched_ref": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "mean_desc_sim": 1.0,
+    "desc_exact_char_for_char": 8,
+    "desc_exact_casefold": 8
+   },
+   "cards": {
+    "n_pred": 2,
+    "n_ref": 2,
+    "count_match": true
+   },
+   "issuerName": {
+    "luna": "ICICI Bank",
+    "csv": "ICICI Bank"
+   },
+   "rewards": {
+    "luna": {
+     "bonusPointsThisCycle": null,
+     "closingPoints": null,
+     "openingPoints": null,
+     "pointsEarnedThisCycle": null,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "pointsRedeemedThisCycle": null,
+     "programType": null
+    },
+    "csv": {
+     "programType": "My Cash",
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 575,
+     "pointsRedeemedThisCycle": 575,
+     "closingPoints": null,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "bonusPointsThisCycle": null
+    }
+   },
+   "pdf_reward_labels": [
+    "Closing Balance"
+   ],
+   "pdf_has_utilis": false,
+   "pdf_network_tokens": [
+    "American Express",
+    "Mastercard",
+    "RuPay",
+    "Visa"
+   ],
+   "network": {
+    "luna": [
+     null,
+     null
+    ],
+    "csv": [
+     null,
+     null
+    ],
+    "pdf_tokens": [
+     "American Express",
+     "Mastercard",
+     "RuPay",
+     "Visa"
+    ]
+   },
+   "disagreements": {
+    "statementMeta.dueDate": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "21/07/2026",
+      "ref": "July 21, 2026"
+     }
+    ],
+    "statementMeta.rawStatementId": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "1574030700048786",
+      "ref": null
+     }
+    ],
+    "rewards.programType": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "My Cash"
+     }
+    ],
+    "rewards.pointsEarnedThisCycle": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 575
+     }
+    ],
+    "rewards.pointsRedeemedThisCycle": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 575
+     }
+    ],
+    "cards[].cardMeta.isPrimaryCard": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": true
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": false
+     }
+    ],
+    "transactions[].txnType": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "UPI",
+      "ref": null,
+      "sim": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "statement_id": "557652636",
+   "pdf": "decrypt_557652636_19c406844ff30d22_4375XXXXXXXX9001_425180_Retail_Expressions_NORM.pdf",
+   "outcome": "OK",
+   "product": "Retail_Expressions_NORM",
+   "n_txn_luna": 148,
+   "n_txn_csv": 150,
+   "n_cards_luna": 1,
+   "n_cards_csv": 1,
+   "usage": {
+    "completion_tokens": 8005,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 621,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 17498,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 25503
+   },
+   "finish_reason": "stop",
+   "txn": {
+    "n_pred": 148,
+    "n_ref": 150,
+    "matched": 148,
+    "unmatched_pred": 0,
+    "unmatched_ref": 2,
+    "precision": 1.0,
+    "recall": 0.9866666666666667,
+    "f1": 0.9932885906040269,
+    "mean_desc_sim": 1.0,
+    "desc_exact_char_for_char": 148,
+    "desc_exact_casefold": 148
+   },
+   "cards": {
+    "n_pred": 1,
+    "n_ref": 1,
+    "count_match": true
+   },
+   "issuerName": {
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   "rewards": {
+    "luna": {
+     "bonusPointsThisCycle": null,
+     "closingPoints": null,
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 59,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "pointsRedeemedThisCycle": null,
+     "programType": "ICICI Bank Rewards"
+    },
+    "csv": {
+     "programType": "Reward Points",
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 59,
+     "pointsRedeemedThisCycle": 0,
+     "closingPoints": null,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "bonusPointsThisCycle": null
+    }
+   },
+   "pdf_reward_labels": [
+    "Closing Balance",
+    "Total Points earned",
+    "total points earned"
+   ],
+   "pdf_has_utilis": false,
+   "pdf_network_tokens": [
+    "American Express",
+    "Mastercard",
+    "RuPay",
+    "Visa"
+   ],
+   "network": {
+    "luna": [
+     null
+    ],
+    "csv": [
+     null
+    ],
+    "pdf_tokens": [
+     "American Express",
+     "Mastercard",
+     "RuPay",
+     "Visa"
+    ]
+   },
+   "disagreements": {
+    "statementMeta.issuerName": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "Axis Bank",
+      "ref": "ICICI Bank"
+     }
+    ],
+    "rewards.programType": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "ICICI Bank Rewards",
+      "ref": "Reward Points"
+     }
+    ],
+    "rewards.pointsRedeemedThisCycle": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 0
+     }
+    ],
+    "statementLevelSummary.utilisationPercent@extracted": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 98.8
+     }
+    ],
+    "cards[].cardMeta.cardDisplayName": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "ICICI Bank Credit Card"
+     }
+    ],
+    "transactions[].txnType": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "REFUND",
+      "sim": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "statement_id": "670758880",
+   "pdf": "decrypt_670758880_19f5cafbc55469f8_4315XXXXXXXX5007_1593277_Retail_Amazon_NORM.pdf",
+   "outcome": "OK",
+   "product": "Retail_Amazon_NORM",
+   "n_txn_luna": 6,
+   "n_txn_csv": 6,
+   "n_cards_luna": 1,
+   "n_cards_csv": 1,
+   "usage": {
+    "completion_tokens": 970,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 436,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 13986,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 14956
+   },
+   "finish_reason": "stop",
+   "txn": {
+    "n_pred": 6,
+    "n_ref": 6,
+    "matched": 6,
+    "unmatched_pred": 0,
+    "unmatched_ref": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "mean_desc_sim": 1.0,
+    "desc_exact_char_for_char": 6,
+    "desc_exact_casefold": 6
+   },
+   "cards": {
+    "n_pred": 1,
+    "n_ref": 1,
+    "count_match": true
+   },
+   "issuerName": {
+    "luna": "ICICI Bank",
+    "csv": "ICICI Bank"
+   },
+   "rewards": {
+    "luna": {
+     "bonusPointsThisCycle": null,
+     "closingPoints": null,
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 27,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "pointsRedeemedThisCycle": null,
+     "programType": null
+    },
+    "csv": {
+     "programType": "Amazon Pay balance",
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 27,
+     "pointsRedeemedThisCycle": 27,
+     "closingPoints": null,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "bonusPointsThisCycle": null
+    }
+   },
+   "pdf_reward_labels": [
+    "Closing Balance"
+   ],
+   "pdf_has_utilis": false,
+   "pdf_network_tokens": [
+    "American Express",
+    "Mastercard",
+    "RuPay",
+    "Visa"
+   ],
+   "network": {
+    "luna": [
+     "VISA"
+    ],
+    "csv": [
+     "VISA"
+    ],
+    "pdf_tokens": [
+     "American Express",
+     "Mastercard",
+     "RuPay",
+     "Visa"
+    ]
+   },
+   "disagreements": {
+    "statementMeta.rawStatementId": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "1574120701593277",
+      "ref": null
+     }
+    ],
+    "rewards.programType": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "Amazon Pay balance"
+     }
+    ],
+    "rewards.pointsRedeemedThisCycle": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 27
+     }
+    ],
+    "transactions[].txnType": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PAYMENT",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "statement_id": "820648402",
+   "pdf": "decrypt_820648402_19cb31b6c76c58a1_6528XXXXXXXX3009_805977_Retail_Sapphiro_NORM.pdf",
+   "outcome": "OK",
+   "product": "Retail_Sapphiro_NORM",
+   "n_txn_luna": 42,
+   "n_txn_csv": 42,
+   "n_cards_luna": 3,
+   "n_cards_csv": 3,
+   "usage": {
+    "completion_tokens": 3104,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 507,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 16203,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 19307
+   },
+   "finish_reason": "stop",
+   "txn": {
+    "n_pred": 42,
+    "n_ref": 42,
+    "matched": 42,
+    "unmatched_pred": 0,
+    "unmatched_ref": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "mean_desc_sim": 1.0,
+    "desc_exact_char_for_char": 42,
+    "desc_exact_casefold": 42
+   },
+   "cards": {
+    "n_pred": 3,
+    "n_ref": 3,
+    "count_match": true
+   },
+   "issuerName": {
+    "luna": "ICICI Bank",
+    "csv": "ICICI Bank"
+   },
+   "rewards": {
+    "luna": {
+     "bonusPointsThisCycle": null,
+     "closingPoints": null,
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 109,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "pointsRedeemedThisCycle": null,
+     "programType": "ICICI Bank Rewards"
+    },
+    "csv": {
+     "programType": "ICICI Bank Rewards",
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 109,
+     "pointsRedeemedThisCycle": 0,
+     "closingPoints": null,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "bonusPointsThisCycle": null
+    }
+   },
+   "pdf_reward_labels": [
+    "Closing Balance",
+    "Total Points earned",
+    "total points earned"
+   ],
+   "pdf_has_utilis": false,
+   "pdf_network_tokens": [
+    "American Express",
+    "Mastercard",
+    "RuPay",
+    "Visa"
+   ],
+   "network": {
+    "luna": [
+     null,
+     null,
+     null
+    ],
+    "csv": [
+     "American Express",
+     "Mastercard",
+     "RuPay"
+    ],
+    "pdf_tokens": [
+     "American Express",
+     "Mastercard",
+     "RuPay",
+     "Visa"
+    ]
+   },
+   "disagreements": {
+    "statementMeta.rawStatementId": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "1574020300805977",
+      "ref": null
+     }
+    ],
+    "rewards.pointsRedeemedThisCycle": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 0
+     }
+    ],
+    "statementLevelSummary.utilisationPercent@extracted": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": 32.01
+     }
+    ],
+    "cards[].cardMeta.network": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "American Express"
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "Mastercard"
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": "RuPay"
+     }
+    ],
+    "cards[].cardMeta.isPrimaryCard": [
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": true
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": false
+     },
+     {
+      "verdict": "null_when_populated",
+      "kind": null,
+      "pred": null,
+      "ref": false
+     }
+    ],
+    "cards[].bigPicture.cardCreditLimit": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": 500000,
+      "ref": null
+     }
+    ],
+    "cards[].bigPicture.cardAvailableCreditLimit": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": 339966.02,
+      "ref": null
+     }
+    ],
+    "transactions[].txnType": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "UPI",
+      "ref": "PURCHASE",
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "UPI",
+      "ref": "PURCHASE",
+      "sim": 1.0
+     },
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "UPI",
+      "ref": "PURCHASE",
+      "sim": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "statement_id": "979848021",
+   "pdf": "decrypt_979848021_19fba72c1fca82a7_4035XXXXXXXX7014_35791_Retail_Platinum_NORM.pdf",
+   "outcome": "OK",
+   "product": "Retail_Platinum_NORM",
+   "n_txn_luna": 41,
+   "n_txn_csv": 41,
+   "n_cards_luna": 1,
+   "n_cards_csv": 1,
+   "usage": {
+    "completion_tokens": 3458,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 1065,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 16169,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 19627
+   },
+   "finish_reason": "stop",
+   "txn": {
+    "n_pred": 41,
+    "n_ref": 41,
+    "matched": 41,
+    "unmatched_pred": 0,
+    "unmatched_ref": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "mean_desc_sim": 1.0,
+    "desc_exact_char_for_char": 41,
+    "desc_exact_casefold": 41
+   },
+   "cards": {
+    "n_pred": 1,
+    "n_ref": 1,
+    "count_match": true
+   },
+   "issuerName": {
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   "rewards": {
+    "luna": {
+     "bonusPointsThisCycle": null,
+     "closingPoints": null,
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 373,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "pointsRedeemedThisCycle": null,
+     "programType": "ICICI Bank Rewards"
+    },
+    "csv": {
+     "programType": "ICICI Bank Rewards",
+     "openingPoints": null,
+     "pointsEarnedThisCycle": 373,
+     "pointsRedeemedThisCycle": null,
+     "closingPoints": null,
+     "pointsExpiringNext30Days": null,
+     "pointsExpiringNext60Days": null,
+     "bonusPointsThisCycle": null
+    }
+   },
+   "pdf_reward_labels": [
+    "Closing Balance",
+    "Total Points earned",
+    "total points earned"
+   ],
+   "pdf_has_utilis": false,
+   "pdf_network_tokens": [
+    "American Express",
+    "Mastercard",
+    "RuPay",
+    "Visa"
+   ],
+   "network": {
+    "luna": [
+     null
+    ],
+    "csv": [
+     null
+    ],
+    "pdf_tokens": [
+     "American Express",
+     "Mastercard",
+     "RuPay",
+     "Visa"
+    ]
+   },
+   "disagreements": {
+    "statementMeta.issuerName": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "Axis Bank",
+      "ref": "ICICI Bank"
+     }
+    ],
+    "statementMeta.rawStatementId": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "1574310700035791",
+      "ref": null
+     }
+    ],
+    "transactions[].direction": [
+     {
+      "verdict": "wrong_value",
+      "kind": null,
+      "pred": "CREDIT",
+      "ref": "DEBIT",
+      "sim": 1.0
+     }
+    ],
+    "transactions[].txnType": [
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "INTEREST",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "INTEREST",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "TAX",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "EMI",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     },
+     {
+      "verdict": "hallucinated_when_null",
+      "kind": null,
+      "pred": "PURCHASE",
+      "ref": null,
+      "sim": 1.0
+     }
+    ]
+   }
+  }
+ ],
+ "patterns": {
+  "disagree::statementMeta.rawStatementId::hallucinated_when_null": [
+   {
+    "sid": "1010092654",
+    "luna": "1574020800107986",
+    "csv": null
+   },
+   {
+    "sid": "1066621585",
+    "luna": "1574050800563261",
+    "csv": null
+   },
+   {
+    "sid": "1711342048",
+    "luna": "1574211100311200",
+    "csv": null
+   },
+   {
+    "sid": "2054837190",
+    "luna": "1574280500249755",
+    "csv": null
+   },
+   {
+    "sid": "516479745",
+    "luna": "1574020700866620",
+    "csv": null
+   },
+   {
+    "sid": "524015761",
+    "luna": "1574030700048786",
+    "csv": null
+   },
+   {
+    "sid": "670758880",
+    "luna": "1574120701593277",
+    "csv": null
+   },
+   {
+    "sid": "820648402",
+    "luna": "1574020300805977",
+    "csv": null
+   },
+   {
+    "sid": "979848021",
+    "luna": "1574310700035791",
+    "csv": null
+   }
+  ],
+  "disagree::cards[].cardMeta.isPrimaryCard::null_when_populated": [
+   {
+    "sid": "516479745",
+    "luna": null,
+    "csv": true
+   },
+   {
+    "sid": "516479745",
+    "luna": null,
+    "csv": false
+   },
+   {
+    "sid": "516479745",
+    "luna": null,
+    "csv": false
+   },
+   {
+    "sid": "524015761",
+    "luna": null,
+    "csv": true
+   },
+   {
+    "sid": "524015761",
+    "luna": null,
+    "csv": false
+   },
+   {
+    "sid": "820648402",
+    "luna": null,
+    "csv": true
+   },
+   {
+    "sid": "820648402",
+    "luna": null,
+    "csv": false
+   },
+   {
+    "sid": "820648402",
+    "luna": null,
+    "csv": false
+   }
+  ],
+  "disagree::rewards.pointsRedeemedThisCycle::null_when_populated": [
+   {
+    "sid": "1066621585",
+    "luna": null,
+    "csv": 13425
+   },
+   {
+    "sid": "1711342048",
+    "luna": null,
+    "csv": 0
+   },
+   {
+    "sid": "2054837190",
+    "luna": null,
+    "csv": 485
+   },
+   {
+    "sid": "524015761",
+    "luna": null,
+    "csv": 575
+   },
+   {
+    "sid": "557652636",
+    "luna": null,
+    "csv": 0
+   },
+   {
+    "sid": "670758880",
+    "luna": null,
+    "csv": 27
+   },
+   {
+    "sid": "820648402",
+    "luna": null,
+    "csv": 0
+   }
+  ],
+  "disagree::cards[].cardMeta.network::null_when_populated": [
+   {
+    "sid": "2054837190",
+    "luna": null,
+    "csv": "VISA"
+   },
+   {
+    "sid": "820648402",
+    "luna": null,
+    "csv": "American Express"
+   },
+   {
+    "sid": "820648402",
+    "luna": null,
+    "csv": "Mastercard"
+   },
+   {
+    "sid": "820648402",
+    "luna": null,
+    "csv": "RuPay"
+   }
+  ],
+  "disagree::rewards.programType::null_when_populated": [
+   {
+    "sid": "1066621585",
+    "luna": null,
+    "csv": "Adani One"
+   },
+   {
+    "sid": "2054837190",
+    "luna": null,
+    "csv": "Amazon Pay balance"
+   },
+   {
+    "sid": "524015761",
+    "luna": null,
+    "csv": "My Cash"
+   },
+   {
+    "sid": "670758880",
+    "luna": null,
+    "csv": "Amazon Pay balance"
+   }
+  ],
+  "disagree::statementMeta.issuerName::wrong_value": [
+   {
+    "sid": "1066621585",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   {
+    "sid": "1711342048",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   {
+    "sid": "557652636",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   {
+    "sid": "979848021",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   }
+  ],
+  "issuer_not_icici_LUNA": [
+   {
+    "sid": "1066621585",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   {
+    "sid": "1711342048",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   {
+    "sid": "557652636",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   {
+    "sid": "979848021",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   }
+  ],
+  "issuer_says_axis_LUNA": [
+   {
+    "sid": "1066621585",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   {
+    "sid": "1711342048",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   {
+    "sid": "557652636",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   },
+   {
+    "sid": "979848021",
+    "luna": "Axis Bank",
+    "csv": "ICICI Bank"
+   }
+  ],
+  "disagree::cards[].cardMeta.cardDisplayName::null_when_populated": [
+   {
+    "sid": "1066621585",
+    "luna": null,
+    "csv": "ICICI Bank Adani One"
+   },
+   {
+    "sid": "516479745",
+    "luna": null,
+    "csv": "ICICI Bank HPCL Coral Credit Card"
+   },
+   {
+    "sid": "557652636",
+    "luna": null,
+    "csv": "ICICI Bank Credit Card"
+   }
+  ],
+  "disagree::statementLevelSummary.utilisationPercent@extracted::null_when_populated": [
+   {
+    "sid": "1711342048",
+    "luna": null,
+    "csv": 69.1
+   },
+   {
+    "sid": "557652636",
+    "luna": null,
+    "csv": 98.8
+   },
+   {
+    "sid": "820648402",
+    "luna": null,
+    "csv": 32.01
+   }
+  ],
+  "closingPoints_matches_arithmetic_CSV": [
+   {
+    "sid": "1010092654",
+    "closingPoints": 495,
+    "openingPoints": null,
+    "earned": 495,
+    "redeemed": null,
+    "matches": [
+     "earned-redeemed",
+     "opening+earned-redeemed"
+    ]
+   },
+   {
+    "sid": "516479745",
+    "closingPoints": 97,
+    "openingPoints": null,
+    "earned": 97,
+    "redeemed": null,
+    "matches": [
+     "earned-redeemed",
+     "opening+earned-redeemed"
+    ]
+   }
+  ],
+  "disagree::cards[].cardMeta.productFamily::null_when_populated": [
+   {
+    "sid": "1066621585",
+    "luna": null,
+    "csv": "Adani One"
+   },
+   {
+    "sid": "516479745",
+    "luna": null,
+    "csv": "HPCL Coral"
+   }
+  ],
+  "disagree::rewards.closingPoints::null_when_populated": [
+   {
+    "sid": "1010092654",
+    "luna": null,
+    "csv": 495
+   },
+   {
+    "sid": "516479745",
+    "luna": null,
+    "csv": 97
+   }
+  ],
+  "disagree::rewards.pointsEarnedThisCycle::null_when_populated": [
+   {
+    "sid": "2054837190",
+    "luna": null,
+    "csv": 485
+   },
+   {
+    "sid": "524015761",
+    "luna": null,
+    "csv": 575
+   }
+  ],
+  "disagree::rewards.programType::wrong_value": [
+   {
+    "sid": "1010092654",
+    "luna": "ICICI Bank Rewards",
+    "csv": "Reward Points"
+   },
+   {
+    "sid": "557652636",
+    "luna": "ICICI Bank Rewards",
+    "csv": "Reward Points"
+   }
+  ],
+  "disagree::cards[].bigPicture.cardAvailableCreditLimit::hallucinated_when_null": [
+   {
+    "sid": "820648402",
+    "luna": 339966.02,
+    "csv": null
+   }
+  ],
+  "disagree::cards[].bigPicture.cardCreditLimit::hallucinated_when_null": [
+   {
+    "sid": "820648402",
+    "luna": 500000,
+    "csv": null
+   }
+  ],
+  "disagree::statementMeta.dueDate::wrong_value": [
+   {
+    "sid": "524015761",
+    "luna": "21/07/2026",
+    "csv": "July 21, 2026"
+   }
+  ]
+ },
+ "pattern_counts": {
+  "disagree::statementMeta.rawStatementId::hallucinated_when_null": 9,
+  "disagree::cards[].cardMeta.isPrimaryCard::null_when_populated": 8,
+  "disagree::rewards.pointsRedeemedThisCycle::null_when_populated": 7,
+  "disagree::cards[].cardMeta.network::null_when_populated": 4,
+  "disagree::rewards.programType::null_when_populated": 4,
+  "disagree::statementMeta.issuerName::wrong_value": 4,
+  "issuer_not_icici_LUNA": 4,
+  "issuer_says_axis_LUNA": 4,
+  "disagree::cards[].cardMeta.cardDisplayName::null_when_populated": 3,
+  "disagree::statementLevelSummary.utilisationPercent@extracted::null_when_populated": 3,
+  "closingPoints_matches_arithmetic_CSV": 2,
+  "disagree::cards[].cardMeta.productFamily::null_when_populated": 2,
+  "disagree::rewards.closingPoints::null_when_populated": 2,
+  "disagree::rewards.pointsEarnedThisCycle::null_when_populated": 2,
+  "disagree::rewards.programType::wrong_value": 2,
+  "disagree::cards[].bigPicture.cardAvailableCreditLimit::hallucinated_when_null": 1,
+  "disagree::cards[].bigPicture.cardCreditLimit::hallucinated_when_null": 1,
+  "disagree::statementMeta.dueDate::wrong_value": 1
+ },
+ "csv_join_diag": {
+  "csv_rows": 315,
+  "matched": 304,
+  "unmatched_csv_rows": 11,
+  "duplicate_joins": 0
+ },
+ "sample_rule": "1 per distinct product family (families ordered by corpus frequency desc, then name; within family: max txn_row_est, then max bytes, then filename) for 8 slots; then the corpus-wide max-txn-rows and max-bytes PDFs for slots 9-10. Fully deterministic total order, no RNG."
+}

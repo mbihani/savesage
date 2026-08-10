@@ -1,0 +1,12 @@
+model=luna prompt=hdfc n=10 todo=10 par=1 out=/Users/mayanck.bihani/Savesage/bank_eval/hdfc/phase2_hdfc_sample
+prompt_sha256=569b8595dc47a28dd0803a36041f026d78a122ddadd13344e3b06866eef6f824 chars=13361
+1/10 [12s] OK fr=stop txn=1 att=1 rl=0 lat=12233ms in=5729 out=888 decrypt_1196489569_19d518a09371644e_HDFC_Bank_Pixel_
+2/10 [45s] OK fr=stop txn=44 att=1 rl=0 lat=33286ms in=11098 out=3760 decrypt_1678401256_19aa6bdd1e9f899e_5522XXXXXXXXXX40
+3/10 [76s] OK fr=stop txn=51 att=1 rl=0 lat=31010ms in=10764 out=3882 decrypt_252502266_19bc220c2d3c07ef_4341XXXXXXXXXX35_
+4/10 [113s] OK fr=stop txn=123 att=1 rl=0 lat=36579ms in=10199 out=6373 decrypt_310396339_19e30dcf27dc7f73_HDFC_Bank_Pixel_P
+5/10 [150s] OK fr=stop txn=66 att=1 rl=0 lat=37248ms in=10732 out=4546 decrypt_493517787_19c1fc592bdf84d1_6529XXXXXXXXXX09_
+6/10 [183s] OK fr=stop txn=87 att=1 rl=0 lat=32756ms in=11335 out=4992 decrypt_705330814_19c81ac46a73163b_0036XXXXXXXXXX87_
+7/10 [248s] OK fr=stop txn=109 att=1 rl=0 lat=65358ms in=12228 out=5672 decrypt_738368244_19f70d2e2c77ebd5_6530XXXXXXXXXX38_
+8/10 [297s] OK fr=stop txn=11 att=1 rl=0 lat=48904ms in=8338 out=1319 decrypt_810097123_19caf4a3c2c34de6_6529XXXXXXXXXX89_
+9/10 [356s] OK fr=stop txn=223 att=1 rl=0 lat=59253ms in=14229 out=11594 decrypt_879728587_18a0b7c020b06bf5_3611XXXXXXXX51_18
+10/10 [382s] OK fr=stop txn=51 att=1 rl=0 lat=25334ms in=10376 out=3723 decrypt_923692554_19802d1d11c3ef78_4375XXXXXXXXXX40_

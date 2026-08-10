@@ -1,0 +1,53 @@
+{
+ "121563623": {
+  "real_filename": {
+   "sent_filename": "decrypt_121563623_19ded9b74baf75aa_6528XXXXXXXX0002_1031640_Retail_Coral_NORM.pdf",
+   "cardDisplayName": [
+    "ICICI Bank Coral Credit Card"
+   ],
+   "err": null
+  },
+  "sanitised": {
+   "sent_filename": "statement.pdf",
+   "cardDisplayName": [
+    "ICICI Bank Coral Credit Card",
+    "ICICI Bank Coral Credit Card"
+   ],
+   "err": null
+  }
+ },
+ "1255188325": {
+  "real_filename": {
+   "sent_filename": "decrypt_1255188325_19d6fbdf0a9c3e52_5241XXXXXXXX0000_380875_Retail_Sapphiro_NORM.pdf",
+   "cardDisplayName": [
+    "Sapphiro",
+    null
+   ],
+   "err": null
+  },
+  "sanitised": {
+   "sent_filename": "statement.pdf",
+   "cardDisplayName": [
+    "Sapphiro",
+    null
+   ],
+   "err": null
+  }
+ },
+ "1046763144": {
+  "real_filename": {
+   "sent_filename": "decrypt_1046763144_19af19ce11bedba8_4786XXXXXXXX3006_330187_Retail_AdaniOne_NORM.pdf",
+   "cardDisplayName": [
+    null
+   ],
+   "err": null
+  },
+  "sanitised": {
+   "sent_filename": "statement.pdf",
+   "cardDisplayName": [
+    "Adani One ICICI Bank Credit Card"
+   ],
+   "err": null
+  }
+ }
+}

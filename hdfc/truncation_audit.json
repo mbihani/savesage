@@ -1,0 +1,75 @@
+{
+ "csv_txn_density": {
+  "max": 223,
+  "mean": 16.51,
+  "median": 10,
+  "n_statements": 281,
+  "total": 4638
+ },
+ "gt_opus": {
+  "abnormal_finish": 0,
+  "abnormal_finish_detail": [],
+  "cap": 64000,
+  "max_completion_pct_of_cap": 18.09,
+  "max_completion_tokens": 11578,
+  "n": 167,
+  "near_cap_detail": [],
+  "projected_tokens_for_223_txn_stmt": 27494,
+  "projection_fits_cap": true,
+  "records_within_10pct_of_cap": 0,
+  "under_extracted_detail": [],
+  "under_extracted_vs_csv": 0,
+  "worst_tokens_per_txn_on_large_stmts": 123.3
+ },
+ "luna_generic_sample": {
+  "abnormal_finish": 0,
+  "abnormal_finish_detail": [],
+  "cap": 96000,
+  "max_completion_pct_of_cap": 12.17,
+  "max_completion_tokens": 11688,
+  "n": 10,
+  "near_cap_detail": [],
+  "projected_tokens_for_223_txn_stmt": 21321,
+  "projection_fits_cap": true,
+  "records_within_10pct_of_cap": 0,
+  "under_extracted_detail": [],
+  "under_extracted_vs_csv": 0,
+  "worst_tokens_per_txn_on_large_stmts": 95.6
+ },
+ "luna_refined": {
+  "abnormal_finish": 0,
+  "abnormal_finish_detail": [],
+  "cap": 96000,
+  "max_completion_pct_of_cap": 6.63,
+  "max_completion_tokens": 6367,
+  "n": 153,
+  "near_cap_detail": [],
+  "projected_tokens_for_223_txn_stmt": 20352,
+  "projection_fits_cap": true,
+  "records_within_10pct_of_cap": 0,
+  "under_extracted_detail": [],
+  "under_extracted_vs_csv": 0,
+  "worst_tokens_per_txn_on_large_stmts": 91.3
+ },
+ "luna_refined_sample": {
+  "abnormal_finish": 0,
+  "abnormal_finish_detail": [],
+  "cap": 96000,
+  "max_completion_pct_of_cap": 12.03,
+  "max_completion_tokens": 11553,
+  "n": 10,
+  "near_cap_detail": [],
+  "projected_tokens_for_223_txn_stmt": 20237,
+  "projection_fits_cap": true,
+  "records_within_10pct_of_cap": 0,
+  "under_extracted_detail": [],
+  "under_extracted_vs_csv": 0,
+  "worst_tokens_per_txn_on_large_stmts": 90.8
+ },
+ "notes": [
+  "GT: **0 of 167** records show an abnormal finish_reason and **0** extracted <80% of the CSV's row count. Peak completion was 11,578 tokens = 18.09% of the 64,000 cap.",
+  "GT cap sizing: worst observed 123.3 tokens/txn on statements with >=30 txns projects ~27,494 tokens for the 223-txn outlier -- fits the 64,000 cap: True.",
+  "GT max_tokens was raised 32,000 -> 64,000 partway through the sweep. The records collected under 32,000 remain comparable: max_tokens is a ceiling, not a sampling parameter, and none of those records came within 78% of even the lower cap, so none could have been shaped by it.",
+  "Challenger: 0/153 abnormal finishes, 0 under-extractions, peak 6,367 tokens = 6.63% of the 96,000 cap."
+ ]
+}

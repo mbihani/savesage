@@ -1,0 +1,848 @@
+{
+ "n": 10,
+ "statements": {
+  "837436340": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 7627,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 668,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 21508,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 29135
+   },
+   "n_txn_luna": 137,
+   "n_txn_incumbent": 141,
+   "n_txn_pdf_geom": 141,
+   "issues": [
+    {
+     "kind": "LUNA_CLOSINGPOINTS_FROM_LIFETIME",
+     "field": "rewards.closingPoints",
+     "luna": 1365,
+     "incumbent": 1365,
+     "pdf_evidence": [
+      0.0,
+      4.0,
+      15.0,
+      48.0,
+      120.0,
+      1365.0,
+      5676791.0
+     ],
+     "note": "luna value equals a lifetime/YTD figure"
+    },
+    {
+     "kind": "CSV_CLOSINGPOINTS_FROM_LIFETIME",
+     "field": "rewards.closingPoints",
+     "luna": 1365,
+     "incumbent": 1365,
+     "pdf_evidence": [
+      0.0,
+      4.0,
+      15.0,
+      48.0,
+      120.0,
+      1365.0,
+      5676791.0
+     ],
+     "note": "incumbent value equals a lifetime/YTD figure"
+    },
+    {
+     "kind": "LUNA_TXN_INCOMPLETE",
+     "field": "transactions",
+     "luna": 137,
+     "incumbent": 141,
+     "pdf_evidence": {
+      "pdf_rows": 141,
+      "examples": [
+       {
+        "page": 1,
+        "date": "01 Jul 26",
+        "amount": 15050.0,
+        "desc": "PAYMENT RECEIVED 000HD016182BALAAAEGQKTA",
+        "marker": "C"
+       },
+       {
+        "page": 1,
+        "date": "10 Jul 26",
+        "amount": 15.0,
+        "desc": "FUEL SURCHARGE WAIVER EXCL TAX",
+        "marker": "C"
+       },
+       {
+        "page": 1,
+        "date": "22 Jun 26",
+        "amount": 10.0,
+        "desc": "UPI-MONIKA LALIT CHANG",
+        "marker": "D"
+       },
+       {
+        "page": 1,
+        "date": "22 Jun 26",
+        "amount": 10.0,
+        "desc": "UPI-L A ENTERPRISE",
+        "marker": "D"
+       },
+       {
+        "page": 1,
+        "date": "22 Jun 26",
+        "amount": 48.0,
+        "desc": "UPI-PRAHALAD DHOBI",
+        "marker": "D"
+       },
+       {
+        "page": 1,
+        "date": "22 Jun 26",
+        "amount": 115.0,
+        "desc": "UPI-DINESHBHAI",
+        "marker": "D"
+       }
+      ]
+     },
+     "note": "luna emitted fewer rows than the PDF geometrically contains"
+    }
+   ],
+   "txn_recall_vs_geom": 0.9716312056737588,
+   "direction_vs_marker": {
+    "agrees_with_marker": 0,
+    "luna_contradicts_marker": 0,
+    "unresolvable": 137,
+    "examples": []
+   },
+   "desc": {
+    "n": 137,
+    "with_double_space": 0,
+    "ending_in_country_code": 2,
+    "pdf_rows_ending_in_country": 2
+   },
+   "last_four": {
+    "luna": "XX25",
+    "incumbent": "XX25"
+   },
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "period": {
+    "luna": [
+     "23/06/2026",
+     "22/07/2026"
+    ],
+    "incumbent": [
+     "23 Jun 2026",
+     "22 Jul 2026"
+    ]
+   },
+   "rawStatementId": {
+    "luna": "H26072450588",
+    "incumbent": null,
+    "pdf_has_STMT_No": true
+   }
+  },
+  "546216901": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 5129,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 548,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 19646,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 24775
+   },
+   "n_txn_luna": 90,
+   "n_txn_incumbent": 90,
+   "n_txn_pdf_geom": 90,
+   "issues": [],
+   "txn_recall_vs_geom": 1.0,
+   "direction_vs_marker": {
+    "agrees_with_marker": 0,
+    "luna_contradicts_marker": 0,
+    "unresolvable": 90,
+    "examples": []
+   },
+   "desc": {
+    "n": 90,
+    "with_double_space": 0,
+    "ending_in_country_code": 0,
+    "pdf_rows_ending_in_country": 0
+   },
+   "last_four": {
+    "luna": "XX63",
+    "incumbent": "XX63"
+   },
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "period": {
+    "luna": [
+     "05/06/2026",
+     "04/07/2026"
+    ],
+    "incumbent": [
+     "05 Jun 26",
+     "04 Jul 26"
+    ]
+   },
+   "rawStatementId": {
+    "luna": "A26070329496",
+    "incumbent": null,
+    "pdf_has_STMT_No": true
+   }
+  },
+  "924475136": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 2193,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 866,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 12567,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 14760
+   },
+   "n_txn_luna": 21,
+   "n_txn_incumbent": 21,
+   "n_txn_pdf_geom": 19,
+   "issues": [
+    {
+     "kind": "LUNA_CLOSINGPOINTS_FROM_LIFETIME",
+     "field": "rewards.closingPoints",
+     "luna": 1732,
+     "incumbent": 1732,
+     "pdf_evidence": [
+      0.0,
+      4.0,
+      5.0,
+      6.0,
+      19.96,
+      120.0,
+      1732.0,
+      6582.0
+     ],
+     "note": "luna value equals a lifetime/YTD figure"
+    },
+    {
+     "kind": "CSV_CLOSINGPOINTS_FROM_LIFETIME",
+     "field": "rewards.closingPoints",
+     "luna": 1732,
+     "incumbent": 1732,
+     "pdf_evidence": [
+      0.0,
+      4.0,
+      5.0,
+      6.0,
+      19.96,
+      120.0,
+      1732.0,
+      6582.0
+     ],
+     "note": "incumbent value equals a lifetime/YTD figure"
+    },
+    {
+     "kind": "LUNA_TXN_EXTRA",
+     "field": "transactions",
+     "luna": 21,
+     "incumbent": 21,
+     "pdf_evidence": {
+      "pdf_rows": 19
+     },
+     "note": "luna emitted MORE rows than the PDF contains"
+    }
+   ],
+   "txn_recall_vs_geom": 1.105263157894737,
+   "direction_vs_marker": {
+    "agrees_with_marker": 0,
+    "luna_contradicts_marker": 0,
+    "unresolvable": 21,
+    "examples": []
+   },
+   "desc": {
+    "n": 21,
+    "with_double_space": 0,
+    "ending_in_country_code": 13,
+    "pdf_rows_ending_in_country": 13
+   },
+   "last_four": {
+    "luna": "XX54",
+    "incumbent": "XX54"
+   },
+   "issuer": {
+    "luna": "SBI Cards and Payment Services Limited",
+    "incumbent": "SBI Card"
+   },
+   "period": {
+    "luna": [
+     null,
+     null
+    ],
+    "incumbent": [
+     null,
+     null
+    ]
+   },
+   "rawStatementId": {
+    "luna": "C21121671252",
+    "incumbent": null,
+    "pdf_has_STMT_No": true
+   }
+  },
+  "734857498": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 1388,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 512,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 17697,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 19085
+   },
+   "n_txn_luna": 12,
+   "n_txn_incumbent": 12,
+   "n_txn_pdf_geom": 10,
+   "issues": [
+    {
+     "kind": "LUNA_TXN_EXTRA",
+     "field": "transactions",
+     "luna": 12,
+     "incumbent": 12,
+     "pdf_evidence": {
+      "pdf_rows": 10
+     },
+     "note": "luna emitted MORE rows than the PDF contains"
+    }
+   ],
+   "txn_recall_vs_geom": 1.2,
+   "direction_vs_marker": {
+    "agrees_with_marker": 0,
+    "luna_contradicts_marker": 0,
+    "unresolvable": 12,
+    "examples": []
+   },
+   "desc": {
+    "n": 12,
+    "with_double_space": 0,
+    "ending_in_country_code": 4,
+    "pdf_rows_ending_in_country": 4
+   },
+   "last_four": {
+    "luna": "XX89",
+    "incumbent": "XX89"
+   },
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "period": {
+    "luna": [
+     "17/06/2026",
+     "16/07/2026"
+    ],
+    "incumbent": [
+     "17 Jun 2026",
+     "16 Jul 2026"
+    ]
+   },
+   "rawStatementId": {
+    "luna": "B26072191084",
+    "incumbent": null,
+    "pdf_has_STMT_No": true
+   }
+  },
+  "1120623464": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 671,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 378,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 17018,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 17689
+   },
+   "n_txn_luna": 1,
+   "n_txn_incumbent": 1,
+   "n_txn_pdf_geom": 1,
+   "issues": [
+    {
+     "kind": "CSV_CLOSINGPOINTS_FROM_LIFETIME",
+     "field": "rewards.closingPoints",
+     "luna": null,
+     "incumbent": 0,
+     "pdf_evidence": [
+      0.0,
+      4.0,
+      27.8,
+      48.0,
+      120.0,
+      4791.0
+     ],
+     "note": "incumbent value equals a lifetime/YTD figure"
+    }
+   ],
+   "txn_recall_vs_geom": 1.0,
+   "direction_vs_marker": {
+    "agrees_with_marker": 0,
+    "luna_contradicts_marker": 0,
+    "unresolvable": 1,
+    "examples": []
+   },
+   "desc": {
+    "n": 1,
+    "with_double_space": 0,
+    "ending_in_country_code": 0,
+    "pdf_rows_ending_in_country": 0
+   },
+   "last_four": {
+    "luna": "XX02",
+    "incumbent": "XX02"
+   },
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "period": {
+    "luna": [
+     "26/02/2026",
+     "25/03/2026"
+    ],
+    "incumbent": [
+     "2026-02-26",
+     "2026-03-25"
+    ]
+   },
+   "rawStatementId": {
+    "luna": "C26032109845",
+    "incumbent": null,
+    "pdf_has_STMT_No": true
+   }
+  },
+  "1220226393": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 617,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 325,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 17249,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 17866
+   },
+   "n_txn_luna": 1,
+   "n_txn_incumbent": 1,
+   "n_txn_pdf_geom": 1,
+   "issues": [],
+   "txn_recall_vs_geom": 1.0,
+   "direction_vs_marker": {
+    "agrees_with_marker": 0,
+    "luna_contradicts_marker": 0,
+    "unresolvable": 1,
+    "examples": []
+   },
+   "desc": {
+    "n": 1,
+    "with_double_space": 0,
+    "ending_in_country_code": 0,
+    "pdf_rows_ending_in_country": 0
+   },
+   "last_four": {
+    "luna": "XX09",
+    "incumbent": "XX09"
+   },
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "period": {
+    "luna": [
+     "05/03/2026",
+     "04/04/2026"
+    ],
+    "incumbent": [
+     "05 Mar 26",
+     "04 Apr 26"
+    ]
+   },
+   "rawStatementId": {
+    "luna": "D26040398862",
+    "incumbent": null,
+    "pdf_has_STMT_No": true
+   }
+  },
+  "1560321887": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 4344,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 461,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 19451,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 23795
+   },
+   "n_txn_luna": 75,
+   "n_txn_incumbent": 75,
+   "n_txn_pdf_geom": 75,
+   "issues": [
+    {
+     "kind": "LUNA_CLOSINGPOINTS_FROM_LIFETIME",
+     "field": "rewards.closingPoints",
+     "luna": 4555,
+     "incumbent": 4555,
+     "pdf_evidence": [
+      0.0,
+      4.0,
+      46.5,
+      48.0,
+      120.0,
+      4555.0,
+      5676791.0
+     ],
+     "note": "luna value equals a lifetime/YTD figure"
+    },
+    {
+     "kind": "CSV_CLOSINGPOINTS_FROM_LIFETIME",
+     "field": "rewards.closingPoints",
+     "luna": 4555,
+     "incumbent": 4555,
+     "pdf_evidence": [
+      0.0,
+      4.0,
+      46.5,
+      48.0,
+      120.0,
+      4555.0,
+      5676791.0
+     ],
+     "note": "incumbent value equals a lifetime/YTD figure"
+    }
+   ],
+   "txn_recall_vs_geom": 1.0,
+   "direction_vs_marker": {
+    "agrees_with_marker": 0,
+    "luna_contradicts_marker": 0,
+    "unresolvable": 75,
+    "examples": []
+   },
+   "desc": {
+    "n": 75,
+    "with_double_space": 0,
+    "ending_in_country_code": 0,
+    "pdf_rows_ending_in_country": 0
+   },
+   "last_four": {
+    "luna": "XX71",
+    "incumbent": "XX71"
+   },
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "period": {
+    "luna": [
+     "06/04/2026",
+     "05/05/2026"
+    ],
+    "incumbent": [
+     "06 Apr 26",
+     "05 May 26"
+    ]
+   },
+   "rawStatementId": {
+    "luna": "I26050642637",
+    "incumbent": null,
+    "pdf_has_STMT_No": true
+   }
+  },
+  "1707857175": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 3785,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 415,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 19388,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 23173
+   },
+   "n_txn_luna": 64,
+   "n_txn_incumbent": 71,
+   "n_txn_pdf_geom": 71,
+   "issues": [
+    {
+     "kind": "LUNA_TXN_INCOMPLETE",
+     "field": "transactions",
+     "luna": 64,
+     "incumbent": 71,
+     "pdf_evidence": {
+      "pdf_rows": 71,
+      "examples": [
+       {
+        "page": 1,
+        "date": "01 May 26",
+        "amount": 128100.0,
+        "desc": "PAYMENT RECEIVED 000BD016121BALAAAJGB4VZ",
+        "marker": "C"
+       },
+       {
+        "page": 1,
+        "date": "03 May 26",
+        "amount": 5.36,
+        "desc": "FUEL SURCHARGE WAIVER EXCL TAX",
+        "marker": "C"
+       },
+       {
+        "page": 1,
+        "date": "16 Apr 26",
+        "amount": 20.0,
+        "desc": "UPI-REDEFINED PRIVATE L",
+        "marker": "D"
+       },
+       {
+        "page": 1,
+        "date": "16 Apr 26",
+        "amount": 105.0,
+        "desc": "UPI-REDEFINED PRIVATE L",
+        "marker": "D"
+       },
+       {
+        "page": 1,
+        "date": "16 Apr 26",
+        "amount": 20.0,
+        "desc": "UPI-REDEFINED PRIVATE L",
+        "marker": "D"
+       },
+       {
+        "page": 1,
+        "date": "16 Apr 26",
+        "amount": 265.0,
+        "desc": "UPI-A M R TEMPTATIONS",
+        "marker": "D"
+       }
+      ]
+     },
+     "note": "luna emitted fewer rows than the PDF geometrically contains"
+    }
+   ],
+   "txn_recall_vs_geom": 0.9014084507042254,
+   "direction_vs_marker": {
+    "agrees_with_marker": 0,
+    "luna_contradicts_marker": 0,
+    "unresolvable": 64,
+    "examples": []
+   },
+   "desc": {
+    "n": 64,
+    "with_double_space": 0,
+    "ending_in_country_code": 4,
+    "pdf_rows_ending_in_country": 4
+   },
+   "last_four": {
+    "luna": "XX13",
+    "incumbent": "XX13"
+   },
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "period": {
+    "luna": [
+     "17/04/2026",
+     "16/05/2026"
+    ],
+    "incumbent": [
+     "17 Apr 26",
+     "16 May 26"
+    ]
+   },
+   "rawStatementId": {
+    "luna": "I26051795576",
+    "incumbent": null,
+    "pdf_has_STMT_No": true
+   }
+  },
+  "365516172": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 3687,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 294,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 19200,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 22887
+   },
+   "n_txn_luna": 65,
+   "n_txn_incumbent": 65,
+   "n_txn_pdf_geom": 65,
+   "issues": [],
+   "txn_recall_vs_geom": 1.0,
+   "direction_vs_marker": {
+    "agrees_with_marker": 0,
+    "luna_contradicts_marker": 0,
+    "unresolvable": 65,
+    "examples": []
+   },
+   "desc": {
+    "n": 65,
+    "with_double_space": 0,
+    "ending_in_country_code": 0,
+    "pdf_rows_ending_in_country": 0
+   },
+   "last_four": {
+    "luna": "XX50",
+    "incumbent": "XX50"
+   },
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "period": {
+    "luna": [
+     "21/05/2026",
+     "20/06/2026"
+    ],
+    "incumbent": [
+     "21 May 2026",
+     "20 Jun 2026"
+    ]
+   },
+   "rawStatementId": {
+    "luna": "B26062784904",
+    "incumbent": null,
+    "pdf_has_STMT_No": true
+   }
+  },
+  "515948911": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 3534,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 440,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 19006,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 22540
+   },
+   "n_txn_luna": 56,
+   "n_txn_incumbent": 56,
+   "n_txn_pdf_geom": 56,
+   "issues": [],
+   "txn_recall_vs_geom": 1.0,
+   "direction_vs_marker": {
+    "agrees_with_marker": 0,
+    "luna_contradicts_marker": 0,
+    "unresolvable": 56,
+    "examples": []
+   },
+   "desc": {
+    "n": 56,
+    "with_double_space": 0,
+    "ending_in_country_code": 51,
+    "pdf_rows_ending_in_country": 51
+   },
+   "last_four": {
+    "luna": "XX56",
+    "incumbent": "XX56"
+   },
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "period": {
+    "luna": [
+     "04/01/2026",
+     "03/02/2026"
+    ],
+    "incumbent": [
+     "2026-01-04",
+     "2026-02-03"
+    ]
+   },
+   "rawStatementId": {
+    "luna": "A26020284772",
+    "incumbent": null,
+    "pdf_has_STMT_No": true
+   }
+  }
+ },
+ "patterns": {
+  "LUNA_CLOSINGPOINTS_FROM_LIFETIME": 3,
+  "CSV_CLOSINGPOINTS_FROM_LIFETIME": 4,
+  "LUNA_TXN_INCOMPLETE": 2,
+  "LUNA_TXN_EXTRA": 2
+ }
+}

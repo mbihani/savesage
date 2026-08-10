@@ -1,0 +1,4 @@
+arm=opus_gt model=opus corpus=304 todo=197 par=1 prompt_chars=8243 outdir=/Users/mayanck.bihani/Savesage/bank_eval/icici/opus_gt
+1/197 [29s] 2088767065 OK fr=stop txn=15 card=1 att=1 rl=0 lat=29105ms in=28720 out=1971 tot=30691
+2/197 [44s] 2094680192 OK fr=stop txn=3 card=1 att=1 rl=0 lat=15736ms in=26333 out=839 tot=27172
+3/197 [94s] 2094858111 OK fr=stop txn=37 card=3 att=1 rl=0 lat=49794ms in=25148 out=4622 tot=29770

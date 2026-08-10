@@ -1,0 +1,793 @@
+{
+ "patterns": {
+  "disagree:cardDisplayName": 2,
+  "disagree:network": 2,
+  "disagree:statementLevelSummary.utilisationPercent": 6,
+  "disagree:statementMeta.issuerName": 1,
+  "issuer_says_axis": 1,
+  "txn_disagree:amount": 4,
+  "txn_disagree:date": 1,
+  "txn_disagree:description": 7
+ },
+ "per_statement": [
+  {
+   "csv_only": 0,
+   "csv_rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 717,
+    "earnBreakup": [],
+    "estimatedBlendedRewardRatePercent": null,
+    "openingPoints": 717,
+    "pointsEarnedThisCycle": 0,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": "Reward Points",
+    "rewardsSummary": null
+   },
+   "csv_txn": 1,
+   "fields": {
+    "statementLevelSummary.utilisationPercent": {
+     "csv": 0,
+     "luna": null
+    }
+   },
+   "layout": "pixel_play",
+   "luna_only": 0,
+   "luna_rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 717,
+    "openingPoints": 717,
+    "pointsEarnedThisCycle": 0,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": null
+   },
+   "luna_txn": 1,
+   "matched": 1,
+   "notes": [],
+   "outcome": "OK",
+   "pdf_date_rows": 1,
+   "pdf_reward_labels_present": [
+    "Reward Points Summary",
+    "Opening Balance",
+    "Closing Balance"
+   ],
+   "sid": "decrypt_1196489569_19d518a09371644e_HDFC_Bank_Pixel_Play_Credit_Card_Statement_03Mar2026_to_02Apr2026"
+  },
+  {
+   "csv_only": 0,
+   "csv_rewards": {
+    "bonusPointsThisCycle": 80,
+    "closingPoints": 4444,
+    "earnBreakup": [
+     {
+      "approxRatePercent": null,
+      "label": "Reward Points_on_Insurance",
+      "points": 80
+     }
+    ],
+    "estimatedBlendedRewardRatePercent": null,
+    "openingPoints": 0,
+    "pointsEarnedThisCycle": 6085,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": "Reward Points",
+    "rewardsSummary": null
+   },
+   "csv_txn": 44,
+   "fields": {
+    "txn.amount": {
+     "examples": [
+      [
+       28479,
+       -28479
+      ]
+     ],
+     "n_disagree": 1
+    }
+   },
+   "layout": "regalia",
+   "luna_only": 0,
+   "luna_rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 4444,
+    "openingPoints": 0,
+    "pointsEarnedThisCycle": 6085,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": null,
+    "programType": "Reward Points"
+   },
+   "luna_txn": 44,
+   "matched": 44,
+   "notes": [],
+   "outcome": "OK",
+   "pdf_date_rows": 59,
+   "pdf_reward_labels_present": [
+    "Disbursed",
+    "Points Earned",
+    "Opening Balance",
+    "Adjusted"
+   ],
+   "sid": "decrypt_1678401256_19aa6bdd1e9f899e_5522XXXXXXXXXX40_20_11_2025_174"
+  },
+  {
+   "csv_only": 0,
+   "csv_rewards": {
+    "bonusPointsThisCycle": 65,
+    "closingPoints": 65,
+    "earnBreakup": [
+     {
+      "approxRatePercent": null,
+      "label": "EARNED 5% CASHBACK_SELECT MERCHANTS",
+      "points": 65
+     }
+    ],
+    "estimatedBlendedRewardRatePercent": null,
+    "openingPoints": 620,
+    "pointsEarnedThisCycle": 65,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 620,
+    "programType": "Reward Points",
+    "rewardsSummary": null
+   },
+   "csv_txn": 51,
+   "fields": {
+    "txn.amount": {
+     "examples": [
+      [
+       329,
+       792
+      ],
+      [
+       329,
+       792
+      ],
+      [
+       792,
+       329
+      ],
+      [
+       792,
+       329
+      ]
+     ],
+     "n_disagree": 4
+    },
+    "txn.date": {
+     "examples": [
+      [
+       "08/01/2026",
+       "07/01/2026"
+      ],
+      [
+       "08/01/2026",
+       "07/01/2026"
+      ],
+      [
+       "07/01/2026",
+       "08/01/2026"
+      ],
+      [
+       "07/01/2026",
+       "08/01/2026"
+      ]
+     ],
+     "n_disagree": 4
+    },
+    "txn.description": {
+     "examples": [
+      [
+       "*ViFun Live Co LiHongKong",
+       "PM *ViFun Live Co LiHongKong"
+      ],
+      [
+       "*ViFun Live Co LiHongKong",
+       "PM *ViFun Live Co LiHongKong"
+      ],
+      [
+       "*ViFun Live Co LiHongKong",
+       "PM *ViFun Live Co LiHongKong"
+      ],
+      [
+       "*ViFun Live Co LiHongKong",
+       "PM *ViFun Live Co LiHongKong"
+      ],
+      [
+       "*ViFun Live Co LiHongKong",
+       "PM *ViFun Live Co LiHongKong"
+      ]
+     ],
+     "n_disagree": 19
+    }
+   },
+   "layout": "cashback",
+   "luna_only": 0,
+   "luna_rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 65,
+    "openingPoints": 620,
+    "pointsEarnedThisCycle": 65,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 620,
+    "programType": "5% CASHBACK_SELECT MERCHANTS"
+   },
+   "luna_txn": 51,
+   "matched": 51,
+   "notes": [],
+   "outcome": "OK",
+   "pdf_date_rows": 60,
+   "pdf_reward_labels_present": [
+    "Cash Back Summary",
+    "Disbursed",
+    "Opening Balance",
+    "Adjusted"
+   ],
+   "sid": "decrypt_252502266_19bc220c2d3c07ef_4341XXXXXXXXXX35_14_01_2026_31"
+  },
+  {
+   "csv_only": 0,
+   "csv_rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 2100,
+    "earnBreakup": [],
+    "estimatedBlendedRewardRatePercent": null,
+    "openingPoints": 1060,
+    "pointsEarnedThisCycle": 1040,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": "CASHPOINTS",
+    "rewardsSummary": null
+   },
+   "csv_txn": 123,
+   "fields": {
+    "statementLevelSummary.utilisationPercent": {
+     "csv": 40.72,
+     "luna": null
+    },
+    "txn.description": {
+     "examples": [
+      [
+       "Am azon Pay Groceries",
+       "Amazon Pay Groceries"
+      ],
+      [
+       "Am azon Pay Groceries",
+       "Amazon Pay Groceries"
+      ],
+      [
+       "Zom atofood",
+       "Zomatofood"
+      ],
+      [
+       "Zom atofood",
+       "Zomatofood"
+      ],
+      [
+       "S ENDEAVOUR",
+       "SENDEAVOUR"
+      ]
+     ],
+     "n_disagree": 12
+    }
+   },
+   "layout": "pixel_play",
+   "luna_only": 0,
+   "luna_rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 2100,
+    "openingPoints": 1060,
+    "pointsEarnedThisCycle": 1040,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": null
+   },
+   "luna_txn": 123,
+   "matched": 123,
+   "notes": [],
+   "outcome": "OK",
+   "pdf_date_rows": 124,
+   "pdf_reward_labels_present": [
+    "Reward Points Summary",
+    "Opening Balance",
+    "Closing Balance"
+   ],
+   "sid": "decrypt_310396339_19e30dcf27dc7f73_HDFC_Bank_Pixel_Play_Credit_Card_Statement_15Apr2026_to_14May2026"
+  },
+  {
+   "csv_only": 0,
+   "csv_rewards": {
+    "bonusPointsThisCycle": 105,
+    "closingPoints": 150,
+    "earnBreakup": [
+     {
+      "approxRatePercent": null,
+      "label": "Base_Grocery",
+      "points": 31
+     },
+     {
+      "approxRatePercent": null,
+      "label": "NeuCoins_on_EMI",
+      "points": 27
+     },
+     {
+      "approxRatePercent": null,
+      "label": "NeuCoins_on_UPI_Acc",
+      "points": 47
+     }
+    ],
+    "estimatedBlendedRewardRatePercent": null,
+    "openingPoints": 65,
+    "pointsEarnedThisCycle": 150,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": 65,
+    "programType": "NeuCoins",
+    "rewardsSummary": "Earned 150 NeuCoins this cycle, with a closing balance of 150 NeuCoins available for redemption on Tata Neu."
+   },
+   "csv_txn": 66,
+   "fields": {
+    "network": {
+     "csv": null,
+     "luna": "MASTERCARD"
+    },
+    "statementLevelSummary.utilisationPercent": {
+     "csv": 5.61,
+     "luna": null
+    },
+    "txn.description": {
+     "examples": [
+      [
+       "IGST-VPS2600287300576-RATE 18.0 -32 (Ref# 09999999980101001805057)",
+       "IGST-VPS2600287300576-RATE 18.0 -32"
+      ],
+      [
+       "BPPY CC PAYMENT DP016013150806YcryE (Ref# ST260140083000010243993)",
+       "BPPY CC PAYMENT DP016013150806YcryE"
+      ],
+      [
+       "IMPS PMT 602716072690602716072690I (Ref# 00000000000127018526971)",
+       "IMPS PMT 602716072690602716072690I"
+      ],
+      [
+       "MER EMI ,INT NBR:05,00000130398726 (Ref# 09999999980201001804751)",
+       "MER EMI ,INT NBR:05,00000130398726"
+      ]
+     ],
+     "n_disagree": 4
+    }
+   },
+   "layout": "tata_neu",
+   "luna_only": 0,
+   "luna_rewards": {
+    "bonusPointsThisCycle": 105,
+    "closingPoints": 150,
+    "openingPoints": 65,
+    "pointsEarnedThisCycle": 150,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": null,
+    "programType": "NeuCoins with Bank"
+   },
+   "luna_txn": 66,
+   "matched": 66,
+   "notes": [],
+   "outcome": "OK",
+   "pdf_date_rows": 69,
+   "pdf_reward_labels_present": [
+    "NeuCoins Earned",
+    "Adjusted"
+   ],
+   "sid": "decrypt_493517787_19c1fc592bdf84d1_6529XXXXXXXXXX09_01_02_2026_701"
+  },
+  {
+   "csv_only": 0,
+   "csv_rewards": {
+    "bonusPointsThisCycle": 4147,
+    "closingPoints": 29259,
+    "earnBreakup": [
+     {
+      "approxRatePercent": null,
+      "label": "Reward Points_on_Grocery",
+      "points": 1135
+     },
+     {
+      "approxRatePercent": null,
+      "label": "SmartBuy_Bonus_5X_RP_Promo",
+      "points": 2660
+     },
+     {
+      "approxRatePercent": null,
+      "label": "Retail Spends Greater50K",
+      "points": 1
+     },
+     {
+      "approxRatePercent": null,
+      "label": "DB 2XRP_Weekend Dining",
+      "points": 40
+     }
+    ],
+    "estimatedBlendedRewardRatePercent": null,
+    "openingPoints": 20677,
+    "pointsEarnedThisCycle": 9237,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": "Reward Points",
+    "rewardsSummary": "Accumulated 29,259 points, with 9,237 earned this cycle including a significant bonus of 4,147 points."
+   },
+   "csv_txn": 87,
+   "fields": {
+    "statementLevelSummary.utilisationPercent": {
+     "csv": 15.53,
+     "luna": null
+    },
+    "txn.description": {
+     "examples": [
+      [
+       "EMI PHARMEASY INMUMBAI",
+       "PHARMEASY INMUMBAI"
+      ],
+      [
+       "EMI ATRIA CONVERGENCE TECHNBANGALORE",
+       "ATRIA CONVERGENCE TECHNBANGALORE"
+      ],
+      [
+       "EMI ESHA FUELSBangalore",
+       "ESHA FUELSBangalore"
+      ],
+      [
+       "EMI MOTHERHOOD HOSPITALBENGALURU",
+       "MOTHERHOOD HOSPITALBENGALURU"
+      ],
+      [
+       "EMI MOTHERHOOD HOSPITALBENGALURU",
+       "MOTHERHOOD HOSPITALBENGALURU"
+      ]
+     ],
+     "n_disagree": 26
+    }
+   },
+   "layout": "diners",
+   "luna_only": 0,
+   "luna_rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 29259,
+    "openingPoints": 20677,
+    "pointsEarnedThisCycle": 9237,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": null,
+    "programType": "Reward Points"
+   },
+   "luna_txn": 87,
+   "matched": 87,
+   "notes": [],
+   "outcome": "OK",
+   "pdf_date_rows": 90,
+   "pdf_reward_labels_present": [
+    "Disbursed",
+    "Points Earned",
+    "Opening Balance",
+    "Adjusted"
+   ],
+   "sid": "decrypt_705330814_19c81ac46a73163b_0036XXXXXXXXXX87_20_02_2026_641"
+  },
+  {
+   "csv_only": 0,
+   "csv_rewards": {
+    "bonusPointsThisCycle": 158,
+    "closingPoints": 739,
+    "openingPoints": 581,
+    "pointsEarnedThisCycle": 158,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": "Reward Points"
+   },
+   "csv_txn": 109,
+   "fields": {
+    "cardDisplayName": {
+     "csv": "SALMAN KHAN S",
+     "luna": "UPI RuPay Credit Card"
+    },
+    "txn.amount": {
+     "examples": [
+      [
+       2600,
+       -2600
+      ],
+      [
+       49259,
+       -49259
+      ]
+     ],
+     "n_disagree": 2
+    },
+    "txn.description": {
+     "examples": [
+      [
+       "UPI-YOUNOUS KHAN",
+       "UPI-YOUNUS KHAN"
+      ],
+      [
+       "UPI-YOUNOUS KHAN",
+       "UPI-YOUNUS KHAN"
+      ]
+     ],
+     "n_disagree": 2
+    }
+   },
+   "layout": "standard",
+   "luna_only": 0,
+   "luna_rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 739,
+    "openingPoints": 581,
+    "pointsEarnedThisCycle": 158,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": null,
+    "programType": "Reward Points"
+   },
+   "luna_txn": 109,
+   "matched": 109,
+   "notes": [],
+   "outcome": "OK",
+   "pdf_date_rows": 112,
+   "pdf_reward_labels_present": [
+    "Disbursed",
+    "Points Earned",
+    "Opening Balance",
+    "Adjusted"
+   ],
+   "sid": "decrypt_738368244_19f70d2e2c77ebd5_6530XXXXXXXXXX38_16_07_2026_366"
+  },
+  {
+   "csv_only": 0,
+   "csv_rewards": {
+    "bonusPointsThisCycle": 5922,
+    "closingPoints": 8133,
+    "earnBreakup": [
+     {
+      "approxRatePercent": null,
+      "label": "Add_BigBasket",
+      "points": 39
+     },
+     {
+      "approxRatePercent": null,
+      "label": "Add_Titan_Tanishq",
+      "points": 5860
+     },
+     {
+      "approxRatePercent": null,
+      "label": "Base_Grocery",
+      "points": 17
+     },
+     {
+      "approxRatePercent": null,
+      "label": "Infinity LoungeVoucher",
+      "points": 1
+     },
+     {
+      "approxRatePercent": null,
+      "label": "NeuCoins_on_UPI_Acc",
+      "points": 5
+     }
+    ],
+    "estimatedBlendedRewardRatePercent": null,
+    "openingPoints": 1308,
+    "pointsEarnedThisCycle": 8133,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": 1308,
+    "programType": "NeuCoins",
+    "rewardsSummary": "You earned a total of 8,133 NeuCoins this cycle, including 5,922 bonus coins primarily from Tanishq and BigBasket spends."
+   },
+   "csv_txn": 11,
+   "fields": {
+    "network": {
+     "csv": null,
+     "luna": "MASTERCARD"
+    },
+    "statementLevelSummary.utilisationPercent": {
+     "csv": 49.62,
+     "luna": null
+    },
+    "txn.description": {
+     "examples": [
+      [
+       "BPPY CC PAYMENT DP0160340809401GJdx (Ref# ST260350083000010407777)",
+       "BPPY CC PAYMENT DP0160340809401GJdx (Ref# ST260350080900010407777)"
+      ]
+     ],
+     "n_disagree": 1
+    }
+   },
+   "layout": "tata_neu",
+   "luna_only": 0,
+   "luna_rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 8133,
+    "openingPoints": 1308,
+    "pointsEarnedThisCycle": 8133,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": 1308,
+    "programType": "NeuCoins"
+   },
+   "luna_txn": 11,
+   "matched": 11,
+   "notes": [],
+   "outcome": "OK",
+   "pdf_date_rows": 14,
+   "pdf_reward_labels_present": [
+    "NeuCoins Earned",
+    "Adjusted"
+   ],
+   "sid": "decrypt_810097123_19caf4a3c2c34de6_6529XXXXXXXXXX89_01_03_2026_81"
+  },
+  {
+   "csv_only": 0,
+   "csv_rewards": {
+    "bonusPointsThisCycle": 1000,
+    "closingPoints": 14733,
+    "openingPoints": 13733,
+    "pointsEarnedThisCycle": 1000,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": "Cash points"
+   },
+   "csv_txn": 223,
+   "fields": {
+    "statementMeta.issuerName": {
+     "csv": "HDFC BANK",
+     "luna": "Axis Bank"
+    }
+   },
+   "layout": "millennia",
+   "luna_only": 0,
+   "luna_rewards": {
+    "bonusPointsThisCycle": 1000,
+    "closingPoints": 14733,
+    "openingPoints": 13733,
+    "pointsEarnedThisCycle": 1000,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": null
+   },
+   "luna_txn": 223,
+   "matched": 223,
+   "notes": [
+    {
+     "pattern": "issuer_contaminated_by_axis_prompt_rule",
+     "value": "Axis Bank"
+    }
+   ],
+   "outcome": "OK",
+   "pdf_date_rows": 224,
+   "pdf_reward_labels_present": [
+    "Disbursed",
+    "Opening Balance",
+    "Closing Balance",
+    "Adjusted"
+   ],
+   "sid": "decrypt_879728587_18a0b7c020b06bf5_3611XXXXXXXX51_18_08_2023"
+  },
+  {
+   "csv_only": 0,
+   "csv_rewards": {
+    "bonusPointsThisCycle": 355,
+    "closingPoints": 173634,
+    "earnBreakup": [
+     {
+      "approxRatePercent": null,
+      "label": "Reward Points_on_Grocery",
+      "points": 85
+     },
+     {
+      "approxRatePercent": null,
+      "label": "Reward Points_on_Utility",
+      "points": 270
+     }
+    ],
+    "estimatedBlendedRewardRatePercent": 2.99,
+    "openingPoints": 169599,
+    "pointsEarnedThisCycle": 4035,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": "Reward Points",
+    "rewardsSummary": "A total of 4,035 points were earned this cycle, including 355 bonus points on grocery and utility spending, bringing the total balance to 1,73,634."
+   },
+   "csv_txn": 51,
+   "fields": {
+    "cardDisplayName": {
+     "csv": "HDFC Bank Infinia",
+     "luna": "Infinia Credit Card"
+    },
+    "statementLevelSummary.utilisationPercent": {
+     "csv": 17.13,
+     "luna": null
+    },
+    "txn.amount": {
+     "examples": [
+      [
+       1,
+       -1
+      ],
+      [
+       36.74,
+       -36.74
+      ],
+      [
+       122500,
+       -122500
+      ]
+     ],
+     "n_disagree": 3
+    },
+    "txn.description": {
+     "examples": [
+      [
+       "IGST-VPS2616448262694-RATE 18.0 -07 (Ref# 09999999980612010045501)",
+       "IGST-VPS2616448262694-RATE 18.0 -07"
+      ],
+      [
+       "TELE TRANSFER CREDIT (Ref# ST251850083000010102317)",
+       "TELE TRANSFER CREDIT"
+      ],
+      [
+       "IGST-VPS2619006210434-RATE 18.0 -07 (Ref# ST251900084000010710837)",
+       "IGST-VPS2619006210434-RATE 18.0 -07"
+      ],
+      [
+       "PPLoungeFee 29042025 New Delhi 0+1 (Ref# ST251900084000010710837)",
+       "PPLoungeFee 29042025 New Delhi 0+1"
+      ],
+      [
+       "OFFUS EMI,PRIN NB:03,00000123281283 (Ref# 09999999980712010047794)",
+       "OFFUS EMI,PRIN NB:03,00000123281283"
+      ]
+     ],
+     "n_disagree": 6
+    }
+   },
+   "layout": "infinia",
+   "luna_only": 0,
+   "luna_rewards": {
+    "bonusPointsThisCycle": 355,
+    "closingPoints": 173634,
+    "openingPoints": 169599,
+    "pointsEarnedThisCycle": 4035,
+    "pointsExpiringNext30Days": 0,
+    "pointsExpiringNext60Days": 0,
+    "pointsRedeemedThisCycle": 0,
+    "programType": "Reward Points"
+   },
+   "luna_txn": 51,
+   "matched": 51,
+   "notes": [],
+   "outcome": "OK",
+   "pdf_date_rows": 53,
+   "pdf_reward_labels_present": [
+    "Disbursed",
+    "Reward Points Summary",
+    "Points Earned",
+    "Opening Balance",
+    "Closing Balance",
+    "Adjusted"
+   ],
+   "sid": "decrypt_923692554_19802d1d11c3ef78_4375XXXXXXXXXX40_12_07_2025"
+  }
+ ]
+}

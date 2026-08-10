@@ -1,0 +1,102 @@
+arm=luna_refined outdir=/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_luna_refined corpus=300 todo=300 par=1 prompt=refined prompt_chars=14887
+1/300 199386 OK fr=stop txn=21 att=1 rl=0 lat=17645ms in=18926 out=1675 elapsed=17s
+2/300 320134 OK fr=stop txn=1 att=1 rl=0 lat=12840ms in=18479 out=640 elapsed=30s
+3/300 658880 OK fr=stop txn=1 att=1 rl=0 lat=12466ms in=18449 out=506 elapsed=42s
+4/300 714227 OK fr=stop txn=4 att=1 rl=0 lat=15774ms in=18597 out=935 elapsed=58s
+5/300 838411 OK fr=stop txn=17 att=1 rl=0 lat=18182ms in=18906 out=1526 elapsed=76s
+6/300 879450 OK fr=stop txn=2 att=1 rl=0 lat=13591ms in=18506 out=605 elapsed=90s
+7/300 1132035 OK fr=stop txn=4 att=1 rl=0 lat=14232ms in=18670 out=673 elapsed=104s
+8/300 1162118 OK fr=stop txn=10 att=1 rl=0 lat=23194ms in=18809 out=1522 elapsed=127s
+9/300 119535901 OK fr=stop txn=37 att=1 rl=0 lat=26275ms in=20259 out=2839 elapsed=154s
+10/300 129215339 OK fr=stop txn=20 att=1 rl=0 lat=16914ms in=18881 out=1530 elapsed=171s
+11/300 142194871 OK fr=stop txn=2 att=1 rl=0 lat=13650ms in=18479 out=614 elapsed=184s
+12/300 142826009 OK fr=stop txn=4 att=1 rl=0 lat=15699ms in=18577 out=711 elapsed=200s
+13/300 146930601 OK fr=stop txn=12 att=1 rl=0 lat=16615ms in=18871 out=1190 elapsed=217s
+14/300 148036763 OK fr=stop txn=7 att=1 rl=0 lat=16456ms in=18615 out=998 elapsed=233s
+15/300 155642305 OK fr=stop txn=5 att=1 rl=0 lat=18914ms in=18701 out=1011 elapsed=252s
+16/300 162725042 OK fr=stop txn=8 att=1 rl=0 lat=18458ms in=18705 out=1076 elapsed=271s
+17/300 172420705 OK fr=stop txn=6 att=1 rl=0 lat=13690ms in=18672 out=736 elapsed=284s
+18/300 179943460 OK fr=stop txn=1 att=1 rl=0 lat=13211ms in=17962 out=573 elapsed=297s
+19/300 186473748 OK fr=stop txn=1 att=1 rl=0 lat=18378ms in=18433 out=691 elapsed=316s
+20/300 186548429 OK fr=stop txn=7 att=1 rl=0 lat=26426ms in=18793 out=2061 elapsed=342s
+21/300 190790537 OK fr=stop txn=5 att=1 rl=0 lat=17521ms in=18648 out=1020 elapsed=360s
+22/300 198888784 OK fr=stop txn=1 att=1 rl=0 lat=13859ms in=18370 out=531 elapsed=374s
+23/300 202738690 OK fr=stop txn=32 att=1 rl=0 lat=23676ms in=19901 out=2338 elapsed=397s
+24/300 206861792 OK fr=stop txn=5 att=1 rl=0 lat=28656ms in=18455 out=904 elapsed=426s
+25/300 215155650 OK fr=stop txn=1 att=1 rl=0 lat=15675ms in=18320 out=578 elapsed=442s
+26/300 221159806 OK fr=stop txn=2 att=1 rl=0 lat=21166ms in=18468 out=915 elapsed=463s
+27/300 223400342 OK fr=stop txn=1 att=10 rl=0 lat=282245ms in=18417 out=543 elapsed=745s
+28/300 224671626 OK fr=stop txn=3 att=1 rl=0 lat=14983ms in=18411 out=614 elapsed=760s
+29/300 226707778 OK fr=stop txn=2 att=1 rl=0 lat=16197ms in=18570 out=948 elapsed=776s
+30/300 228115498 OK fr=stop txn=4 att=1 rl=0 lat=19574ms in=18465 out=953 elapsed=796s
+31/300 230215053 OK fr=stop txn=6 att=1 rl=0 lat=18376ms in=18583 out=826 elapsed=814s
+32/300 234547848 OK fr=stop txn=7 att=1 rl=0 lat=23265ms in=18529 out=929 elapsed=838s
+33/300 243926575 OK fr=stop txn=10 att=1 rl=0 lat=23602ms in=18548 out=1781 elapsed=861s
+34/300 247847647 OK fr=stop txn=35 att=1 rl=0 lat=29604ms in=20118 out=2981 elapsed=891s
+35/300 248267921 OK fr=stop txn=2 att=1 rl=0 lat=19056ms in=18459 out=830 elapsed=910s
+36/300 255661827 OK fr=stop txn=14 att=1 rl=0 lat=15976ms in=18582 out=1272 elapsed=926s
+37/300 260493437 OK fr=stop txn=26 att=1 rl=0 lat=21194ms in=18968 out=2259 elapsed=947s
+38/300 261362041 OK fr=stop txn=3 att=1 rl=0 lat=11948ms in=18533 out=702 elapsed=959s
+39/300 263555998 OK fr=stop txn=11 att=1 rl=0 lat=15511ms in=18654 out=1100 elapsed=974s
+40/300 264695036 OK fr=stop txn=43 att=1 rl=0 lat=29711ms in=20314 out=3355 elapsed=1004s
+41/300 273593709 OK fr=stop txn=12 att=1 rl=0 lat=27212ms in=18682 out=1564 elapsed=1031s
+42/300 273596610 OK fr=stop txn=6 att=1 rl=0 lat=56491ms in=18744 out=913 elapsed=1088s
+43/300 273613913 OK fr=stop txn=2 att=1 rl=0 lat=78777ms in=18376 out=672 elapsed=1167s
+44/300 273650193 OK fr=stop txn=45 att=2 rl=0 lat=919032ms in=20061 out=2850 elapsed=2086s
+45/300 273706322 OK fr=stop txn=48 att=1 rl=0 lat=26639ms in=20064 out=3377 elapsed=2112s
+46/300 277985991 OK fr=stop txn=55 att=1 rl=0 lat=22640ms in=20279 out=3207 elapsed=2135s
+47/300 280105657 OK fr=stop txn=6 att=1 rl=0 lat=14263ms in=18665 out=1056 elapsed=2149s
+48/300 284029679 OK fr=stop txn=2 att=1 rl=0 lat=11950ms in=18432 out=750 elapsed=2161s
+49/300 291528552 OK fr=stop txn=13 att=1 rl=0 lat=18678ms in=18633 out=1687 elapsed=2180s
+50/300 293803721 OK fr=stop txn=5 att=1 rl=0 lat=13024ms in=18657 out=890 elapsed=2193s
+51/300 294112950 OK fr=stop txn=8 att=1 rl=0 lat=13076ms in=18706 out=1113 elapsed=2206s
+52/300 311317506 OK fr=stop txn=1 att=1 rl=0 lat=15081ms in=18568 out=565 elapsed=2221s
+53/300 315786283 OK fr=stop txn=2 att=1 rl=0 lat=11046ms in=18641 out=536 elapsed=2232s
+54/300 316218178 OK fr=stop txn=4 att=1 rl=0 lat=16213ms in=18690 out=1308 elapsed=2248s
+55/300 318267391 OK fr=stop txn=7 att=1 rl=0 lat=14940ms in=18600 out=1036 elapsed=2263s
+56/300 319897605 OK fr=stop txn=7 att=1 rl=0 lat=16961ms in=14171 out=1112 elapsed=2280s
+57/300 324755946 OK fr=stop txn=2 att=1 rl=0 lat=12177ms in=18466 out=690 elapsed=2292s
+58/300 325774041 OK fr=stop txn=15 att=1 rl=0 lat=16591ms in=18745 out=1370 elapsed=2309s
+59/300 325833538 OK fr=stop txn=2 att=1 rl=0 lat=11974ms in=18362 out=681 elapsed=2321s
+60/300 326362956 OK fr=stop txn=12 att=1 rl=0 lat=14579ms in=18655 out=1252 elapsed=2336s
+61/300 332633154 OK fr=stop txn=1 att=1 rl=0 lat=11492ms in=18473 out=479 elapsed=2347s
+62/300 335241508 OK fr=stop txn=6 att=1 rl=0 lat=13639ms in=18625 out=1058 elapsed=2361s
+63/300 341705711 OK fr=stop txn=40 att=1 rl=0 lat=27048ms in=20149 out=3185 elapsed=2388s
+64/300 361589519 OK fr=stop txn=3 att=1 rl=0 lat=13395ms in=18387 out=915 elapsed=2401s
+65/300 363063468 OK fr=stop txn=20 att=1 rl=0 lat=21243ms in=18934 out=1894 elapsed=2422s
+(eval):3: command not found: setsid
+
+--- detached launch: luna_refined pid=94809 ---
+arm=luna_refined outdir=/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_luna_refined corpus=300 todo=235 par=1 prompt=refined prompt_chars=14887
+
+--- detached launch: luna_refined pid=94593 ---
+arm=luna_refined outdir=/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_luna_refined corpus=300 todo=199 par=1 prompt=refined prompt_chars=14887
+arm=luna_refined outdir=/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_luna_refined corpus=300 todo=89 par=1 prompt=refined prompt_chars=14887
+1/89 1033508900 OK fr=stop txn=10 att=1 rl=0 lat=14446ms in=18560 out=1152 elapsed=14s
+2/89 1035550549 OK fr=stop txn=55 att=1 rl=0 lat=23012ms in=20337 out=3183 elapsed=37s
+3/89 1036027898 OK fr=stop txn=5 att=1 rl=0 lat=12081ms in=18489 out=852 elapsed=49s
+4/89 1036185244 OK fr=stop txn=7 att=1 rl=0 lat=14440ms in=18535 out=1154 elapsed=64s
+5/89 1036466127 OK fr=stop txn=13 att=1 rl=0 lat=17385ms in=18648 out=1512 elapsed=81s
+6/89 1039120737 OK fr=stop txn=3 att=1 rl=0 lat=12207ms in=18398 out=916 elapsed=93s
+7/89 1040768215 OK fr=stop txn=19 att=1 rl=0 lat=17067ms in=18661 out=2013 elapsed=110s
+arm=luna_refined outdir=/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_luna_refined corpus=300 todo=82 par=1 prompt=refined prompt_chars=14887
+8/89 1049204707 OK fr=stop txn=4 att=1 rl=0 lat=10905ms in=18476 out=815 elapsed=121s
+1/82 1049204707 OK fr=stop txn=4 att=1 rl=0 lat=11065ms in=18476 out=712 elapsed=11s
+9/89 1059519911 OK fr=stop txn=5 att=1 rl=0 lat=12441ms in=18388 out=896 elapsed=134s
+2/82 1059519911 OK fr=stop txn=5 att=1 rl=0 lat=13810ms in=18388 out=1127 elapsed=24s
+10/89 1068754002 OK fr=stop txn=3 att=1 rl=0 lat=9713ms in=18404 out=544 elapsed=143s
+3/82 1068754002 OK fr=stop txn=3 att=1 rl=0 lat=10874ms in=18404 out=650 elapsed=35s
+11/89 1069496966 OK fr=stop txn=11 att=1 rl=0 lat=16649ms in=17742 out=1131 elapsed=160s
+4/82 1069496966 OK fr=stop txn=11 att=1 rl=0 lat=12446ms in=17742 out=1066 elapsed=48s
+12/89 1074107359 OK fr=stop txn=4 att=1 rl=0 lat=12331ms in=18647 out=847 elapsed=172s
+5/82 1074107359 OK fr=stop txn=4 att=1 rl=0 lat=11582ms in=18647 out=758 elapsed=59s
+13/89 1087127791 OK fr=stop txn=8 att=1 rl=0 lat=10956ms in=18468 out=875 elapsed=183s
+6/82 1087127791 OK fr=stop txn=8 att=1 rl=0 lat=11643ms in=18468 out=998 elapsed=71s
+7/82 1087960522 OK fr=stop txn=9 att=1 rl=0 lat=10743ms in=18390 out=870 elapsed=82s
+14/89 1087960522 OK fr=stop txn=9 att=1 rl=0 lat=12519ms in=18390 out=918 elapsed=196s
+8/82 1094576759 OK fr=stop txn=36 att=1 rl=0 lat=23467ms in=20223 out=3127 elapsed=105s
+15/89 1094576759 OK fr=stop txn=36 att=1 rl=0 lat=24152ms in=20223 out=2919 elapsed=220s
+9/82 1099437619 OK fr=stop txn=4 att=1 rl=0 lat=13327ms in=18327 out=962 elapsed=119s
+10/82 1253559167 OK fr=stop txn=27 att=1 rl=0 lat=17814ms in=19075 out=1968 elapsed=136s
+11/82 1253765972 OK fr=stop txn=10 att=1 rl=0 lat=18431ms in=18617 out=1147 elapsed=155s
+12/82 1262363168 OK fr=stop txn=3 att=1 rl=0 lat=18393ms in=18491 out=866 elapsed=173s

@@ -1,0 +1,318 @@
+{
+ "gt_arm": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_gt",
+ "luna_arm": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_luna_refined",
+ "n_statements": 54,
+ "tally": {
+  "GT_WRONG": 12,
+  "BOTH_PRINTED_AMBIGUOUS": 3
+ },
+ "per_field": {
+  "statementMeta.dueDate": {
+   "GT_WRONG": 12
+  },
+  "statementMeta.issuerName": {
+   "BOTH_PRINTED_AMBIGUOUS": 3
+  }
+ },
+ "txn_rows_gt_null_date": {
+  "total": 24,
+  "by_class": {
+   "IGST": 19,
+   "GST": 4,
+   "FORGN_CURR_MARKUP": 1
+  },
+  "verdicts": {
+   "GT_WRONG": 15,
+   "BOTH_NULL_AGREE": 9
+  },
+  "examples": [
+   {
+    "statement_id": "714227",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 23.91,
+    "gt_date": null,
+    "luna_date": "01/05/2026",
+    "luna_date_printed_as": "1 May 2026",
+    "verdict": "GT_WRONG",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "838411",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 10.65,
+    "gt_date": null,
+    "luna_date": "13/07/2026",
+    "luna_date_printed_as": "13 Jul 2026",
+    "verdict": "GT_WRONG",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "1132035",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 89.82,
+    "gt_date": null,
+    "luna_date": "03/06/2026",
+    "luna_date_printed_as": "03 Jun 2026",
+    "verdict": "GT_WRONG",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "1162118",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 55.22,
+    "gt_date": null,
+    "luna_date": null,
+    "luna_date_printed_as": null,
+    "verdict": "BOTH_NULL_AGREE",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "119535901",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 540.34,
+    "gt_date": null,
+    "luna_date": null,
+    "luna_date_printed_as": null,
+    "verdict": "BOTH_NULL_AGREE",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "148036763",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 25.15,
+    "gt_date": null,
+    "luna_date": "06/06/2025",
+    "luna_date_printed_as": "06 Jun 25",
+    "verdict": "GT_WRONG",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "155642305",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 139.5,
+    "gt_date": null,
+    "luna_date": "09/06/2026",
+    "luna_date_printed_as": "09 Jun 26",
+    "verdict": "GT_WRONG",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "162725042",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 35.49,
+    "gt_date": null,
+    "luna_date": "09/11/2025",
+    "luna_date_printed_as": "9 Nov 2025",
+    "verdict": "GT_WRONG",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "186548429",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 158.56,
+    "gt_date": null,
+    "luna_date": null,
+    "luna_date_printed_as": null,
+    "verdict": "BOTH_NULL_AGREE",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "190790537",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 822.06,
+    "gt_date": null,
+    "luna_date": "11/06/2026",
+    "luna_date_printed_as": "11 Jun 26",
+    "verdict": "GT_WRONG",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "206861792",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 23.27,
+    "gt_date": null,
+    "luna_date": "19/11/2025",
+    "luna_date_printed_as": "19 Nov 2025",
+    "verdict": "GT_WRONG",
+    "class": "IGST"
+   },
+   {
+    "statement_id": "221159806",
+    "desc": "IGST DB @ 18.00%",
+    "amount": 269.82,
+    "gt_date": null,
+    "luna_date": null,
+    "luna_date_printed_as": null,
+    "verdict": "BOTH_NULL_AGREE",
+    "class": "IGST"
+   }
+  ]
+ },
+ "items": [
+  {
+   "statement_id": "320134",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "658880",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "179943460",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "186473748",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "198888784",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "198888784",
+   "field": "statementMeta.issuerName",
+   "gt": "SBI Cards and Payment Services Limited (SBI Card)",
+   "luna": "SBI Card",
+   "incumbent": "SBI Card",
+   "verdict": "BOTH_PRINTED_AMBIGUOUS",
+   "gt_printed_as": "SBI Cards and Payment Services Limited (SBI Card)",
+   "luna_printed_as": "SBI Card",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "202738690",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "215155650",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "223400342",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "247847647",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "248267921",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "248267921",
+   "field": "statementMeta.issuerName",
+   "gt": "SBI Cards and Payment Services Limited (SBI Card)",
+   "luna": "SBI Card",
+   "incumbent": "SBI Card",
+   "verdict": "BOTH_PRINTED_AMBIGUOUS",
+   "gt_printed_as": "SBI Cards and Payment Services Limited (SBI Card)",
+   "luna_printed_as": "SBI Card",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "263555998",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "263555998",
+   "field": "statementMeta.issuerName",
+   "gt": "SBI Cards and Payment Services Limited (SBI Card)",
+   "luna": "SBI Card",
+   "incumbent": "SBI Card",
+   "verdict": "BOTH_PRINTED_AMBIGUOUS",
+   "gt_printed_as": "SBI Cards and Payment Services Limited (SBI Card)",
+   "luna_printed_as": "SBI Card",
+   "csv_agrees_with": "luna"
+  },
+  {
+   "statement_id": "315786283",
+   "field": "statementMeta.dueDate",
+   "gt": null,
+   "luna": "NO PAYMENT REQUIRED",
+   "incumbent": "NO PAYMENT REQUIRED",
+   "verdict": "GT_WRONG",
+   "gt_printed_as": null,
+   "luna_printed_as": "NO PAYMENT REQUIRED",
+   "csv_agrees_with": "luna"
+  }
+ ]
+}

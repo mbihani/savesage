@@ -1,0 +1,215 @@
+arm=luna_refined model=luna corpus=304 todo=210 par=1 prompt_chars=11842 outdir=/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined
+1/210 [23s] 203051285 OK fr=stop txn=10 card=1 att=1 rl=0 lat=23167ms in=15912 out=2189 tot=18101
+2/210 [36s] 203248504 OK fr=stop txn=13 card=1 att=1 rl=0 lat=13190ms in=14975 out=1167 tot=16142
+3/210 [46s] 2048460122 OK fr=stop txn=4 card=1 att=1 rl=0 lat=9660ms in=14870 out=693 tot=15563
+4/210 [58s] 205034973 OK fr=stop txn=7 card=2 att=1 rl=0 lat=12400ms in=13304 out=1103 tot=14407
+5/210 [89s] 2054837190 OK fr=stop txn=68 card=1 att=1 rl=0 lat=31226ms in=18855 out=4190 tot=23045
+6/210 [100s] 2057521219 OK fr=stop txn=2 card=1 att=1 rl=0 lat=10595ms in=14707 out=578 tot=15285
+7/210 [110s] 2058834292 OK fr=stop txn=2 card=1 att=1 rl=0 lat=10501ms in=14672 out=583 tot=15255
+8/210 [122s] 206264558 OK fr=stop txn=4 card=1 att=1 rl=0 lat=11319ms in=14758 out=762 tot=15520
+9/210 [136s] 206872880 OK fr=stop txn=8 card=3 att=1 rl=0 lat=14024ms in=14850 out=1219 tot=16069
+10/210 [153s] 207079238 OK fr=stop txn=3 card=1 att=1 rl=0 lat=17590ms in=14715 out=741 tot=15456
+11/210 [163s] 207751344 OK fr=stop txn=2 card=1 att=1 rl=0 lat=9527ms in=14698 out=545 tot=15243
+12/210 [176s] 207984369 OK fr=stop txn=9 card=2 att=1 rl=0 lat=13197ms in=14899 out=1149 tot=16048
+13/210 [186s] 2084798476 OK fr=stop txn=2 card=1 att=1 rl=0 lat=9942ms in=14649 out=597 tot=15246
+14/210 [200s] 2088767065 OK fr=stop txn=15 card=1 att=1 rl=0 lat=14277ms in=16074 out=1404 tot=17478
+arm=luna_refined model=luna corpus=304 todo=175 par=1 prompt_chars=11842 outdir=/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined
+1/175 [10s] 283344944 OK fr=stop txn=8 card=1 att=1 rl=0 lat=10647ms in=14002 out=836 tot=14838
+2/175 [22s] 283590804 OK fr=stop txn=9 card=1 att=1 rl=0 lat=12129ms in=8528 out=983 tot=9511
+3/175 [42s] 287685839 OK fr=stop txn=25 card=3 att=1 rl=0 lat=19315ms in=15274 out=2201 tot=17475
+4/175 [52s] 294621573 OK fr=stop txn=6 card=1 att=1 rl=0 lat=10473ms in=13905 out=840 tot=14745
+5/175 [70s] 294667490 OK fr=stop txn=26 card=1 att=1 rl=0 lat=17584ms in=16188 out=2014 tot=18202
+6/175 [85s] 295029623 OK fr=stop txn=9 card=1 att=1 rl=0 lat=15196ms in=13291 out=1117 tot=14408
+7/175 [105s] 309341455 OK fr=stop txn=35 card=1 att=1 rl=0 lat=19916ms in=13221 out=2567 tot=15788
+8/175 [118s] 310385621 OK fr=stop txn=15 card=1 att=1 rl=0 lat=13638ms in=7581 out=1364 tot=8945
+9/175 [137s] 315420710 OK fr=stop txn=7 card=1 att=1 rl=0 lat=18205ms in=12261 out=851 tot=13112
+10/175 [149s] 318421884 OK fr=stop txn=1 card=1 att=1 rl=0 lat=12261ms in=14614 out=586 tot=15200
+11/175 [164s] 322917785 OK fr=stop txn=4 card=1 att=1 rl=0 lat=14614ms in=14690 out=689 tot=15379
+12/175 [183s] 323875265 OK fr=stop txn=9 card=2 att=1 rl=0 lat=19247ms in=15920 out=1555 tot=17475
+13/175 [192s] 327584995 OK fr=stop txn=1 card=1 att=1 rl=0 lat=9498ms in=12100 out=453 tot=12553
+14/175 [215s] 331404336 OK fr=stop txn=38 card=1 att=1 rl=0 lat=22493ms in=13328 out=2762 tot=16090
+15/175 [234s] 332491832 OK fr=stop txn=28 card=1 att=1 rl=0 lat=19143ms in=12965 out=2152 tot=15117
+16/175 [244s] 336364537 OK fr=stop txn=6 card=1 att=1 rl=0 lat=10263ms in=11337 out=849 tot=12186
+17/175 [275s] 352358915 OK fr=stop txn=94 card=2 att=1 rl=0 lat=30511ms in=19273 out=5654 tot=24927
+18/175 [295s] 352834220 OK fr=stop txn=5 card=1 att=1 rl=0 lat=20605ms in=14961 out=1015 tot=15976
+19/175 [305s] 352867812 OK fr=stop txn=1 card=1 att=1 rl=0 lat=9723ms in=14666 out=498 tot=15164
+20/175 [317s] 352911509 OK fr=stop txn=1 card=1 att=1 rl=0 lat=12344ms in=14631 out=592 tot=15223
+21/175 [332s] 353151850 OK fr=stop txn=5 card=1 att=1 rl=0 lat=14087ms in=14700 out=991 tot=15691
+22/175 [346s] 354990911 OK fr=stop txn=9 card=2 att=1 rl=0 lat=14527ms in=12286 out=1234 tot=13520
+23/175 [358s] 355961907 OK fr=stop txn=8 card=1 att=1 rl=0 lat=12202ms in=12277 out=871 tot=13148
+24/175 [395s] 357979545 OK fr=stop txn=101 card=1 att=1 rl=0 lat=36275ms in=16882 out=6007 tot=22889
+25/175 [407s] 358460787 OK fr=stop txn=6 card=1 att=1 rl=0 lat=11956ms in=12200 out=937 tot=13137
+26/175 [421s] 360240379 OK fr=stop txn=7 card=2 att=1 rl=0 lat=14690ms in=13230 out=1186 tot=14416
+27/175 [439s] 362295048 OK fr=stop txn=15 card=1 att=1 rl=0 lat=17939ms in=7529 out=1418 tot=8947
+28/175 [452s] 363764441 OK fr=stop txn=2 card=1 att=1 rl=0 lat=13260ms in=12079 out=569 tot=12648
+29/175 [466s] 376916516 OK fr=stop txn=13 card=1 att=1 rl=0 lat=13952ms in=15974 out=1189 tot=17163
+30/175 [475s] 380476562 OK fr=stop txn=1 card=1 att=1 rl=0 lat=9046ms in=7129 out=483 tot=7612
+31/175 [488s] 393431624 OK fr=stop txn=6 card=1 att=1 rl=0 lat=13017ms in=12185 out=1064 tot=13249
+32/175 [504s] 395765199 OK fr=stop txn=12 card=1 att=1 rl=0 lat=15042ms in=12435 out=1138 tot=13573
+33/175 [518s] 396060590 OK fr=stop txn=9 card=1 att=1 rl=0 lat=13985ms in=14908 out=1187 tot=16095
+34/175 [532s] 397145551 OK fr=stop txn=7 card=1 att=1 rl=0 lat=14843ms in=14851 out=991 tot=15842
+35/175 [546s] 399766178 OK fr=stop txn=3 card=1 att=1 rl=0 lat=13664ms in=12169 out=565 tot=12734
+36/175 [564s] 400018882 OK fr=stop txn=24 card=1 att=1 rl=0 lat=17524ms in=13785 out=1854 tot=15639
+37/175 [584s] 410444357 OK fr=stop txn=9 card=3 att=1 rl=0 lat=19904ms in=13340 out=1473 tot=14813
+38/175 [611s] 426486404 OK fr=stop txn=57 card=2 att=1 rl=0 lat=27783ms in=14965 out=3805 tot=18770
+39/175 [631s] 426609865 OK fr=stop txn=2 card=1 att=1 rl=0 lat=20125ms in=14650 out=518 tot=15168
+40/175 [646s] 426756205 OK fr=stop txn=15 card=1 att=1 rl=0 lat=14414ms in=13512 out=1291 tot=14803
+41/175 [658s] 428243139 OK fr=stop txn=1 card=1 att=1 rl=0 lat=12541ms in=12078 out=434 tot=12512
+42/175 [670s] 437873294 OK fr=stop txn=6 card=1 att=1 rl=0 lat=11711ms in=14836 out=807 tot=15643
+43/175 [696s] 441380560 OK fr=stop txn=15 card=4 att=1 rl=0 lat=26121ms in=13533 out=1854 tot=15387
+44/175 [714s] 453557468 OK fr=stop txn=3 card=1 att=1 rl=0 lat=18138ms in=14685 out=737 tot=15422
+45/175 [727s] 468260219 OK fr=stop txn=2 card=1 att=1 rl=0 lat=12563ms in=14649 out=635 tot=15284
+46/175 [742s] 473898256 OK fr=stop txn=3 card=2 att=1 rl=0 lat=15489ms in=12102 out=937 tot=13039
+47/175 [757s] 497137275 OK fr=stop txn=7 card=1 att=1 rl=0 lat=14839ms in=12230 out=1118 tot=13348
+48/175 [776s] 507278435 OK fr=stop txn=13 card=2 att=1 rl=0 lat=18179ms in=12432 out=1531 tot=13963
+49/175 [787s] 510567175 OK fr=stop txn=1 card=1 att=1 rl=0 lat=11384ms in=14566 out=501 tot=15067
+50/175 [806s] 511757498 OK fr=stop txn=1 card=1 att=1 rl=0 lat=18648ms in=14573 out=582 tot=15155
+51/175 [839s] 516479745 OK fr=stop txn=61 card=3 att=1 rl=0 lat=33061ms in=17452 out=4437 tot=21889
+52/175 [862s] 516582080 OK fr=stop txn=25 card=1 att=1 rl=0 lat=23387ms in=16234 out=2437 tot=18671
+53/175 [883s] 516977279 OK fr=stop txn=14 card=3 att=1 rl=0 lat=20900ms in=15047 out=1573 tot=16620
+54/175 [893s] 518146504 OK fr=stop txn=2 card=1 att=1 rl=0 lat=10262ms in=14676 out=688 tot=15364
+55/175 [906s] 518298999 OK fr=stop txn=10 card=1 att=1 rl=0 lat=13203ms in=14880 out=926 tot=15806
+56/175 [923s] 524015761 OK fr=stop txn=8 card=2 att=1 rl=0 lat=17026ms in=14875 out=1390 tot=16265
+57/175 [938s] 552887784 OK fr=stop txn=5 card=2 att=1 rl=0 lat=14298ms in=14719 out=936 tot=15655
+58/175 [952s] 552950064 OK fr=stop txn=3 card=2 att=1 rl=0 lat=14586ms in=14604 out=926 tot=15530
+59/175 [966s] 553419366 OK fr=stop txn=10 card=2 att=1 rl=0 lat=13794ms in=14901 out=1247 tot=16148
+60/175 [983s] 556044487 OK fr=stop txn=14 card=1 att=1 rl=0 lat=16454ms in=16040 out=1344 tot=17384
+61/175 [998s] 557648640 OK fr=stop txn=13 card=2 att=1 rl=0 lat=15082ms in=13433 out=1474 tot=14907
+62/175 [1044s] 557652636 OK fr=stop txn=150 card=1 att=1 rl=0 lat=46540ms in=18278 out=8064 tot=26342
+63/175 [1063s] 562287572 OK fr=stop txn=20 card=1 att=1 rl=0 lat=19122ms in=16026 out=1573 tot=17599
+64/175 [1075s] 566940147 OK fr=stop txn=2 card=1 att=1 rl=0 lat=11345ms in=12027 out=698 tot=12725
+65/175 [1085s] 586112625 OK fr=stop txn=1 card=1 att=1 rl=0 lat=10477ms in=6794 out=496 tot=7290
+66/175 [1103s] 593476004 OK fr=stop txn=12 card=1 att=1 rl=0 lat=17315ms in=12395 out=1155 tot=13550
+67/175 [1121s] 598844387 OK fr=stop txn=8 card=2 att=1 rl=0 lat=18388ms in=14812 out=1478 tot=16290
+68/175 [1135s] 598864855 OK fr=stop txn=8 card=3 att=1 rl=0 lat=14351ms in=14849 out=1242 tot=16091
+69/175 [1171s] 598871199 OK fr=stop txn=48 card=2 att=1 rl=0 lat=35660ms in=16883 out=3380 tot=20263
+70/175 [1187s] 601053102 OK fr=stop txn=6 card=1 att=1 rl=0 lat=15851ms in=7228 out=797 tot=8025
+71/175 [1205s] 606359443 OK fr=stop txn=16 card=2 att=1 rl=0 lat=18299ms in=13328 out=1423 tot=14751
+72/175 [1223s] 612777484 OK fr=stop txn=6 card=1 att=1 rl=0 lat=17809ms in=13218 out=896 tot=14114
+73/175 [1236s] 616133066 OK fr=stop txn=8 card=1 att=1 rl=0 lat=13084ms in=12309 out=973 tot=13282
+74/175 [1255s] 616907912 OK fr=stop txn=28 card=1 att=1 rl=0 lat=19456ms in=13630 out=2134 tot=15764
+75/175 [1269s] 617889169 OK fr=stop txn=9 card=1 att=1 rl=0 lat=13294ms in=12313 out=1127 tot=13440
+76/175 [1283s] 619062142 OK fr=stop txn=12 card=1 att=1 rl=0 lat=13768ms in=12438 out=1158 tot=13596
+77/175 [1294s] 627409665 OK fr=stop txn=1 card=1 att=1 rl=0 lat=11114ms in=14617 out=629 tot=15246
+78/175 [1322s] 629527188 OK fr=stop txn=35 card=2 att=1 rl=0 lat=28158ms in=16511 out=3115 tot=19626
+79/175 [1335s] 630691442 OK fr=stop txn=9 card=1 att=1 rl=0 lat=13310ms in=12345 out=1130 tot=13475
+80/175 [1357s] 633702499 OK fr=stop txn=15 card=1 att=1 rl=0 lat=21459ms in=15934 out=1595 tot=17529
+81/175 [1373s] 636378563 OK fr=stop txn=11 card=2 att=1 rl=0 lat=16096ms in=13324 out=1271 tot=14595
+82/175 [1383s] 641757343 OK fr=stop txn=1 card=1 att=1 rl=0 lat=10309ms in=14665 out=481 tot=15146
+83/175 [1402s] 647130 OK fr=stop txn=7 card=1 att=1 rl=0 lat=18761ms in=12291 out=1029 tot=13320
+84/175 [1412s] 649744380 OK fr=stop txn=5 card=1 att=1 rl=0 lat=10586ms in=7228 out=823 tot=8051
+85/175 [1427s] 651362650 OK fr=stop txn=7 card=2 att=1 rl=0 lat=14803ms in=12185 out=1113 tot=13298
+86/175 [1446s] 660763472 OK fr=stop txn=14 card=1 att=1 rl=0 lat=18861ms in=16030 out=1504 tot=17534
+87/175 [1460s] 661070519 OK fr=stop txn=12 card=1 att=1 rl=0 lat=13760ms in=14927 out=1112 tot=16039
+88/175 [1475s] 662627 OK fr=stop txn=4 card=2 att=1 rl=0 lat=14788ms in=14692 out=930 tot=15622
+89/175 [1507s] 664363272 OK fr=stop txn=24 card=4 att=1 rl=0 lat=32405ms in=8790 out=2720 tot=11510
+90/175 [1529s] 666071832 OK fr=stop txn=32 card=1 att=1 rl=0 lat=21879ms in=16371 out=2613 tot=18984
+91/175 [1542s] 666657782 OK fr=stop txn=7 card=1 att=1 rl=0 lat=12611ms in=13234 out=967 tot=14201
+92/175 [1555s] 670758880 OK fr=stop txn=6 card=1 att=1 rl=0 lat=13305ms in=14766 out=815 tot=15581
+93/175 [1568s] 671343762 OK fr=stop txn=2 card=1 att=1 rl=0 lat=13265ms in=14318 out=715 tot=15033
+94/175 [1589s] 671814881 OK fr=stop txn=6 card=1 att=1 rl=0 lat=21298ms in=14807 out=897 tot=15704
+95/175 [1612s] 675447684 OK fr=stop txn=21 card=2 att=1 rl=0 lat=22881ms in=8755 out=1695 tot=10450
+96/175 [1633s] 676055793 OK fr=stop txn=7 card=1 att=1 rl=0 lat=20320ms in=11163 out=912 tot=12075
+97/175 [1648s] 682644407 OK fr=stop txn=13 card=1 att=1 rl=0 lat=15556ms in=15970 out=1275 tot=17245
+98/175 [1665s] 683600125 OK fr=stop txn=2 card=1 att=1 rl=0 lat=16464ms in=12130 out=591 tot=12721
+99/175 [1686s] 683953945 OK fr=stop txn=47 card=4 att=1 rl=0 lat=21714ms in=14333 out=3252 tot=17585
+100/175 [1705s] 693462745 OK fr=stop txn=3 card=1 att=1 rl=0 lat=18733ms in=12124 out=851 tot=12975
+101/175 [1719s] 704329172 OK fr=stop txn=4 card=1 att=1 rl=0 lat=13840ms in=12424 out=874 tot=13298
+102/175 [1737s] 704361834 OK fr=stop txn=13 card=2 att=1 rl=0 lat=17880ms in=12450 out=1511 tot=13961
+103/175 [1755s] 706603424 OK fr=stop txn=8 card=1 att=1 rl=0 lat=17621ms in=15794 out=1193 tot=16987
+104/175 [1767s] 707372768 OK fr=stop txn=1 card=1 att=1 rl=0 lat=12127ms in=12041 out=676 tot=12717
+105/175 [1780s] 707548761 OK fr=stop txn=7 card=1 att=1 rl=0 lat=13695ms in=12296 out=959 tot=13255
+106/175 [1799s] 708803842 OK fr=stop txn=27 card=1 att=1 rl=0 lat=18311ms in=16284 out=2026 tot=18310
+107/175 [1811s] 715702448 OK fr=stop txn=7 card=1 att=1 rl=0 lat=12761ms in=12014 out=877 tot=12891
+108/175 [1831s] 732254987 OK fr=stop txn=14 card=2 att=1 rl=0 lat=19977ms in=8456 out=1767 tot=10223
+109/175 [1842s] 733226864 OK fr=stop txn=2 card=2 att=1 rl=0 lat=10857ms in=14615 out=678 tot=15293
+110/175 740672043 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/740672043.json.tmp'
+111/175 742789801 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/742789801.json.tmp'
+112/175 746508094 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/746508094.json.tmp'
+113/175 749872819 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/749872819.json.tmp'
+114/175 754335267 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/754335267.json.tmp'
+115/175 759847704 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/759847704.json.tmp'
+116/175 760620732 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/760620732.json.tmp'
+117/175 764391244 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/764391244.json.tmp'
+118/175 765669334 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/765669334.json.tmp'
+119/175 766418139 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/766418139.json.tmp'
+120/175 766448272 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/766448272.json.tmp'
+121/175 767763527 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/767763527.json.tmp'
+122/175 770458880 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/770458880.json.tmp'
+123/175 774977536 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/774977536.json.tmp'
+124/175 777795710 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/777795710.json.tmp'
+125/175 788442231 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/788442231.json.tmp'
+126/175 788733402 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/788733402.json.tmp'
+127/175 788768669 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/788768669.json.tmp'
+128/175 [2170s] 789498956 OK fr=stop txn=10 card=3 att=1 rl=0 lat=17110ms in=14862 out=1331 tot=16193
+129/175 [2186s] 791936214 OK fr=stop txn=9 card=1 att=1 rl=0 lat=15392ms in=14882 out=1002 tot=15884
+130/175 [2209s] 792094551 OK fr=stop txn=28 card=1 att=1 rl=0 lat=23632ms in=16489 out=2700 tot=19189
+131/175 [2222s] 793486538 OK fr=stop txn=9 card=1 att=1 rl=0 lat=12282ms in=12342 out=937 tot=13279
+132/175 [2234s] 794744562 OK fr=stop txn=7 card=1 att=1 rl=0 lat=12581ms in=13255 out=961 tot=14216
+133/175 [2245s] 798698768 OK fr=stop txn=4 card=1 att=1 rl=0 lat=10335ms in=7303 out=695 tot=7998
+arm=luna_refined model=luna corpus=304 todo=59 par=1 prompt_chars=11842 outdir=/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined
+1/59 742789801 DRIVER_EXCEPTION OSError: [Errno 28] No space left on device: '/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined/json/742789801.json.tmp'
+arm=luna_refined model=luna corpus=304 todo=57 par=1 prompt_chars=11842 outdir=/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined
+1/57 [12s] 749872819 OK fr=stop txn=5 card=2 att=1 rl=0 lat=12144ms in=13225 out=816 tot=14041
+2/57 [24s] 754335267 OK fr=stop txn=9 card=2 att=1 rl=0 lat=12417ms in=7042 out=1133 tot=8175
+3/57 [37s] 759847704 OK fr=stop txn=7 card=1 att=1 rl=0 lat=12505ms in=12287 out=909 tot=13196
+4/57 [54s] 760620732 OK fr=stop txn=21 card=1 att=1 rl=0 lat=17820ms in=15342 out=1913 tot=17255
+5/57 [109s] 764391244 OK fr=stop txn=3 card=1 att=1 rl=0 lat=54653ms in=12061 out=901 tot=12962
+6/57 [433s] 765669334 NETWORK_ERROR fr=None txn=None card=None att=10 rl=0 lat=324359ms in=None out=None tot=None
+7/57 [757s] 766418139 NETWORK_ERROR fr=None txn=None card=None att=10 rl=0 lat=323614ms in=None out=None tot=None
+8/57 [1081s] 766448272 NETWORK_ERROR fr=None txn=None card=None att=10 rl=0 lat=324039ms in=None out=None tot=None
+9/57 [1227s] 767763527 OK fr=stop txn=1 card=1 att=7 rl=0 lat=146228ms in=14630 out=530 tot=15160
+10/57 [1241s] 770458880 OK fr=stop txn=9 card=1 att=1 rl=0 lat=13183ms in=12339 out=1126 tot=13465
+11/57 [1254s] 774977536 OK fr=stop txn=5 card=1 att=1 rl=0 lat=13456ms in=12333 out=1200 tot=13533
+12/57 [1268s] 777795710 OK fr=stop txn=12 card=1 att=1 rl=0 lat=14094ms in=8614 out=1265 tot=9879
+13/57 [1282s] 788442231 OK fr=stop txn=7 card=2 att=1 rl=0 lat=13472ms in=14920 out=1018 tot=15938
+14/57 [1302s] 788733402 OK fr=stop txn=30 card=2 att=1 rl=0 lat=19977ms in=14019 out=2368 tot=16387
+15/57 [1312s] 788768669 OK fr=stop txn=1 card=1 att=1 rl=0 lat=10930ms in=11948 out=725 tot=12673
+16/57 [1324s] 805456072 OK fr=stop txn=8 card=2 att=1 rl=0 lat=11344ms in=14858 out=917 tot=15775
+17/57 [1338s] 806586751 OK fr=stop txn=12 card=1 att=1 rl=0 lat=14191ms in=14915 out=1331 tot=16246
+18/57 [1349s] 807235322 OK fr=stop txn=5 card=1 att=1 rl=0 lat=10875ms in=14759 out=788 tot=15547
+19/57 [1362s] 810102017 OK fr=stop txn=6 card=1 att=1 rl=0 lat=12704ms in=12253 out=1027 tot=13280
+20/57 [1374s] 816091682 OK fr=stop txn=1 card=1 att=1 rl=0 lat=11906ms in=14625 out=504 tot=15129
+21/57 [1388s] 816142559 OK fr=stop txn=6 card=1 att=1 rl=0 lat=14004ms in=14737 out=865 tot=15602
+22/57 [1400s] 820617504 OK fr=stop txn=5 card=1 att=1 rl=0 lat=12541ms in=14898 out=986 tot=15884
+23/57 [1430s] 820648402 OK fr=stop txn=42 card=3 att=1 rl=0 lat=29561ms in=16983 out=3361 tot=20344
+24/57 [1442s] 842730581 OK fr=stop txn=1 card=1 att=1 rl=0 lat=12281ms in=14586 out=427 tot=15013
+25/57 [1452s] 843279450 OK fr=stop txn=3 card=1 att=1 rl=0 lat=9859ms in=14683 out=617 tot=15300
+26/57 [1470s] 843301192 OK fr=stop txn=17 card=3 att=1 rl=0 lat=18243ms in=15945 out=1754 tot=17699
+27/57 [1485s] 852044788 OK fr=stop txn=10 card=1 att=1 rl=0 lat=15204ms in=14918 out=1148 tot=16066
+28/57 [1499s] 852073396 OK fr=stop txn=2 card=1 att=1 rl=0 lat=13893ms in=14606 out=902 tot=15508
+29/57 [1511s] 854325020 OK fr=stop txn=5 card=1 att=1 rl=0 lat=12018ms in=14759 out=838 tot=15597
+30/57 [1526s] 855177418 OK fr=stop txn=3 card=1 att=1 rl=0 lat=14656ms in=12140 out=691 tot=12831
+31/57 [1540s] 869784175 OK fr=stop txn=17 card=3 att=1 rl=0 lat=14610ms in=13552 out=1597 tot=15149
+32/57 [1553s] 870931682 OK fr=stop txn=11 card=1 att=1 rl=0 lat=12975ms in=13387 out=1124 tot=14511
+33/57 [1571s] 872002391 OK fr=stop txn=4 card=1 att=1 rl=0 lat=17865ms in=12345 out=801 tot=13146
+34/57 [1580s] 906241229 OK fr=stop txn=1 card=1 att=1 rl=0 lat=8612ms in=14702 out=476 tot=15178
+35/57 [1600s] 909154422 OK fr=stop txn=19 card=1 att=1 rl=0 lat=20389ms in=13392 out=2013 tot=15405
+36/57 [1616s] 912798115 OK fr=stop txn=21 card=1 att=1 rl=0 lat=15816ms in=16046 out=1773 tot=17819
+37/57 [1633s] 913897807 OK fr=stop txn=12 card=1 att=1 rl=0 lat=16388ms in=15032 out=1503 tot=16535
+38/57 [1650s] 917089462 OK fr=stop txn=10 card=2 att=1 rl=0 lat=17797ms in=14835 out=1604 tot=16439
+39/57 [1667s] 928517530 OK fr=stop txn=20 card=1 att=1 rl=0 lat=16542ms in=16021 out=1713 tot=17734
+40/57 [1679s] 930159577 OK fr=stop txn=4 card=1 att=1 rl=0 lat=11757ms in=14839 out=697 tot=15536
+41/57 [1690s] 946441395 OK fr=stop txn=3 card=1 att=1 rl=0 lat=10817ms in=14675 out=602 tot=15277
+42/57 [1698s] 952278831 OK fr=stop txn=1 card=1 att=1 rl=0 lat=8948ms in=14663 out=539 tot=15202
+43/57 [1717s] 952325284 OK fr=stop txn=34 card=2 att=1 rl=0 lat=18570ms in=8311 out=2605 tot=10916
+44/57 [1727s] 954015887 OK fr=stop txn=1 card=1 att=1 rl=0 lat=9970ms in=14641 out=552 tot=15193
+45/57 [1736s] 962307900 OK fr=stop txn=1 card=1 att=1 rl=0 lat=9036ms in=14558 out=495 tot=15053
+46/57 [1745s] 962309612 OK fr=stop txn=1 card=1 att=1 rl=0 lat=9057ms in=14620 out=450 tot=15070
+47/57 [1758s] 978490018 OK fr=stop txn=14 card=1 att=1 rl=0 lat=13176ms in=14983 out=1218 tot=16201
+48/57 [1778s] 979848021 OK fr=stop txn=41 card=1 att=1 rl=0 lat=19544ms in=16949 out=2876 tot=19825
+49/57 [1788s] 981635766 OK fr=stop txn=6 card=1 att=1 rl=0 lat=10526ms in=7454 out=815 tot=8269
+50/57 [1801s] 992610831 OK fr=stop txn=8 card=1 att=1 rl=0 lat=12283ms in=14863 out=911 tot=15774
+51/57 [1813s] 995061250 OK fr=stop txn=3 card=1 att=1 rl=0 lat=11950ms in=14899 out=921 tot=15820
+52/57 [1823s] 289418121 OK fr=stop txn=3 card=1 att=1 rl=0 lat=10724ms in=12157 out=670 tot=12827
+53/57 [1837s] 848955682 OK fr=stop txn=14 card=1 att=1 rl=0 lat=13579ms in=15044 out=1300 tot=16344
+54/57 [1850s] gmail-1030239-19fe3dce17aa0588 OK fr=stop txn=10 card=1 att=1 rl=0 lat=13084ms in=15924 out=1193 tot=17117
+55/57 [1861s] gmail-1222877-19fe40c768a64e20 OK fr=stop txn=3 card=1 att=1 rl=0 lat=11088ms in=14681 out=654 tot=15335
+56/57 [1877s] gmail-32250-19fd70ce1ca5b8f5 OK fr=stop txn=17 card=3 att=1 rl=0 lat=15624ms in=15804 out=1611 tot=17415
+57/57 [1888s] gmail-43303-19fe3c9ff0c6d016 OK fr=stop txn=4 card=1 att=1 rl=0 lat=11485ms in=14681 out=634 tot=15315
+DONE arm=luna_refined in 1888s
+arm=luna_refined model=luna corpus=3 todo=3 par=1 prompt_chars=11842 outdir=/Users/mayanck.bihani/Savesage/bank_eval/icici/luna_refined
+1/3 [16s] 765669334 OK fr=stop txn=10 card=2 att=1 rl=0 lat=16376ms in=15012 out=1359 tot=16371
+2/3 [38s] 766418139 OK fr=stop txn=34 card=3 att=1 rl=0 lat=22449ms in=16396 out=2871 tot=19267
+3/3 [52s] 766448272 OK fr=stop txn=6 card=1 att=1 rl=0 lat=13234ms in=14784 out=827 tot=15611
+DONE arm=luna_refined in 52s

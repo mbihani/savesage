@@ -1,0 +1,1230 @@
+{
+ "arm": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_p1_client",
+ "n": 10,
+ "statements": {
+  "837436340": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 7627,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 668,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 21508,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 29135
+   },
+   "n_luna": 137,
+   "n_incumbent": 141,
+   "n_pdf_geom": 141,
+   "period": [
+    "23/06/2026",
+    "22/07/2026"
+   ],
+   "statementDate": "22/07/2026",
+   "leading_band_rows": 2,
+   "dropped": [
+    {
+     "page": 1,
+     "date": "01 Jul 26",
+     "amount": 15050.0,
+     "marker": "C",
+     "desc": "PAYMENT RECEIVED 000HD016182BALAAAEGQKTA",
+     "cause": "LEADING_BAND"
+    },
+    {
+     "page": 1,
+     "date": "22 Jun 26",
+     "amount": 10.0,
+     "marker": "D",
+     "desc": "UPI-MONIKA LALIT CHANG",
+     "cause": "BEFORE_periodStart"
+    },
+    {
+     "page": 1,
+     "date": "22 Jun 26",
+     "amount": 10.0,
+     "marker": "D",
+     "desc": "UPI-L A ENTERPRISE",
+     "cause": "BEFORE_periodStart"
+    },
+    {
+     "page": 1,
+     "date": "22 Jun 26",
+     "amount": 48.0,
+     "marker": "D",
+     "desc": "UPI-PRAHALAD DHOBI",
+     "cause": "BEFORE_periodStart"
+    },
+    {
+     "page": 1,
+     "date": "22 Jun 26",
+     "amount": 115.0,
+     "marker": "D",
+     "desc": "UPI-DINESHBHAI",
+     "cause": "BEFORE_periodStart"
+    }
+   ],
+   "defects": [
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__LEADING_BAND",
+     "note": "printed row absent from Luna output (LEADING_BAND)",
+     "evidence": {
+      "page": 1,
+      "y": 460.0,
+      "date": "01 Jul 26",
+      "amount": 15050.0,
+      "marker": "C",
+      "desc": "PAYMENT RECEIVED 000HD016182BALAAAEGQKTA"
+     }
+    },
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__BEFORE_periodStart",
+     "note": "printed row absent from Luna output (BEFORE_periodStart)",
+     "evidence": {
+      "page": 1,
+      "y": 495.0,
+      "date": "22 Jun 26",
+      "amount": 10.0,
+      "marker": "D",
+      "desc": "UPI-MONIKA LALIT CHANG"
+     }
+    },
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__BEFORE_periodStart",
+     "note": "printed row absent from Luna output (BEFORE_periodStart)",
+     "evidence": {
+      "page": 1,
+      "y": 507.0,
+      "date": "22 Jun 26",
+      "amount": 10.0,
+      "marker": "D",
+      "desc": "UPI-L A ENTERPRISE"
+     }
+    },
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__BEFORE_periodStart",
+     "note": "printed row absent from Luna output (BEFORE_periodStart)",
+     "evidence": {
+      "page": 1,
+      "y": 519.0,
+      "date": "22 Jun 26",
+      "amount": 48.0,
+      "marker": "D",
+      "desc": "UPI-PRAHALAD DHOBI"
+     }
+    },
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__BEFORE_periodStart",
+     "note": "printed row absent from Luna output (BEFORE_periodStart)",
+     "evidence": {
+      "page": 1,
+      "y": 530.0,
+      "date": "22 Jun 26",
+      "amount": 115.0,
+      "marker": "D",
+      "desc": "UPI-DINESHBHAI"
+     }
+    },
+    {
+     "kind": "LUNA_AMOUNT_SCALED__DIV1000",
+     "note": "Luna amount is the printed amount divided by 1000 (thousands separator read as a decimal point)",
+     "evidence": {
+      "page": 1,
+      "printed": "15,050.00",
+      "pdf": 15050.0,
+      "luna": 15.05,
+      "desc": "PAYMENT RECEIVED 000HD016182BALAAAEGQKTA"
+     }
+    }
+   ],
+   "direction": {
+    "agrees": 133,
+    "contradicts": 0,
+    "unresolvable": 4
+   },
+   "payment_received": [
+    {
+     "luna": "CREDIT",
+     "amount": 15.05,
+     "date": "01/07/2026"
+    }
+   ],
+   "network": [
+    null
+   ],
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "rawStatementId": {
+    "luna": "H26072450588",
+    "pdf_prints_STMT_No": true,
+    "pdf_line": ": H26072450588"
+   },
+   "points": {
+    "luna_closing": 1365,
+    "incumbent_closing": 1365,
+    "pdf_cycle_strip": [
+     1256.0,
+     109.0,
+     0.0,
+     1365.0
+    ],
+    "pdf_lifetime_row": null
+   },
+   "desc": {
+    "n": 137,
+    "exact_match_printed": 137,
+    "luna_double_space": 0,
+    "pdf_double_space": 0,
+    "luna_ends_country": 2,
+    "pdf_ends_country": 2
+   },
+   "summary": {
+    "totalAmountDue": {
+     "luna": 11787,
+     "incumbent": 11787,
+     "pdf": 11787.0
+    },
+    "totalMinimumAmountDue": {
+     "luna": 236,
+     "incumbent": 236,
+     "pdf": 236.0
+    },
+    "totalCreditLimit": {
+     "luna": 250000,
+     "incumbent": 250000,
+     "pdf": 250000.0
+    },
+    "availableCreditLimit": {
+     "luna": 238214.05,
+     "incumbent": 238214.05,
+     "pdf": 238214.05
+    }
+   }
+  },
+  "546216901": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 5129,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 548,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 19646,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 24775
+   },
+   "n_luna": 90,
+   "n_incumbent": 90,
+   "n_pdf_geom": 90,
+   "period": [
+    "05/06/2026",
+    "04/07/2026"
+   ],
+   "statementDate": "04/07/2026",
+   "leading_band_rows": 2,
+   "dropped": [],
+   "defects": [],
+   "direction": {
+    "agrees": 88,
+    "contradicts": 0,
+    "unresolvable": 2
+   },
+   "payment_received": [
+    {
+     "luna": "CREDIT",
+     "amount": 8168.94,
+     "date": "05/06/2026"
+    }
+   ],
+   "network": [
+    null
+   ],
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "rawStatementId": {
+    "luna": "A26070329496",
+    "pdf_prints_STMT_No": true,
+    "pdf_line": ": A26070329496"
+   },
+   "points": {
+    "luna_closing": 47,
+    "incumbent_closing": 47,
+    "pdf_cycle_strip": [
+     24.0,
+     23.0,
+     0.0,
+     47.0
+    ],
+    "pdf_lifetime_row": null
+   },
+   "desc": {
+    "n": 90,
+    "exact_match_printed": 87,
+    "luna_double_space": 0,
+    "pdf_double_space": 0,
+    "luna_ends_country": 0,
+    "pdf_ends_country": 0
+   },
+   "summary": {
+    "totalAmountDue": {
+     "luna": 9084,
+     "incumbent": 9084,
+     "pdf": 9084.0
+    },
+    "totalMinimumAmountDue": {
+     "luna": 200,
+     "incumbent": 200,
+     "pdf": 200.0
+    },
+    "totalCreditLimit": {
+     "luna": 104000,
+     "incumbent": 104000,
+     "pdf": 104000.0
+    },
+    "availableCreditLimit": {
+     "luna": 94916.12,
+     "incumbent": 94916.12,
+     "pdf": 94916.12
+    }
+   }
+  },
+  "924475136": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 2193,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 866,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 12567,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 14760
+   },
+   "n_luna": 21,
+   "n_incumbent": 21,
+   "n_pdf_geom": 19,
+   "period": [
+    null,
+    null
+   ],
+   "statementDate": "16/12/2021",
+   "leading_band_rows": 1,
+   "dropped": [],
+   "defects": [],
+   "direction": {
+    "agrees": 15,
+    "contradicts": 0,
+    "unresolvable": 6
+   },
+   "network": [
+    null
+   ],
+   "issuer": {
+    "luna": "SBI Cards and Payment Services Limited",
+    "incumbent": "SBI Card"
+   },
+   "rawStatementId": {
+    "luna": "C21121671252",
+    "pdf_prints_STMT_No": true,
+    "pdf_line": ": C21121671252"
+   },
+   "points": {
+    "luna_closing": 1732,
+    "incumbent_closing": 1732,
+    "pdf_cycle_strip": null,
+    "pdf_lifetime_row": null
+   },
+   "desc": {
+    "n": 21,
+    "exact_match_printed": 17,
+    "luna_double_space": 0,
+    "pdf_double_space": 0,
+    "luna_ends_country": 13,
+    "pdf_ends_country": 13
+   },
+   "summary": {
+    "totalAmountDue": {
+     "luna": 10107,
+     "incumbent": 10107,
+     "pdf": 10107.0
+    },
+    "totalMinimumAmountDue": {
+     "luna": 536,
+     "incumbent": 536,
+     "pdf": 536.0
+    },
+    "totalCreditLimit": {
+     "luna": 17837,
+     "incumbent": 17837,
+     "pdf": 17837.0
+    },
+    "availableCreditLimit": {
+     "luna": 7730.39,
+     "incumbent": 7730.39,
+     "pdf": 7730.39
+    }
+   }
+  },
+  "734857498": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 1388,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 512,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 17697,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 19085
+   },
+   "n_luna": 12,
+   "n_incumbent": 12,
+   "n_pdf_geom": 10,
+   "period": [
+    "17/06/2026",
+    "16/07/2026"
+   ],
+   "statementDate": "16/07/2026",
+   "leading_band_rows": 1,
+   "dropped": [],
+   "defects": [
+    {
+     "kind": "LUNA_DIRECTION_VS_CD_MARKER",
+     "note": "Luna direction contradicts the printed C/D column",
+     "evidence": {
+      "date": "06/07/2026",
+      "amount": 1074,
+      "expected": "CREDIT",
+      "luna": "DEBIT",
+      "desc": "PAYMENT RECEIVED 000DP216187LEE0ICGZWZW9"
+     }
+    },
+    {
+     "kind": "LUNA_PAYMENT_RECEIVED_AS_DEBIT",
+     "note": "PAYMENT RECEIVED marked DEBIT; PDF prints 'C' and the incumbent says CREDIT",
+     "evidence": {
+      "date": "06/07/2026",
+      "amount": 1074
+     }
+    }
+   ],
+   "direction": {
+    "agrees": 7,
+    "contradicts": 1,
+    "unresolvable": 4
+   },
+   "payment_received": [
+    {
+     "luna": "DEBIT",
+     "amount": 1074,
+     "date": "06/07/2026"
+    }
+   ],
+   "network": [
+    null
+   ],
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "rawStatementId": {
+    "luna": "B26072191084",
+    "pdf_prints_STMT_No": true,
+    "pdf_line": ": B26072191084"
+   },
+   "points": {
+    "luna_closing": 11600,
+    "incumbent_closing": 11600,
+    "pdf_cycle_strip": null,
+    "pdf_lifetime_row": null
+   },
+   "desc": {
+    "n": 12,
+    "exact_match_printed": 6,
+    "luna_double_space": 0,
+    "pdf_double_space": 0,
+    "luna_ends_country": 4,
+    "pdf_ends_country": 4
+   },
+   "summary": {
+    "totalAmountDue": {
+     "luna": 3036,
+     "incumbent": 3036,
+     "pdf": 3036.0
+    },
+    "totalMinimumAmountDue": {
+     "luna": 200,
+     "incumbent": 200,
+     "pdf": 200.0
+    },
+    "totalCreditLimit": {
+     "luna": 252000,
+     "incumbent": 252000,
+     "pdf": 252000.0
+    },
+    "availableCreditLimit": {
+     "luna": 248964.18,
+     "incumbent": 248964.18,
+     "pdf": 248964.18
+    }
+   }
+  },
+  "1120623464": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 671,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 378,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 17018,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 17689
+   },
+   "n_luna": 1,
+   "n_incumbent": 1,
+   "n_pdf_geom": 1,
+   "period": [
+    "26/02/2026",
+    "25/03/2026"
+   ],
+   "statementDate": "25/03/2026",
+   "leading_band_rows": null,
+   "dropped": [],
+   "defects": [
+    {
+     "kind": "LUNA_DIRECTION_VS_CD_MARKER",
+     "note": "Luna direction contradicts the printed C/D column",
+     "evidence": {
+      "date": "04/03/2026",
+      "amount": 34,
+      "expected": "CREDIT",
+      "luna": "DEBIT",
+      "desc": "PAYMENT RECEIVED 000DP016063184952z1QEsy"
+     }
+    },
+    {
+     "kind": "LUNA_PAYMENT_RECEIVED_AS_DEBIT",
+     "note": "PAYMENT RECEIVED marked DEBIT; PDF prints 'C' and the incumbent says CREDIT",
+     "evidence": {
+      "date": "04/03/2026",
+      "amount": 34
+     }
+    }
+   ],
+   "direction": {
+    "agrees": 0,
+    "contradicts": 1,
+    "unresolvable": 0
+   },
+   "payment_received": [
+    {
+     "luna": "DEBIT",
+     "amount": 34,
+     "date": "04/03/2026"
+    }
+   ],
+   "network": [
+    null
+   ],
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "rawStatementId": {
+    "luna": "C26032109845",
+    "pdf_prints_STMT_No": true,
+    "pdf_line": ": C26032109845"
+   },
+   "points": {
+    "luna_closing": null,
+    "incumbent_closing": 0,
+    "pdf_cycle_strip": null,
+    "pdf_lifetime_row": null
+   },
+   "desc": {
+    "n": 1,
+    "exact_match_printed": 1,
+    "luna_double_space": 0,
+    "pdf_double_space": 0,
+    "luna_ends_country": 0,
+    "pdf_ends_country": 0
+   },
+   "summary": {
+    "totalAmountDue": {
+     "luna": 0,
+     "incumbent": 0,
+     "pdf": 0.0
+    },
+    "totalMinimumAmountDue": {
+     "luna": 0,
+     "incumbent": 0,
+     "pdf": 0.0
+    },
+    "totalCreditLimit": {
+     "luna": 184000,
+     "incumbent": 184000,
+     "pdf": 184000.0
+    },
+    "availableCreditLimit": {
+     "luna": 183999.79,
+     "incumbent": 183999.79,
+     "pdf": 183999.79
+    }
+   }
+  },
+  "1220226393": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 617,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 325,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 17249,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 17866
+   },
+   "n_luna": 1,
+   "n_incumbent": 1,
+   "n_pdf_geom": 1,
+   "period": [
+    "05/03/2026",
+    "04/04/2026"
+   ],
+   "statementDate": "04/04/2026",
+   "leading_band_rows": null,
+   "dropped": [],
+   "defects": [],
+   "direction": {
+    "agrees": 1,
+    "contradicts": 0,
+    "unresolvable": 0
+   },
+   "payment_received": [
+    {
+     "luna": "CREDIT",
+     "amount": 1671,
+     "date": "16/03/2026"
+    }
+   ],
+   "network": [
+    "VISA"
+   ],
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "rawStatementId": {
+    "luna": "D26040398862",
+    "pdf_prints_STMT_No": true,
+    "pdf_line": ": D26040398862"
+   },
+   "points": {
+    "luna_closing": 4106,
+    "incumbent_closing": 4106,
+    "pdf_cycle_strip": null,
+    "pdf_lifetime_row": null
+   },
+   "desc": {
+    "n": 1,
+    "exact_match_printed": 1,
+    "luna_double_space": 0,
+    "pdf_double_space": 0,
+    "luna_ends_country": 0,
+    "pdf_ends_country": 0
+   },
+   "summary": {
+    "totalAmountDue": {
+     "luna": 0,
+     "incumbent": 0,
+     "pdf": 0.0
+    },
+    "totalMinimumAmountDue": {
+     "luna": 0,
+     "incumbent": 0,
+     "pdf": 0.0
+    },
+    "totalCreditLimit": {
+     "luna": 105000,
+     "incumbent": 105000,
+     "pdf": 105000.0
+    },
+    "availableCreditLimit": {
+     "luna": 105000,
+     "incumbent": 105000,
+     "pdf": 105000.0
+    }
+   }
+  },
+  "1560321887": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 4344,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 461,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 19451,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 23795
+   },
+   "n_luna": 75,
+   "n_incumbent": 75,
+   "n_pdf_geom": 75,
+   "period": [
+    "06/04/2026",
+    "05/05/2026"
+   ],
+   "statementDate": "05/05/2026",
+   "leading_band_rows": 4,
+   "dropped": [],
+   "defects": [],
+   "direction": {
+    "agrees": 73,
+    "contradicts": 0,
+    "unresolvable": 2
+   },
+   "payment_received": [
+    {
+     "luna": "CREDIT",
+     "amount": 43291,
+     "date": "08/04/2026"
+    },
+    {
+     "luna": "CREDIT",
+     "amount": 15000,
+     "date": "23/04/2026"
+    },
+    {
+     "luna": "CREDIT",
+     "amount": 14904.03,
+     "date": "01/05/2026"
+    }
+   ],
+   "network": [
+    null
+   ],
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "rawStatementId": {
+    "luna": "I26050642637",
+    "pdf_prints_STMT_No": true,
+    "pdf_line": ": I26050642637"
+   },
+   "points": {
+    "luna_closing": 4555,
+    "incumbent_closing": 4555,
+    "pdf_cycle_strip": [
+     3763.0,
+     792.0,
+     0.0,
+     4555.0
+    ],
+    "pdf_lifetime_row": null
+   },
+   "desc": {
+    "n": 75,
+    "exact_match_printed": 74,
+    "luna_double_space": 0,
+    "pdf_double_space": 0,
+    "luna_ends_country": 0,
+    "pdf_ends_country": 0
+   },
+   "summary": {
+    "totalAmountDue": {
+     "luna": 1005,
+     "incumbent": 1005,
+     "pdf": 1005.0
+    },
+    "totalMinimumAmountDue": {
+     "luna": 200,
+     "incumbent": 200,
+     "pdf": 200.0
+    },
+    "totalCreditLimit": {
+     "luna": 200000,
+     "incumbent": 200000,
+     "pdf": 200000.0
+    },
+    "availableCreditLimit": {
+     "luna": 198995.32,
+     "incumbent": 198995.32,
+     "pdf": 198995.32
+    }
+   }
+  },
+  "1707857175": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 3785,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 415,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 19388,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 23173
+   },
+   "n_luna": 64,
+   "n_incumbent": 71,
+   "n_pdf_geom": 71,
+   "period": [
+    "17/04/2026",
+    "16/05/2026"
+   ],
+   "statementDate": "16/05/2026",
+   "leading_band_rows": 2,
+   "dropped": [
+    {
+     "page": 1,
+     "date": "01 May 26",
+     "amount": 128100.0,
+     "marker": "C",
+     "desc": "PAYMENT RECEIVED 000BD016121BALAAAJGB4VZ",
+     "cause": "LEADING_BAND"
+    },
+    {
+     "page": 1,
+     "date": "03 May 26",
+     "amount": 5.36,
+     "marker": "C",
+     "desc": "FUEL SURCHARGE WAIVER EXCL TAX",
+     "cause": "LEADING_BAND"
+    },
+    {
+     "page": 1,
+     "date": "16 Apr 26",
+     "amount": 20.0,
+     "marker": "D",
+     "desc": "UPI-REDEFINED PRIVATE L",
+     "cause": "BEFORE_periodStart"
+    },
+    {
+     "page": 1,
+     "date": "16 Apr 26",
+     "amount": 105.0,
+     "marker": "D",
+     "desc": "UPI-REDEFINED PRIVATE L",
+     "cause": "BEFORE_periodStart"
+    },
+    {
+     "page": 1,
+     "date": "16 Apr 26",
+     "amount": 20.0,
+     "marker": "D",
+     "desc": "UPI-REDEFINED PRIVATE L",
+     "cause": "BEFORE_periodStart"
+    },
+    {
+     "page": 1,
+     "date": "16 Apr 26",
+     "amount": 265.0,
+     "marker": "D",
+     "desc": "UPI-A M R TEMPTATIONS",
+     "cause": "BEFORE_periodStart"
+    },
+    {
+     "page": 2,
+     "date": "28 Apr 26",
+     "amount": 20.0,
+     "marker": "D",
+     "desc": "UPI-REDEFINED PRIVATE L",
+     "cause": "unclassified"
+    }
+   ],
+   "defects": [
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__LEADING_BAND",
+     "note": "printed row absent from Luna output (LEADING_BAND)",
+     "evidence": {
+      "page": 1,
+      "y": 460.0,
+      "date": "01 May 26",
+      "amount": 128100.0,
+      "marker": "C",
+      "desc": "PAYMENT RECEIVED 000BD016121BALAAAJGB4VZ"
+     }
+    },
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__LEADING_BAND",
+     "note": "printed row absent from Luna output (LEADING_BAND)",
+     "evidence": {
+      "page": 1,
+      "y": 471.0,
+      "date": "03 May 26",
+      "amount": 5.36,
+      "marker": "C",
+      "desc": "FUEL SURCHARGE WAIVER EXCL TAX"
+     }
+    },
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__BEFORE_periodStart",
+     "note": "printed row absent from Luna output (BEFORE_periodStart)",
+     "evidence": {
+      "page": 1,
+      "y": 495.0,
+      "date": "16 Apr 26",
+      "amount": 20.0,
+      "marker": "D",
+      "desc": "UPI-REDEFINED PRIVATE L"
+     }
+    },
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__BEFORE_periodStart",
+     "note": "printed row absent from Luna output (BEFORE_periodStart)",
+     "evidence": {
+      "page": 1,
+      "y": 507.0,
+      "date": "16 Apr 26",
+      "amount": 105.0,
+      "marker": "D",
+      "desc": "UPI-REDEFINED PRIVATE L"
+     }
+    },
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__BEFORE_periodStart",
+     "note": "printed row absent from Luna output (BEFORE_periodStart)",
+     "evidence": {
+      "page": 1,
+      "y": 519.0,
+      "date": "16 Apr 26",
+      "amount": 20.0,
+      "marker": "D",
+      "desc": "UPI-REDEFINED PRIVATE L"
+     }
+    },
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__BEFORE_periodStart",
+     "note": "printed row absent from Luna output (BEFORE_periodStart)",
+     "evidence": {
+      "page": 1,
+      "y": 530.0,
+      "date": "16 Apr 26",
+      "amount": 265.0,
+      "marker": "D",
+      "desc": "UPI-A M R TEMPTATIONS"
+     }
+    },
+    {
+     "kind": "LUNA_DROPPED_PRINTED_ROW__unclassified",
+     "note": "printed row absent from Luna output (unclassified)",
+     "evidence": {
+      "page": 2,
+      "y": 125.0,
+      "date": "28 Apr 26",
+      "amount": 20.0,
+      "marker": "D",
+      "desc": "UPI-REDEFINED PRIVATE L"
+     }
+    }
+   ],
+   "direction": {
+    "agrees": 64,
+    "contradicts": 0,
+    "unresolvable": 0
+   },
+   "network": [
+    null
+   ],
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "rawStatementId": {
+    "luna": "I26051795576",
+    "pdf_prints_STMT_No": true,
+    "pdf_line": ": I26051795576"
+   },
+   "points": {
+    "luna_closing": 1072,
+    "incumbent_closing": 1072,
+    "pdf_cycle_strip": null,
+    "pdf_lifetime_row": [
+     1072.0,
+     5077.0,
+     6590.0
+    ]
+   },
+   "desc": {
+    "n": 64,
+    "exact_match_printed": 64,
+    "luna_double_space": 0,
+    "pdf_double_space": 0,
+    "luna_ends_country": 4,
+    "pdf_ends_country": 4
+   },
+   "summary": {
+    "totalAmountDue": {
+     "luna": 53412,
+     "incumbent": 53412,
+     "pdf": 53412.0
+    },
+    "totalMinimumAmountDue": {
+     "luna": 1068,
+     "incumbent": 1068,
+     "pdf": 1068.0
+    },
+    "totalCreditLimit": {
+     "luna": 192000,
+     "incumbent": 192000,
+     "pdf": 192000.0
+    },
+    "availableCreditLimit": {
+     "luna": 138588.15,
+     "incumbent": 138588.15,
+     "pdf": 138588.15
+    }
+   }
+  },
+  "365516172": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 3687,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 294,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 19200,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 22887
+   },
+   "n_luna": 65,
+   "n_incumbent": 65,
+   "n_pdf_geom": 65,
+   "period": [
+    "21/05/2026",
+    "20/06/2026"
+   ],
+   "statementDate": "20/06/2026",
+   "leading_band_rows": 2,
+   "dropped": [],
+   "defects": [],
+   "direction": {
+    "agrees": 65,
+    "contradicts": 0,
+    "unresolvable": 0
+   },
+   "payment_received": [
+    {
+     "luna": "CREDIT",
+     "amount": 26835,
+     "date": "22/05/2026"
+    }
+   ],
+   "network": [
+    null
+   ],
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "rawStatementId": {
+    "luna": "B26062784904",
+    "pdf_prints_STMT_No": true,
+    "pdf_line": ": B26062784904"
+   },
+   "points": {
+    "luna_closing": 1269,
+    "incumbent_closing": 1269,
+    "pdf_cycle_strip": [
+     1021.0,
+     248.0,
+     0.0,
+     1269.0
+    ],
+    "pdf_lifetime_row": null
+   },
+   "desc": {
+    "n": 65,
+    "exact_match_printed": 65,
+    "luna_double_space": 0,
+    "pdf_double_space": 0,
+    "luna_ends_country": 0,
+    "pdf_ends_country": 0
+   },
+   "summary": {
+    "totalAmountDue": {
+     "luna": 17755,
+     "incumbent": 17755,
+     "pdf": 17755.0
+    },
+    "totalMinimumAmountDue": {
+     "luna": 355,
+     "incumbent": 355,
+     "pdf": 355.0
+    },
+    "totalCreditLimit": {
+     "luna": 41000,
+     "incumbent": 41000,
+     "pdf": 41000.0
+    },
+    "availableCreditLimit": {
+     "luna": 23245.16,
+     "incumbent": 23245.16,
+     "pdf": 23245.16
+    }
+   }
+  },
+  "515948911": {
+   "outcome": "OK",
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 3534,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 440,
+     "rejected_prediction_tokens": 0
+    },
+    "prompt_tokens": 19006,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 0
+    },
+    "total_tokens": 22540
+   },
+   "n_luna": 56,
+   "n_incumbent": 56,
+   "n_pdf_geom": 56,
+   "period": [
+    "04/01/2026",
+    "03/02/2026"
+   ],
+   "statementDate": "03/02/2026",
+   "leading_band_rows": 2,
+   "dropped": [],
+   "defects": [],
+   "direction": {
+    "agrees": 54,
+    "contradicts": 0,
+    "unresolvable": 2
+   },
+   "payment_received": [
+    {
+     "luna": "CREDIT",
+     "amount": 61532.13,
+     "date": "20/01/2026"
+    }
+   ],
+   "network": [
+    null
+   ],
+   "issuer": {
+    "luna": "SBI Card",
+    "incumbent": "SBI Card"
+   },
+   "rawStatementId": {
+    "luna": "A26020284772",
+    "pdf_prints_STMT_No": true,
+    "pdf_line": ": A26020284772"
+   },
+   "points": {
+    "luna_closing": null,
+    "incumbent_closing": 1467,
+    "pdf_cycle_strip": null,
+    "pdf_lifetime_row": null
+   },
+   "desc": {
+    "n": 56,
+    "exact_match_printed": 56,
+    "luna_double_space": 0,
+    "pdf_double_space": 0,
+    "luna_ends_country": 51,
+    "pdf_ends_country": 51
+   },
+   "summary": {
+    "totalAmountDue": {
+     "luna": 21162,
+     "incumbent": 21162,
+     "pdf": 21162.0
+    },
+    "totalMinimumAmountDue": {
+     "luna": 423,
+     "incumbent": 423,
+     "pdf": 423.0
+    },
+    "totalCreditLimit": {
+     "luna": 282000,
+     "incumbent": 282000,
+     "pdf": 282000.0
+    },
+    "availableCreditLimit": {
+     "luna": 260837.84,
+     "incumbent": 260837.84,
+     "pdf": 260837.84
+    }
+   }
+  }
+ },
+ "patterns": {
+  "LUNA_DROPPED_PRINTED_ROW__BEFORE_periodStart": 8,
+  "LUNA_CLOSINGPOINTS_IS_CYCLE_CLOSING": 4,
+  "LUNA_DROPPED_PRINTED_ROW__LEADING_BAND": 3,
+  "LUNA_DIRECTION_VS_CD_MARKER": 2,
+  "LUNA_PAYMENT_RECEIVED_AS_DEBIT": 2,
+  "LUNA_AMOUNT_SCALED__DIV1000": 1,
+  "LUNA_DROPPED_PRINTED_ROW__unclassified": 1
+ }
+}

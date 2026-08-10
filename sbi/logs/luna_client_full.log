@@ -1,0 +1,16 @@
+arm=luna_client outdir=/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_luna_client corpus=300 todo=300 par=1 prompt=client prompt_chars=10041
+
+--- detached launch: luna_client pid=62951 ---
+arm=luna_client outdir=/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_luna_client corpus=300 todo=296 par=1 prompt=client prompt_chars=10041
+arm=luna_client outdir=/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_luna_client corpus=300 todo=216 par=1 prompt=client prompt_chars=10041
+1/216 469171081 OK fr=stop txn=1 att=1 rl=0 lat=9674ms in=17188 out=533 elapsed=9s
+2/216 470031039 OK fr=stop txn=1 att=1 rl=0 lat=11993ms in=17211 out=744 elapsed=21s
+3/216 472223669 OK fr=stop txn=9 att=1 rl=0 lat=12966ms in=17488 out=1075 elapsed=34s
+4/216 479428567 OK fr=stop txn=28 att=1 rl=0 lat=20295ms in=17783 out=2243 elapsed=54s
+5/216 499090838 OK fr=stop txn=7 att=1 rl=0 lat=13375ms in=13082 out=1106 elapsed=68s
+6/216 502619618 OK fr=stop txn=9 att=1 rl=0 lat=11926ms in=17379 out=1063 elapsed=80s
+7/216 502834297 OK fr=stop txn=4 att=1 rl=0 lat=13591ms in=17272 out=947 elapsed=93s
+8/216 503732081 OK fr=stop txn=17 att=1 rl=0 lat=14271ms in=17391 out=1450 elapsed=108s
+9/216 504170294 OK fr=stop txn=35 att=1 rl=0 lat=25566ms in=18665 out=3055 elapsed=133s
+10/216 504199886 OK fr=stop txn=1 att=1 rl=0 lat=13448ms in=17136 out=634 elapsed=147s
+11/216 504572674 OK fr=stop txn=54 att=1 rl=0 lat=25662ms in=19093 out=3432 elapsed=172s

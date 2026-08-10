@@ -1,0 +1,4664 @@
+{
+ "gt_full": {
+  "all": [
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5017.8,
+    "credit_sum": 5017.8,
+    "debit_delta": 0.0,
+    "debit_printed": 10480.4,
+    "debit_sum": 10480.4,
+    "n_txn": 18,
+    "sid": "decrypt_1000001429_19ee635e6b5ca8dd_5268XXXXXXXXXX79_19_06_2026_918"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 2358.0,
+    "debit_sum": 2358.0,
+    "n_txn": 1,
+    "sid": "decrypt_1003374647_19fc281339f200fd_4023XXXXXXXXXX68_01_08_2026_572"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 15839.0,
+    "credit_sum": 15839.0,
+    "debit_delta": 0.0,
+    "debit_printed": 15807.86,
+    "debit_sum": 15807.86,
+    "n_txn": 16,
+    "sid": "decrypt_1004976115_19f6b241ed96e20c_4854XXXXXXXXXX52_15_07_2026_888"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 40851.0,
+    "credit_sum": 40851.0,
+    "debit_delta": 0.0,
+    "debit_printed": 85077.19,
+    "debit_sum": 85077.19,
+    "n_txn": 46,
+    "sid": "decrypt_1006624221_19fc3990d36fe58b_6529XXXXXXXXXX03_01_08_2026_802"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7143.0,
+    "credit_sum": 7143.0,
+    "debit_delta": 0.0,
+    "debit_printed": 5710.87,
+    "debit_sum": 5710.87,
+    "n_txn": 27,
+    "sid": "decrypt_1007138360_19fc36498a4f10f1_6529XXXXXXXXXX47_01_08_2026_245"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 25508.1,
+    "credit_sum": 25508.1,
+    "debit_delta": 0.0,
+    "debit_printed": 35923.64,
+    "debit_sum": 35923.64,
+    "n_txn": 14,
+    "sid": "decrypt_1007259461_19fc3e489eef7576_4022XXXXXXXXXX57_01_08_2026_883"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 10711.31,
+    "credit_sum": 10711.31,
+    "debit_delta": 0.0,
+    "debit_printed": 8448.0,
+    "debit_sum": 8448.0,
+    "n_txn": 28,
+    "sid": "decrypt_1007633548_19fc42a54b364a79_6529XXXXXXXXXX00_01_08_2026_750"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1818.7,
+    "credit_sum": 1818.7,
+    "debit_delta": 0.0,
+    "debit_printed": 6989.9,
+    "debit_sum": 6989.9,
+    "n_txn": 16,
+    "sid": "decrypt_1008041836_19fc4891bda81a19_5268XXXXXXXXXX35_01_08_2026_245"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 81929.0,
+    "credit_sum": 81929.0,
+    "debit_delta": 0.0,
+    "debit_printed": 49833.44,
+    "debit_sum": 49833.44,
+    "n_txn": 24,
+    "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 5348.0,
+    "debit_sum": 5348.0,
+    "n_txn": 7,
+    "sid": "decrypt_1036474356_19d010a851c47e93_5268XXXXXXXXXX21_17_03_2026_924"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3540.0,
+    "credit_sum": 3540.0,
+    "debit_delta": 0.0,
+    "debit_printed": 650.0,
+    "debit_sum": 650.0,
+    "n_txn": 2,
+    "sid": "decrypt_10378_20260601_114107_124_0036XXXXXXXXXX48_14_05_2026_951"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3221.0,
+    "credit_sum": 3221.0,
+    "debit_delta": 0.0,
+    "debit_printed": 3456.0,
+    "debit_sum": 3456.0,
+    "n_txn": 22,
+    "sid": "decrypt_1040137277_19f801df085c71aa_5268XXXXXXXXXX62_19_07_2026_869"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5265.95,
+    "credit_sum": 5265.95,
+    "debit_delta": 0.0,
+    "debit_printed": 10075.38,
+    "debit_sum": 10075.38,
+    "n_txn": 9,
+    "sid": "decrypt_1044835578_19fd065a0d5b8c16_5459XXXXXXXXXX45_04_08_2026_26"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 19596.0,
+    "credit_sum": 19596.0,
+    "debit_delta": 0.0,
+    "debit_printed": 3220.06,
+    "debit_sum": 3220.06,
+    "n_txn": 4,
+    "sid": "decrypt_1054010601_19d8c1db709e8d79_4854XXXXXXXXXX08_13_04_2026_461"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4698.0,
+    "credit_sum": 4698.0,
+    "debit_delta": 0.0,
+    "debit_printed": 6215.24,
+    "debit_sum": 6215.24,
+    "n_txn": 33,
+    "sid": "decrypt_1058554327_19d0ba865d1d632d_6530XXXXXXXXXX02_19_03_2026_743"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 80250.0,
+    "credit_sum": 80250.0,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_1059505310_19d0c22a22df17a0_0036XXXXXXXXXX46_19_03_2026_313"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 54581.0,
+    "credit_sum": 54581.0,
+    "debit_delta": 0.0,
+    "debit_printed": 2328.7,
+    "debit_sum": 2328.7,
+    "n_txn": 5,
+    "sid": "decrypt_1077681910_19f6bb004730168a_5372XXXXXXXXXX33_15_07_2026_461"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2872.0,
+    "credit_sum": 2872.0,
+    "debit_delta": 0.0,
+    "debit_printed": 51495.03,
+    "debit_sum": 51495.03,
+    "n_txn": 19,
+    "sid": "decrypt_1084375771_19d19ede9671b70a_6529XXXXXXXXXX26_22_03_2026_881"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7001.0,
+    "credit_sum": 7001.0,
+    "debit_delta": 0.0,
+    "debit_printed": 37430.15,
+    "debit_sum": 37430.15,
+    "n_txn": 9,
+    "sid": "decrypt_1194682871_19d500f0083bb8a3_4022XXXXXXXXXX34_01_04_2026_599"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 156904.2,
+    "credit_sum": 156904.2,
+    "debit_delta": 0.0,
+    "debit_printed": 59689.64,
+    "debit_sum": 59689.64,
+    "n_txn": 45,
+    "sid": "decrypt_1200743427_19c7baa31fef379c_0036XXXXXXXXXX16_19_02_2026_433"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 49794.05,
+    "credit_sum": 49794.05,
+    "debit_delta": 0.0,
+    "debit_printed": 65957.83,
+    "debit_sum": 65957.83,
+    "n_txn": 40,
+    "sid": "decrypt_1297815983_19d85bca1c5980f8_4639XXXXXXXXXX65_12_04_2026_483"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2001.16,
+    "credit_sum": 2001.16,
+    "debit_delta": 0.0,
+    "debit_printed": 4233.0,
+    "debit_sum": 4233.0,
+    "n_txn": 12,
+    "sid": "decrypt_1301751572_19d87037e5152550_5268XXXXXXXXXX57_12_04_2026_780"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5682.74,
+    "credit_sum": 5682.74,
+    "debit_delta": 0.0,
+    "debit_printed": 8436.0,
+    "debit_sum": 8436.0,
+    "n_txn": 13,
+    "sid": "decrypt_1313134750_19d8cb2e361d4053_5268XXXXXXXXXX66_13_04_2026_447"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9019.0,
+    "credit_sum": 9019.0,
+    "debit_delta": 0.0,
+    "debit_printed": 24910.18,
+    "debit_sum": 24910.18,
+    "n_txn": 5,
+    "sid": "decrypt_1314262250_19d8d7f063feebb5_6530XXXXXXXXXX46_13_04_2026_476"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 30478.0,
+    "credit_sum": 30478.0,
+    "debit_delta": 0.0,
+    "debit_printed": 31280.55,
+    "debit_sum": 31280.55,
+    "n_txn": 22,
+    "sid": "decrypt_1321299796_19d910697db4ced0_5522XXXXXXXXXX29_14_04_2026_319"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11905.0,
+    "credit_sum": 11905.0,
+    "debit_delta": 0.0,
+    "debit_printed": 9884.0,
+    "debit_sum": 9884.0,
+    "n_txn": 14,
+    "sid": "decrypt_1321692961_19d912a5cd24c79d_4341XXXXXXXXXX85_14_04_2026_607"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 15000.0,
+    "credit_sum": 15000.0,
+    "debit_delta": 0.0,
+    "debit_printed": 3540.0,
+    "debit_sum": 3540.0,
+    "n_txn": 3,
+    "sid": "decrypt_1331350479_19d95f6ab8e53ba3_0036XXXXXXXXXX85_15_04_2026_354"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9198.3,
+    "credit_sum": 9198.3,
+    "debit_delta": 0.0,
+    "debit_printed": 37056.6,
+    "debit_sum": 37056.6,
+    "n_txn": 20,
+    "sid": "decrypt_1333936388_19d96f2774f958fb_5268XXXXXXXXXX36_15_04_2026_279"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9590.02,
+    "credit_sum": 9590.02,
+    "debit_delta": 0.0,
+    "debit_printed": 3202.51,
+    "debit_sum": 3202.51,
+    "n_txn": 11,
+    "sid": "decrypt_1334151138_19d971090ec8b56e_5372XXXXXXXXXX25_15_04_2026_857"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 163445.09,
+    "credit_sum": 163445.09,
+    "debit_delta": 0.0,
+    "debit_printed": 298569.81,
+    "debit_sum": 298569.81,
+    "n_txn": 11,
+    "sid": "decrypt_1341280270_19d9adc027f30ffe_4375XXXXXXXXXX17_16_04_2026_67"
+   },
+   {
+    "credit_delta": -0.0,
+    "credit_printed": 9721.2,
+    "credit_sum": 9721.2,
+    "debit_delta": 0.0,
+    "debit_printed": 9354.0,
+    "debit_sum": 9354.0,
+    "n_txn": 24,
+    "sid": "decrypt_1353742935_19da0d215be432fa_5268XXXXXXXXXX85_17_04_2026_643"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 33333.91,
+    "credit_sum": 33333.91,
+    "debit_delta": 0.0,
+    "debit_printed": 201333.13,
+    "debit_sum": 201333.13,
+    "n_txn": 28,
+    "sid": "decrypt_1359787929_19da4b87600e475b_5522XXXXXXXXXX82_18_04_2026_847"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 348.29,
+    "credit_sum": 348.29,
+    "debit_delta": 0.0,
+    "debit_printed": 2871.1,
+    "debit_sum": 2871.1,
+    "n_txn": 6,
+    "sid": "decrypt_1374016344_19dabf4c67deed86_5268XXXXXXXXXX37_19_04_2026_1"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1500.0,
+    "credit_sum": 1500.0,
+    "debit_delta": 0.0,
+    "debit_printed": 4440.18,
+    "debit_sum": 4440.18,
+    "n_txn": 5,
+    "sid": "decrypt_1401418909_19db986fc102034b_6530XXXXXXXXXX31_22_04_2026_115"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 98346.0,
+    "credit_sum": 98346.0,
+    "debit_delta": 0.0,
+    "debit_printed": 5424.22,
+    "debit_sum": 5424.22,
+    "n_txn": 7,
+    "sid": "decrypt_1403225883_19dba173e44c8703_4341XXXXXXXXXX03_22_04_2026_13"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11316.0,
+    "credit_sum": 11316.0,
+    "debit_delta": 0.0,
+    "debit_printed": 134906.0,
+    "debit_sum": 134906.0,
+    "n_txn": 7,
+    "sid": "decrypt_1467094437_19dd7998cbedc24a_4375XXXXXXXXXX20_28_04_2026_360"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 18183.0,
+    "credit_sum": 18183.0,
+    "debit_delta": 0.0,
+    "debit_printed": 6307.19,
+    "debit_sum": 6307.19,
+    "n_txn": 22,
+    "sid": "decrypt_1521401884_19dec495bdd965f3_6529XXXXXXXXXX15_02_05_2026_83"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 590.0,
+    "credit_sum": 590.0,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_1573279512_19cf6b37a93a3ad5_5372XXXXXXXXXX59_15_03_2026_307"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 480.0,
+    "debit_sum": 480.0,
+    "n_txn": 1,
+    "sid": "decrypt_1613196399_19e115ebf050b4da_0036XXXXXXXXXX41_09_05_2026_832"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 119.0,
+    "credit_sum": 119,
+    "debit_delta": 0.0,
+    "debit_printed": 119.0,
+    "debit_sum": 119,
+    "n_txn": 2,
+    "sid": "decrypt_1625148322_19d0f4d77b67ab50_5589XXXXXXXXXX46_20_03_2026_710"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 13728.71,
+    "credit_sum": 13728.71,
+    "debit_delta": 0.0,
+    "debit_printed": 7481.76,
+    "debit_sum": 7481.76,
+    "n_txn": 43,
+    "sid": "decrypt_1667800365_19e263589509ee3e_5268XXXXXXXXXX82_13_05_2026_1"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7664.0,
+    "credit_sum": 7664.0,
+    "debit_delta": 0.0,
+    "debit_printed": 7647.36,
+    "debit_sum": 7647.36,
+    "n_txn": 7,
+    "sid": "decrypt_1672398864_19e287a1382163d9_6530XXXXXXXXXX53_13_05_2026_691"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 28479.0,
+    "credit_sum": 28479.0,
+    "debit_delta": 0.0,
+    "debit_printed": 27284.92,
+    "debit_sum": 27284.92,
+    "n_txn": 44,
+    "sid": "decrypt_1678401256_19aa6bdd1e9f899e_5522XXXXXXXXXX40_20_11_2025_174"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5590.0,
+    "credit_sum": 5590.0,
+    "debit_delta": 0.0,
+    "debit_printed": 4914.83,
+    "debit_sum": 4914.83,
+    "n_txn": 4,
+    "sid": "decrypt_1705107163_19d4e13fd1c965fe_4023XXXXXXXXXX18_01_04_2026_876"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 102704.55,
+    "credit_sum": 102704.55,
+    "debit_delta": 0.0,
+    "debit_printed": 153972.23,
+    "debit_sum": 153972.23,
+    "n_txn": 19,
+    "sid": "decrypt_170594703_19daf0e13991add5_5523XXXXXXXXXX09_20_04_2026_333"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5074.0,
+    "credit_sum": 5074.0,
+    "debit_delta": 0.0,
+    "debit_printed": 1310.39,
+    "debit_sum": 1310.39,
+    "n_txn": 7,
+    "sid": "decrypt_1706662991_19e357806f433b00_5228XXXXXXXXXX75_16_05_2026_306"
+   },
+   {
+    "credit_delta": -5.99,
+    "credit_printed": 12710.37,
+    "credit_sum": 12704.38,
+    "debit_delta": 5.99,
+    "debit_printed": 3860.49,
+    "debit_sum": 3866.48,
+    "n_txn": 23,
+    "sid": "decrypt_1723515293_19e3b5338033e3ad_5268XXXXXXXXXX05_17_05_2026_94"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 6674.0,
+    "credit_sum": 6674.0,
+    "debit_delta": 0.0,
+    "debit_printed": 6662.64,
+    "debit_sum": 6662.64,
+    "n_txn": 4,
+    "sid": "decrypt_172459778_19e2ac18500eafff_5372XXXXXXXXXX51_14_05_2026_238"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 88156.0,
+    "credit_sum": 88156.0,
+    "debit_delta": 0.0,
+    "debit_printed": 29337.9,
+    "debit_sum": 29337.9,
+    "n_txn": 37,
+    "sid": "decrypt_1732499368_19e3f2a26405c8a5_6529XXXXXXXXXX44_18_05_2026_629"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2266.0,
+    "credit_sum": 2266.0,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 2,
+    "sid": "decrypt_1741303904_19943aee1836e5e9_5268XXXXXXXXXX64_12_09_2025_526"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 12325.0,
+    "credit_sum": 12325.0,
+    "debit_delta": 0.0,
+    "debit_printed": 10927.59,
+    "debit_sum": 10927.59,
+    "n_txn": 14,
+    "sid": "decrypt_1756410838_199f656352543609_6529XXXXXXXXXX34_17_10_2025_944"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 73506.59,
+    "credit_sum": 73506.59,
+    "debit_delta": 0.0,
+    "debit_printed": 111749.83,
+    "debit_sum": 111749.83,
+    "n_txn": 51,
+    "sid": "decrypt_1766388459_19e4b512e626509d_4854XXXXXXXXXX66_20_05_2026_209"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3616.8,
+    "credit_sum": 3616.8,
+    "debit_delta": 0.0,
+    "debit_printed": 2138.0,
+    "debit_sum": 2138.0,
+    "n_txn": 5,
+    "sid": "decrypt_1786952495_19e5006262824c69_5268XXXXXXXXXX23_21_05_2026_780"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 121183.0,
+    "credit_sum": 121183.0,
+    "debit_delta": 0.0,
+    "debit_printed": 57010.7,
+    "debit_sum": 57010.7,
+    "n_txn": 10,
+    "sid": "decrypt_1787504092_19e5024075cbb6e1_5372XXXXXXXXXX18_21_05_2026_450"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 494.0,
+    "debit_sum": 494.0,
+    "n_txn": 1,
+    "sid": "decrypt_1793197687_19d9c608ef70fe41_5268XXXXXXXXXX75_16_04_2026_883"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7185.19,
+    "credit_sum": 7185.19,
+    "debit_delta": 0.0,
+    "debit_printed": 32342.54,
+    "debit_sum": 32342.54,
+    "n_txn": 9,
+    "sid": "decrypt_182753160_19eba3b7d4b5095d_4893XXXXXXXXXX16_11_06_2026_708"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8.0,
+    "credit_sum": 8.0,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_1849181159_19e5a2f840fda55c_0036XXXXXXXXXX64_23_05_2026_259"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 54021.0,
+    "credit_sum": 54021.0,
+    "debit_delta": 0.0,
+    "debit_printed": 61668.42,
+    "debit_sum": 61668.42,
+    "n_txn": 5,
+    "sid": "decrypt_199385897_19a9850c20459241_0036XXXXXXXXXX77_17_11_2025_449"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3015.0,
+    "credit_sum": 3015.0,
+    "debit_delta": 0.0,
+    "debit_printed": 1521.8899999999999,
+    "debit_sum": 1521.89,
+    "n_txn": 11,
+    "sid": "decrypt_2038798665_1994d2c267cbd71c_5268XXXXXXXXXX23_14_09_2025_41"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 30004.0,
+    "credit_sum": 30004.0,
+    "debit_delta": 0.0,
+    "debit_printed": 21721.2,
+    "debit_sum": 21721.2,
+    "n_txn": 21,
+    "sid": "decrypt_2056820968_19e44b4d159aa50d_4632XXXXXXXXXX85_19_05_2026_453"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3271.8,
+    "credit_sum": 3271.8,
+    "debit_delta": 0.0,
+    "debit_printed": 5877.0,
+    "debit_sum": 5877.0,
+    "n_txn": 11,
+    "sid": "decrypt_2095121764_19943eacc6766b50_5268XXXXXXXXXX70_12_09_2025_639"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 12620.85,
+    "credit_sum": 12620.85,
+    "debit_delta": 0.0,
+    "debit_printed": 10668.7,
+    "debit_sum": 10668.7,
+    "n_txn": 24,
+    "sid": "decrypt_2167919244_19e2638ce48be46d_5268XXXXXXXXXX94_13_05_2026_713"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 314.0,
+    "credit_sum": 314.0,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_221414905_19ec73baa0c1a27b_5181XXXXXXXXXX59_13_06_2026_955"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 82967.17,
+    "credit_sum": 82967.17,
+    "debit_delta": 0.0,
+    "debit_printed": 17085.59,
+    "debit_sum": 17085.59,
+    "n_txn": 20,
+    "sid": "decrypt_221926359_19b1c715c58151ce_0036XXXXXXXXXX36_13_12_2025_529"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2969.0,
+    "credit_sum": 2969.0,
+    "debit_delta": 0.0,
+    "debit_printed": 1255.0,
+    "debit_sum": 1255.0,
+    "n_txn": 14,
+    "sid": "decrypt_222889854_19ec81da9a87ca26_6530XXXXXXXXXX21_13_06_2026_279"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 31958.26,
+    "credit_sum": 31958.26,
+    "debit_delta": 0.0,
+    "debit_printed": 10910.38,
+    "debit_sum": 10910.38,
+    "n_txn": 10,
+    "sid": "decrypt_231745607_19ecafa6a679925f_4854XXXXXXXXXX47_14_06_2026_451"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1834.32,
+    "credit_sum": 1834.32,
+    "debit_delta": -0.0,
+    "debit_printed": 2052.32,
+    "debit_sum": 2052.32,
+    "n_txn": 6,
+    "sid": "decrypt_232783658_19ecb4313478fafa_6528XXXXXXXXXX47_14_06_2026_277"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11596.0,
+    "credit_sum": 11596.0,
+    "debit_delta": 0.0,
+    "debit_printed": 11572.56,
+    "debit_sum": 11572.56,
+    "n_txn": 10,
+    "sid": "decrypt_234377875_19aa18f320fbf128_5181XXXXXXXXXX50_19_11_2025_882"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9542.0,
+    "credit_sum": 9542.0,
+    "debit_delta": 0.0,
+    "debit_printed": 11822.5,
+    "debit_sum": 11822.5,
+    "n_txn": 4,
+    "sid": "decrypt_236010497_19a8389425d08978_0036XXXXXXXXXX34_13_11_2025_195"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3790.0,
+    "credit_sum": 3790.0,
+    "debit_delta": 0.0,
+    "debit_printed": 55668.0,
+    "debit_sum": 55668.0,
+    "n_txn": 4,
+    "sid": "decrypt_23704_20260710_022652_178_5523XXXXXXXXXX74_11_02_2026_983"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11.5,
+    "credit_sum": 11.5,
+    "debit_delta": 0.0,
+    "debit_printed": 115.0,
+    "debit_sum": 115.0,
+    "n_txn": 2,
+    "sid": "decrypt_239006153_19dba8679ff935eb_5268XXXXXXXXXX45_22_04_2026_524"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5042.0,
+    "credit_sum": 5042.0,
+    "debit_delta": 0.0,
+    "debit_printed": 132860.28,
+    "debit_sum": 132860.28,
+    "n_txn": 7,
+    "sid": "decrypt_250520458_19ed1704ae29ec29_0036XXXXXXXXXX25_15_06_2026_1000"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1991.1,
+    "credit_sum": 1991.1,
+    "debit_delta": 0.0,
+    "debit_printed": 780.1,
+    "debit_sum": 780.1,
+    "n_txn": 8,
+    "sid": "decrypt_251015678_19ed1b000d295e7a_5268XXXXXXXXXX13_15_06_2026_764"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2447.0,
+    "credit_sum": 2447.0,
+    "debit_delta": 0.0,
+    "debit_printed": 9149.4,
+    "debit_sum": 9149.4,
+    "n_txn": 10,
+    "sid": "decrypt_252037730_19b242ecc42b1806_4854XXXXXXXXXX59_14_12_2025_532"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 17023.0,
+    "credit_sum": 17023.0,
+    "debit_delta": 0.0,
+    "debit_printed": 17880.84,
+    "debit_sum": 17880.84,
+    "n_txn": 51,
+    "sid": "decrypt_252502266_19bc220c2d3c07ef_4341XXXXXXXXXX35_14_01_2026_31"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 19255.0,
+    "credit_sum": 19255.0,
+    "debit_delta": 0.0,
+    "debit_printed": 15840.0,
+    "debit_sum": 15840.0,
+    "n_txn": 3,
+    "sid": "decrypt_254551018_19aa69887d57b017_5522XXXXXXXXXX17_20_11_2025_914"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 540.0,
+    "debit_sum": 540.0,
+    "n_txn": 1,
+    "sid": "decrypt_262692645_19b314bc16c12e28_5268XXXXXXXXXX47_17_12_2025_218"
+   },
+   {
+    "credit_delta": -0.79,
+    "credit_printed": 40445.79,
+    "credit_sum": 40445.0,
+    "debit_delta": 0.0,
+    "debit_printed": 47252.61,
+    "debit_sum": 47252.61,
+    "n_txn": 83,
+    "sid": "decrypt_263640292_19ed61be9868cec7_6530XXXXXXXXXX67_16_06_2026_496"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8856.0,
+    "credit_sum": 8856.0,
+    "debit_delta": 0.0,
+    "debit_printed": 12422.19,
+    "debit_sum": 12422.19,
+    "n_txn": 12,
+    "sid": "decrypt_267910014_19bb70d77c40e1bd_5181XXXXXXXXXX69_12_01_2026_883"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 6.0,
+    "credit_sum": 6.0,
+    "debit_delta": 0.0,
+    "debit_printed": 2.0,
+    "debit_sum": 2.0,
+    "n_txn": 4,
+    "sid": "decrypt_285839648_19ede97eb758dce4_0036XXXXXXXXXX21_18_06_2026_741"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7149.45,
+    "credit_sum": 7149.45,
+    "debit_delta": 0.0,
+    "debit_printed": 20515.99,
+    "debit_sum": 20515.99,
+    "n_txn": 10,
+    "sid": "decrypt_285879906_19b1c8cf84649584_5268XXXXXXXXXX57_13_12_2025_83"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 15294.61,
+    "credit_sum": 15294.61,
+    "debit_delta": 0.0,
+    "debit_printed": 102910.96,
+    "debit_sum": 102910.96,
+    "n_txn": 22,
+    "sid": "decrypt_289154370_19bbd3ad4206f61a_6529XXXXXXXXXX12_13_01_2026_345"
+   },
+   {
+    "credit_delta": -0.02,
+    "credit_printed": 38878.02,
+    "credit_sum": 38878.0,
+    "debit_delta": 0.0,
+    "debit_printed": 31372.96,
+    "debit_sum": 31372.96,
+    "n_txn": 9,
+    "sid": "decrypt_294132372_19dbf9a45f273136_4854XXXXXXXXXX67_23_04_2026_826"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 95769.0,
+    "credit_sum": 95769.0,
+    "debit_delta": 0.0,
+    "debit_printed": 51938.02,
+    "debit_sum": 51938.02,
+    "n_txn": 14,
+    "sid": "decrypt_305266_20260316_064257_290_5522XXXXXXXXXX58_14_02_2026_231"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4005.0,
+    "credit_sum": 4005.0,
+    "debit_delta": 0.0,
+    "debit_printed": 34804.25,
+    "debit_sum": 34804.25,
+    "n_txn": 34,
+    "sid": "decrypt_305724115_19bc7559248adec7_6529XXXXXXXXXX32_15_01_2026_802"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 26219.6,
+    "credit_sum": 26219.6,
+    "debit_delta": 0.0,
+    "debit_printed": 3476.0,
+    "debit_sum": 3476.0,
+    "n_txn": 10,
+    "sid": "decrypt_308513115_19ee61900c3f9c9f_5268XXXXXXXXXX07_19_06_2026_353"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 483.0,
+    "credit_sum": 483.0,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_311699439_19bcae68f8d3beb7_4577XXXXXXXXXX60_16_01_2026_317"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 62351.2,
+    "credit_sum": 62351.2,
+    "debit_delta": 0.0,
+    "debit_printed": 501603.63,
+    "debit_sum": 501603.63,
+    "n_txn": 15,
+    "sid": "decrypt_311856914_19bcaf37125e7546_0036XXXXXXXXXX63_16_01_2026_535"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2.0,
+    "credit_sum": 2.0,
+    "debit_delta": 0.0,
+    "debit_printed": 667.8,
+    "debit_sum": 667.8,
+    "n_txn": 3,
+    "sid": "decrypt_312035055_19bcafe4734d7f64_0036XXXXXXXXXX45_16_01_2026_612"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 24429.0,
+    "credit_sum": 24429.0,
+    "debit_delta": 0.0,
+    "debit_printed": 23633.23,
+    "debit_sum": 23633.23,
+    "n_txn": 63,
+    "sid": "decrypt_313233022_19bcb5f4444cf98e_6530XXXXXXXXXX68_16_01_2026_94"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 17256.0,
+    "credit_sum": 17256.0,
+    "debit_delta": 0.0,
+    "debit_printed": 32416.59,
+    "debit_sum": 32416.59,
+    "n_txn": 63,
+    "sid": "decrypt_321531061_19eeb6a697075c11_6528XXXXXXXXXX01_20_06_2026_847"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 40828.45,
+    "credit_sum": 40828.45,
+    "debit_delta": 0.0,
+    "debit_printed": 17050.45,
+    "debit_sum": 17050.45,
+    "n_txn": 4,
+    "sid": "decrypt_322556407_19bbdbe49e068203_0036XXXXXXXXXX01_13_01_2026_330"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 913.27,
+    "debit_sum": 913.27,
+    "n_txn": 5,
+    "sid": "decrypt_335420570_19ef0943125f08b5_4695XXXXXXXXXX16_21_06_2026_70"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 19596.0,
+    "credit_sum": 19596.0,
+    "debit_delta": 0.0,
+    "debit_printed": 10490.0,
+    "debit_sum": 10490.0,
+    "n_txn": 4,
+    "sid": "decrypt_348356766_19ef4eaa9ee1550d_5372XXXXXXXXXX50_22_06_2026_239"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 20000.0,
+    "credit_sum": 20000.0,
+    "debit_delta": 0.0,
+    "debit_printed": 24074.850000000002,
+    "debit_sum": 24074.85,
+    "n_txn": 10,
+    "sid": "decrypt_351009068_19bdbc0cb00ce71d_5522XXXXXXXXXX57_19_01_2026_738"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7502.4,
+    "credit_sum": 7502.4,
+    "debit_delta": 0.0,
+    "debit_printed": 2824.0,
+    "debit_sum": 2824.0,
+    "n_txn": 9,
+    "sid": "decrypt_361136650_19ef8cb9df3f2383_5268XXXXXXXXXX87_23_06_2026_957"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5523.4,
+    "credit_sum": 5523.4,
+    "debit_delta": 0.0,
+    "debit_printed": 574.0,
+    "debit_sum": 574.0,
+    "n_txn": 5,
+    "sid": "decrypt_368372182_19efa121b74f650d_5268XXXXXXXXXX87_23_06_2026_184"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 6686.13,
+    "credit_sum": 6686.13,
+    "debit_delta": 0.0,
+    "debit_printed": 7487.32,
+    "debit_sum": 7487.32,
+    "n_txn": 5,
+    "sid": "decrypt_376951286_19b4130f9ffb730a_6528XXXXXXXXXX69_20_12_2025_651"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1769.0,
+    "credit_sum": 1769.0,
+    "debit_delta": 0.0,
+    "debit_printed": 0.46,
+    "debit_sum": 0.46,
+    "n_txn": 2,
+    "sid": "decrypt_378038910_19be9ff5c80e0b6a_6529XXXXXXXXXX59_22_01_2026_18"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3552.0,
+    "credit_sum": 3552.0,
+    "debit_delta": 0.0,
+    "debit_printed": 5209.64,
+    "debit_sum": 5209.64,
+    "n_txn": 11,
+    "sid": "decrypt_379442466_19e3093191b1086d_6530XXXXXXXXXX21_15_05_2026_807"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 24748.0,
+    "credit_sum": 24748.0,
+    "debit_delta": 0.0,
+    "debit_printed": 5061.61,
+    "debit_sum": 5061.61,
+    "n_txn": 4,
+    "sid": "decrypt_393753076_1996ca20b9b8d9a6_6529XXXXXXXXXX44_20_09_2025_928"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8553.0,
+    "credit_sum": 8553.0,
+    "debit_delta": 0.0,
+    "debit_printed": 3349.0,
+    "debit_sum": 3349.0,
+    "n_txn": 4,
+    "sid": "decrypt_432234805_19f0c9613553eb8a_4854XXXXXXXXXX21_27_06_2026_570"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 980.27,
+    "credit_sum": 980.27,
+    "debit_delta": 0.0,
+    "debit_printed": 1852.74,
+    "debit_sum": 1852.74,
+    "n_txn": 6,
+    "sid": "decrypt_483214570_19bdb02b350583a3_4632XXXXXXXXXX02_19_01_2026_271"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4019.0,
+    "credit_sum": 4019.0,
+    "debit_delta": 0.0,
+    "debit_printed": 18485.51,
+    "debit_sum": 18485.51,
+    "n_txn": 5,
+    "sid": "decrypt_492951318_19c1f6c190bb2c5f_4022XXXXXXXXXX61_01_02_2026_386"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1240.6,
+    "credit_sum": 1240.6,
+    "debit_delta": 0.0,
+    "debit_printed": 9315.72,
+    "debit_sum": 9315.72,
+    "n_txn": 14,
+    "sid": "decrypt_493242314_19c1f9b31a3b65d3_6529XXXXXXXXXX48_01_02_2026_833"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5043.0,
+    "credit_sum": 5043.0,
+    "debit_delta": 0.0,
+    "debit_printed": 4494.58,
+    "debit_sum": 4494.58,
+    "n_txn": 6,
+    "sid": "decrypt_493483361_19c1fc04cb476d1a_6529XXXXXXXXXX15_01_02_2026_933"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 54260.0,
+    "credit_sum": 54260.0,
+    "debit_delta": 0.0,
+    "debit_printed": 16829.05,
+    "debit_sum": 16829.05,
+    "n_txn": 66,
+    "sid": "decrypt_493517787_19c1fc592bdf84d1_6529XXXXXXXXXX09_01_02_2026_701"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4730.0,
+    "credit_sum": 4730.0,
+    "debit_delta": 0.0,
+    "debit_printed": 5721.15,
+    "debit_sum": 5721.15,
+    "n_txn": 7,
+    "sid": "decrypt_507351700_19a831537f70658b_0036XXXXXXXXXX60_13_11_2025_886"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 14264.88,
+    "debit_sum": 14264.88,
+    "n_txn": 19,
+    "sid": "decrypt_507911219_19f24a35645ad306_6529XXXXXXXXXX99_01_07_2026_758"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 67718.0,
+    "credit_sum": 67718.0,
+    "debit_delta": 0.0,
+    "debit_printed": 10502.0,
+    "debit_sum": 10502.0,
+    "n_txn": 8,
+    "sid": "decrypt_510302_20260517_191432_394_5522XXXXXXXXXX21_05_03_2026_491"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 49576.95,
+    "credit_sum": 49576.95,
+    "debit_delta": 0.0,
+    "debit_printed": 51430.35,
+    "debit_sum": 51430.35,
+    "n_txn": 50,
+    "sid": "decrypt_515648205_19be16f86ee0ec66_4341XXXXXXXXXX84_20_01_2026_298"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 18304.0,
+    "credit_sum": 18304.0,
+    "debit_delta": 0.0,
+    "debit_printed": 148465.5,
+    "debit_sum": 148465.5,
+    "n_txn": 18,
+    "sid": "decrypt_535035_20260303_170644_670_4854XXXXXXXXXX50_17_01_2026_19"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11358.0,
+    "credit_sum": 11358.0,
+    "debit_delta": 0.0,
+    "debit_printed": 12233.92,
+    "debit_sum": 12233.92,
+    "n_txn": 12,
+    "sid": "decrypt_559393419_19c411193996347f_5522XXXXXXXXXX06_08_02_2026_407"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 14619.84,
+    "credit_sum": 14619.84,
+    "debit_delta": 0.0,
+    "debit_printed": 15110.84,
+    "debit_sum": 15110.84,
+    "n_txn": 31,
+    "sid": "decrypt_567125239_198abd4b645b8fce_6530XXXXXXXXXX12_13_08_2025_872"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 20509.48,
+    "credit_sum": 20509.48,
+    "debit_delta": 0.0,
+    "debit_printed": 5109.71,
+    "debit_sum": 5109.71,
+    "n_txn": 17,
+    "sid": "decrypt_575573715_19ef9832d557af04_4466XXXXXXXXXX66_23_06_2026_685"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5699.0,
+    "credit_sum": 5699.0,
+    "debit_delta": 0.0,
+    "debit_printed": 5686.6,
+    "debit_sum": 5686.6,
+    "n_txn": 4,
+    "sid": "decrypt_585205550_19f40312bdcc41a5_0036XXXXXXXXXX03_07_07_2026_781"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 77336.0,
+    "credit_sum": 77336.0,
+    "debit_delta": 0.0,
+    "debit_printed": 66441.67,
+    "debit_sum": 66441.67,
+    "n_txn": 28,
+    "sid": "decrypt_602636760_19c5086ecbb8c602_0036XXXXXXXXXX37_11_02_2026_10"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 67366.0,
+    "credit_sum": 67366.0,
+    "debit_delta": 0.0,
+    "debit_printed": 24203.9,
+    "debit_sum": 24203.9,
+    "n_txn": 2,
+    "sid": "decrypt_620274809_19b2e3d3623d5c32_4572XXXXXXXXXX25_16_12_2025_562"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4019.0,
+    "credit_sum": 4019.0,
+    "debit_delta": 0.0,
+    "debit_printed": 1432.0,
+    "debit_sum": 1432.0,
+    "n_txn": 4,
+    "sid": "decrypt_620637396_19c588fee796ca8c_6530XXXXXXXXXX59_12_02_2026_282"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8320.7,
+    "credit_sum": 8320.7,
+    "debit_delta": 0.0,
+    "debit_printed": 8622.2,
+    "debit_sum": 8622.2,
+    "n_txn": 21,
+    "sid": "decrypt_629227338_19c5cfb16d520142_5268XXXXXXXXXX41_13_02_2026_512"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 173336.0,
+    "credit_sum": 173336.0,
+    "debit_delta": 0.0,
+    "debit_printed": 127425.91,
+    "debit_sum": 127425.91,
+    "n_txn": 17,
+    "sid": "decrypt_633611396_19be0e9c06e1e70b_0036XXXXXXXXXX95_20_01_2026_346"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2698.0,
+    "credit_sum": 2698.0,
+    "debit_delta": 0.0,
+    "debit_printed": 75041.45,
+    "debit_sum": 75041.45,
+    "n_txn": 10,
+    "sid": "decrypt_636530784_19c61b13b54e442d_4577XXXXXXXXXX41_14_02_2026_790"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 119004.0,
+    "credit_sum": 119004.0,
+    "debit_delta": 0.0,
+    "debit_printed": 131018.42,
+    "debit_sum": 131018.42,
+    "n_txn": 22,
+    "sid": "decrypt_637806286_19c62671548f8e2a_6530XXXXXXXXXX26_14_02_2026_280"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8260.42,
+    "credit_sum": 8260.42,
+    "debit_delta": 0.0,
+    "debit_printed": 6114.05,
+    "debit_sum": 6114.05,
+    "n_txn": 6,
+    "sid": "decrypt_637810891_19c62684f66b7377_5535XXXXXXXXXX22_14_02_2026_595"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 47233.82,
+    "credit_sum": 47233.82,
+    "debit_delta": 0.0,
+    "debit_printed": 33724.67,
+    "debit_sum": 33724.67,
+    "n_txn": 37,
+    "sid": "decrypt_657449850_19b312f9ad5b3d88_4854XXXXXXXXXX63_17_12_2025_37"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 481068.0,
+    "credit_sum": 481068.0,
+    "debit_delta": -0.0,
+    "debit_printed": 478368.11000000004,
+    "debit_sum": 478368.11,
+    "n_txn": 7,
+    "sid": "decrypt_657988166_19c6c0ea0f0b3e3d_4572XXXXXXXXXX16_16_02_2026_619"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 114397.0,
+    "credit_sum": 114397.0,
+    "debit_delta": 0.0,
+    "debit_printed": 173153.0,
+    "debit_sum": 173153.0,
+    "n_txn": 8,
+    "sid": "decrypt_660732666_19b7e6ca59b45a81_4023XXXXXXXXXX80_01_01_2026_574"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 33500.0,
+    "credit_sum": 33500.0,
+    "debit_delta": 0.0,
+    "debit_printed": 20000.0,
+    "debit_sum": 20000.0,
+    "n_txn": 4,
+    "sid": "decrypt_666281181_19c7041eede6207f_6529XXXXXXXXXX75_17_02_2026_480"
+   }
+  ],
+  "label": "Opus-5 GT",
+  "overshoots_possible_duplicate": [
+   {
+    "credit_delta": -5.99,
+    "credit_printed": 12710.37,
+    "credit_sum": 12704.38,
+    "debit_delta": 5.99,
+    "debit_printed": 3860.49,
+    "debit_sum": 3866.48,
+    "n_txn": 23,
+    "sid": "decrypt_1723515293_19e3b5338033e3ad_5268XXXXXXXXXX05_17_05_2026_94"
+   }
+  ],
+  "reconcile_rate": 0.9922,
+  "reconciles": 127,
+  "run_dir": "gt_full",
+  "statements_checked": 128,
+  "statements_without_strip": 59,
+  "undershoots_possible_dropped_row": [
+   {
+    "credit_delta": -5.99,
+    "credit_printed": 12710.37,
+    "credit_sum": 12704.38,
+    "debit_delta": 5.99,
+    "debit_printed": 3860.49,
+    "debit_sum": 3866.48,
+    "n_txn": 23,
+    "sid": "decrypt_1723515293_19e3b5338033e3ad_5268XXXXXXXXXX05_17_05_2026_94"
+   }
+  ]
+ },
+ "incumbent_csv": {
+  "all": [
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5017.8,
+    "credit_sum": 5017.8,
+    "debit_delta": 0.0,
+    "debit_printed": 10480.4,
+    "debit_sum": 10480.4,
+    "n_txn": 18,
+    "sid": "decrypt_1000001429_19ee635e6b5ca8dd_5268XXXXXXXXXX79_19_06_2026_918"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 2358.0,
+    "debit_sum": 2358,
+    "n_txn": 1,
+    "sid": "decrypt_1003374647_19fc281339f200fd_4023XXXXXXXXXX68_01_08_2026_572"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 15839.0,
+    "credit_sum": 15839,
+    "debit_delta": 0.0,
+    "debit_printed": 15807.86,
+    "debit_sum": 15807.86,
+    "n_txn": 16,
+    "sid": "decrypt_1004976115_19f6b241ed96e20c_4854XXXXXXXXXX52_15_07_2026_888"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 40851.0,
+    "credit_sum": 40851,
+    "debit_delta": 0.0,
+    "debit_printed": 85077.19,
+    "debit_sum": 85077.19,
+    "n_txn": 46,
+    "sid": "decrypt_1006624221_19fc3990d36fe58b_6529XXXXXXXXXX03_01_08_2026_802"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7143.0,
+    "credit_sum": 7143,
+    "debit_delta": 0.0,
+    "debit_printed": 5710.87,
+    "debit_sum": 5710.87,
+    "n_txn": 27,
+    "sid": "decrypt_1007138360_19fc36498a4f10f1_6529XXXXXXXXXX47_01_08_2026_245"
+   },
+   {
+    "credit_delta": 60.1,
+    "credit_printed": 25508.1,
+    "credit_sum": 25568.2,
+    "debit_delta": 0.0,
+    "debit_printed": 35923.64,
+    "debit_sum": 35923.64,
+    "n_txn": 14,
+    "sid": "decrypt_1007259461_19fc3e489eef7576_4022XXXXXXXXXX57_01_08_2026_883"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 10711.31,
+    "credit_sum": 10711.31,
+    "debit_delta": 0.0,
+    "debit_printed": 8448.0,
+    "debit_sum": 8448,
+    "n_txn": 28,
+    "sid": "decrypt_1007633548_19fc42a54b364a79_6529XXXXXXXXXX00_01_08_2026_750"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1818.7,
+    "credit_sum": 1818.7,
+    "debit_delta": 0.0,
+    "debit_printed": 6989.9,
+    "debit_sum": 6989.9,
+    "n_txn": 16,
+    "sid": "decrypt_1008041836_19fc4891bda81a19_5268XXXXXXXXXX35_01_08_2026_245"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 81929.0,
+    "credit_sum": 81929,
+    "debit_delta": 0.0,
+    "debit_printed": 49833.44,
+    "debit_sum": 49833.44,
+    "n_txn": 24,
+    "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 5348.0,
+    "debit_sum": 5348,
+    "n_txn": 7,
+    "sid": "decrypt_1036474356_19d010a851c47e93_5268XXXXXXXXXX21_17_03_2026_924"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3540.0,
+    "credit_sum": 3540,
+    "debit_delta": 0.0,
+    "debit_printed": 650.0,
+    "debit_sum": 650,
+    "n_txn": 2,
+    "sid": "decrypt_10378_20260601_114107_124_0036XXXXXXXXXX48_14_05_2026_951"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3221.0,
+    "credit_sum": 3221.0,
+    "debit_delta": 0.0,
+    "debit_printed": 3456.0,
+    "debit_sum": 3456,
+    "n_txn": 22,
+    "sid": "decrypt_1040137277_19f801df085c71aa_5268XXXXXXXXXX62_19_07_2026_869"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5265.95,
+    "credit_sum": 5265.95,
+    "debit_delta": 0.0,
+    "debit_printed": 10075.38,
+    "debit_sum": 10075.38,
+    "n_txn": 9,
+    "sid": "decrypt_1044835578_19fd065a0d5b8c16_5459XXXXXXXXXX45_04_08_2026_26"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 19596.0,
+    "credit_sum": 19596,
+    "debit_delta": 0.0,
+    "debit_printed": 3220.06,
+    "debit_sum": 3220.06,
+    "n_txn": 4,
+    "sid": "decrypt_1054010601_19d8c1db709e8d79_4854XXXXXXXXXX08_13_04_2026_461"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4698.0,
+    "credit_sum": 4698,
+    "debit_delta": 0.0,
+    "debit_printed": 6215.24,
+    "debit_sum": 6215.24,
+    "n_txn": 33,
+    "sid": "decrypt_1058554327_19d0ba865d1d632d_6530XXXXXXXXXX02_19_03_2026_743"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 80250.0,
+    "credit_sum": 80250,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_1059505310_19d0c22a22df17a0_0036XXXXXXXXXX46_19_03_2026_313"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 54581.0,
+    "credit_sum": 54581,
+    "debit_delta": 0.0,
+    "debit_printed": 2328.7,
+    "debit_sum": 2328.7,
+    "n_txn": 5,
+    "sid": "decrypt_1077681910_19f6bb004730168a_5372XXXXXXXXXX33_15_07_2026_461"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2872.0,
+    "credit_sum": 2872,
+    "debit_delta": 0.0,
+    "debit_printed": 51495.03,
+    "debit_sum": 51495.03,
+    "n_txn": 19,
+    "sid": "decrypt_1084375771_19d19ede9671b70a_6529XXXXXXXXXX26_22_03_2026_881"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7001.0,
+    "credit_sum": 7001,
+    "debit_delta": 0.0,
+    "debit_printed": 37430.15,
+    "debit_sum": 37430.15,
+    "n_txn": 9,
+    "sid": "decrypt_1194682871_19d500f0083bb8a3_4022XXXXXXXXXX34_01_04_2026_599"
+   },
+   {
+    "credit_delta": -6902.2,
+    "credit_printed": 156904.2,
+    "credit_sum": 150002,
+    "debit_delta": 6902.2,
+    "debit_printed": 59689.64,
+    "debit_sum": 66591.84,
+    "n_txn": 45,
+    "sid": "decrypt_1200743427_19c7baa31fef379c_0036XXXXXXXXXX16_19_02_2026_433"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 49794.05,
+    "credit_sum": 49794.05,
+    "debit_delta": 0.0,
+    "debit_printed": 65957.83,
+    "debit_sum": 65957.83,
+    "n_txn": 40,
+    "sid": "decrypt_1297815983_19d85bca1c5980f8_4639XXXXXXXXXX65_12_04_2026_483"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2001.16,
+    "credit_sum": 2001.16,
+    "debit_delta": 0.0,
+    "debit_printed": 4233.0,
+    "debit_sum": 4233,
+    "n_txn": 12,
+    "sid": "decrypt_1301751572_19d87037e5152550_5268XXXXXXXXXX57_12_04_2026_780"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5682.74,
+    "credit_sum": 5682.74,
+    "debit_delta": 0.0,
+    "debit_printed": 8436.0,
+    "debit_sum": 8436,
+    "n_txn": 13,
+    "sid": "decrypt_1313134750_19d8cb2e361d4053_5268XXXXXXXXXX66_13_04_2026_447"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9019.0,
+    "credit_sum": 9019,
+    "debit_delta": 0.0,
+    "debit_printed": 24910.18,
+    "debit_sum": 24910.18,
+    "n_txn": 5,
+    "sid": "decrypt_1314262250_19d8d7f063feebb5_6530XXXXXXXXXX46_13_04_2026_476"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 30478.0,
+    "credit_sum": 30478.0,
+    "debit_delta": 0.0,
+    "debit_printed": 31280.55,
+    "debit_sum": 31280.55,
+    "n_txn": 22,
+    "sid": "decrypt_1321299796_19d910697db4ced0_5522XXXXXXXXXX29_14_04_2026_319"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11905.0,
+    "credit_sum": 11905,
+    "debit_delta": 0.0,
+    "debit_printed": 9884.0,
+    "debit_sum": 9884.0,
+    "n_txn": 14,
+    "sid": "decrypt_1321692961_19d912a5cd24c79d_4341XXXXXXXXXX85_14_04_2026_607"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 15000.0,
+    "credit_sum": 15000,
+    "debit_delta": 0.0,
+    "debit_printed": 3540.0,
+    "debit_sum": 3540,
+    "n_txn": 3,
+    "sid": "decrypt_1331350479_19d95f6ab8e53ba3_0036XXXXXXXXXX85_15_04_2026_354"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9198.3,
+    "credit_sum": 9198.3,
+    "debit_delta": 0.0,
+    "debit_printed": 37056.6,
+    "debit_sum": 37056.6,
+    "n_txn": 20,
+    "sid": "decrypt_1333936388_19d96f2774f958fb_5268XXXXXXXXXX36_15_04_2026_279"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9590.02,
+    "credit_sum": 9590.02,
+    "debit_delta": 0.0,
+    "debit_printed": 3202.51,
+    "debit_sum": 3202.51,
+    "n_txn": 11,
+    "sid": "decrypt_1334151138_19d971090ec8b56e_5372XXXXXXXXXX25_15_04_2026_857"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 163445.09,
+    "credit_sum": 163445.09,
+    "debit_delta": 0.0,
+    "debit_printed": 298569.81,
+    "debit_sum": 298569.81,
+    "n_txn": 11,
+    "sid": "decrypt_1341280270_19d9adc027f30ffe_4375XXXXXXXXXX17_16_04_2026_67"
+   },
+   {
+    "credit_delta": -0.0,
+    "credit_printed": 9721.2,
+    "credit_sum": 9721.2,
+    "debit_delta": 0.0,
+    "debit_printed": 9354.0,
+    "debit_sum": 9354,
+    "n_txn": 24,
+    "sid": "decrypt_1353742935_19da0d215be432fa_5268XXXXXXXXXX85_17_04_2026_643"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 33333.91,
+    "credit_sum": 33333.91,
+    "debit_delta": 0.0,
+    "debit_printed": 201333.13,
+    "debit_sum": 201333.13,
+    "n_txn": 28,
+    "sid": "decrypt_1359787929_19da4b87600e475b_5522XXXXXXXXXX82_18_04_2026_847"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 348.29,
+    "credit_sum": 348.29,
+    "debit_delta": 0.0,
+    "debit_printed": 2871.1,
+    "debit_sum": 2871.1,
+    "n_txn": 6,
+    "sid": "decrypt_1374016344_19dabf4c67deed86_5268XXXXXXXXXX37_19_04_2026_1"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1500.0,
+    "credit_sum": 1500,
+    "debit_delta": 0.0,
+    "debit_printed": 4440.18,
+    "debit_sum": 4440.18,
+    "n_txn": 5,
+    "sid": "decrypt_1401418909_19db986fc102034b_6530XXXXXXXXXX31_22_04_2026_115"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 98346.0,
+    "credit_sum": 98346,
+    "debit_delta": 0.0,
+    "debit_printed": 5424.22,
+    "debit_sum": 5424.22,
+    "n_txn": 7,
+    "sid": "decrypt_1403225883_19dba173e44c8703_4341XXXXXXXXXX03_22_04_2026_13"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11316.0,
+    "credit_sum": 11316,
+    "debit_delta": 0.0,
+    "debit_printed": 134906.0,
+    "debit_sum": 134906,
+    "n_txn": 7,
+    "sid": "decrypt_1467094437_19dd7998cbedc24a_4375XXXXXXXXXX20_28_04_2026_360"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 18183.0,
+    "credit_sum": 18183,
+    "debit_delta": 0.0,
+    "debit_printed": 6307.19,
+    "debit_sum": 6307.19,
+    "n_txn": 22,
+    "sid": "decrypt_1521401884_19dec495bdd965f3_6529XXXXXXXXXX15_02_05_2026_83"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 590.0,
+    "credit_sum": 590,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_1573279512_19cf6b37a93a3ad5_5372XXXXXXXXXX59_15_03_2026_307"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 480.0,
+    "debit_sum": 480,
+    "n_txn": 1,
+    "sid": "decrypt_1613196399_19e115ebf050b4da_0036XXXXXXXXXX41_09_05_2026_832"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 119.0,
+    "credit_sum": 119,
+    "debit_delta": 0.0,
+    "debit_printed": 119.0,
+    "debit_sum": 119,
+    "n_txn": 2,
+    "sid": "decrypt_1625148322_19d0f4d77b67ab50_5589XXXXXXXXXX46_20_03_2026_710"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 13728.71,
+    "credit_sum": 13728.71,
+    "debit_delta": 0.0,
+    "debit_printed": 7481.76,
+    "debit_sum": 7481.76,
+    "n_txn": 43,
+    "sid": "decrypt_1667800365_19e263589509ee3e_5268XXXXXXXXXX82_13_05_2026_1"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7664.0,
+    "credit_sum": 7664,
+    "debit_delta": 0.0,
+    "debit_printed": 7647.36,
+    "debit_sum": 7647.36,
+    "n_txn": 7,
+    "sid": "decrypt_1672398864_19e287a1382163d9_6530XXXXXXXXXX53_13_05_2026_691"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 28479.0,
+    "credit_sum": 28479,
+    "debit_delta": 0.0,
+    "debit_printed": 27284.92,
+    "debit_sum": 27284.92,
+    "n_txn": 44,
+    "sid": "decrypt_1678401256_19aa6bdd1e9f899e_5522XXXXXXXXXX40_20_11_2025_174"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5590.0,
+    "credit_sum": 5590,
+    "debit_delta": 0.0,
+    "debit_printed": 4914.83,
+    "debit_sum": 4914.83,
+    "n_txn": 4,
+    "sid": "decrypt_1705107163_19d4e13fd1c965fe_4023XXXXXXXXXX18_01_04_2026_876"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 102704.55,
+    "credit_sum": 102704.55,
+    "debit_delta": -0.0,
+    "debit_printed": 153972.23,
+    "debit_sum": 153972.23,
+    "n_txn": 19,
+    "sid": "decrypt_170594703_19daf0e13991add5_5523XXXXXXXXXX09_20_04_2026_333"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5074.0,
+    "credit_sum": 5074,
+    "debit_delta": 0.0,
+    "debit_printed": 1310.39,
+    "debit_sum": 1310.39,
+    "n_txn": 7,
+    "sid": "decrypt_1706662991_19e357806f433b00_5228XXXXXXXXXX75_16_05_2026_306"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 12710.37,
+    "credit_sum": 12710.37,
+    "debit_delta": 0.0,
+    "debit_printed": 3860.49,
+    "debit_sum": 3860.49,
+    "n_txn": 23,
+    "sid": "decrypt_1723515293_19e3b5338033e3ad_5268XXXXXXXXXX05_17_05_2026_94"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 6674.0,
+    "credit_sum": 6674,
+    "debit_delta": 0.0,
+    "debit_printed": 6662.64,
+    "debit_sum": 6662.64,
+    "n_txn": 4,
+    "sid": "decrypt_172459778_19e2ac18500eafff_5372XXXXXXXXXX51_14_05_2026_238"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 88156.0,
+    "credit_sum": 88156,
+    "debit_delta": 0.0,
+    "debit_printed": 29337.9,
+    "debit_sum": 29337.9,
+    "n_txn": 37,
+    "sid": "decrypt_1732499368_19e3f2a26405c8a5_6529XXXXXXXXXX44_18_05_2026_629"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2266.0,
+    "credit_sum": 2266,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 2,
+    "sid": "decrypt_1741303904_19943aee1836e5e9_5268XXXXXXXXXX64_12_09_2025_526"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 12325.0,
+    "credit_sum": 12325,
+    "debit_delta": 0.0,
+    "debit_printed": 10927.59,
+    "debit_sum": 10927.59,
+    "n_txn": 14,
+    "sid": "decrypt_1756410838_199f656352543609_6529XXXXXXXXXX34_17_10_2025_944"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 73506.59,
+    "credit_sum": 73506.59,
+    "debit_delta": 0.0,
+    "debit_printed": 111749.83,
+    "debit_sum": 111749.83,
+    "n_txn": 51,
+    "sid": "decrypt_1766388459_19e4b512e626509d_4854XXXXXXXXXX66_20_05_2026_209"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3616.8,
+    "credit_sum": 3616.8,
+    "debit_delta": 0.0,
+    "debit_printed": 2138.0,
+    "debit_sum": 2138,
+    "n_txn": 5,
+    "sid": "decrypt_1786952495_19e5006262824c69_5268XXXXXXXXXX23_21_05_2026_780"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 121183.0,
+    "credit_sum": 121183,
+    "debit_delta": 0.0,
+    "debit_printed": 57010.7,
+    "debit_sum": 57010.7,
+    "n_txn": 10,
+    "sid": "decrypt_1787504092_19e5024075cbb6e1_5372XXXXXXXXXX18_21_05_2026_450"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 494.0,
+    "debit_sum": 494,
+    "n_txn": 1,
+    "sid": "decrypt_1793197687_19d9c608ef70fe41_5268XXXXXXXXXX75_16_04_2026_883"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7185.19,
+    "credit_sum": 7185.19,
+    "debit_delta": 0.0,
+    "debit_printed": 32342.54,
+    "debit_sum": 32342.54,
+    "n_txn": 9,
+    "sid": "decrypt_182753160_19eba3b7d4b5095d_4893XXXXXXXXXX16_11_06_2026_708"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8.0,
+    "credit_sum": 8,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_1849181159_19e5a2f840fda55c_0036XXXXXXXXXX64_23_05_2026_259"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 54021.0,
+    "credit_sum": 54021,
+    "debit_delta": 0.0,
+    "debit_printed": 61668.42,
+    "debit_sum": 61668.42,
+    "n_txn": 5,
+    "sid": "decrypt_199385897_19a9850c20459241_0036XXXXXXXXXX77_17_11_2025_449"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3015.0,
+    "credit_sum": 3015,
+    "debit_delta": 0.0,
+    "debit_printed": 1521.8899999999999,
+    "debit_sum": 1521.89,
+    "n_txn": 11,
+    "sid": "decrypt_2038798665_1994d2c267cbd71c_5268XXXXXXXXXX23_14_09_2025_41"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 30004.0,
+    "credit_sum": 30004,
+    "debit_delta": 0.0,
+    "debit_printed": 21721.2,
+    "debit_sum": 21721.2,
+    "n_txn": 21,
+    "sid": "decrypt_2056820968_19e44b4d159aa50d_4632XXXXXXXXXX85_19_05_2026_453"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3271.8,
+    "credit_sum": 3271.8,
+    "debit_delta": 0.0,
+    "debit_printed": 5877.0,
+    "debit_sum": 5877,
+    "n_txn": 11,
+    "sid": "decrypt_2095121764_19943eacc6766b50_5268XXXXXXXXXX70_12_09_2025_639"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 12620.85,
+    "credit_sum": 12620.85,
+    "debit_delta": 0.0,
+    "debit_printed": 10668.7,
+    "debit_sum": 10668.7,
+    "n_txn": 24,
+    "sid": "decrypt_2167919244_19e2638ce48be46d_5268XXXXXXXXXX94_13_05_2026_713"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 314.0,
+    "credit_sum": 314,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_221414905_19ec73baa0c1a27b_5181XXXXXXXXXX59_13_06_2026_955"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 82967.17,
+    "credit_sum": 82967.17,
+    "debit_delta": 0.0,
+    "debit_printed": 17085.59,
+    "debit_sum": 17085.59,
+    "n_txn": 20,
+    "sid": "decrypt_221926359_19b1c715c58151ce_0036XXXXXXXXXX36_13_12_2025_529"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2969.0,
+    "credit_sum": 2969,
+    "debit_delta": 0.0,
+    "debit_printed": 1255.0,
+    "debit_sum": 1255,
+    "n_txn": 14,
+    "sid": "decrypt_222889854_19ec81da9a87ca26_6530XXXXXXXXXX21_13_06_2026_279"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 31958.26,
+    "credit_sum": 31958.26,
+    "debit_delta": 0.0,
+    "debit_printed": 10910.38,
+    "debit_sum": 10910.38,
+    "n_txn": 10,
+    "sid": "decrypt_231745607_19ecafa6a679925f_4854XXXXXXXXXX47_14_06_2026_451"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1834.32,
+    "credit_sum": 1834.32,
+    "debit_delta": -0.0,
+    "debit_printed": 2052.32,
+    "debit_sum": 2052.32,
+    "n_txn": 6,
+    "sid": "decrypt_232783658_19ecb4313478fafa_6528XXXXXXXXXX47_14_06_2026_277"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11596.0,
+    "credit_sum": 11596,
+    "debit_delta": 0.0,
+    "debit_printed": 11572.56,
+    "debit_sum": 11572.56,
+    "n_txn": 10,
+    "sid": "decrypt_234377875_19aa18f320fbf128_5181XXXXXXXXXX50_19_11_2025_882"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9542.0,
+    "credit_sum": 9542,
+    "debit_delta": 0.0,
+    "debit_printed": 11822.5,
+    "debit_sum": 11822.5,
+    "n_txn": 4,
+    "sid": "decrypt_236010497_19a8389425d08978_0036XXXXXXXXXX34_13_11_2025_195"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3790.0,
+    "credit_sum": 3790,
+    "debit_delta": 0.0,
+    "debit_printed": 55668.0,
+    "debit_sum": 55668,
+    "n_txn": 4,
+    "sid": "decrypt_23704_20260710_022652_178_5523XXXXXXXXXX74_11_02_2026_983"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11.5,
+    "credit_sum": 11.5,
+    "debit_delta": 0.0,
+    "debit_printed": 115.0,
+    "debit_sum": 115,
+    "n_txn": 2,
+    "sid": "decrypt_239006153_19dba8679ff935eb_5268XXXXXXXXXX45_22_04_2026_524"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5042.0,
+    "credit_sum": 5042,
+    "debit_delta": 0.0,
+    "debit_printed": 132860.28,
+    "debit_sum": 132860.28,
+    "n_txn": 7,
+    "sid": "decrypt_250520458_19ed1704ae29ec29_0036XXXXXXXXXX25_15_06_2026_1000"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1991.1,
+    "credit_sum": 1991.1,
+    "debit_delta": 0.0,
+    "debit_printed": 780.1,
+    "debit_sum": 780.1,
+    "n_txn": 8,
+    "sid": "decrypt_251015678_19ed1b000d295e7a_5268XXXXXXXXXX13_15_06_2026_764"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2447.0,
+    "credit_sum": 2447,
+    "debit_delta": 0.0,
+    "debit_printed": 9149.4,
+    "debit_sum": 9149.4,
+    "n_txn": 10,
+    "sid": "decrypt_252037730_19b242ecc42b1806_4854XXXXXXXXXX59_14_12_2025_532"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 17023.0,
+    "credit_sum": 17023,
+    "debit_delta": 0.0,
+    "debit_printed": 17880.84,
+    "debit_sum": 17880.84,
+    "n_txn": 51,
+    "sid": "decrypt_252502266_19bc220c2d3c07ef_4341XXXXXXXXXX35_14_01_2026_31"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 19255.0,
+    "credit_sum": 19255,
+    "debit_delta": 0.0,
+    "debit_printed": 15840.0,
+    "debit_sum": 15840,
+    "n_txn": 3,
+    "sid": "decrypt_254551018_19aa69887d57b017_5522XXXXXXXXXX17_20_11_2025_914"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 540.0,
+    "debit_sum": 540,
+    "n_txn": 1,
+    "sid": "decrypt_262692645_19b314bc16c12e28_5268XXXXXXXXXX47_17_12_2025_218"
+   },
+   {
+    "credit_delta": -0.79,
+    "credit_printed": 40445.79,
+    "credit_sum": 40445,
+    "debit_delta": 0.0,
+    "debit_printed": 47252.61,
+    "debit_sum": 47252.61,
+    "n_txn": 83,
+    "sid": "decrypt_263640292_19ed61be9868cec7_6530XXXXXXXXXX67_16_06_2026_496"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8856.0,
+    "credit_sum": 8856,
+    "debit_delta": 0.0,
+    "debit_printed": 12422.19,
+    "debit_sum": 12422.19,
+    "n_txn": 12,
+    "sid": "decrypt_267910014_19bb70d77c40e1bd_5181XXXXXXXXXX69_12_01_2026_883"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 6.0,
+    "credit_sum": 6,
+    "debit_delta": 0.0,
+    "debit_printed": 2.0,
+    "debit_sum": 2,
+    "n_txn": 4,
+    "sid": "decrypt_285839648_19ede97eb758dce4_0036XXXXXXXXXX21_18_06_2026_741"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7149.45,
+    "credit_sum": 7149.45,
+    "debit_delta": 0.0,
+    "debit_printed": 20515.99,
+    "debit_sum": 20515.99,
+    "n_txn": 10,
+    "sid": "decrypt_285879906_19b1c8cf84649584_5268XXXXXXXXXX57_13_12_2025_83"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 15294.61,
+    "credit_sum": 15294.61,
+    "debit_delta": 0.0,
+    "debit_printed": 102910.96,
+    "debit_sum": 102910.96,
+    "n_txn": 22,
+    "sid": "decrypt_289154370_19bbd3ad4206f61a_6529XXXXXXXXXX12_13_01_2026_345"
+   },
+   {
+    "credit_delta": 399.98,
+    "credit_printed": 38878.02,
+    "credit_sum": 39278,
+    "debit_delta": -400.0,
+    "debit_printed": 31372.96,
+    "debit_sum": 30972.96,
+    "n_txn": 9,
+    "sid": "decrypt_294132372_19dbf9a45f273136_4854XXXXXXXXXX67_23_04_2026_826"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 95769.0,
+    "credit_sum": 95769,
+    "debit_delta": 0.0,
+    "debit_printed": 51938.02,
+    "debit_sum": 51938.02,
+    "n_txn": 14,
+    "sid": "decrypt_305266_20260316_064257_290_5522XXXXXXXXXX58_14_02_2026_231"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4005.0,
+    "credit_sum": 4005,
+    "debit_delta": 0.0,
+    "debit_printed": 34804.25,
+    "debit_sum": 34804.25,
+    "n_txn": 34,
+    "sid": "decrypt_305724115_19bc7559248adec7_6529XXXXXXXXXX32_15_01_2026_802"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 26219.6,
+    "credit_sum": 26219.6,
+    "debit_delta": 0.0,
+    "debit_printed": 3476.0,
+    "debit_sum": 3476,
+    "n_txn": 10,
+    "sid": "decrypt_308513115_19ee61900c3f9c9f_5268XXXXXXXXXX07_19_06_2026_353"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 483.0,
+    "credit_sum": 483,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_311699439_19bcae68f8d3beb7_4577XXXXXXXXXX60_16_01_2026_317"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 62351.2,
+    "credit_sum": 62351.2,
+    "debit_delta": 0.0,
+    "debit_printed": 501603.63,
+    "debit_sum": 501603.63,
+    "n_txn": 15,
+    "sid": "decrypt_311856914_19bcaf37125e7546_0036XXXXXXXXXX63_16_01_2026_535"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2.0,
+    "credit_sum": 2,
+    "debit_delta": 0.0,
+    "debit_printed": 667.8,
+    "debit_sum": 667.8,
+    "n_txn": 3,
+    "sid": "decrypt_312035055_19bcafe4734d7f64_0036XXXXXXXXXX45_16_01_2026_612"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 24429.0,
+    "credit_sum": 24429,
+    "debit_delta": 0.0,
+    "debit_printed": 23633.23,
+    "debit_sum": 23633.23,
+    "n_txn": 63,
+    "sid": "decrypt_313233022_19bcb5f4444cf98e_6530XXXXXXXXXX68_16_01_2026_94"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 17256.0,
+    "credit_sum": 17256,
+    "debit_delta": 0.0,
+    "debit_printed": 32416.59,
+    "debit_sum": 32416.59,
+    "n_txn": 63,
+    "sid": "decrypt_321531061_19eeb6a697075c11_6528XXXXXXXXXX01_20_06_2026_847"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 40828.45,
+    "credit_sum": 40828.45,
+    "debit_delta": 0.0,
+    "debit_printed": 17050.45,
+    "debit_sum": 17050.45,
+    "n_txn": 4,
+    "sid": "decrypt_322556407_19bbdbe49e068203_0036XXXXXXXXXX01_13_01_2026_330"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 913.27,
+    "debit_sum": 913.27,
+    "n_txn": 5,
+    "sid": "decrypt_335420570_19ef0943125f08b5_4695XXXXXXXXXX16_21_06_2026_70"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 19596.0,
+    "credit_sum": 19596,
+    "debit_delta": 0.0,
+    "debit_printed": 10490.0,
+    "debit_sum": 10490,
+    "n_txn": 4,
+    "sid": "decrypt_348356766_19ef4eaa9ee1550d_5372XXXXXXXXXX50_22_06_2026_239"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 20000.0,
+    "credit_sum": 20000,
+    "debit_delta": 0.0,
+    "debit_printed": 24074.850000000002,
+    "debit_sum": 24074.85,
+    "n_txn": 10,
+    "sid": "decrypt_351009068_19bdbc0cb00ce71d_5522XXXXXXXXXX57_19_01_2026_738"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7502.4,
+    "credit_sum": 7502.4,
+    "debit_delta": 0.0,
+    "debit_printed": 2824.0,
+    "debit_sum": 2824,
+    "n_txn": 9,
+    "sid": "decrypt_361136650_19ef8cb9df3f2383_5268XXXXXXXXXX87_23_06_2026_957"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5523.4,
+    "credit_sum": 5523.4,
+    "debit_delta": 0.0,
+    "debit_printed": 574.0,
+    "debit_sum": 574,
+    "n_txn": 5,
+    "sid": "decrypt_368372182_19efa121b74f650d_5268XXXXXXXXXX87_23_06_2026_184"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 6686.13,
+    "credit_sum": 6686.13,
+    "debit_delta": 0.0,
+    "debit_printed": 7487.32,
+    "debit_sum": 7487.32,
+    "n_txn": 5,
+    "sid": "decrypt_376951286_19b4130f9ffb730a_6528XXXXXXXXXX69_20_12_2025_651"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1769.0,
+    "credit_sum": 1769,
+    "debit_delta": 0.0,
+    "debit_printed": 0.46,
+    "debit_sum": 0.46,
+    "n_txn": 2,
+    "sid": "decrypt_378038910_19be9ff5c80e0b6a_6529XXXXXXXXXX59_22_01_2026_18"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3552.0,
+    "credit_sum": 3552,
+    "debit_delta": 0.0,
+    "debit_printed": 5209.64,
+    "debit_sum": 5209.64,
+    "n_txn": 11,
+    "sid": "decrypt_379442466_19e3093191b1086d_6530XXXXXXXXXX21_15_05_2026_807"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 24748.0,
+    "credit_sum": 24748,
+    "debit_delta": 0.0,
+    "debit_printed": 5061.61,
+    "debit_sum": 5061.61,
+    "n_txn": 4,
+    "sid": "decrypt_393753076_1996ca20b9b8d9a6_6529XXXXXXXXXX44_20_09_2025_928"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8553.0,
+    "credit_sum": 8553,
+    "debit_delta": 0.0,
+    "debit_printed": 3349.0,
+    "debit_sum": 3349,
+    "n_txn": 4,
+    "sid": "decrypt_432234805_19f0c9613553eb8a_4854XXXXXXXXXX21_27_06_2026_570"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 980.27,
+    "credit_sum": 980.27,
+    "debit_delta": 0.0,
+    "debit_printed": 1852.74,
+    "debit_sum": 1852.74,
+    "n_txn": 6,
+    "sid": "decrypt_483214570_19bdb02b350583a3_4632XXXXXXXXXX02_19_01_2026_271"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4019.0,
+    "credit_sum": 4019,
+    "debit_delta": 0.0,
+    "debit_printed": 18485.51,
+    "debit_sum": 18485.51,
+    "n_txn": 5,
+    "sid": "decrypt_492951318_19c1f6c190bb2c5f_4022XXXXXXXXXX61_01_02_2026_386"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1240.6,
+    "credit_sum": 1240.6,
+    "debit_delta": 0.0,
+    "debit_printed": 9315.72,
+    "debit_sum": 9315.72,
+    "n_txn": 14,
+    "sid": "decrypt_493242314_19c1f9b31a3b65d3_6529XXXXXXXXXX48_01_02_2026_833"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5043.0,
+    "credit_sum": 5043,
+    "debit_delta": 0.0,
+    "debit_printed": 4494.58,
+    "debit_sum": 4494.58,
+    "n_txn": 6,
+    "sid": "decrypt_493483361_19c1fc04cb476d1a_6529XXXXXXXXXX15_01_02_2026_933"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 54260.0,
+    "credit_sum": 54260,
+    "debit_delta": 0.0,
+    "debit_printed": 16829.05,
+    "debit_sum": 16829.05,
+    "n_txn": 66,
+    "sid": "decrypt_493517787_19c1fc592bdf84d1_6529XXXXXXXXXX09_01_02_2026_701"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4730.0,
+    "credit_sum": 4730,
+    "debit_delta": 0.0,
+    "debit_printed": 5721.15,
+    "debit_sum": 5721.15,
+    "n_txn": 7,
+    "sid": "decrypt_507351700_19a831537f70658b_0036XXXXXXXXXX60_13_11_2025_886"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 14264.88,
+    "debit_sum": 14264.88,
+    "n_txn": 19,
+    "sid": "decrypt_507911219_19f24a35645ad306_6529XXXXXXXXXX99_01_07_2026_758"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 67718.0,
+    "credit_sum": 67718,
+    "debit_delta": 0.0,
+    "debit_printed": 10502.0,
+    "debit_sum": 10502,
+    "n_txn": 8,
+    "sid": "decrypt_510302_20260517_191432_394_5522XXXXXXXXXX21_05_03_2026_491"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 49576.95,
+    "credit_sum": 49576.95,
+    "debit_delta": 0.0,
+    "debit_printed": 51430.35,
+    "debit_sum": 51430.35,
+    "n_txn": 50,
+    "sid": "decrypt_515648205_19be16f86ee0ec66_4341XXXXXXXXXX84_20_01_2026_298"
+   },
+   {
+    "credit_delta": -18304.0,
+    "credit_printed": 18304.0,
+    "credit_sum": 0,
+    "debit_delta": -148465.5,
+    "debit_printed": 148465.5,
+    "debit_sum": 0,
+    "n_txn": 18,
+    "sid": "decrypt_535035_20260303_170644_670_4854XXXXXXXXXX50_17_01_2026_19"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11358.0,
+    "credit_sum": 11358,
+    "debit_delta": 0.0,
+    "debit_printed": 12233.92,
+    "debit_sum": 12233.92,
+    "n_txn": 12,
+    "sid": "decrypt_559393419_19c411193996347f_5522XXXXXXXXXX06_08_02_2026_407"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 14619.84,
+    "credit_sum": 14619.84,
+    "debit_delta": 0.0,
+    "debit_printed": 15110.84,
+    "debit_sum": 15110.84,
+    "n_txn": 31,
+    "sid": "decrypt_567125239_198abd4b645b8fce_6530XXXXXXXXXX12_13_08_2025_872"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 20509.48,
+    "credit_sum": 20509.48,
+    "debit_delta": 0.0,
+    "debit_printed": 5109.71,
+    "debit_sum": 5109.71,
+    "n_txn": 17,
+    "sid": "decrypt_575573715_19ef9832d557af04_4466XXXXXXXXXX66_23_06_2026_685"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5699.0,
+    "credit_sum": 5699,
+    "debit_delta": 0.0,
+    "debit_printed": 5686.6,
+    "debit_sum": 5686.6,
+    "n_txn": 4,
+    "sid": "decrypt_585205550_19f40312bdcc41a5_0036XXXXXXXXXX03_07_07_2026_781"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 77336.0,
+    "credit_sum": 77336,
+    "debit_delta": 0.0,
+    "debit_printed": 66441.67,
+    "debit_sum": 66441.67,
+    "n_txn": 28,
+    "sid": "decrypt_602636760_19c5086ecbb8c602_0036XXXXXXXXXX37_11_02_2026_10"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 67366.0,
+    "credit_sum": 67366,
+    "debit_delta": 0.0,
+    "debit_printed": 24203.9,
+    "debit_sum": 24203.9,
+    "n_txn": 2,
+    "sid": "decrypt_620274809_19b2e3d3623d5c32_4572XXXXXXXXXX25_16_12_2025_562"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4019.0,
+    "credit_sum": 4019,
+    "debit_delta": 0.0,
+    "debit_printed": 1432.0,
+    "debit_sum": 1432,
+    "n_txn": 4,
+    "sid": "decrypt_620637396_19c588fee796ca8c_6530XXXXXXXXXX59_12_02_2026_282"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8320.7,
+    "credit_sum": 8320.7,
+    "debit_delta": 0.0,
+    "debit_printed": 8622.2,
+    "debit_sum": 8622.2,
+    "n_txn": 21,
+    "sid": "decrypt_629227338_19c5cfb16d520142_5268XXXXXXXXXX41_13_02_2026_512"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 173336.0,
+    "credit_sum": 173336,
+    "debit_delta": -0.0,
+    "debit_printed": 127425.91,
+    "debit_sum": 127425.91,
+    "n_txn": 17,
+    "sid": "decrypt_633611396_19be0e9c06e1e70b_0036XXXXXXXXXX95_20_01_2026_346"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2698.0,
+    "credit_sum": 2698,
+    "debit_delta": 0.0,
+    "debit_printed": 75041.45,
+    "debit_sum": 75041.45,
+    "n_txn": 10,
+    "sid": "decrypt_636530784_19c61b13b54e442d_4577XXXXXXXXXX41_14_02_2026_790"
+   },
+   {
+    "credit_delta": -119004.0,
+    "credit_printed": 119004.0,
+    "credit_sum": 0,
+    "debit_delta": -131018.42,
+    "debit_printed": 131018.42,
+    "debit_sum": 0,
+    "n_txn": 22,
+    "sid": "decrypt_637806286_19c62671548f8e2a_6530XXXXXXXXXX26_14_02_2026_280"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8260.42,
+    "credit_sum": 8260.42,
+    "debit_delta": 0.0,
+    "debit_printed": 6114.05,
+    "debit_sum": 6114.05,
+    "n_txn": 6,
+    "sid": "decrypt_637810891_19c62684f66b7377_5535XXXXXXXXXX22_14_02_2026_595"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 47233.82,
+    "credit_sum": 47233.82,
+    "debit_delta": 0.0,
+    "debit_printed": 33724.67,
+    "debit_sum": 33724.67,
+    "n_txn": 37,
+    "sid": "decrypt_657449850_19b312f9ad5b3d88_4854XXXXXXXXXX63_17_12_2025_37"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 481068.0,
+    "credit_sum": 481068,
+    "debit_delta": -0.0,
+    "debit_printed": 478368.11000000004,
+    "debit_sum": 478368.11,
+    "n_txn": 7,
+    "sid": "decrypt_657988166_19c6c0ea0f0b3e3d_4572XXXXXXXXXX16_16_02_2026_619"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 114397.0,
+    "credit_sum": 114397,
+    "debit_delta": 0.0,
+    "debit_printed": 173153.0,
+    "debit_sum": 173153,
+    "n_txn": 8,
+    "sid": "decrypt_660732666_19b7e6ca59b45a81_4023XXXXXXXXXX80_01_01_2026_574"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 33500.0,
+    "credit_sum": 33500,
+    "debit_delta": 0.0,
+    "debit_printed": 20000.0,
+    "debit_sum": 20000,
+    "n_txn": 4,
+    "sid": "decrypt_666281181_19c7041eede6207f_6529XXXXXXXXXX75_17_02_2026_480"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 23178.08,
+    "credit_sum": 23178.08,
+    "debit_delta": 0.0,
+    "debit_printed": 9428.44,
+    "debit_sum": 9428.44,
+    "n_txn": 29,
+    "sid": "decrypt_668879557_19c7118d7ecb7a25_5268XXXXXXXXXX41_17_02_2026_858"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 20722.0,
+    "credit_sum": 20722,
+    "debit_delta": 0.0,
+    "debit_printed": 53604.4,
+    "debit_sum": 53604.4,
+    "n_txn": 4,
+    "sid": "decrypt_675273289_19c749d831374011_4572XXXXXXXXXX68_18_02_2026_872"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 14704.57,
+    "debit_sum": 14704.57,
+    "n_txn": 6,
+    "sid": "decrypt_676212835_19c74ddbd50d006e_5522XXXXXXXXXX15_18_02_2026_814"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 43753.0,
+    "credit_sum": 43753,
+    "debit_delta": 0.0,
+    "debit_printed": 42924.88,
+    "debit_sum": 42924.88,
+    "n_txn": 21,
+    "sid": "decrypt_683101450_19b68a557fce7249_6529XXXXXXXXXX87_28_12_2025_543"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9732.29,
+    "credit_sum": 9732.29,
+    "debit_delta": 0.0,
+    "debit_printed": 15905.99,
+    "debit_sum": 15905.99,
+    "n_txn": 44,
+    "sid": "decrypt_693665665_19f612e5b9fb7870_6528XXXXXXXXXX94_13_07_2026_520"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 63347.0,
+    "credit_sum": 63347,
+    "debit_delta": 0.0,
+    "debit_printed": 83409.91,
+    "debit_sum": 83409.91,
+    "n_txn": 9,
+    "sid": "decrypt_694712666_19a91d611ddb6084_4854XXXXXXXXXX08_16_11_2025_640"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1750.05,
+    "credit_sum": 1750.05,
+    "debit_delta": 0.0,
+    "debit_printed": 336.95,
+    "debit_sum": 336.95,
+    "n_txn": 7,
+    "sid": "decrypt_694767615_19c7c50e752d1d23_5268XXXXXXXXXX65_19_02_2026_975"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 13884.0,
+    "credit_sum": 13884,
+    "debit_delta": -0.0,
+    "debit_printed": 76796.99,
+    "debit_sum": 76796.99,
+    "n_txn": 9,
+    "sid": "decrypt_700917438_19f66288330d9666_4854XXXXXXXXXX11_14_07_2026_888"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 795.95,
+    "credit_sum": 795.95,
+    "debit_delta": 0.0,
+    "debit_printed": 249.45,
+    "debit_sum": 249.45,
+    "n_txn": 10,
+    "sid": "decrypt_701635727_19c7fcdf59651874_5268XXXXXXXXXX45_20_02_2026_418"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 180397.73,
+    "credit_sum": 180397.73,
+    "debit_delta": 0.0,
+    "debit_printed": 214086.71,
+    "debit_sum": 214086.71,
+    "n_txn": 87,
+    "sid": "decrypt_705330814_19c81ac46a73163b_0036XXXXXXXXXX87_20_02_2026_641"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 71199.52,
+    "credit_sum": 71199.52,
+    "debit_delta": 0.0,
+    "debit_printed": 141737.97,
+    "debit_sum": 141737.97,
+    "n_txn": 49,
+    "sid": "decrypt_712741047_19f69e8c6f013401_4375XXXXXXXXXX30_15_07_2026_50"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2380.6,
+    "credit_sum": 2380.6,
+    "debit_delta": 0.0,
+    "debit_printed": 4406.0,
+    "debit_sum": 4406,
+    "n_txn": 15,
+    "sid": "decrypt_720409566_19f6b9956887df92_5268XXXXXXXXXX00_15_07_2026_85"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 114866.0,
+    "credit_sum": 114866,
+    "debit_delta": 0.0,
+    "debit_printed": 1338.63,
+    "debit_sum": 1338.63,
+    "n_txn": 3,
+    "sid": "decrypt_733882350_19f6fb2f9c230bf0_5181XXXXXXXXXX45_16_07_2026_823"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 57129.48,
+    "credit_sum": 57129.48,
+    "debit_delta": 0.0,
+    "debit_printed": 191402.09,
+    "debit_sum": 191402.09,
+    "n_txn": 35,
+    "sid": "decrypt_735554704_19b5f94aa44a636b_0036XXXXXXXXXX62_26_12_2025_275"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4835.51,
+    "credit_sum": 4835.51,
+    "debit_delta": 0.0,
+    "debit_printed": 3980.56,
+    "debit_sum": 3980.56,
+    "n_txn": 13,
+    "sid": "decrypt_736172429_19f703e9ac069a71_5268XXXXXXXXXX24_16_07_2026_56"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 21195.0,
+    "credit_sum": 21195,
+    "debit_delta": 0.0,
+    "debit_printed": 8024.0,
+    "debit_sum": 8024,
+    "n_txn": 15,
+    "sid": "decrypt_737042969_19f70798b47cdac2_4695XXXXXXXXXX64_16_07_2026_455"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 118.0,
+    "credit_sum": 118,
+    "debit_delta": 0.0,
+    "debit_printed": 767.0,
+    "debit_sum": 767,
+    "n_txn": 6,
+    "sid": "decrypt_738075871_19c90671c1d59320_4632XXXXXXXXXX28_23_02_2026_813"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 51859.0,
+    "credit_sum": 51859,
+    "debit_delta": 0.0,
+    "debit_printed": 13507.0,
+    "debit_sum": 13507,
+    "n_txn": 109,
+    "sid": "decrypt_738368244_19f70d2e2c77ebd5_6530XXXXXXXXXX38_16_07_2026_366"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 405770.54,
+    "credit_sum": 405770.54,
+    "debit_delta": 0.0,
+    "debit_printed": 42811.89,
+    "debit_sum": 42811.89,
+    "n_txn": 33,
+    "sid": "decrypt_744112621_19ee544405e98ee2_5522XXXXXXXXXX67_19_06_2026_980"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4886.0,
+    "credit_sum": 4886,
+    "debit_delta": 0.0,
+    "debit_printed": 4097.16,
+    "debit_sum": 4097.16,
+    "n_txn": 41,
+    "sid": "decrypt_748830705_19f746d5f8c1e245_6530XXXXXXXXXX13_17_07_2026_127"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 63170.74,
+    "credit_sum": 63170.74,
+    "debit_delta": 0.0,
+    "debit_printed": 64100.49,
+    "debit_sum": 64100.49,
+    "n_txn": 14,
+    "sid": "decrypt_751743690_19f751d506bb46f5_5181XXXXXXXXXX28_17_07_2026_154"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 16160.0,
+    "credit_sum": 16160,
+    "debit_delta": 0.0,
+    "debit_printed": 21822.54,
+    "debit_sum": 21822.54,
+    "n_txn": 6,
+    "sid": "decrypt_764285844_19f79396e035c3a7_5523XXXXXXXXXX21_18_07_2026_449"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 353946.0,
+    "credit_sum": 353946,
+    "debit_delta": 0.0,
+    "debit_printed": 334162.15,
+    "debit_sum": 334162.15,
+    "n_txn": 15,
+    "sid": "decrypt_765966961_19f79a30fa0bc0df_0036XXXXXXXXXX41_18_07_2026_215"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 791.0,
+    "credit_sum": 791,
+    "debit_delta": 0.0,
+    "debit_printed": 9821.0,
+    "debit_sum": 9821,
+    "n_txn": 3,
+    "sid": "decrypt_789532749_19bcafe2643505ad_0036XXXXXXXXXX00_16_01_2026_499"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 56546.37,
+    "credit_sum": 56546.37,
+    "debit_delta": 0.0,
+    "debit_printed": 22173.68,
+    "debit_sum": 22173.68,
+    "n_txn": 13,
+    "sid": "decrypt_805756520_19f855c6593b8bfe_4577XXXXXXXXXX34_20_07_2026_562"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 219905.0,
+    "credit_sum": 219905,
+    "debit_delta": 0.0,
+    "debit_printed": 6628.2,
+    "debit_sum": 6628.2,
+    "n_txn": 19,
+    "sid": "decrypt_806212337_19cae5bf68716405_6529XXXXXXXXXX83_01_03_2026_424"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 60.0,
+    "debit_sum": 60,
+    "n_txn": 1,
+    "sid": "decrypt_808975223_19caef77159e3210_6529XXXXXXXXXX83_01_03_2026_667"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 380.0,
+    "credit_sum": 380,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_809843802_19caf19ec47b54f0_6529XXXXXXXXXX64_01_03_2026_671"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 41819.0,
+    "credit_sum": 41819,
+    "debit_delta": 0.0,
+    "debit_printed": 148869.95,
+    "debit_sum": 148869.95,
+    "n_txn": 11,
+    "sid": "decrypt_810097123_19caf4a3c2c34de6_6529XXXXXXXXXX89_01_03_2026_81"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2691.0,
+    "credit_sum": 2691,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_816661061_19f8928d6f3bb4c0_6530XXXXXXXXXX64_21_07_2026_909"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 2699.02,
+    "debit_sum": 2699.02,
+    "n_txn": 6,
+    "sid": "decrypt_821836069_19f8a705d4c8ff2c_5372XXXXXXXXXX46_21_07_2026_294"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 20278.0,
+    "credit_sum": 20278,
+    "debit_delta": 0.0,
+    "debit_printed": 40316.4,
+    "debit_sum": 40316.4,
+    "n_txn": 106,
+    "sid": "decrypt_834542834_19a717e6ace4b0b6_6530XXXXXXXXXX91_10_11_2025_125"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8894.0,
+    "credit_sum": 8894,
+    "debit_delta": 0.0,
+    "debit_printed": 7783.72,
+    "debit_sum": 7783.72,
+    "n_txn": 16,
+    "sid": "decrypt_838506972_19c58564d1f9788b_6530XXXXXXXXXX17_12_02_2026_390"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 980.0,
+    "credit_sum": 980,
+    "debit_delta": 0.0,
+    "debit_printed": 856.34,
+    "debit_sum": 856.34,
+    "n_txn": 3,
+    "sid": "decrypt_838900283_19ed638ffeaff9c3_6530XXXXXXXXXX02_16_06_2026_471"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": -0.0,
+    "debit_printed": 466.66,
+    "debit_sum": 466.66,
+    "n_txn": 5,
+    "sid": "decrypt_843237273_19cbc894e5737112_6529XXXXXXXXXX75_04_03_2026_141"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 27131.94,
+    "credit_sum": 27131.94,
+    "debit_delta": 0.0,
+    "debit_printed": 24522.06,
+    "debit_sum": 24522.06,
+    "n_txn": 53,
+    "sid": "decrypt_853991354_19f9382428970233_6530XXXXXXXXXX94_23_07_2026_152"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5389.37,
+    "credit_sum": 5389.37,
+    "debit_delta": 0.0,
+    "debit_printed": 4983.37,
+    "debit_sum": 4983.37,
+    "n_txn": 8,
+    "sid": "decrypt_861342059_1995762a90a891ae_4854XXXXXXXXXX90_16_09_2025_210"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 14955.38,
+    "credit_sum": 14955.38,
+    "debit_delta": 0.0,
+    "debit_printed": 13168.67,
+    "debit_sum": 13168.67,
+    "n_txn": 9,
+    "sid": "decrypt_872204588_199e6ecf07295815_5459XXXXXXXXXX32_14_10_2025_890"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 101100.0,
+    "credit_sum": 101100,
+    "debit_delta": 0.0,
+    "debit_printed": 43150.62,
+    "debit_sum": 43150.62,
+    "n_txn": 22,
+    "sid": "decrypt_878116889_19aa6e3ba014c857_5522XXXXXXXXXX25_20_11_2025_369"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8147.0,
+    "credit_sum": 8147,
+    "debit_delta": 0.0,
+    "debit_printed": 1922.86,
+    "debit_sum": 1922.86,
+    "n_txn": 4,
+    "sid": "decrypt_884954012_19a47d8a65b9ffae_6529XXXXXXXXXX42_01_11_2025_641"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 986.2,
+    "credit_sum": 986.2,
+    "debit_delta": 0.0,
+    "debit_printed": 2661.2,
+    "debit_sum": 2661.2,
+    "n_txn": 17,
+    "sid": "decrypt_887687188_19e3b43fc04fc84a_5268XXXXXXXXXX05_17_05_2026_633"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2019.0,
+    "credit_sum": 2019,
+    "debit_delta": 0.0,
+    "debit_printed": 2019.0,
+    "debit_sum": 2019,
+    "n_txn": 2,
+    "sid": "decrypt_898078246_1996b2490714eee3_4893XXXXXXXXXX52_20_09_2025_897"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 26652.0,
+    "credit_sum": 26652,
+    "debit_delta": 0.0,
+    "debit_printed": 70202.29,
+    "debit_sum": 70202.29,
+    "n_txn": 2,
+    "sid": "decrypt_942160447_19f246a395e019aa_6529XXXXXXXXXX20_01_07_2026_462"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4431.0,
+    "credit_sum": 4431,
+    "debit_delta": -0.0,
+    "debit_printed": 30417.65,
+    "debit_sum": 30417.65,
+    "n_txn": 40,
+    "sid": "decrypt_953566990_19ce79d90918fe33_6530XXXXXXXXXX54_12_03_2026_683"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": -0.0,
+    "debit_printed": 3784.32,
+    "debit_sum": 3784.32,
+    "n_txn": 2,
+    "sid": "decrypt_957057756_19c85804e8a528f8_4341XXXXXXXXXX93_21_02_2026_528"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5080.0,
+    "credit_sum": 5080,
+    "debit_delta": 0.0,
+    "debit_printed": 4432.4,
+    "debit_sum": 4432.4,
+    "n_txn": 3,
+    "sid": "decrypt_968264884_19a44f88b8643341_6529XXXXXXXXXX19_01_11_2025_492"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 19484.0,
+    "credit_sum": 19484,
+    "debit_delta": 0.0,
+    "debit_printed": 59664.23,
+    "debit_sum": 59664.23,
+    "n_txn": 10,
+    "sid": "decrypt_972368996_19f75d43e33f2b11_0036XXXXXXXXXX67_17_07_2026_105"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 29980.0,
+    "credit_sum": 29980,
+    "debit_delta": 0.0,
+    "debit_printed": 7512.599999999999,
+    "debit_sum": 7512.6,
+    "n_txn": 10,
+    "sid": "decrypt_984293990_19cf7cc3db183e7e_5268XXXXXXXXXX13_15_03_2026_358"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 637.15,
+    "debit_sum": 637.15,
+    "n_txn": 4,
+    "sid": "decrypt_99244_20260528_100758_421_5268XXXXXXXXXX85_22_05_2026_38"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 15514.0,
+    "credit_sum": 15514,
+    "debit_delta": 0.0,
+    "debit_printed": 29173.14,
+    "debit_sum": 29173.14,
+    "n_txn": 28,
+    "sid": "decrypt_encrypt_499462644_19e30bbd3de5ac34_6529XXXXXXXXXX59_15_05_2026_20"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1180.0,
+    "credit_sum": 1180,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_gmail_36703_19fea2d76088153a_19fea2d76088153a_5228XXXXXXXXXX77_09_08_2026_987"
+   }
+  ],
+  "label": "Incumbent CSV (Gemini)",
+  "overshoots_possible_duplicate": [
+   {
+    "credit_delta": -6902.2,
+    "credit_printed": 156904.2,
+    "credit_sum": 150002,
+    "debit_delta": 6902.2,
+    "debit_printed": 59689.64,
+    "debit_sum": 66591.84,
+    "n_txn": 45,
+    "sid": "decrypt_1200743427_19c7baa31fef379c_0036XXXXXXXXXX16_19_02_2026_433"
+   },
+   {
+    "credit_delta": 399.98,
+    "credit_printed": 38878.02,
+    "credit_sum": 39278,
+    "debit_delta": -400.0,
+    "debit_printed": 31372.96,
+    "debit_sum": 30972.96,
+    "n_txn": 9,
+    "sid": "decrypt_294132372_19dbf9a45f273136_4854XXXXXXXXXX67_23_04_2026_826"
+   },
+   {
+    "credit_delta": 60.1,
+    "credit_printed": 25508.1,
+    "credit_sum": 25568.2,
+    "debit_delta": 0.0,
+    "debit_printed": 35923.64,
+    "debit_sum": 35923.64,
+    "n_txn": 14,
+    "sid": "decrypt_1007259461_19fc3e489eef7576_4022XXXXXXXXXX57_01_08_2026_883"
+   }
+  ],
+  "reconcile_rate": 0.9721,
+  "reconciles": 174,
+  "run_dir": "hdfc.csv",
+  "statements_checked": 179,
+  "statements_without_strip": null,
+  "undershoots_possible_dropped_row": [
+   {
+    "credit_delta": -18304.0,
+    "credit_printed": 18304.0,
+    "credit_sum": 0,
+    "debit_delta": -148465.5,
+    "debit_printed": 148465.5,
+    "debit_sum": 0,
+    "n_txn": 18,
+    "sid": "decrypt_535035_20260303_170644_670_4854XXXXXXXXXX50_17_01_2026_19"
+   },
+   {
+    "credit_delta": -119004.0,
+    "credit_printed": 119004.0,
+    "credit_sum": 0,
+    "debit_delta": -131018.42,
+    "debit_printed": 131018.42,
+    "debit_sum": 0,
+    "n_txn": 22,
+    "sid": "decrypt_637806286_19c62671548f8e2a_6530XXXXXXXXXX26_14_02_2026_280"
+   },
+   {
+    "credit_delta": -6902.2,
+    "credit_printed": 156904.2,
+    "credit_sum": 150002,
+    "debit_delta": 6902.2,
+    "debit_printed": 59689.64,
+    "debit_sum": 66591.84,
+    "n_txn": 45,
+    "sid": "decrypt_1200743427_19c7baa31fef379c_0036XXXXXXXXXX16_19_02_2026_433"
+   },
+   {
+    "credit_delta": 399.98,
+    "credit_printed": 38878.02,
+    "credit_sum": 39278,
+    "debit_delta": -400.0,
+    "debit_printed": 31372.96,
+    "debit_sum": 30972.96,
+    "n_txn": 9,
+    "sid": "decrypt_294132372_19dbf9a45f273136_4854XXXXXXXXXX67_23_04_2026_826"
+   }
+  ]
+ },
+ "phase3_refined": {
+  "all": [
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5017.8,
+    "credit_sum": 5017.8,
+    "debit_delta": 0.0,
+    "debit_printed": 10480.4,
+    "debit_sum": 10480.4,
+    "n_txn": 18,
+    "sid": "decrypt_1000001429_19ee635e6b5ca8dd_5268XXXXXXXXXX79_19_06_2026_918"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 2358.0,
+    "debit_sum": 2358,
+    "n_txn": 1,
+    "sid": "decrypt_1003374647_19fc281339f200fd_4023XXXXXXXXXX68_01_08_2026_572"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 15839.0,
+    "credit_sum": 15839,
+    "debit_delta": 0.0,
+    "debit_printed": 15807.86,
+    "debit_sum": 15807.86,
+    "n_txn": 16,
+    "sid": "decrypt_1004976115_19f6b241ed96e20c_4854XXXXXXXXXX52_15_07_2026_888"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 40851.0,
+    "credit_sum": 40851,
+    "debit_delta": 0.0,
+    "debit_printed": 85077.19,
+    "debit_sum": 85077.19,
+    "n_txn": 46,
+    "sid": "decrypt_1006624221_19fc3990d36fe58b_6529XXXXXXXXXX03_01_08_2026_802"
+   },
+   {
+    "credit_delta": -2470.0,
+    "credit_printed": 7143.0,
+    "credit_sum": 4673,
+    "debit_delta": 2470.0,
+    "debit_printed": 5710.87,
+    "debit_sum": 8180.87,
+    "n_txn": 27,
+    "sid": "decrypt_1007138360_19fc36498a4f10f1_6529XXXXXXXXXX47_01_08_2026_245"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 25508.1,
+    "credit_sum": 25508.1,
+    "debit_delta": 0.0,
+    "debit_printed": 35923.64,
+    "debit_sum": 35923.64,
+    "n_txn": 14,
+    "sid": "decrypt_1007259461_19fc3e489eef7576_4022XXXXXXXXXX57_01_08_2026_883"
+   },
+   {
+    "credit_delta": -200.0,
+    "credit_printed": 10711.31,
+    "credit_sum": 10511.31,
+    "debit_delta": 200.0,
+    "debit_printed": 8448.0,
+    "debit_sum": 8648,
+    "n_txn": 28,
+    "sid": "decrypt_1007633548_19fc42a54b364a79_6529XXXXXXXXXX00_01_08_2026_750"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1818.7,
+    "credit_sum": 1818.7,
+    "debit_delta": 0.0,
+    "debit_printed": 6989.9,
+    "debit_sum": 6989.9,
+    "n_txn": 16,
+    "sid": "decrypt_1008041836_19fc4891bda81a19_5268XXXXXXXXXX35_01_08_2026_245"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 81929.0,
+    "credit_sum": 81929,
+    "debit_delta": 0.0,
+    "debit_printed": 49833.44,
+    "debit_sum": 49833.44,
+    "n_txn": 24,
+    "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 5348.0,
+    "debit_sum": 5348,
+    "n_txn": 7,
+    "sid": "decrypt_1036474356_19d010a851c47e93_5268XXXXXXXXXX21_17_03_2026_924"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3540.0,
+    "credit_sum": 3540,
+    "debit_delta": 0.0,
+    "debit_printed": 650.0,
+    "debit_sum": 650,
+    "n_txn": 2,
+    "sid": "decrypt_10378_20260601_114107_124_0036XXXXXXXXXX48_14_05_2026_951"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3221.0,
+    "credit_sum": 3221.0,
+    "debit_delta": 0.0,
+    "debit_printed": 3456.0,
+    "debit_sum": 3456,
+    "n_txn": 22,
+    "sid": "decrypt_1040137277_19f801df085c71aa_5268XXXXXXXXXX62_19_07_2026_869"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5265.95,
+    "credit_sum": 5265.95,
+    "debit_delta": 0.0,
+    "debit_printed": 10075.38,
+    "debit_sum": 10075.38,
+    "n_txn": 9,
+    "sid": "decrypt_1044835578_19fd065a0d5b8c16_5459XXXXXXXXXX45_04_08_2026_26"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 19596.0,
+    "credit_sum": 19596,
+    "debit_delta": 0.0,
+    "debit_printed": 3220.06,
+    "debit_sum": 3220.06,
+    "n_txn": 4,
+    "sid": "decrypt_1054010601_19d8c1db709e8d79_4854XXXXXXXXXX08_13_04_2026_461"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4698.0,
+    "credit_sum": 4698,
+    "debit_delta": 0.0,
+    "debit_printed": 6215.24,
+    "debit_sum": 6215.24,
+    "n_txn": 33,
+    "sid": "decrypt_1058554327_19d0ba865d1d632d_6530XXXXXXXXXX02_19_03_2026_743"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 80250.0,
+    "credit_sum": 80250,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_1059505310_19d0c22a22df17a0_0036XXXXXXXXXX46_19_03_2026_313"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 54581.0,
+    "credit_sum": 54581,
+    "debit_delta": 0.0,
+    "debit_printed": 2328.7,
+    "debit_sum": 2328.7,
+    "n_txn": 5,
+    "sid": "decrypt_1077681910_19f6bb004730168a_5372XXXXXXXXXX33_15_07_2026_461"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2872.0,
+    "credit_sum": 2872,
+    "debit_delta": 0.0,
+    "debit_printed": 51495.03,
+    "debit_sum": 51495.03,
+    "n_txn": 19,
+    "sid": "decrypt_1084375771_19d19ede9671b70a_6529XXXXXXXXXX26_22_03_2026_881"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7001.0,
+    "credit_sum": 7001,
+    "debit_delta": 0.0,
+    "debit_printed": 37430.15,
+    "debit_sum": 37430.15,
+    "n_txn": 9,
+    "sid": "decrypt_1194682871_19d500f0083bb8a3_4022XXXXXXXXXX34_01_04_2026_599"
+   },
+   {
+    "credit_delta": -7212.2,
+    "credit_printed": 156904.2,
+    "credit_sum": 149692,
+    "debit_delta": 7212.2,
+    "debit_printed": 59689.64,
+    "debit_sum": 66901.84,
+    "n_txn": 45,
+    "sid": "decrypt_1200743427_19c7baa31fef379c_0036XXXXXXXXXX16_19_02_2026_433"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 49794.05,
+    "credit_sum": 49794.05,
+    "debit_delta": -33098.09,
+    "debit_printed": 65957.83,
+    "debit_sum": 32859.74,
+    "n_txn": 40,
+    "sid": "decrypt_1297815983_19d85bca1c5980f8_4639XXXXXXXXXX65_12_04_2026_483"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2001.16,
+    "credit_sum": 2001.16,
+    "debit_delta": 0.0,
+    "debit_printed": 4233.0,
+    "debit_sum": 4233,
+    "n_txn": 12,
+    "sid": "decrypt_1301751572_19d87037e5152550_5268XXXXXXXXXX57_12_04_2026_780"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5682.74,
+    "credit_sum": 5682.74,
+    "debit_delta": 0.0,
+    "debit_printed": 8436.0,
+    "debit_sum": 8436,
+    "n_txn": 13,
+    "sid": "decrypt_1313134750_19d8cb2e361d4053_5268XXXXXXXXXX66_13_04_2026_447"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9019.0,
+    "credit_sum": 9019,
+    "debit_delta": 0.0,
+    "debit_printed": 24910.18,
+    "debit_sum": 24910.18,
+    "n_txn": 5,
+    "sid": "decrypt_1314262250_19d8d7f063feebb5_6530XXXXXXXXXX46_13_04_2026_476"
+   },
+   {
+    "credit_delta": -5144.28,
+    "credit_printed": 30478.0,
+    "credit_sum": 25333.72,
+    "debit_delta": 5144.28,
+    "debit_printed": 31280.55,
+    "debit_sum": 36424.83,
+    "n_txn": 22,
+    "sid": "decrypt_1321299796_19d910697db4ced0_5522XXXXXXXXXX29_14_04_2026_319"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11905.0,
+    "credit_sum": 11905,
+    "debit_delta": 0.0,
+    "debit_printed": 9884.0,
+    "debit_sum": 9884.0,
+    "n_txn": 14,
+    "sid": "decrypt_1321692961_19d912a5cd24c79d_4341XXXXXXXXXX85_14_04_2026_607"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 15000.0,
+    "credit_sum": 15000,
+    "debit_delta": 0.0,
+    "debit_printed": 3540.0,
+    "debit_sum": 3540,
+    "n_txn": 3,
+    "sid": "decrypt_1331350479_19d95f6ab8e53ba3_0036XXXXXXXXXX85_15_04_2026_354"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9198.3,
+    "credit_sum": 9198.3,
+    "debit_delta": 0.0,
+    "debit_printed": 37056.6,
+    "debit_sum": 37056.6,
+    "n_txn": 20,
+    "sid": "decrypt_1333936388_19d96f2774f958fb_5268XXXXXXXXXX36_15_04_2026_279"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9590.02,
+    "credit_sum": 9590.02,
+    "debit_delta": 0.0,
+    "debit_printed": 3202.51,
+    "debit_sum": 3202.51,
+    "n_txn": 11,
+    "sid": "decrypt_1334151138_19d971090ec8b56e_5372XXXXXXXXXX25_15_04_2026_857"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 163445.09,
+    "credit_sum": 163445.09,
+    "debit_delta": 0.0,
+    "debit_printed": 298569.81,
+    "debit_sum": 298569.81,
+    "n_txn": 11,
+    "sid": "decrypt_1341280270_19d9adc027f30ffe_4375XXXXXXXXXX17_16_04_2026_67"
+   },
+   {
+    "credit_delta": -0.0,
+    "credit_printed": 9721.2,
+    "credit_sum": 9721.2,
+    "debit_delta": 0.0,
+    "debit_printed": 9354.0,
+    "debit_sum": 9354,
+    "n_txn": 24,
+    "sid": "decrypt_1353742935_19da0d215be432fa_5268XXXXXXXXXX85_17_04_2026_643"
+   },
+   {
+    "credit_delta": -6486.15,
+    "credit_printed": 33333.91,
+    "credit_sum": 26847.76,
+    "debit_delta": 6486.15,
+    "debit_printed": 201333.13,
+    "debit_sum": 207819.28,
+    "n_txn": 28,
+    "sid": "decrypt_1359787929_19da4b87600e475b_5522XXXXXXXXXX82_18_04_2026_847"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 348.29,
+    "credit_sum": 348.29,
+    "debit_delta": 0.0,
+    "debit_printed": 2871.1,
+    "debit_sum": 2871.1,
+    "n_txn": 6,
+    "sid": "decrypt_1374016344_19dabf4c67deed86_5268XXXXXXXXXX37_19_04_2026_1"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1500.0,
+    "credit_sum": 1500,
+    "debit_delta": 0.0,
+    "debit_printed": 4440.18,
+    "debit_sum": 4440.18,
+    "n_txn": 5,
+    "sid": "decrypt_1401418909_19db986fc102034b_6530XXXXXXXXXX31_22_04_2026_115"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 98346.0,
+    "credit_sum": 98346,
+    "debit_delta": 0.0,
+    "debit_printed": 5424.22,
+    "debit_sum": 5424.22,
+    "n_txn": 7,
+    "sid": "decrypt_1403225883_19dba173e44c8703_4341XXXXXXXXXX03_22_04_2026_13"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11316.0,
+    "credit_sum": 11316,
+    "debit_delta": 0.0,
+    "debit_printed": 134906.0,
+    "debit_sum": 134906,
+    "n_txn": 7,
+    "sid": "decrypt_1467094437_19dd7998cbedc24a_4375XXXXXXXXXX20_28_04_2026_360"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 18183.0,
+    "credit_sum": 18183,
+    "debit_delta": 0.0,
+    "debit_printed": 6307.19,
+    "debit_sum": 6307.19,
+    "n_txn": 22,
+    "sid": "decrypt_1521401884_19dec495bdd965f3_6529XXXXXXXXXX15_02_05_2026_83"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 590.0,
+    "credit_sum": 590,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_1573279512_19cf6b37a93a3ad5_5372XXXXXXXXXX59_15_03_2026_307"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 480.0,
+    "debit_sum": 480,
+    "n_txn": 1,
+    "sid": "decrypt_1613196399_19e115ebf050b4da_0036XXXXXXXXXX41_09_05_2026_832"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 119.0,
+    "credit_sum": 119,
+    "debit_delta": 0.0,
+    "debit_printed": 119.0,
+    "debit_sum": 119,
+    "n_txn": 2,
+    "sid": "decrypt_1625148322_19d0f4d77b67ab50_5589XXXXXXXXXX46_20_03_2026_710"
+   },
+   {
+    "credit_delta": 1082.96,
+    "credit_printed": 13728.71,
+    "credit_sum": 14811.67,
+    "debit_delta": -1082.96,
+    "debit_printed": 7481.76,
+    "debit_sum": 6398.8,
+    "n_txn": 43,
+    "sid": "decrypt_1667800365_19e263589509ee3e_5268XXXXXXXXXX82_13_05_2026_1"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7664.0,
+    "credit_sum": 7664,
+    "debit_delta": 0.0,
+    "debit_printed": 7647.36,
+    "debit_sum": 7647.36,
+    "n_txn": 7,
+    "sid": "decrypt_1672398864_19e287a1382163d9_6530XXXXXXXXXX53_13_05_2026_691"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 28479.0,
+    "credit_sum": 28479,
+    "debit_delta": 0.0,
+    "debit_printed": 27284.92,
+    "debit_sum": 27284.92,
+    "n_txn": 44,
+    "sid": "decrypt_1678401256_19aa6bdd1e9f899e_5522XXXXXXXXXX40_20_11_2025_174"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5590.0,
+    "credit_sum": 5590,
+    "debit_delta": 0.0,
+    "debit_printed": 4914.83,
+    "debit_sum": 4914.83,
+    "n_txn": 4,
+    "sid": "decrypt_1705107163_19d4e13fd1c965fe_4023XXXXXXXXXX18_01_04_2026_876"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 102704.55,
+    "credit_sum": 102704.55,
+    "debit_delta": -0.0,
+    "debit_printed": 153972.23,
+    "debit_sum": 153972.23,
+    "n_txn": 19,
+    "sid": "decrypt_170594703_19daf0e13991add5_5523XXXXXXXXXX09_20_04_2026_333"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5074.0,
+    "credit_sum": 5074,
+    "debit_delta": 0.0,
+    "debit_printed": 1310.39,
+    "debit_sum": 1310.39,
+    "n_txn": 7,
+    "sid": "decrypt_1706662991_19e357806f433b00_5228XXXXXXXXXX75_16_05_2026_306"
+   },
+   {
+    "credit_delta": 5.99,
+    "credit_printed": 12710.37,
+    "credit_sum": 12716.36,
+    "debit_delta": -5.99,
+    "debit_printed": 3860.49,
+    "debit_sum": 3854.5,
+    "n_txn": 23,
+    "sid": "decrypt_1723515293_19e3b5338033e3ad_5268XXXXXXXXXX05_17_05_2026_94"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 6674.0,
+    "credit_sum": 6674,
+    "debit_delta": 0.0,
+    "debit_printed": 6662.64,
+    "debit_sum": 6662.64,
+    "n_txn": 4,
+    "sid": "decrypt_172459778_19e2ac18500eafff_5372XXXXXXXXXX51_14_05_2026_238"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 88156.0,
+    "credit_sum": 88156,
+    "debit_delta": 0.0,
+    "debit_printed": 29337.9,
+    "debit_sum": 29337.9,
+    "n_txn": 37,
+    "sid": "decrypt_1732499368_19e3f2a26405c8a5_6529XXXXXXXXXX44_18_05_2026_629"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2266.0,
+    "credit_sum": 2266,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 2,
+    "sid": "decrypt_1741303904_19943aee1836e5e9_5268XXXXXXXXXX64_12_09_2025_526"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 12325.0,
+    "credit_sum": 12325,
+    "debit_delta": 0.0,
+    "debit_printed": 10927.59,
+    "debit_sum": 10927.59,
+    "n_txn": 14,
+    "sid": "decrypt_1756410838_199f656352543609_6529XXXXXXXXXX34_17_10_2025_944"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 73506.59,
+    "credit_sum": 73506.59,
+    "debit_delta": 0.0,
+    "debit_printed": 111749.83,
+    "debit_sum": 111749.83,
+    "n_txn": 51,
+    "sid": "decrypt_1766388459_19e4b512e626509d_4854XXXXXXXXXX66_20_05_2026_209"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3616.8,
+    "credit_sum": 3616.8,
+    "debit_delta": 0.0,
+    "debit_printed": 2138.0,
+    "debit_sum": 2138,
+    "n_txn": 5,
+    "sid": "decrypt_1786952495_19e5006262824c69_5268XXXXXXXXXX23_21_05_2026_780"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 121183.0,
+    "credit_sum": 121183,
+    "debit_delta": 0.0,
+    "debit_printed": 57010.7,
+    "debit_sum": 57010.7,
+    "n_txn": 10,
+    "sid": "decrypt_1787504092_19e5024075cbb6e1_5372XXXXXXXXXX18_21_05_2026_450"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 494.0,
+    "debit_sum": 494,
+    "n_txn": 1,
+    "sid": "decrypt_1793197687_19d9c608ef70fe41_5268XXXXXXXXXX75_16_04_2026_883"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7185.19,
+    "credit_sum": 7185.19,
+    "debit_delta": 0.0,
+    "debit_printed": 32342.54,
+    "debit_sum": 32342.54,
+    "n_txn": 9,
+    "sid": "decrypt_182753160_19eba3b7d4b5095d_4893XXXXXXXXXX16_11_06_2026_708"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8.0,
+    "credit_sum": 8,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_1849181159_19e5a2f840fda55c_0036XXXXXXXXXX64_23_05_2026_259"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 54021.0,
+    "credit_sum": 54021,
+    "debit_delta": 0.0,
+    "debit_printed": 61668.42,
+    "debit_sum": 61668.42,
+    "n_txn": 5,
+    "sid": "decrypt_199385897_19a9850c20459241_0036XXXXXXXXXX77_17_11_2025_449"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3015.0,
+    "credit_sum": 3015,
+    "debit_delta": 0.0,
+    "debit_printed": 1521.8899999999999,
+    "debit_sum": 1521.89,
+    "n_txn": 11,
+    "sid": "decrypt_2038798665_1994d2c267cbd71c_5268XXXXXXXXXX23_14_09_2025_41"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 30004.0,
+    "credit_sum": 30004,
+    "debit_delta": 0.0,
+    "debit_printed": 21721.2,
+    "debit_sum": 21721.2,
+    "n_txn": 21,
+    "sid": "decrypt_2056820968_19e44b4d159aa50d_4632XXXXXXXXXX85_19_05_2026_453"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3271.8,
+    "credit_sum": 3271.8,
+    "debit_delta": 0.0,
+    "debit_printed": 5877.0,
+    "debit_sum": 5877,
+    "n_txn": 11,
+    "sid": "decrypt_2095121764_19943eacc6766b50_5268XXXXXXXXXX70_12_09_2025_639"
+   },
+   {
+    "credit_delta": 159.3,
+    "credit_printed": 12620.85,
+    "credit_sum": 12780.15,
+    "debit_delta": -159.3,
+    "debit_printed": 10668.7,
+    "debit_sum": 10509.4,
+    "n_txn": 24,
+    "sid": "decrypt_2167919244_19e2638ce48be46d_5268XXXXXXXXXX94_13_05_2026_713"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 314.0,
+    "credit_sum": 314,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_221414905_19ec73baa0c1a27b_5181XXXXXXXXXX59_13_06_2026_955"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 82967.17,
+    "credit_sum": 82967.17,
+    "debit_delta": 0.0,
+    "debit_printed": 17085.59,
+    "debit_sum": 17085.59,
+    "n_txn": 20,
+    "sid": "decrypt_221926359_19b1c715c58151ce_0036XXXXXXXXXX36_13_12_2025_529"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2969.0,
+    "credit_sum": 2969,
+    "debit_delta": 0.0,
+    "debit_printed": 1255.0,
+    "debit_sum": 1255,
+    "n_txn": 14,
+    "sid": "decrypt_222889854_19ec81da9a87ca26_6530XXXXXXXXXX21_13_06_2026_279"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 31958.26,
+    "credit_sum": 31958.26,
+    "debit_delta": 0.0,
+    "debit_printed": 10910.38,
+    "debit_sum": 10910.38,
+    "n_txn": 10,
+    "sid": "decrypt_231745607_19ecafa6a679925f_4854XXXXXXXXXX47_14_06_2026_451"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1834.32,
+    "credit_sum": 1834.32,
+    "debit_delta": -0.0,
+    "debit_printed": 2052.32,
+    "debit_sum": 2052.32,
+    "n_txn": 6,
+    "sid": "decrypt_232783658_19ecb4313478fafa_6528XXXXXXXXXX47_14_06_2026_277"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11596.0,
+    "credit_sum": 11596,
+    "debit_delta": 0.0,
+    "debit_printed": 11572.56,
+    "debit_sum": 11572.56,
+    "n_txn": 10,
+    "sid": "decrypt_234377875_19aa18f320fbf128_5181XXXXXXXXXX50_19_11_2025_882"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 9542.0,
+    "credit_sum": 9542,
+    "debit_delta": 0.0,
+    "debit_printed": 11822.5,
+    "debit_sum": 11822.5,
+    "n_txn": 4,
+    "sid": "decrypt_236010497_19a8389425d08978_0036XXXXXXXXXX34_13_11_2025_195"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3790.0,
+    "credit_sum": 3790,
+    "debit_delta": 0.0,
+    "debit_printed": 55668.0,
+    "debit_sum": 55668,
+    "n_txn": 4,
+    "sid": "decrypt_23704_20260710_022652_178_5523XXXXXXXXXX74_11_02_2026_983"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11.5,
+    "credit_sum": 11.5,
+    "debit_delta": 0.0,
+    "debit_printed": 115.0,
+    "debit_sum": 115,
+    "n_txn": 2,
+    "sid": "decrypt_239006153_19dba8679ff935eb_5268XXXXXXXXXX45_22_04_2026_524"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5042.0,
+    "credit_sum": 5042,
+    "debit_delta": 0.0,
+    "debit_printed": 132860.28,
+    "debit_sum": 132860.28,
+    "n_txn": 7,
+    "sid": "decrypt_250520458_19ed1704ae29ec29_0036XXXXXXXXXX25_15_06_2026_1000"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1991.1,
+    "credit_sum": 1991.1,
+    "debit_delta": 0.0,
+    "debit_printed": 780.1,
+    "debit_sum": 780.1,
+    "n_txn": 8,
+    "sid": "decrypt_251015678_19ed1b000d295e7a_5268XXXXXXXXXX13_15_06_2026_764"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2447.0,
+    "credit_sum": 2447,
+    "debit_delta": 0.0,
+    "debit_printed": 9149.4,
+    "debit_sum": 9149.4,
+    "n_txn": 10,
+    "sid": "decrypt_252037730_19b242ecc42b1806_4854XXXXXXXXXX59_14_12_2025_532"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 17023.0,
+    "credit_sum": 17023,
+    "debit_delta": 792.0,
+    "debit_printed": 17880.84,
+    "debit_sum": 18672.84,
+    "n_txn": 52,
+    "sid": "decrypt_252502266_19bc220c2d3c07ef_4341XXXXXXXXXX35_14_01_2026_31"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 19255.0,
+    "credit_sum": 19255,
+    "debit_delta": 0.0,
+    "debit_printed": 15840.0,
+    "debit_sum": 15840,
+    "n_txn": 3,
+    "sid": "decrypt_254551018_19aa69887d57b017_5522XXXXXXXXXX17_20_11_2025_914"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 540.0,
+    "debit_sum": 540,
+    "n_txn": 1,
+    "sid": "decrypt_262692645_19b314bc16c12e28_5268XXXXXXXXXX47_17_12_2025_218"
+   },
+   {
+    "credit_delta": -0.79,
+    "credit_printed": 40445.79,
+    "credit_sum": 40445,
+    "debit_delta": 0.0,
+    "debit_printed": 47252.61,
+    "debit_sum": 47252.61,
+    "n_txn": 83,
+    "sid": "decrypt_263640292_19ed61be9868cec7_6530XXXXXXXXXX67_16_06_2026_496"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8856.0,
+    "credit_sum": 8856,
+    "debit_delta": 0.0,
+    "debit_printed": 12422.19,
+    "debit_sum": 12422.19,
+    "n_txn": 12,
+    "sid": "decrypt_267910014_19bb70d77c40e1bd_5181XXXXXXXXXX69_12_01_2026_883"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 6.0,
+    "credit_sum": 6,
+    "debit_delta": 0.0,
+    "debit_printed": 2.0,
+    "debit_sum": 2,
+    "n_txn": 4,
+    "sid": "decrypt_285839648_19ede97eb758dce4_0036XXXXXXXXXX21_18_06_2026_741"
+   },
+   {
+    "credit_delta": 4.85,
+    "credit_printed": 7149.45,
+    "credit_sum": 7154.3,
+    "debit_delta": -4.85,
+    "debit_printed": 20515.99,
+    "debit_sum": 20511.14,
+    "n_txn": 10,
+    "sid": "decrypt_285879906_19b1c8cf84649584_5268XXXXXXXXXX57_13_12_2025_83"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 15294.61,
+    "credit_sum": 15294.61,
+    "debit_delta": 0.0,
+    "debit_printed": 102910.96,
+    "debit_sum": 102910.96,
+    "n_txn": 22,
+    "sid": "decrypt_289154370_19bbd3ad4206f61a_6529XXXXXXXXXX12_13_01_2026_345"
+   },
+   {
+    "credit_delta": -0.02,
+    "credit_printed": 38878.02,
+    "credit_sum": 38878,
+    "debit_delta": 0.0,
+    "debit_printed": 31372.96,
+    "debit_sum": 31372.96,
+    "n_txn": 9,
+    "sid": "decrypt_294132372_19dbf9a45f273136_4854XXXXXXXXXX67_23_04_2026_826"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 95769.0,
+    "credit_sum": 95769,
+    "debit_delta": 0.0,
+    "debit_printed": 51938.02,
+    "debit_sum": 51938.02,
+    "n_txn": 14,
+    "sid": "decrypt_305266_20260316_064257_290_5522XXXXXXXXXX58_14_02_2026_231"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4005.0,
+    "credit_sum": 4005,
+    "debit_delta": 0.0,
+    "debit_printed": 34804.25,
+    "debit_sum": 34804.25,
+    "n_txn": 34,
+    "sid": "decrypt_305724115_19bc7559248adec7_6529XXXXXXXXXX32_15_01_2026_802"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 26219.6,
+    "credit_sum": 26219.6,
+    "debit_delta": 0.0,
+    "debit_printed": 3476.0,
+    "debit_sum": 3476,
+    "n_txn": 10,
+    "sid": "decrypt_308513115_19ee61900c3f9c9f_5268XXXXXXXXXX07_19_06_2026_353"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 483.0,
+    "credit_sum": 483,
+    "debit_delta": 0.0,
+    "debit_printed": 0.0,
+    "debit_sum": 0,
+    "n_txn": 1,
+    "sid": "decrypt_311699439_19bcae68f8d3beb7_4577XXXXXXXXXX60_16_01_2026_317"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 62351.2,
+    "credit_sum": 62351.2,
+    "debit_delta": 0.0,
+    "debit_printed": 501603.63,
+    "debit_sum": 501603.63,
+    "n_txn": 15,
+    "sid": "decrypt_311856914_19bcaf37125e7546_0036XXXXXXXXXX63_16_01_2026_535"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2.0,
+    "credit_sum": 2,
+    "debit_delta": 0.0,
+    "debit_printed": 667.8,
+    "debit_sum": 667.8,
+    "n_txn": 3,
+    "sid": "decrypt_312035055_19bcafe4734d7f64_0036XXXXXXXXXX45_16_01_2026_612"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 24429.0,
+    "credit_sum": 24429,
+    "debit_delta": 0.0,
+    "debit_printed": 23633.23,
+    "debit_sum": 23633.23,
+    "n_txn": 63,
+    "sid": "decrypt_313233022_19bcb5f4444cf98e_6530XXXXXXXXXX68_16_01_2026_94"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 17256.0,
+    "credit_sum": 17256,
+    "debit_delta": 0.0,
+    "debit_printed": 32416.59,
+    "debit_sum": 32416.59,
+    "n_txn": 63,
+    "sid": "decrypt_321531061_19eeb6a697075c11_6528XXXXXXXXXX01_20_06_2026_847"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 40828.45,
+    "credit_sum": 40828.45,
+    "debit_delta": 0.0,
+    "debit_printed": 17050.45,
+    "debit_sum": 17050.45,
+    "n_txn": 4,
+    "sid": "decrypt_322556407_19bbdbe49e068203_0036XXXXXXXXXX01_13_01_2026_330"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 913.27,
+    "debit_sum": 913.27,
+    "n_txn": 5,
+    "sid": "decrypt_335420570_19ef0943125f08b5_4695XXXXXXXXXX16_21_06_2026_70"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 19596.0,
+    "credit_sum": 19596,
+    "debit_delta": 0.0,
+    "debit_printed": 10490.0,
+    "debit_sum": 10490,
+    "n_txn": 4,
+    "sid": "decrypt_348356766_19ef4eaa9ee1550d_5372XXXXXXXXXX50_22_06_2026_239"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 20000.0,
+    "credit_sum": 20000,
+    "debit_delta": 0.0,
+    "debit_printed": 24074.850000000002,
+    "debit_sum": 24074.85,
+    "n_txn": 10,
+    "sid": "decrypt_351009068_19bdbc0cb00ce71d_5522XXXXXXXXXX57_19_01_2026_738"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 7502.4,
+    "credit_sum": 7502.4,
+    "debit_delta": 0.0,
+    "debit_printed": 2824.0,
+    "debit_sum": 2824,
+    "n_txn": 9,
+    "sid": "decrypt_361136650_19ef8cb9df3f2383_5268XXXXXXXXXX87_23_06_2026_957"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5523.4,
+    "credit_sum": 5523.4,
+    "debit_delta": 0.0,
+    "debit_printed": 574.0,
+    "debit_sum": 574,
+    "n_txn": 5,
+    "sid": "decrypt_368372182_19efa121b74f650d_5268XXXXXXXXXX87_23_06_2026_184"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 6686.13,
+    "credit_sum": 6686.13,
+    "debit_delta": 0.0,
+    "debit_printed": 7487.32,
+    "debit_sum": 7487.32,
+    "n_txn": 5,
+    "sid": "decrypt_376951286_19b4130f9ffb730a_6528XXXXXXXXXX69_20_12_2025_651"
+   },
+   {
+    "credit_delta": 0.46,
+    "credit_printed": 1769.0,
+    "credit_sum": 1769.46,
+    "debit_delta": -0.46,
+    "debit_printed": 0.46,
+    "debit_sum": 0,
+    "n_txn": 2,
+    "sid": "decrypt_378038910_19be9ff5c80e0b6a_6529XXXXXXXXXX59_22_01_2026_18"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 3552.0,
+    "credit_sum": 3552,
+    "debit_delta": 0.0,
+    "debit_printed": 5209.64,
+    "debit_sum": 5209.64,
+    "n_txn": 11,
+    "sid": "decrypt_379442466_19e3093191b1086d_6530XXXXXXXXXX21_15_05_2026_807"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 24748.0,
+    "credit_sum": 24748,
+    "debit_delta": 0.0,
+    "debit_printed": 5061.61,
+    "debit_sum": 5061.61,
+    "n_txn": 4,
+    "sid": "decrypt_393753076_1996ca20b9b8d9a6_6529XXXXXXXXXX44_20_09_2025_928"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8553.0,
+    "credit_sum": 8553,
+    "debit_delta": 0.0,
+    "debit_printed": 3349.0,
+    "debit_sum": 3349,
+    "n_txn": 4,
+    "sid": "decrypt_432234805_19f0c9613553eb8a_4854XXXXXXXXXX21_27_06_2026_570"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 980.27,
+    "credit_sum": 980.27,
+    "debit_delta": 0.0,
+    "debit_printed": 1852.74,
+    "debit_sum": 1852.74,
+    "n_txn": 6,
+    "sid": "decrypt_483214570_19bdb02b350583a3_4632XXXXXXXXXX02_19_01_2026_271"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4019.0,
+    "credit_sum": 4019,
+    "debit_delta": 0.0,
+    "debit_printed": 18485.51,
+    "debit_sum": 18485.51,
+    "n_txn": 5,
+    "sid": "decrypt_492951318_19c1f6c190bb2c5f_4022XXXXXXXXXX61_01_02_2026_386"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 1240.6,
+    "credit_sum": 1240.6,
+    "debit_delta": 0.0,
+    "debit_printed": 9315.72,
+    "debit_sum": 9315.72,
+    "n_txn": 14,
+    "sid": "decrypt_493242314_19c1f9b31a3b65d3_6529XXXXXXXXXX48_01_02_2026_833"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5043.0,
+    "credit_sum": 5043,
+    "debit_delta": 0.0,
+    "debit_printed": 4494.58,
+    "debit_sum": 4494.58,
+    "n_txn": 6,
+    "sid": "decrypt_493483361_19c1fc04cb476d1a_6529XXXXXXXXXX15_01_02_2026_933"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 54260.0,
+    "credit_sum": 54260,
+    "debit_delta": 0.0,
+    "debit_printed": 16829.05,
+    "debit_sum": 16829.05,
+    "n_txn": 66,
+    "sid": "decrypt_493517787_19c1fc592bdf84d1_6529XXXXXXXXXX09_01_02_2026_701"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4730.0,
+    "credit_sum": 4730,
+    "debit_delta": 0.0,
+    "debit_printed": 5721.15,
+    "debit_sum": 5721.15,
+    "n_txn": 7,
+    "sid": "decrypt_507351700_19a831537f70658b_0036XXXXXXXXXX60_13_11_2025_886"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 0.0,
+    "credit_sum": 0,
+    "debit_delta": 0.0,
+    "debit_printed": 14264.88,
+    "debit_sum": 14264.88,
+    "n_txn": 19,
+    "sid": "decrypt_507911219_19f24a35645ad306_6529XXXXXXXXXX99_01_07_2026_758"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 67718.0,
+    "credit_sum": 67718,
+    "debit_delta": 0.0,
+    "debit_printed": 10502.0,
+    "debit_sum": 10502,
+    "n_txn": 8,
+    "sid": "decrypt_510302_20260517_191432_394_5522XXXXXXXXXX21_05_03_2026_491"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 49576.95,
+    "credit_sum": 49576.95,
+    "debit_delta": 0.0,
+    "debit_printed": 51430.35,
+    "debit_sum": 51430.35,
+    "n_txn": 50,
+    "sid": "decrypt_515648205_19be16f86ee0ec66_4341XXXXXXXXXX84_20_01_2026_298"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 18304.0,
+    "credit_sum": 18304,
+    "debit_delta": 0.0,
+    "debit_printed": 148465.5,
+    "debit_sum": 148465.5,
+    "n_txn": 18,
+    "sid": "decrypt_535035_20260303_170644_670_4854XXXXXXXXXX50_17_01_2026_19"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 11358.0,
+    "credit_sum": 11358,
+    "debit_delta": 0.0,
+    "debit_printed": 12233.92,
+    "debit_sum": 12233.92,
+    "n_txn": 12,
+    "sid": "decrypt_559393419_19c411193996347f_5522XXXXXXXXXX06_08_02_2026_407"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 14619.84,
+    "credit_sum": 14619.84,
+    "debit_delta": 0.0,
+    "debit_printed": 15110.84,
+    "debit_sum": 15110.84,
+    "n_txn": 31,
+    "sid": "decrypt_567125239_198abd4b645b8fce_6530XXXXXXXXXX12_13_08_2025_872"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 20509.48,
+    "credit_sum": 20509.48,
+    "debit_delta": 0.0,
+    "debit_printed": 5109.71,
+    "debit_sum": 5109.71,
+    "n_txn": 17,
+    "sid": "decrypt_575573715_19ef9832d557af04_4466XXXXXXXXXX66_23_06_2026_685"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 5699.0,
+    "credit_sum": 5699,
+    "debit_delta": 0.0,
+    "debit_printed": 5686.6,
+    "debit_sum": 5686.6,
+    "n_txn": 4,
+    "sid": "decrypt_585205550_19f40312bdcc41a5_0036XXXXXXXXXX03_07_07_2026_781"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 77336.0,
+    "credit_sum": 77336,
+    "debit_delta": 0.0,
+    "debit_printed": 66441.67,
+    "debit_sum": 66441.67,
+    "n_txn": 28,
+    "sid": "decrypt_602636760_19c5086ecbb8c602_0036XXXXXXXXXX37_11_02_2026_10"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 67366.0,
+    "credit_sum": 67366,
+    "debit_delta": 0.0,
+    "debit_printed": 24203.9,
+    "debit_sum": 24203.9,
+    "n_txn": 2,
+    "sid": "decrypt_620274809_19b2e3d3623d5c32_4572XXXXXXXXXX25_16_12_2025_562"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 4019.0,
+    "credit_sum": 4019,
+    "debit_delta": 0.0,
+    "debit_printed": 1432.0,
+    "debit_sum": 1432,
+    "n_txn": 4,
+    "sid": "decrypt_620637396_19c588fee796ca8c_6530XXXXXXXXXX59_12_02_2026_282"
+   },
+   {
+    "credit_delta": 49.8,
+    "credit_printed": 8320.7,
+    "credit_sum": 8370.5,
+    "debit_delta": -49.8,
+    "debit_printed": 8622.2,
+    "debit_sum": 8572.4,
+    "n_txn": 21,
+    "sid": "decrypt_629227338_19c5cfb16d520142_5268XXXXXXXXXX41_13_02_2026_512"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 173336.0,
+    "credit_sum": 173336,
+    "debit_delta": -0.0,
+    "debit_printed": 127425.91,
+    "debit_sum": 127425.91,
+    "n_txn": 17,
+    "sid": "decrypt_633611396_19be0e9c06e1e70b_0036XXXXXXXXXX95_20_01_2026_346"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 2698.0,
+    "credit_sum": 2698,
+    "debit_delta": 0.0,
+    "debit_printed": 75041.45,
+    "debit_sum": 75041.45,
+    "n_txn": 10,
+    "sid": "decrypt_636530784_19c61b13b54e442d_4577XXXXXXXXXX41_14_02_2026_790"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 119004.0,
+    "credit_sum": 119004,
+    "debit_delta": 0.0,
+    "debit_printed": 131018.42,
+    "debit_sum": 131018.42,
+    "n_txn": 22,
+    "sid": "decrypt_637806286_19c62671548f8e2a_6530XXXXXXXXXX26_14_02_2026_280"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 8260.42,
+    "credit_sum": 8260.42,
+    "debit_delta": 0.0,
+    "debit_printed": 6114.05,
+    "debit_sum": 6114.05,
+    "n_txn": 6,
+    "sid": "decrypt_637810891_19c62684f66b7377_5535XXXXXXXXXX22_14_02_2026_595"
+   }
+  ],
+  "label": "Luna (refined prompt)",
+  "overshoots_possible_duplicate": [
+   {
+    "credit_delta": -7212.2,
+    "credit_printed": 156904.2,
+    "credit_sum": 149692,
+    "debit_delta": 7212.2,
+    "debit_printed": 59689.64,
+    "debit_sum": 66901.84,
+    "n_txn": 45,
+    "sid": "decrypt_1200743427_19c7baa31fef379c_0036XXXXXXXXXX16_19_02_2026_433"
+   },
+   {
+    "credit_delta": -6486.15,
+    "credit_printed": 33333.91,
+    "credit_sum": 26847.76,
+    "debit_delta": 6486.15,
+    "debit_printed": 201333.13,
+    "debit_sum": 207819.28,
+    "n_txn": 28,
+    "sid": "decrypt_1359787929_19da4b87600e475b_5522XXXXXXXXXX82_18_04_2026_847"
+   },
+   {
+    "credit_delta": -5144.28,
+    "credit_printed": 30478.0,
+    "credit_sum": 25333.72,
+    "debit_delta": 5144.28,
+    "debit_printed": 31280.55,
+    "debit_sum": 36424.83,
+    "n_txn": 22,
+    "sid": "decrypt_1321299796_19d910697db4ced0_5522XXXXXXXXXX29_14_04_2026_319"
+   },
+   {
+    "credit_delta": -2470.0,
+    "credit_printed": 7143.0,
+    "credit_sum": 4673,
+    "debit_delta": 2470.0,
+    "debit_printed": 5710.87,
+    "debit_sum": 8180.87,
+    "n_txn": 27,
+    "sid": "decrypt_1007138360_19fc36498a4f10f1_6529XXXXXXXXXX47_01_08_2026_245"
+   },
+   {
+    "credit_delta": 1082.96,
+    "credit_printed": 13728.71,
+    "credit_sum": 14811.67,
+    "debit_delta": -1082.96,
+    "debit_printed": 7481.76,
+    "debit_sum": 6398.8,
+    "n_txn": 43,
+    "sid": "decrypt_1667800365_19e263589509ee3e_5268XXXXXXXXXX82_13_05_2026_1"
+   },
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 17023.0,
+    "credit_sum": 17023,
+    "debit_delta": 792.0,
+    "debit_printed": 17880.84,
+    "debit_sum": 18672.84,
+    "n_txn": 52,
+    "sid": "decrypt_252502266_19bc220c2d3c07ef_4341XXXXXXXXXX35_14_01_2026_31"
+   },
+   {
+    "credit_delta": -200.0,
+    "credit_printed": 10711.31,
+    "credit_sum": 10511.31,
+    "debit_delta": 200.0,
+    "debit_printed": 8448.0,
+    "debit_sum": 8648,
+    "n_txn": 28,
+    "sid": "decrypt_1007633548_19fc42a54b364a79_6529XXXXXXXXXX00_01_08_2026_750"
+   },
+   {
+    "credit_delta": 159.3,
+    "credit_printed": 12620.85,
+    "credit_sum": 12780.15,
+    "debit_delta": -159.3,
+    "debit_printed": 10668.7,
+    "debit_sum": 10509.4,
+    "n_txn": 24,
+    "sid": "decrypt_2167919244_19e2638ce48be46d_5268XXXXXXXXXX94_13_05_2026_713"
+   },
+   {
+    "credit_delta": 49.8,
+    "credit_printed": 8320.7,
+    "credit_sum": 8370.5,
+    "debit_delta": -49.8,
+    "debit_printed": 8622.2,
+    "debit_sum": 8572.4,
+    "n_txn": 21,
+    "sid": "decrypt_629227338_19c5cfb16d520142_5268XXXXXXXXXX41_13_02_2026_512"
+   },
+   {
+    "credit_delta": 5.99,
+    "credit_printed": 12710.37,
+    "credit_sum": 12716.36,
+    "debit_delta": -5.99,
+    "debit_printed": 3860.49,
+    "debit_sum": 3854.5,
+    "n_txn": 23,
+    "sid": "decrypt_1723515293_19e3b5338033e3ad_5268XXXXXXXXXX05_17_05_2026_94"
+   },
+   {
+    "credit_delta": 4.85,
+    "credit_printed": 7149.45,
+    "credit_sum": 7154.3,
+    "debit_delta": -4.85,
+    "debit_printed": 20515.99,
+    "debit_sum": 20511.14,
+    "n_txn": 10,
+    "sid": "decrypt_285879906_19b1c8cf84649584_5268XXXXXXXXXX57_13_12_2025_83"
+   }
+  ],
+  "reconcile_rate": 0.9032,
+  "reconciles": 112,
+  "run_dir": "phase3_refined",
+  "statements_checked": 124,
+  "statements_without_strip": 59,
+  "undershoots_possible_dropped_row": [
+   {
+    "credit_delta": 0.0,
+    "credit_printed": 49794.05,
+    "credit_sum": 49794.05,
+    "debit_delta": -33098.09,
+    "debit_printed": 65957.83,
+    "debit_sum": 32859.74,
+    "n_txn": 40,
+    "sid": "decrypt_1297815983_19d85bca1c5980f8_4639XXXXXXXXXX65_12_04_2026_483"
+   },
+   {
+    "credit_delta": -7212.2,
+    "credit_printed": 156904.2,
+    "credit_sum": 149692,
+    "debit_delta": 7212.2,
+    "debit_printed": 59689.64,
+    "debit_sum": 66901.84,
+    "n_txn": 45,
+    "sid": "decrypt_1200743427_19c7baa31fef379c_0036XXXXXXXXXX16_19_02_2026_433"
+   },
+   {
+    "credit_delta": -6486.15,
+    "credit_printed": 33333.91,
+    "credit_sum": 26847.76,
+    "debit_delta": 6486.15,
+    "debit_printed": 201333.13,
+    "debit_sum": 207819.28,
+    "n_txn": 28,
+    "sid": "decrypt_1359787929_19da4b87600e475b_5522XXXXXXXXXX82_18_04_2026_847"
+   },
+   {
+    "credit_delta": -5144.28,
+    "credit_printed": 30478.0,
+    "credit_sum": 25333.72,
+    "debit_delta": 5144.28,
+    "debit_printed": 31280.55,
+    "debit_sum": 36424.83,
+    "n_txn": 22,
+    "sid": "decrypt_1321299796_19d910697db4ced0_5522XXXXXXXXXX29_14_04_2026_319"
+   },
+   {
+    "credit_delta": -2470.0,
+    "credit_printed": 7143.0,
+    "credit_sum": 4673,
+    "debit_delta": 2470.0,
+    "debit_printed": 5710.87,
+    "debit_sum": 8180.87,
+    "n_txn": 27,
+    "sid": "decrypt_1007138360_19fc36498a4f10f1_6529XXXXXXXXXX47_01_08_2026_245"
+   },
+   {
+    "credit_delta": 1082.96,
+    "credit_printed": 13728.71,
+    "credit_sum": 14811.67,
+    "debit_delta": -1082.96,
+    "debit_printed": 7481.76,
+    "debit_sum": 6398.8,
+    "n_txn": 43,
+    "sid": "decrypt_1667800365_19e263589509ee3e_5268XXXXXXXXXX82_13_05_2026_1"
+   },
+   {
+    "credit_delta": -200.0,
+    "credit_printed": 10711.31,
+    "credit_sum": 10511.31,
+    "debit_delta": 200.0,
+    "debit_printed": 8448.0,
+    "debit_sum": 8648,
+    "n_txn": 28,
+    "sid": "decrypt_1007633548_19fc42a54b364a79_6529XXXXXXXXXX00_01_08_2026_750"
+   },
+   {
+    "credit_delta": 159.3,
+    "credit_printed": 12620.85,
+    "credit_sum": 12780.15,
+    "debit_delta": -159.3,
+    "debit_printed": 10668.7,
+    "debit_sum": 10509.4,
+    "n_txn": 24,
+    "sid": "decrypt_2167919244_19e2638ce48be46d_5268XXXXXXXXXX94_13_05_2026_713"
+   },
+   {
+    "credit_delta": 49.8,
+    "credit_printed": 8320.7,
+    "credit_sum": 8370.5,
+    "debit_delta": -49.8,
+    "debit_printed": 8622.2,
+    "debit_sum": 8572.4,
+    "n_txn": 21,
+    "sid": "decrypt_629227338_19c5cfb16d520142_5268XXXXXXXXXX41_13_02_2026_512"
+   },
+   {
+    "credit_delta": 5.99,
+    "credit_printed": 12710.37,
+    "credit_sum": 12716.36,
+    "debit_delta": -5.99,
+    "debit_printed": 3860.49,
+    "debit_sum": 3854.5,
+    "n_txn": 23,
+    "sid": "decrypt_1723515293_19e3b5338033e3ad_5268XXXXXXXXXX05_17_05_2026_94"
+   },
+   {
+    "credit_delta": 4.85,
+    "credit_printed": 7149.45,
+    "credit_sum": 7154.3,
+    "debit_delta": -4.85,
+    "debit_printed": 20515.99,
+    "debit_sum": 20511.14,
+    "n_txn": 10,
+    "sid": "decrypt_285879906_19b1c8cf84649584_5268XXXXXXXXXX57_13_12_2025_83"
+   }
+  ]
+ }
+}

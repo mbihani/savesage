@@ -1,0 +1,9 @@
+arm=luna_generic outdir=/Users/mayanck.bihani/Savesage/bank_eval/sbi/run_luna_generic corpus=10 todo=9 par=1 prompt=generic prompt_chars=8230
+1/9 365516172 OK fr=stop txn=65 att=1 rl=0 lat=47815ms in=18922 out=3793 elapsed=47s
+2/9 515948911 OK fr=stop txn=56 att=1 rl=0 lat=61147ms in=18728 out=3511 elapsed=108s33/9 546216901 OK fr=stop txn=90 att=1 rl=0 lat=37566ms in=19368 out=4977 elapsed=146s
+4/9 734857498 OK fr=stop txn=12 att=1 rl=0 lat=26483ms in=17419 out=1823 elapsed=146s5/9 837436340 OK fr=stop txn=141 att=1 rl=0 lat=61506ms in=21230 out=7519 elapsed=248s
+6/9 924475136 OK fr=stop txn=21 att=1 rl=0 lat=50364ms in=12289 out=2165 elapsed=298s
+7/9 1220226393 OK fr=stop txn=1 att=1 rl=0 lat=58046ms in=16971 out=922 elapsed=356s
+8/9 1560321887 OK fr=stop txn=75 att=1 rl=0 lat=87168ms in=19173 out=4543 elapsed=443s
+9/9 1707857175 OK fr=stop txn=71 att=1 rl=0 lat=34264ms in=19110 out=4143 elapsed=477s
+
