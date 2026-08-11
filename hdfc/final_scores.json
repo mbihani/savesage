@@ -1,0 +1,1241 @@
+{
+ "comparisons": {
+  "csv_vs_gt": {
+   "label": "CSV vs GT (all)",
+   "n_statements": 281,
+   "row_alignment": {
+    "admission_field": "description",
+    "classification": "PAIRING-BASED; NOT A CORRECTNESS CLAIM",
+    "description_exact_match_rate": 0.9278,
+    "description_mean_similarity": 0.9859,
+    "description_similarity_threshold": 0.55,
+    "f1": 0.9997,
+    "gold_only_false_neg": 2,
+    "matched_pairs": 4637,
+    "one_to_one_assignment": true,
+    "precision": 0.9998,
+    "pred_only_false_pos": 1,
+    "recall": 0.9996,
+    "warning": "precision/recall/F1 here measure row admission and pairing only"
+   },
+   "statement_fields": {
+    "cardDisplayName": {
+     "accuracy": 0.9324,
+     "correct": 262,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 19
+    },
+    "lastFourDigit": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "network": {
+     "accuracy": 0.9181,
+     "correct": 258,
+     "hallucinated_when_gold_null": 20,
+     "n": 281,
+     "null_when_populated": 3,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.availableCreditLimit": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.totalAmountDue": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.totalCreditLimit": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.totalMinimumAmountDue": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.utilisationPercent": {
+     "accuracy": 0.4982,
+     "correct": 140,
+     "hallucinated_when_gold_null": 141,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.utilisationPercent_DERIVED": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementMeta.dueDate": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementMeta.issuerName": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementMeta.statementDate": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    }
+   },
+   "value_correctness": {
+    "classification": "VALUE CORRECTNESS OVER MATCHED PAIRS",
+    "fields": {
+     "amount": {
+      "accuracy": 0.9845,
+      "correct": 4565,
+      "hallucinated_when_gold_null": 0,
+      "n": 4637,
+      "null_when_populated": 0,
+      "wrong_value": 72
+     },
+     "currency": {
+      "accuracy": 0.9873,
+      "correct": 4578,
+      "hallucinated_when_gold_null": 0,
+      "n": 4637,
+      "null_when_populated": 43,
+      "wrong_value": 16
+     },
+     "date": {
+      "accuracy": 0.9987,
+      "correct": 4631,
+      "hallucinated_when_gold_null": 0,
+      "n": 4637,
+      "null_when_populated": 0,
+      "wrong_value": 6
+     },
+     "description": {
+      "accuracy": 0.9278,
+      "correct": 4302,
+      "hallucinated_when_gold_null": 0,
+      "n": 4637,
+      "null_when_populated": 0,
+      "wrong_value": 335
+     },
+     "direction": {
+      "accuracy": 0.9901,
+      "correct": 4591,
+      "hallucinated_when_gold_null": 0,
+      "n": 4637,
+      "null_when_populated": 40,
+      "wrong_value": 6
+     }
+    },
+    "micro": {
+     "accuracy": 0.9777,
+     "correct": 22667,
+     "n": 23185
+    },
+    "normalization": "score_lib canonical comparison; formatting differences are not errors"
+   }
+  },
+  "luna_vs_csv": {
+   "label": "luna_refined vs CSV (all)",
+   "n_statements": 281,
+   "row_alignment": {
+    "admission_field": "description",
+    "classification": "PAIRING-BASED; NOT A CORRECTNESS CLAIM",
+    "description_exact_match_rate": 0.917,
+    "description_mean_similarity": 0.9852,
+    "description_similarity_threshold": 0.55,
+    "f1": 0.9995,
+    "gold_only_false_neg": 2,
+    "matched_pairs": 4636,
+    "one_to_one_assignment": true,
+    "precision": 0.9994,
+    "pred_only_false_pos": 3,
+    "recall": 0.9996,
+    "warning": "precision/recall/F1 here measure row admission and pairing only"
+   },
+   "statement_fields": {
+    "cardDisplayName": {
+     "accuracy": 0.9075,
+     "correct": 255,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 26
+    },
+    "lastFourDigit": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "network": {
+     "accuracy": 0.911,
+     "correct": 256,
+     "hallucinated_when_gold_null": 2,
+     "n": 281,
+     "null_when_populated": 23,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.availableCreditLimit": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.totalAmountDue": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.totalCreditLimit": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.totalMinimumAmountDue": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.utilisationPercent": {
+     "accuracy": 0.4982,
+     "correct": 140,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 141,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.utilisationPercent_DERIVED": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementMeta.dueDate": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementMeta.issuerName": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementMeta.statementDate": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    }
+   },
+   "value_correctness": {
+    "classification": "VALUE CORRECTNESS OVER MATCHED PAIRS",
+    "fields": {
+     "amount": {
+      "accuracy": 0.9806,
+      "correct": 4546,
+      "hallucinated_when_gold_null": 0,
+      "n": 4636,
+      "null_when_populated": 0,
+      "wrong_value": 90
+     },
+     "currency": {
+      "accuracy": 0.9832,
+      "correct": 4558,
+      "hallucinated_when_gold_null": 43,
+      "n": 4636,
+      "null_when_populated": 0,
+      "wrong_value": 35
+     },
+     "date": {
+      "accuracy": 0.9983,
+      "correct": 4628,
+      "hallucinated_when_gold_null": 0,
+      "n": 4636,
+      "null_when_populated": 0,
+      "wrong_value": 8
+     },
+     "description": {
+      "accuracy": 0.917,
+      "correct": 4251,
+      "hallucinated_when_gold_null": 0,
+      "n": 4636,
+      "null_when_populated": 0,
+      "wrong_value": 385
+     },
+     "direction": {
+      "accuracy": 0.9819,
+      "correct": 4552,
+      "hallucinated_when_gold_null": 40,
+      "n": 4636,
+      "null_when_populated": 0,
+      "wrong_value": 44
+     }
+    },
+    "micro": {
+     "accuracy": 0.9722,
+     "correct": 22535,
+     "n": 23180
+    },
+    "normalization": "score_lib canonical comparison; formatting differences are not errors"
+   }
+  },
+  "luna_vs_gt": {
+   "label": "luna_refined vs GT (all)",
+   "n_statements": 281,
+   "row_alignment": {
+    "admission_field": "description",
+    "classification": "PAIRING-BASED; NOT A CORRECTNESS CLAIM",
+    "description_exact_match_rate": 0.9575,
+    "description_mean_similarity": 0.9968,
+    "description_similarity_threshold": 0.55,
+    "f1": 0.9998,
+    "gold_only_false_neg": 1,
+    "matched_pairs": 4638,
+    "one_to_one_assignment": true,
+    "precision": 0.9998,
+    "pred_only_false_pos": 1,
+    "recall": 0.9998,
+    "warning": "precision/recall/F1 here measure row admission and pairing only"
+   },
+   "statement_fields": {
+    "cardDisplayName": {
+     "accuracy": 0.9466,
+     "correct": 266,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 15
+    },
+    "lastFourDigit": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "network": {
+     "accuracy": 0.9715,
+     "correct": 273,
+     "hallucinated_when_gold_null": 2,
+     "n": 281,
+     "null_when_populated": 6,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.availableCreditLimit": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.totalAmountDue": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.totalCreditLimit": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.totalMinimumAmountDue": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.utilisationPercent": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementLevelSummary.utilisationPercent_DERIVED": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementMeta.dueDate": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementMeta.issuerName": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    },
+    "statementMeta.statementDate": {
+     "accuracy": 1.0,
+     "correct": 281,
+     "hallucinated_when_gold_null": 0,
+     "n": 281,
+     "null_when_populated": 0,
+     "wrong_value": 0
+    }
+   },
+   "value_correctness": {
+    "classification": "VALUE CORRECTNESS OVER MATCHED PAIRS",
+    "fields": {
+     "amount": {
+      "accuracy": 0.9966,
+      "correct": 4622,
+      "hallucinated_when_gold_null": 0,
+      "n": 4638,
+      "null_when_populated": 0,
+      "wrong_value": 16
+     },
+     "currency": {
+      "accuracy": 0.9903,
+      "correct": 4593,
+      "hallucinated_when_gold_null": 0,
+      "n": 4638,
+      "null_when_populated": 0,
+      "wrong_value": 45
+     },
+     "date": {
+      "accuracy": 1.0,
+      "correct": 4638,
+      "hallucinated_when_gold_null": 0,
+      "n": 4638,
+      "null_when_populated": 0,
+      "wrong_value": 0
+     },
+     "description": {
+      "accuracy": 0.9575,
+      "correct": 4441,
+      "hallucinated_when_gold_null": 0,
+      "n": 4638,
+      "null_when_populated": 0,
+      "wrong_value": 197
+     },
+     "direction": {
+      "accuracy": 0.9901,
+      "correct": 4592,
+      "hallucinated_when_gold_null": 0,
+      "n": 4638,
+      "null_when_populated": 0,
+      "wrong_value": 46
+     }
+    },
+    "micro": {
+     "accuracy": 0.9869,
+     "correct": 22886,
+     "n": 23190
+    },
+    "normalization": "score_lib canonical comparison; formatting differences are not errors"
+   }
+  }
+ },
+ "discrepancies": [
+  {
+   "issue": "stale partial coverage",
+   "recomputed": "281/281 each",
+   "reported": "GT 154/281; Luna 131/281",
+   "source": "HDFC_REPORT.md"
+  },
+  {
+   "issue": "transaction findings cap",
+   "recomputed_description": {
+    "AMBIGUOUS_IN_PDF": 1,
+    "BOTH_WRONG": 1,
+    "CSV_WRONG": 273,
+    "LUNA_WRONG": 110,
+    "disagreements": 385,
+    "luna_right_share_of_separable": 0.7109,
+    "separable": 384
+   },
+   "reported_description": {
+    "AMBIGUOUS_IN_PDF": 0,
+    "BOTH_WRONG": 1,
+    "CSV_WRONG": 88,
+    "LUNA_WRONG": 31,
+    "disagreements": 120
+   },
+   "source": "HDFC_REPORT.md"
+  },
+  {
+   "issue": "stale transaction overall",
+   "recomputed": {
+    "AMBIGUOUS_IN_PDF": 108,
+    "BOTH_WRONG": 7,
+    "CSV_WRONG": 394,
+    "LUNA_WRONG": 136
+   },
+   "reported": {
+    "AMBIGUOUS_IN_PDF": 101,
+    "BOTH_WRONG": 1,
+    "CSV_WRONG": 116,
+    "LUNA_WRONG": 49
+   },
+   "source": "HDFC_REPORT.md"
+  },
+  {
+   "issue": "stale glaring misses totals",
+   "recomputed": {
+    "ambiguous_in_pdf": 119,
+    "both_wrong": 9,
+    "incumbent_substantive_errors": 420,
+    "luna_substantive_errors": 148,
+    "statements_where_csv_lacks_rows_luna_has": 3,
+    "statements_where_luna_lacks_rows_csv_has": 2
+   },
+   "reported": {
+    "incumbent_substantive_errors": 128,
+    "luna_substantive_errors": 53
+   },
+   "source": "HDFC_REPORT.md"
+  },
+  {
+   "issue": "stale partial-run tables (69/147-style subsets and capped adjudication)",
+   "recomputed": "full 281-statement artifacts used",
+   "source": "REPORT_TABLES.md"
+  },
+  {
+   "issue": "stale partial description analysis",
+   "recomputed_description_luna_wrong": 110,
+   "reported": "31 description defects at 147/281",
+   "source": "NOTES_verified_findings.md"
+  }
+ ],
+ "excluded_arms": [],
+ "gt_audit": {
+  "gt_arm": "Opus-5",
+  "n_statements": 281,
+  "no_model_inference_in_rollup": true
+ },
+ "gt_corrected_accuracy": {
+  "csv_vs_gt": null,
+  "luna_vs_gt": {
+   "correction_2_fx_prompt_gap": {
+    "CLIENT_IMPACT": "Luna is still WRONG for the client on these rows -- the client wants the billed rupee figure. Fixing the prompt is a one-line change; UNVERIFIED until a sweep runs with it.",
+    "amount_cells_affected": 0,
+    "basis": "The GT prompt requires the RUPEE amount with INR on a converted foreign spend (gt298_lib.py:275). Neither the client's baseline prompt nor the refined HDFC prompt states which of the two printed amounts wins, and both say to use an explicitly stated currency code. Luna followed its own instrument. This is a PROMPT GAP (mine), disclosed, not a silent correction.",
+    "currency_cells_affected": 23,
+    "examples": [
+     {
+      "desc": "NDAI.CHAT514-286002",
+      "gt_amount": 1440.88,
+      "gt_currency": "INR",
+      "luna_amount": 1440.88,
+      "luna_currency": "USD",
+      "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+     },
+     {
+      "desc": "ZEROSSL* ZEROSSLVIENNA",
+      "gt_amount": 1907.64,
+      "gt_currency": "INR",
+      "luna_amount": 1907.64,
+      "luna_currency": "USD",
+      "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+     },
+     {
+      "desc": "ZEROSSL* ZEROSSLVIENNA",
+      "gt_amount": 1335.73,
+      "gt_currency": "INR",
+      "luna_amount": 1335.73,
+      "luna_currency": "USD",
+      "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+     },
+     {
+      "desc": "CFA Institute      4349515499                               ",
+      "gt_amount": 101013.09,
+      "gt_currency": "INR",
+      "luna_amount": 101013.09,
+      "luna_currency": "USD",
+      "sid": "decrypt_1451112003_194d892a4b75a471_5523XXXXXXXXXX23_05_02_2025"
+     },
+     {
+      "desc": "SWISSOTEL NANKAI OSAKAOSAKA",
+      "gt_amount": 328.68,
+      "gt_currency": "INR",
+      "luna_amount": 328.68,
+      "luna_currency": "JPY",
+      "sid": "decrypt_170594703_19daf0e13991add5_5523XXXXXXXXXX09_20_04_2026_333"
+     },
+     {
+      "desc": "MERCURE TOKYO HIBIYATOKYO",
+      "gt_amount": 2737.21,
+      "gt_currency": "INR",
+      "luna_amount": 2737.21,
+      "luna_currency": "JPY",
+      "sid": "decrypt_170594703_19daf0e13991add5_5523XXXXXXXXXX09_20_04_2026_333"
+     },
+     {
+      "desc": "UBER *TRIP HELP.UBER.COM help.uber.",
+      "gt_amount": 622.05,
+      "gt_currency": "INR",
+      "luna_amount": 622.05,
+      "luna_currency": "USD",
+      "sid": "decrypt_2056820968_19e44b4d159aa50d_4632XXXXXXXXXX85_19_05_2026_453"
+     },
+     {
+      "desc": "MAC Cosmetics Online   New York                    USD 144.2",
+      "gt_amount": 11533.6,
+      "gt_currency": "INR",
+      "luna_amount": 11533.6,
+      "luna_currency": "USD",
+      "sid": "decrypt_2096534660_1836357fd5f1878b_4572XXXXXXXXXX51_21_09_2022"
+     },
+     {
+      "desc": "MAC Cosmetics Online   New York                    USD 28.73",
+      "gt_amount": 2290.85,
+      "gt_currency": "INR",
+      "luna_amount": 2290.85,
+      "luna_currency": "USD",
+      "sid": "decrypt_2096534660_1836357fd5f1878b_4572XXXXXXXXXX51_21_09_2022"
+     },
+     {
+      "desc": "MAC Cosmetics Online   New York                    USD 9.56",
+      "gt_amount": 762.29,
+      "gt_currency": "INR",
+      "luna_amount": 762.29,
+      "luna_currency": "USD",
+      "sid": "decrypt_2096534660_1836357fd5f1878b_4572XXXXXXXXXX51_21_09_2022"
+     },
+     {
+      "desc": "WWW.G2G.COM     SINGAPORE",
+      "gt_amount": 5528.74,
+      "gt_currency": "INR",
+      "luna_amount": 5528.74,
+      "luna_currency": "USD",
+      "sid": "decrypt_336089883_194914c4c670757d_5181XXXXXXXXXX11_22_01_2025"
+     },
+     {
+      "desc": "RAZER     SINGAPORE",
+      "gt_amount": 851.94,
+      "gt_currency": "INR",
+      "luna_amount": 851.94,
+      "luna_currency": "USD",
+      "sid": "decrypt_336089883_194914c4c670757d_5181XXXXXXXXXX11_22_01_2025"
+     }
+    ],
+    "fields": [
+     {
+      "as_measured_accuracy": 0.9903,
+      "as_measured_correct": 4593,
+      "cells_excluded": 23,
+      "corrected_accuracy": 0.9953,
+      "corrected_correct": 4616,
+      "exclusion_basis": "FX instrument asymmetry",
+      "field": "currency",
+      "n": 4638
+     },
+     {
+      "as_measured_accuracy": 0.9966,
+      "as_measured_correct": 4622,
+      "cells_excluded": 0,
+      "corrected_accuracy": 0.9966,
+      "corrected_correct": 4622,
+      "exclusion_basis": "FX instrument asymmetry",
+      "field": "amount",
+      "n": 4638
+     }
+    ],
+    "fx_rows_affected": 23,
+    "fx_statements_affected": 7
+   },
+   "headline_unchanged": true
+  },
+  "separate_rejectable_corrections": {
+   "correction_1_csv_wrong_cells": {
+    "ambiguous_by_field": {
+     "amount": 21,
+     "currency": 78,
+     "date": 2,
+     "description": 1,
+     "direction": 6
+    },
+    "basis": "Luna-vs-CSV is AGREEMENT. PDF-adjudicated CSV_WRONG cells are Luna being right and are removed from Luna's disagreement count.",
+    "csv_wrong_by_field": {
+     "amount": 69,
+     "date": 6,
+     "description": 274,
+     "direction": 52
+    },
+    "fields": [
+     {
+      "as_measured_accuracy": 0.9983,
+      "as_measured_correct": 4628,
+      "cells_excluded": 6,
+      "corrected_accuracy": 0.9996,
+      "corrected_correct": 4634,
+      "exclusion_basis": "PDF-adjudicated CSV_WRONG",
+      "field": "date",
+      "n": 4636
+     },
+     {
+      "as_measured_accuracy": 0.917,
+      "as_measured_correct": 4251,
+      "cells_excluded": 274,
+      "corrected_accuracy": 0.9761,
+      "corrected_correct": 4525,
+      "exclusion_basis": "PDF-adjudicated CSV_WRONG",
+      "field": "description",
+      "n": 4636
+     },
+     {
+      "as_measured_accuracy": 0.9806,
+      "as_measured_correct": 4546,
+      "cells_excluded": 69,
+      "corrected_accuracy": 0.9955,
+      "corrected_correct": 4615,
+      "exclusion_basis": "PDF-adjudicated CSV_WRONG",
+      "field": "amount",
+      "n": 4636
+     },
+     {
+      "as_measured_accuracy": 0.9819,
+      "as_measured_correct": 4552,
+      "cells_excluded": 52,
+      "corrected_accuracy": 0.9931,
+      "corrected_correct": 4604,
+      "exclusion_basis": "PDF-adjudicated CSV_WRONG",
+      "field": "direction",
+      "n": 4636
+     },
+     {
+      "as_measured_accuracy": 0.9832,
+      "as_measured_correct": 4558,
+      "cells_excluded": 0,
+      "corrected_accuracy": 0.9832,
+      "corrected_correct": 4558,
+      "exclusion_basis": "PDF-adjudicated CSV_WRONG",
+      "field": "currency",
+      "n": 4636
+     }
+    ],
+    "luna_wrong_by_field": {
+     "description": 111,
+     "direction": 32
+    }
+   },
+   "correction_2_fx_prompt_gap": {
+    "CLIENT_IMPACT": "Luna is still WRONG for the client on these rows -- the client wants the billed rupee figure. Fixing the prompt is a one-line change; UNVERIFIED until a sweep runs with it.",
+    "amount_cells_affected": 0,
+    "basis": "The GT prompt requires the RUPEE amount with INR on a converted foreign spend (gt298_lib.py:275). Neither the client's baseline prompt nor the refined HDFC prompt states which of the two printed amounts wins, and both say to use an explicitly stated currency code. Luna followed its own instrument. This is a PROMPT GAP (mine), disclosed, not a silent correction.",
+    "currency_cells_affected": 23,
+    "examples": [
+     {
+      "desc": "NDAI.CHAT514-286002",
+      "gt_amount": 1440.88,
+      "gt_currency": "INR",
+      "luna_amount": 1440.88,
+      "luna_currency": "USD",
+      "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+     },
+     {
+      "desc": "ZEROSSL* ZEROSSLVIENNA",
+      "gt_amount": 1907.64,
+      "gt_currency": "INR",
+      "luna_amount": 1907.64,
+      "luna_currency": "USD",
+      "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+     },
+     {
+      "desc": "ZEROSSL* ZEROSSLVIENNA",
+      "gt_amount": 1335.73,
+      "gt_currency": "INR",
+      "luna_amount": 1335.73,
+      "luna_currency": "USD",
+      "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+     },
+     {
+      "desc": "CFA Institute      4349515499                               ",
+      "gt_amount": 101013.09,
+      "gt_currency": "INR",
+      "luna_amount": 101013.09,
+      "luna_currency": "USD",
+      "sid": "decrypt_1451112003_194d892a4b75a471_5523XXXXXXXXXX23_05_02_2025"
+     },
+     {
+      "desc": "SWISSOTEL NANKAI OSAKAOSAKA",
+      "gt_amount": 328.68,
+      "gt_currency": "INR",
+      "luna_amount": 328.68,
+      "luna_currency": "JPY",
+      "sid": "decrypt_170594703_19daf0e13991add5_5523XXXXXXXXXX09_20_04_2026_333"
+     },
+     {
+      "desc": "MERCURE TOKYO HIBIYATOKYO",
+      "gt_amount": 2737.21,
+      "gt_currency": "INR",
+      "luna_amount": 2737.21,
+      "luna_currency": "JPY",
+      "sid": "decrypt_170594703_19daf0e13991add5_5523XXXXXXXXXX09_20_04_2026_333"
+     },
+     {
+      "desc": "UBER *TRIP HELP.UBER.COM help.uber.",
+      "gt_amount": 622.05,
+      "gt_currency": "INR",
+      "luna_amount": 622.05,
+      "luna_currency": "USD",
+      "sid": "decrypt_2056820968_19e44b4d159aa50d_4632XXXXXXXXXX85_19_05_2026_453"
+     },
+     {
+      "desc": "MAC Cosmetics Online   New York                    USD 144.2",
+      "gt_amount": 11533.6,
+      "gt_currency": "INR",
+      "luna_amount": 11533.6,
+      "luna_currency": "USD",
+      "sid": "decrypt_2096534660_1836357fd5f1878b_4572XXXXXXXXXX51_21_09_2022"
+     },
+     {
+      "desc": "MAC Cosmetics Online   New York                    USD 28.73",
+      "gt_amount": 2290.85,
+      "gt_currency": "INR",
+      "luna_amount": 2290.85,
+      "luna_currency": "USD",
+      "sid": "decrypt_2096534660_1836357fd5f1878b_4572XXXXXXXXXX51_21_09_2022"
+     },
+     {
+      "desc": "MAC Cosmetics Online   New York                    USD 9.56",
+      "gt_amount": 762.29,
+      "gt_currency": "INR",
+      "luna_amount": 762.29,
+      "luna_currency": "USD",
+      "sid": "decrypt_2096534660_1836357fd5f1878b_4572XXXXXXXXXX51_21_09_2022"
+     },
+     {
+      "desc": "WWW.G2G.COM     SINGAPORE",
+      "gt_amount": 5528.74,
+      "gt_currency": "INR",
+      "luna_amount": 5528.74,
+      "luna_currency": "USD",
+      "sid": "decrypt_336089883_194914c4c670757d_5181XXXXXXXXXX11_22_01_2025"
+     },
+     {
+      "desc": "RAZER     SINGAPORE",
+      "gt_amount": 851.94,
+      "gt_currency": "INR",
+      "luna_amount": 851.94,
+      "luna_currency": "USD",
+      "sid": "decrypt_336089883_194914c4c670757d_5181XXXXXXXXXX11_22_01_2025"
+     }
+    ],
+    "fields": [
+     {
+      "as_measured_accuracy": 0.9903,
+      "as_measured_correct": 4593,
+      "cells_excluded": 23,
+      "corrected_accuracy": 0.9953,
+      "corrected_correct": 4616,
+      "exclusion_basis": "FX instrument asymmetry",
+      "field": "currency",
+      "n": 4638
+     },
+     {
+      "as_measured_accuracy": 0.9966,
+      "as_measured_correct": 4622,
+      "cells_excluded": 0,
+      "corrected_accuracy": 0.9966,
+      "corrected_correct": 4622,
+      "exclusion_basis": "FX instrument asymmetry",
+      "field": "amount",
+      "n": 4638
+     }
+    ],
+    "fx_rows_affected": 23,
+    "fx_statements_affected": 7
+   }
+  }
+ },
+ "gt_output_health": {
+  "gt_full": {
+   "capped_records": [],
+   "finish_reasons": [
+    "stop"
+   ],
+   "headroom_vs_lowest_cap_pct": 33.3,
+   "max_completion_observed": 21356,
+   "max_tokens_now": 64000,
+   "max_tokens_values_in_records": [
+    32000,
+    64000
+   ],
+   "records": 281,
+   "run_dir": "gt_full",
+   "worst_sid": "decrypt_879728587_18a0b7c020b06bf5_3611XXXXXXXX51_18_08_2023",
+   "worst_txn": 223
+  },
+  "phase1_baseline": {
+   "capped_records": [],
+   "finish_reasons": [
+    "stop"
+   ],
+   "headroom_vs_lowest_cap_pct": 87.8,
+   "max_completion_observed": 11688,
+   "max_tokens_now": 96000,
+   "max_tokens_values_in_records": [
+    96000
+   ],
+   "records": 10,
+   "run_dir": "phase1_baseline",
+   "worst_sid": "decrypt_879728587_18a0b7c020b06bf5_3611XXXXXXXX51_18_08_2023",
+   "worst_txn": 223
+  },
+  "phase2_refined": {
+   "capped_records": [],
+   "finish_reasons": [
+    "stop"
+   ],
+   "headroom_vs_lowest_cap_pct": 88.0,
+   "max_completion_observed": 11553,
+   "max_tokens_now": 96000,
+   "max_tokens_values_in_records": [
+    96000
+   ],
+   "records": 10,
+   "run_dir": "phase2_refined",
+   "worst_sid": "decrypt_879728587_18a0b7c020b06bf5_3611XXXXXXXX51_18_08_2023",
+   "worst_txn": 223
+  },
+  "phase3_refined": {
+   "capped_records": [],
+   "finish_reasons": [
+    "stop"
+   ],
+   "headroom_vs_lowest_cap_pct": 87.9,
+   "max_completion_observed": 11627,
+   "max_tokens_now": 96000,
+   "max_tokens_values_in_records": [
+    96000
+   ],
+   "records": 281,
+   "run_dir": "phase3_refined",
+   "worst_sid": "decrypt_879728587_18a0b7c020b06bf5_3611XXXXXXXX51_18_08_2023",
+   "worst_txn": 223
+  }
+ },
+ "matcher": {
+  "admission": "description similarity only",
+  "assignment": "greedy one-to-one over globally sorted similarity",
+  "description_similarity_threshold": 0.55,
+  "order_sensitive": false,
+  "warning": "row-alignment metrics are not correctness metrics"
+ },
+ "notes": {
+  "detection_source_counts": {
+   "GEMINI": 300
+  },
+  "filenames_with_spaces": 10,
+  "row_counts": {
+   "csv_rows": 4638,
+   "luna_rows": 4639,
+   "pairs": 4636,
+   "statements": 281,
+   "statements_with_csv_only_rows": 2,
+   "statements_with_luna_only_rows": 3
+  },
+  "uppercase_PDF": 92
+ },
+ "pdf_adjudication": {
+  "findings_cap_correction": {
+   "corrected_description": {
+    "AMBIGUOUS_IN_PDF": 1,
+    "BOTH_WRONG": 1,
+    "CSV_WRONG": 273,
+    "LUNA_WRONG": 110,
+    "disagreements": 385,
+    "luna_right_share_of_separable": 0.7109,
+    "separable": 384
+   },
+   "corrected_overall": {
+    "AMBIGUOUS_IN_PDF": 108,
+    "BOTH_WRONG": 7,
+    "CSV_WRONG": 394,
+    "LUNA_WRONG": 136
+   },
+   "delta": {
+    "AMBIGUOUS_IN_PDF": 1,
+    "BOTH_WRONG": 0,
+    "CSV_WRONG": 185,
+    "LUNA_WRONG": 79,
+    "disagreements": 265
+   },
+   "old_overall": {
+    "AMBIGUOUS_IN_PDF": 107,
+    "BOTH_WRONG": 7,
+    "CSV_WRONG": 209,
+    "LUNA_WRONG": 57
+   },
+   "old_truncated_description": {
+    "AMBIGUOUS_IN_PDF": 0,
+    "BOTH_WRONG": 1,
+    "CSV_WRONG": 88,
+    "LUNA_WRONG": 31,
+    "disagreements": 120
+   }
+  },
+  "glaring_misses_by_field": {
+   "incumbent": {
+    "amount": 69,
+    "cardDisplayName": 3,
+    "date": 6,
+    "description": 273,
+    "direction": 46,
+    "network": 23
+   },
+   "luna": {
+    "cardDisplayName": 10,
+    "description": 110,
+    "direction": 26,
+    "network": 2
+   }
+  },
+  "glaring_misses_counts": {
+   "ambiguous_in_pdf": 119,
+   "both_wrong": 9,
+   "incumbent_substantive_errors": 420,
+   "luna_substantive_errors": 148,
+   "statements_where_csv_lacks_rows_luna_has": 3,
+   "statements_where_luna_lacks_rows_csv_has": 2
+  },
+  "statement": {
+   "by_field": {
+    "cardDisplayName": {
+     "AMBIGUOUS_IN_PDF": 11,
+     "BOTH_WRONG": 2,
+     "CSV_WRONG": 3,
+     "LUNA_WRONG": 10,
+     "disagreements": 26,
+     "luna_right_share_of_separable": 0.2,
+     "separable": 15
+    },
+    "network": {
+     "AMBIGUOUS_IN_PDF": 0,
+     "BOTH_WRONG": 0,
+     "CSV_WRONG": 23,
+     "LUNA_WRONG": 2,
+     "disagreements": 25,
+     "luna_right_share_of_separable": 0.92,
+     "separable": 25
+    }
+   },
+   "overall": {
+    "AMBIGUOUS_IN_PDF": 11,
+    "BOTH_WRONG": 2,
+    "CSV_WRONG": 26,
+    "LUNA_WRONG": 12
+   },
+   "overall_heldout": {
+    "AMBIGUOUS_IN_PDF": 10,
+    "BOTH_WRONG": 2,
+    "CSV_WRONG": 26,
+    "LUNA_WRONG": 12
+   },
+   "total_disagreements": 51
+  },
+  "statement_adjudicator_cap_check": "no findings cap; [:limit] only bounds duplicate rectangle search results per value",
+  "transaction": {
+   "by_field": {
+    "amount": {
+     "AMBIGUOUS_IN_PDF": 21,
+     "BOTH_WRONG": 0,
+     "CSV_WRONG": 69,
+     "LUNA_WRONG": 0,
+     "disagreements": 90,
+     "luna_right_share_of_separable": 1.0,
+     "separable": 69
+    },
+    "currency": {
+     "AMBIGUOUS_IN_PDF": 78,
+     "BOTH_WRONG": 0,
+     "CSV_WRONG": 0,
+     "LUNA_WRONG": 0,
+     "disagreements": 78,
+     "luna_right_share_of_separable": null,
+     "separable": 0
+    },
+    "date": {
+     "AMBIGUOUS_IN_PDF": 2,
+     "BOTH_WRONG": 0,
+     "CSV_WRONG": 6,
+     "LUNA_WRONG": 0,
+     "disagreements": 8,
+     "luna_right_share_of_separable": 1.0,
+     "separable": 6
+    },
+    "description": {
+     "AMBIGUOUS_IN_PDF": 1,
+     "BOTH_WRONG": 1,
+     "CSV_WRONG": 273,
+     "LUNA_WRONG": 110,
+     "disagreements": 385,
+     "luna_right_share_of_separable": 0.7109,
+     "separable": 384
+    },
+    "direction": {
+     "AMBIGUOUS_IN_PDF": 6,
+     "BOTH_WRONG": 6,
+     "CSV_WRONG": 46,
+     "LUNA_WRONG": 26,
+     "disagreements": 84,
+     "luna_right_share_of_separable": 0.5897,
+     "separable": 78
+    }
+   },
+   "findings_are_complete": true,
+   "n_findings": 645,
+   "overall": {
+    "AMBIGUOUS_IN_PDF": 108,
+    "BOTH_WRONG": 7,
+    "CSV_WRONG": 394,
+    "LUNA_WRONG": 136
+   }
+  }
+ },
+ "record_counts": {
+  "csv_rows": 300,
+  "csv_rows_unmatched": 19,
+  "directory_entries": 282,
+  "failed_download_file_entries": 19,
+  "incumbent_csv_joined": 281,
+  "pdfs_on_disk": 281,
+  "pdfs_without_csv_row": 0,
+  "scoreable": 281,
+  "unmatched_links_equal_failed_download_links": true,
+  "unmatched_links_set_sizes": {
+   "failed": 19,
+   "unmatched": 19
+  }
+ },
+ "statement_date_rule": null,
+ "status": "complete; artifacts recomputed without model inference",
+ "tokens": {
+  "comparative": {
+   "gt_to_luna_input_ratio": 1.4,
+   "gt_to_luna_output_ratio": 1.29,
+   "luna_reasoning_pct_of_output": 32.4,
+   "reasoning_is_inside_output": true
+  },
+  "luna_refined": {
+   "grand_total": 2994962,
+   "input_max": 15201,
+   "input_mean": 9004.4,
+   "input_median": 9034,
+   "input_total": 2530225,
+   "label": "luna_refined",
+   "n_calls": 281,
+   "non_additive": 0,
+   "output_max": 11627,
+   "output_mean": 1653.9,
+   "output_median": 1301,
+   "output_total": 464737,
+   "prompt_plus_completion_equals_total": 281,
+   "reasoning_max": 2486,
+   "reasoning_mean": 535.8,
+   "reasoning_median": 462,
+   "reasoning_nested_inside_completion": true,
+   "reasoning_reported_on_n_calls": 281,
+   "reasoning_total": 150562
+  },
+  "opus_gt": {
+   "cost_per_statement_usd": 0.1165,
+   "grand_total": 4139116,
+   "input_cost_usd": 17.69,
+   "input_max": 23095,
+   "input_mean": 12589.4,
+   "input_median": 12798,
+   "input_total": 3537611,
+   "label": "gt_opus",
+   "n_calls": 281,
+   "non_additive": 0,
+   "output_cost_usd": 15.04,
+   "output_max": 21356,
+   "output_mean": 2140.6,
+   "output_median": 1526,
+   "output_total": 601505,
+   "pricing_usd_per_million": {
+    "input": 5,
+    "output": 25
+   },
+   "prompt_plus_completion_equals_total": 281,
+   "reasoning_max": null,
+   "reasoning_mean": null,
+   "reasoning_median": null,
+   "reasoning_nested_inside_completion": null,
+   "reasoning_reported_on_n_calls": 0,
+   "reasoning_total": 0,
+   "total_cost_usd": 32.73
+  }
+ }
+}

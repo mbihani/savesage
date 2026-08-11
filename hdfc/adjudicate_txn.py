@@ -355,13 +355,12 @@ def main():
                             v = "BOTH_WRONG"
                         ev = {"luna_printed": lp, "csv_printed": cp}
                 counts[f][v] += 1
-                if len([x for x in findings if x["field"] == f]) < 120:
-                    findings.append({
-                        "sid": m["sid"], "field": f, "verdict": v, "sim": round(sim, 3),
-                        "luna": lt.get(f), "csv": ct.get(f),
-                        "luna_desc": lt.get("description"), "csv_desc": ct.get("description"),
-                        "evidence": ev, "heldout": m["sid"] not in tune,
-                    })
+                findings.append({
+                    "sid": m["sid"], "field": f, "verdict": v, "sim": round(sim, 3),
+                    "luna": lt.get(f), "csv": ct.get(f),
+                    "luna_desc": lt.get("description"), "csv_desc": ct.get("description"),
+                    "evidence": ev, "heldout": m["sid"] not in tune,
+                })
 
     corrected = {}
     for f, c in counts.items():

@@ -1,0 +1,203 @@
+{
+ "CORRECTION_1_luna_vs_CSV_agreement_minus_CSV_WRONG": {
+  "ambiguous_by_field": {
+   "amount": 21,
+   "currency": 78,
+   "date": 2,
+   "description": 1,
+   "direction": 6
+  },
+  "basis": "Luna-vs-CSV is AGREEMENT. PDF-adjudicated CSV_WRONG cells are Luna being right and are removed from Luna's disagreement count.",
+  "csv_wrong_by_field": {
+   "amount": 69,
+   "date": 6,
+   "description": 274,
+   "direction": 52
+  },
+  "fields": [
+   {
+    "as_measured_accuracy": 0.9983,
+    "as_measured_correct": 4628,
+    "cells_excluded": 6,
+    "corrected_accuracy": 0.9996,
+    "corrected_correct": 4634,
+    "exclusion_basis": "PDF-adjudicated CSV_WRONG",
+    "field": "date",
+    "n": 4636
+   },
+   {
+    "as_measured_accuracy": 0.917,
+    "as_measured_correct": 4251,
+    "cells_excluded": 274,
+    "corrected_accuracy": 0.9761,
+    "corrected_correct": 4525,
+    "exclusion_basis": "PDF-adjudicated CSV_WRONG",
+    "field": "description",
+    "n": 4636
+   },
+   {
+    "as_measured_accuracy": 0.9806,
+    "as_measured_correct": 4546,
+    "cells_excluded": 69,
+    "corrected_accuracy": 0.9955,
+    "corrected_correct": 4615,
+    "exclusion_basis": "PDF-adjudicated CSV_WRONG",
+    "field": "amount",
+    "n": 4636
+   },
+   {
+    "as_measured_accuracy": 0.9819,
+    "as_measured_correct": 4552,
+    "cells_excluded": 52,
+    "corrected_accuracy": 0.9931,
+    "corrected_correct": 4604,
+    "exclusion_basis": "PDF-adjudicated CSV_WRONG",
+    "field": "direction",
+    "n": 4636
+   },
+   {
+    "as_measured_accuracy": 0.9832,
+    "as_measured_correct": 4558,
+    "cells_excluded": 0,
+    "corrected_accuracy": 0.9832,
+    "corrected_correct": 4558,
+    "exclusion_basis": "PDF-adjudicated CSV_WRONG",
+    "field": "currency",
+    "n": 4636
+   }
+  ],
+  "luna_wrong_by_field": {
+   "description": 111,
+   "direction": 32
+  }
+ },
+ "CORRECTION_2_FX_instrument_asymmetry_vs_GT": {
+  "CLIENT_IMPACT": "Luna is still WRONG for the client on these rows -- the client wants the billed rupee figure. Fixing the prompt is a one-line change; UNVERIFIED until a sweep runs with it.",
+  "amount_cells_affected": 0,
+  "basis": "The GT prompt requires the RUPEE amount with INR on a converted foreign spend (gt298_lib.py:275). Neither the client's baseline prompt nor the refined HDFC prompt states which of the two printed amounts wins, and both say to use an explicitly stated currency code. Luna followed its own instrument. This is a PROMPT GAP (mine), disclosed, not a silent correction.",
+  "currency_cells_affected": 23,
+  "examples": [
+   {
+    "desc": "NDAI.CHAT514-286002",
+    "gt_amount": 1440.88,
+    "gt_currency": "INR",
+    "luna_amount": 1440.88,
+    "luna_currency": "USD",
+    "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+   },
+   {
+    "desc": "ZEROSSL* ZEROSSLVIENNA",
+    "gt_amount": 1907.64,
+    "gt_currency": "INR",
+    "luna_amount": 1907.64,
+    "luna_currency": "USD",
+    "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+   },
+   {
+    "desc": "ZEROSSL* ZEROSSLVIENNA",
+    "gt_amount": 1335.73,
+    "gt_currency": "INR",
+    "luna_amount": 1335.73,
+    "luna_currency": "USD",
+    "sid": "decrypt_1028274832_19fcb3b4c55f8f3b_4854XXXXXXXXXX53_03_08_2026_885"
+   },
+   {
+    "desc": "CFA Institute      4349515499                               ",
+    "gt_amount": 101013.09,
+    "gt_currency": "INR",
+    "luna_amount": 101013.09,
+    "luna_currency": "USD",
+    "sid": "decrypt_1451112003_194d892a4b75a471_5523XXXXXXXXXX23_05_02_2025"
+   },
+   {
+    "desc": "SWISSOTEL NANKAI OSAKAOSAKA",
+    "gt_amount": 328.68,
+    "gt_currency": "INR",
+    "luna_amount": 328.68,
+    "luna_currency": "JPY",
+    "sid": "decrypt_170594703_19daf0e13991add5_5523XXXXXXXXXX09_20_04_2026_333"
+   },
+   {
+    "desc": "MERCURE TOKYO HIBIYATOKYO",
+    "gt_amount": 2737.21,
+    "gt_currency": "INR",
+    "luna_amount": 2737.21,
+    "luna_currency": "JPY",
+    "sid": "decrypt_170594703_19daf0e13991add5_5523XXXXXXXXXX09_20_04_2026_333"
+   },
+   {
+    "desc": "UBER *TRIP HELP.UBER.COM help.uber.",
+    "gt_amount": 622.05,
+    "gt_currency": "INR",
+    "luna_amount": 622.05,
+    "luna_currency": "USD",
+    "sid": "decrypt_2056820968_19e44b4d159aa50d_4632XXXXXXXXXX85_19_05_2026_453"
+   },
+   {
+    "desc": "MAC Cosmetics Online   New York                    USD 144.2",
+    "gt_amount": 11533.6,
+    "gt_currency": "INR",
+    "luna_amount": 11533.6,
+    "luna_currency": "USD",
+    "sid": "decrypt_2096534660_1836357fd5f1878b_4572XXXXXXXXXX51_21_09_2022"
+   },
+   {
+    "desc": "MAC Cosmetics Online   New York                    USD 28.73",
+    "gt_amount": 2290.85,
+    "gt_currency": "INR",
+    "luna_amount": 2290.85,
+    "luna_currency": "USD",
+    "sid": "decrypt_2096534660_1836357fd5f1878b_4572XXXXXXXXXX51_21_09_2022"
+   },
+   {
+    "desc": "MAC Cosmetics Online   New York                    USD 9.56",
+    "gt_amount": 762.29,
+    "gt_currency": "INR",
+    "luna_amount": 762.29,
+    "luna_currency": "USD",
+    "sid": "decrypt_2096534660_1836357fd5f1878b_4572XXXXXXXXXX51_21_09_2022"
+   },
+   {
+    "desc": "WWW.G2G.COM     SINGAPORE",
+    "gt_amount": 5528.74,
+    "gt_currency": "INR",
+    "luna_amount": 5528.74,
+    "luna_currency": "USD",
+    "sid": "decrypt_336089883_194914c4c670757d_5181XXXXXXXXXX11_22_01_2025"
+   },
+   {
+    "desc": "RAZER     SINGAPORE",
+    "gt_amount": 851.94,
+    "gt_currency": "INR",
+    "luna_amount": 851.94,
+    "luna_currency": "USD",
+    "sid": "decrypt_336089883_194914c4c670757d_5181XXXXXXXXXX11_22_01_2025"
+   }
+  ],
+  "fields": [
+   {
+    "as_measured_accuracy": 0.9903,
+    "as_measured_correct": 4593,
+    "cells_excluded": 23,
+    "corrected_accuracy": 0.9953,
+    "corrected_correct": 4616,
+    "exclusion_basis": "FX instrument asymmetry",
+    "field": "currency",
+    "n": 4638
+   },
+   {
+    "as_measured_accuracy": 0.9966,
+    "as_measured_correct": 4622,
+    "cells_excluded": 0,
+    "corrected_accuracy": 0.9966,
+    "corrected_correct": 4622,
+    "exclusion_basis": "FX instrument asymmetry",
+    "field": "amount",
+    "n": 4638
+   }
+  ],
+  "fx_rows_affected": 23,
+  "fx_statements_affected": 7
+ },
+ "purpose": "corrected scores after PDF adjudication + disclosed instrument asymmetry"
+}
