@@ -30,8 +30,16 @@ TRANSACTION RULES:
   decimal point: "15,050.00" is 15050.00 and MUST NOT be emitted as 15.05. Only the "."
   separates rupees from paise.
 - Extract every transaction exactly as shown in the statement.
-- Copy transaction descriptions EXACTLY as they appear in the statement. Do NOT shorten,
-  summarize, paraphrase, or omit any characters from the description.
+- The printed date column is separate from the narration. NEVER prepend the transaction
+  date to the description, whether or not a "TRANSACTIONS FOR <NAME>" header is printed.
+- Copy transaction descriptions EXACTLY as they appear in the statement, including text
+  that looks mangled, misspelled, truncated mid-word, or like a broken URL. A truncated
+  or garbled merchant string is the statement's own truncation and MUST be preserved
+  verbatim. Do NOT complete, correct, expand, reconstruct, shorten, summarize, or
+  paraphrase it.
+- Preserve every terminal token visibly printed in that transaction's description cell,
+  including a country code or trailing qualifier. Never omit a printed terminal token,
+  and never supply a country code or qualifier that is not printed.
 - Do NOT infer, fabricate, aggregate, or compute missing transaction fields.
 - COMPLETENESS IS MANDATORY. Extract EVERY printed transaction row, on EVERY page, in
   BOTH the leading band and every "TRANSACTIONS FOR" section, including fees, taxes,
@@ -52,7 +60,8 @@ TRANSACTION RULES:
 - For direction
   - ONLY allowed values are "DEBIT" or "CREDIT". No other values are acceptable.
   - THE PRINTED C/D COLUMN IS AUTHORITATIVE AND OVERRIDES EVERY OTHER SIGNAL,
-    including your reading of the description:
+    including narration wording. Never infer direction from narration when a C/D marker
+    is present:
       - C  -> "CREDIT"
       - D  -> "DEBIT"
       - T (temporary credit) -> "CREDIT"
@@ -61,6 +70,9 @@ TRANSACTION RULES:
   - Only if a row carries no C/D marker at all, infer: purchases, fees, taxes, interest,
     markup and EMI instalments -> DEBIT; payments received, refunds, reversals, cashback
     credited and surcharge waivers -> CREDIT.
+  - For the marker-less SBI rows "TRANSFER TO FLEXIPAY INSTALLMENT", "TRANSFER TO MERCHANT
+    EMI", "TRANSFER TO ENCASH", and similar "TRANSFER TO ..." rows, use "CREDIT": the
+    amount moves out of the revolving purchase balance into an instalment plan.
   - NEVER output raw statement markers (e.g., "DR", "CR", "+", "C", "D") as the direction
     value.
 - For currency:

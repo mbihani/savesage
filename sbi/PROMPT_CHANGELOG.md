@@ -258,6 +258,60 @@ provenance. Verified after reverting that all records carry a single
 Expected effect: fixes 2 known direction errors; upper bound ~14 rows corpus-wide
 (≈0.4% of 3,769). It is UNVERIFIED against the model — no run used it.
 
+## 2026-08-11 — SBI-only prompt repair after the 300-statement review
+
+No inference or re-sweep was run for these edits. Every impact below is a
+**PREDICTION / UNVERIFIED** pending an authorised re-sweep.
+
+### Edit 1 — preserve implausible-looking narration literally
+
+Strengthened literal transcription so mangled, misspelled, mid-word-truncated, and
+broken-URL-looking merchant text is preserved as the statement printed it, without
+completion, correction, expansion, or reconstruction. This targets **17 description
+cells (PREDICTION / UNVERIFIED)**, including 14 repeated broken-URL narrations on
+statement 1712093656 and the observed `ONLIOLUTION`, `RANGAREDD`, and `INTE` cases.
+
+### Edit 2 — keep the date column out of the description
+
+Made date/narration separation independent of the `TRANSACTIONS FOR <NAME>` header:
+the date column must never be prepended to the description, whether or not that header
+is printed. This targets **5 description cells on statement 636217952 (PREDICTION /
+UNVERIFIED)**; the layout is exposed on 65 statements without that header.
+
+### Edit 3 — preserve printed terminal tokens
+
+Required every visibly printed terminal description token, including country codes and
+qualifiers, to be retained, while forbidding supply of tokens not printed. This targets
+**3 description cells (PREDICTION / UNVERIFIED)**. The 13 printed trailing `IN` tokens
+on statement 1349187066 are already emitted correctly and are reference defects, so the
+rule deliberately preserves rather than removes them.
+
+### Edit 4 — direction authority and marker-less SBI transfers
+
+Reinforced that SBI's printed C/D marker overrides narration wording whenever present,
+and added the SBI-specific fallback that marker-less `TRANSFER TO FLEXIPAY INSTALLMENT`,
+`TRANSFER TO MERCHANT EMI`, `TRANSFER TO ENCASH`, and similar transfers are `CREDIT`.
+This targets **5–6 of the 7 direction cells (PREDICTION / UNVERIFIED)**; one of the seven
+is a reference defect. SBI's C/D column is safe and no other bank's glyph caveat applies.
+
+### Deliberately not changed — non-prompt-fixable or harmful targets
+
+- **52 date `both_null` rows:** Luna and the reference agree; the joint metric charge is
+  a scorer defect.
+- **71 undated tax/markup continuation rows:** inheriting the parent date is useful and
+  conflicts with GT rule 14; no rule was added to null continuation-row dates. Only the
+  3 inconsistent nulls merit a future consistency review.
+- **14 description cells:** the reference drops text genuinely printed, including the
+  trailing-country-code case; no prompt can improve those references.
+- **2,255 amount `format_only` cells:** integer/float serialization has identical digits
+  and numeric comparison already treats them as equal, so no serialization format was
+  pinned and the expected gain is exactly zero cells.
+- **14 `rewards.closingPoints` null disagreements:** the client cashback instruction and
+  shared GT rule 13 contradict each other; this requires a client decision.
+- The working leading-credit-band and two-reward-table rules were preserved; measured
+  row alignment is 3,527/3,527 with zero lifetime leaks.
+- No HDFC or ICICI rules were added, and the shared `GT_SCHEMA` was not changed.
+
 ## Anti-overfit note
 
 These 13 changes were tuned on 10 statements and tested on ~300 — a 30x
