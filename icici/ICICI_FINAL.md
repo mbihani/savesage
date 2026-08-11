@@ -56,11 +56,22 @@ Incumbent for comparison: `date` 99.95% (2 wrong), `amount` 98.68% (**52** wrong
 | dropped trailing country code (`IN`) | 92 | cosmetic |
 | **real character difference** | **12** | genuine |
 
-Only **12 of 4,097 rows** carry a real narration character difference, and those are
-largely casing (`fuel Surcharge` vs `Fuel Surcharge`, `MAKE MY TRIP` vs `Make My
-Trip`). This was independently re-derived by a second method that agreed on 12.
-**This is a prompt-level normalisation fix, not a model capability gap** — but it is a
-real gap and should not be waved away.
+Only **12 of 4,097 rows** carry a real narration character difference. Read from
+`final_scores.json → notes.desc_defect_classes`, **none of the 12 is a casing-only
+case.** They are: a dropped trailing ` US`; several where the *GT* carries a PDF
+line-wrap artifact and Luna is the stronger side (`CHURCHGA TE HOSPITALIT`,
+`McDonald s`); a **wrong UPI reference number** (`389476433876` vs `291859843978`);
+and a genuinely different merchant string (`MYNTRA DESIGNS PRIVATE L Bangalore IN`
+vs `Myntra BANGALORE IN`).
+
+**Correction:** an earlier revision of this document described these 12 as "largely
+casing" and cited `fuel Surcharge` / `MAKE MY TRIP`. That was wrong. Those examples
+came from a whitespace-insensitive probe that pairs rows differently from the scorer,
+so they were never members of this 12-cell class.
+
+Consequence: this class is **only partly prompt-addressable**. A literal-transcription
+instruction cannot fix a GT line-wrap artifact or a misread reference number, so no
+12-cell recovery should be predicted.
 
 ## 2. Read this before quoting any number
 
