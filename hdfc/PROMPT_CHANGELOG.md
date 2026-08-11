@@ -213,3 +213,32 @@ The prompt was tuned on 10 statements and is tested on the full scoreable set �
 extrapolation. `HDFC_REPORT.md` therefore reports every metric twice: over all statements
 and over the **held-out** set (all minus those 10). The 10 tuning ids are recorded in
 `corpus_profile.json` → `sample` and listed in the report.
+
+---
+
+## 2026-08-11 — HDFC transaction-column corrections
+
+Impact has not been measured because no inference or re-sweep was run. Every target
+below is a **PREDICTION / UNVERIFIED** pending an authorised re-sweep.
+
+- **FX billed rupee leg:** HDFC's two-line foreign-leg/billed-INR layout now requires
+  the billed rupee amount with currency `INR`, never the foreign leg or a mixed pairing.
+  Targets all 45 measured currency-error cells (43 USD→INR, 2 JPY→INR) and 14 of 16
+  measured amount-error cells. **PREDICTION / UNVERIFIED.**
+- **Description column isolation:** one positional five-column rule excludes clock time,
+  standalone EMI badge, reward points, amount markers/rupee glyph, foreign leg and the
+  decorative glyph from `description`, while preserving the existing bounded EMI rule.
+  Targets 79 measured description cells: EMI badge 29, FX leg 21, reward points 10,
+  clock time 9, credit marker 7 and rupee `C` 3. **PREDICTION / UNVERIFIED.**
+- **Trailing `-NN` discrimination:** column position determines whether `-NN` remains
+  narration or is excluded as reward points. Targets 26 measured description cells:
+  16 narration suffixes wrongly stripped and 10 reward-point values wrongly retained.
+  **PREDICTION / UNVERIFIED.**
+- **Marker-first direction:** the `+` immediately before the amount (or trailing `Cr`/`CR`)
+  is authoritative; signed reward points and narration wording are not credit markers.
+  Targets approximately 18–23 of 39 measured Luna-wrong direction cells.
+  **PREDICTION / UNVERIFIED.**
+
+Deliberately unchanged: the working rupee-`C` glyph section; `GT_SCHEMA`; reference,
+scorer and JSON artifacts; 49 GT/reference defects; 21-digit Ref# recognition; and the
+36 closed-space cells better handled by scorer normalisation.

@@ -37,6 +37,18 @@ TRANSACTION RULES:
   do NOT close the gap up into "SENDEAVOUR".
 - If the row prints a trailing reference in parentheses — "(Ref# 00000000000127018526971)" —
   it IS part of the printed narration. Include it verbatim. Do not drop or truncate it.
+- HDFC transaction rows have five positional columns:
+    date + clock time | NARRATION | signed reward points | [+] C amount | decorative glyph
+  `description` is ONLY the NARRATION column. Columns 1, 3, 4 and 5 frequently extract
+  onto adjacent lines; never join their text into the narration even though it genuinely
+  appears in the PDF. For example, extracted adjacent lines may read `05/07/2026 | 19:07
+  | EMI | PRESTIGEGHAZIABAD | + 76 | C 3,990.00 | l`; the five row columns still yield
+  description "PRESTIGEGHAZIABAD", not
+  "19:07 EMI PRESTIGEGHAZIABAD + 76 C l". Likewise, on an international row,
+  "USD 19.98" beside "ZEROSSL* ZEROSSLVIENNA" is not part of the description.
+  Decide whether a trailing `-NN` belongs to the description by COLUMN POSITION, not
+  by its pattern: keep narration text such as "IGST-VPS2607357151019-RATE 18.0 -23",
+  but exclude a separate reward-points value such as `- 64` from the description.
 - Do NOT prepend a row-type BADGE to the description. HDFC prints small standalone
   labels such as a line containing only "EMI" ABOVE the merchant narration of an
   instalment row. That badge is a row-type marker, not part of the merchant name:
@@ -60,24 +72,34 @@ TRANSACTION RULES:
   - For co-brand cards that display a CASHBACK EARNED or equivalent per-transaction column, populate rewardPointsOnThisTransaction from that column value for each transaction row. Do not leave it null when the column is present and shows a value.
 - For direction
   - ONLY allowed values are "DEBIT" or "CREDIT". No other values are acceptable.
-  - On an HDFC statement the ONLY reliable printed credit markers are:
+  - Use the printed amount marker FIRST; narration wording never overrides it. On an
+    HDFC statement the ONLY reliable printed credit markers are:
       - a "+" sign printed immediately before the amount ("+ C 2,600.00"), and
       - an explicit "Cr" / "CR" suffix AFTER the amount.
     A leading "C" that is part of "C <number>" is the rupee sign — see THE RUPEE GLYPH
     above — and carries NO direction information whatsoever.
-  - If no "+" and no "Cr" suffix is present, classify from the description:
-      - CREDIT: payments received by the bank ("CREDIT CARD PAYMENT", "BPPY CC PAYMENT",
-        "IMPS PMT", "NEFT", "TELE TRANSFER CREDIT", "Net Banking" repayment), refunds,
-        reversals, cashback credited, and any line explicitly labelled a credit.
-      - DEBIT: everything else — ordinary merchant spend, UPI spend, fees, GST/IGST,
-        interest, EMI instalments, cash withdrawals.
+  - A signed number in the separate reward-points column (for example `+ 76` or `+ 312`)
+    is NOT the credit marker. The credit marker is the `+` immediately before the amount,
+    even when reward points sit between narration and amount: `MYNTRA ... | - 8 |
+    + C 359.11` is CREDIT.
+  - If the amount has neither a leading `+` nor a trailing `Cr`/`CR`, the transaction is
+    DEBIT even when narration says REVERSAL, ADJ, reinstatement, cashback, refund, credit,
+    or AUTOPAY RETURNED. For example, `ADJ_5% Swiggy Cashback | C 21.38` is DEBIT;
+    if that same kind of row prints `+ C 21.38`, it is CREDIT. A refund paid out of the
+    card, such as `EXC PYT REFUND TO AC 5836`, is also DEBIT without the amount marker.
   - Note the asymmetry: on a UPI RuPay HDFC statement almost every row is a UPI DEBIT
     and only the one or two payment rows are CREDIT. If you are about to mark most rows
     on a statement CREDIT, you have misread the rupee glyph.
   - NEVER output raw statement markers (e.g., "DR", "CR", "+") as the direction value.
 - For currency:
-  - If the transaction row explicitly states a currency code (e.g., INR, USD, GBP) → use it.
   - A leading "C" is the rupee sign, so such an amount is INR.
+  - HDFC international rows may print the foreign-currency leg on its own adjacent line
+    within the row (for example `USD 19.98` or `JPY 564`) and the billed rupee amount to
+    its right (for example `C 1,907.64`). Report ONLY the billed rupee amount and set
+    currency to "INR". Never report the foreign amount, and never pair the billed rupee
+    amount with the foreign currency code.
+  - A row is non-INR only when the amount being reported is itself denominated in that
+    currency; in that case use its explicit ISO 4217 code.
   - If the transaction amount has a currency symbol (e.g., ₹ → INR, $ → USD) → map the symbol to its ISO 4217 currency code and use it.
   - If no currency is stated per transaction, inherit the default currency from the statement header or account summary section.
   - If currency cannot be determined by any of the above → set to null.
