@@ -14,7 +14,33 @@
   "admission": "description_similarity_only",
   "assignment": "strict_1_to_1",
   "order_sensitive": false,
-  "test_matcher_noncircular": "PASS: all 4 non-circularity proof obligations hold"
+  "test_matcher_noncircular": "PASS: all 4 non-circularity proof obligations hold",
+  "what_the_matcher_test_does_NOT_prove": "test_matcher_noncircular.py proves the MATCHER does not admit pairs on date/amount/direction/currency. It says nothing about how the ROLL-UP labels the matcher's output. The 1.0 published before 2026-08-11 was a roll-up labelling defect one level above the matcher; test_rollup_honesty.py is the guard for that layer.",
+  "test_rollup_honesty": "PASS: no by-construction 1.0 published as a correctness headline"
+ },
+ "measurement_defect_correction": {
+  "date": "2026-08-11",
+  "severity": "BLOCKING -- invalidated the transaction headline of the previous roll-up",
+  "withdrawn_claims": {
+   "headline_verdicts.luna_transaction_micro_f1": 1.0,
+   "headline_verdicts.verdict": "Luna recovers every GT transaction row and materially outperforms the incumbent on card identity; remaining headline weakness is card last-four accuracy."
+  },
+  "mechanism": "score_phase3.run_pair derives micro_precision = rows_matched/rows_pred and micro_recall = rows_matched/rows_ref, where rows_matched comes from score_lib.match_txns_by_description -- a matcher that admits a pair on DESCRIPTION SIMILARITY ALONE (>=0.60, strict 1:1) and deliberately excludes date/amount/direction/currency from admission. Those ratios therefore measure ROW ADMISSION, not value agreement. ICICI narrations transcribe near-perfectly (mean description similarity 0.9992, 4,097/4,097 rows admitted, 304/304 statements with equal row counts), so precision, recall, micro-F1 and macro-F1 all saturate at exactly 1.0 BY CONSTRUCTION. build_final_scores then republished that block verbatim as `transaction_metrics` and hoisted micro_f1 into headline_verdicts as `luna_transaction_micro_f1`, converting an alignment statistic into a correctness claim. The per-field transaction verdicts that DO measure correctness were already being computed and were already NOT 1.0 (description 0.9280, amount 0.9995, direction 0.9988) -- they were simply not the number anyone read.",
+  "fix": "transaction_metrics is now {row_alignment, value_correctness, joint_row_correctness}; alignment ratios are renamed pairing_* and flagged is_correctness_claim=false; every exactly-1.0 metric carries an exactly_1_0_annotation explaining whether it is earned, corpus-constant, or arithmetically derived."
+ },
+ "self_comparison_guard": {
+  "statements_checked": 304,
+  "byte_identical_artifact_files": 0,
+  "is_self_comparison": false,
+  "statements_with_identical_full_transaction_dict_multiset": 29,
+  "statements_with_identical_multiset_after_numeric_normalisation": 178,
+  "_note": "0 byte-identical files means the two sides are independent artifacts, so nothing here is a value compared against itself. The exact-multiset figure is over the FULL transaction dict (7 keys incl. the 484-wrong txnType and int-vs-float amount serialisation), which is why it is far below the priority-field agreement rate -- it is a harder test, not a contradiction.",
+  "fields_that_disprove_self_comparison": {
+   "statementMeta.rawStatementId": "Luna null on 304/304 where the GT is populated",
+   "rewards.programType": "303/304 wrong_value",
+   "transactions[].txnType": "484/4096 wrong_value",
+   "cards[].cardMeta.lastFourDigit": "15/404 wrong_value"
+  }
  },
  "comparisons": {
   "luna_vs_gt": {
@@ -431,18 +457,530 @@
     }
    },
    "transaction_metrics": {
-    "statements": 304,
-    "rows_pred": 4097,
-    "rows_ref": 4097,
-    "rows_matched": 4097,
-    "micro_precision": 1.0,
-    "micro_recall": 1.0,
-    "micro_f1": 1.0,
-    "macro_f1": 1.0,
-    "mean_desc_sim": 0.9992,
-    "desc_exact_char_for_char": 3777,
-    "desc_exact_casefold": 3802,
-    "row_count_exact_match_statements": 304
+    "_schema": "SPLIT 2026-08-11 to repair a measurement defect: the previous single block reported description-pairing ratios (micro_precision/recall/f1, macro_f1) as transaction correctness. Alignment and correctness are now separate and separately labelled.",
+    "row_alignment": {
+     "_what_this_measures": "PAIRING-BASED ALIGNMENT ONLY -- NOT A CORRECTNESS CLAIM. Rows are admitted on description similarity alone (>=0.60, strict 1:1, order-insensitive); date, amount, direction and currency are excluded from admission by design. A 1.0 here means every row found a description twin. It says nothing about whether the paired values agree -- read value_correctness for that.",
+     "is_correctness_claim": false,
+     "admission_rule": "description similarity >= 0.60, strict 1:1, order-insensitive; date/amount/direction/currency excluded from admission",
+     "statements": 304,
+     "rows_pred": 4097,
+     "rows_ref": 4097,
+     "rows_matched": 4097,
+     "rows_missing_vs_reference": 0,
+     "pairing_precision": 1.0,
+     "pairing_recall": 1.0,
+     "pairing_f1": 1.0,
+     "pairing_macro_f1": 1.0,
+     "row_count_exact_match_statements": 304,
+     "mean_desc_sim": 0.9992,
+     "desc_exact_char_for_char": 3777,
+     "desc_exact_casefold": 3802,
+     "renamed_from": {
+      "pairing_precision": "micro_precision",
+      "pairing_recall": "micro_recall",
+      "pairing_f1": "micro_f1",
+      "pairing_macro_f1": "macro_f1"
+     },
+     "exactly_1_0_metrics": [
+      "pairing_precision",
+      "pairing_recall",
+      "pairing_f1",
+      "pairing_macro_f1"
+     ],
+     "exactly_1_0_annotation": "BY CONSTRUCTION on this corpus: mean description similarity is 0.9992, so every row finds a description twin and the pairing ratios saturate. These are NOT correctness numbers and must never be quoted as transaction accuracy."
+    },
+    "value_correctness": {
+     "_what_this_measures": "Per-field verdicts over the MATCHED PAIRS ONLY, using score_lib.cmp_scalar's established normalisation and verdict vocabulary. `format_only` = agrees after normalisation but serialised differently; it is NOT wrong_value. accuracy = correct / (n - both_null), the same denominator as the priority block.",
+     "denominator_note": "Matched pairs only. Rows that never paired are counted in row_alignment.rows_missing_vs_reference, not here.",
+     "priority": {
+      "date": {
+       "correct": 4097,
+       "wrong_value": 0,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 4097,
+       "correct_byte_identical": 4097,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 0,
+       "scored_n": 4097,
+       "accuracy": 1.0,
+       "strict_serialisation_agreement": 1.0,
+       "reference_profile": {
+        "rows_profiled": 4097,
+        "distinct_reference_values": 487,
+        "modal_reference_value": "23/05/2026",
+        "modal_share": 0.0117
+       },
+       "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (487 distinct values) and every one of 4097 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat)."
+      },
+      "amount": {
+       "correct": 4095,
+       "wrong_value": 2,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 4097,
+       "correct_byte_identical": 1750,
+       "format_only": 2345,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 2347,
+       "scored_n": 4097,
+       "accuracy": 0.9995118379301928,
+       "strict_serialisation_agreement": 0.42714181108127897,
+       "reference_profile": {
+        "rows_profiled": 4097,
+        "distinct_reference_values": 2617,
+        "modal_reference_value": "2.0",
+        "modal_share": 0.0149
+       }
+      },
+      "direction": {
+       "correct": 4092,
+       "wrong_value": 5,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 4097,
+       "correct_byte_identical": 4092,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 5,
+       "scored_n": 4097,
+       "accuracy": 0.9987795948254821,
+       "strict_serialisation_agreement": 0.9987795948254821,
+       "reference_profile": {
+        "rows_profiled": 4097,
+        "distinct_reference_values": 2,
+        "modal_reference_value": "DEBIT",
+        "modal_share": 0.8174
+       }
+      },
+      "currency": {
+       "correct": 4097,
+       "wrong_value": 0,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 4097,
+       "correct_byte_identical": 4097,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 0,
+       "scored_n": 4097,
+       "accuracy": 1.0,
+       "strict_serialisation_agreement": 1.0,
+       "reference_profile": {
+        "rows_profiled": 4097,
+        "distinct_reference_values": 1,
+        "modal_reference_value": "INR",
+        "modal_share": 1.0
+       },
+       "exactly_1_0_annotation": "EXACTLY_1_0__BY_CONSTRUCTION: the reference takes a single value across the whole corpus, so this field is solved by emitting a constant. NON-DIFFERENTIATING -- do not read as extraction skill."
+      },
+      "description": {
+       "correct": 3802,
+       "wrong_value": 295,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 4097,
+       "correct_byte_identical": 3777,
+       "format_only": 25,
+       "format_only_scorer_kind": 25,
+       "lenient_only": 0,
+       "naive_str_mismatch": 320,
+       "scored_n": 4097,
+       "accuracy": 0.9279960947034416,
+       "strict_serialisation_agreement": 0.9218940688308519,
+       "reference_profile": {
+        "rows_profiled": 4097,
+        "distinct_reference_values": 1965,
+        "modal_reference_value": "BBPS Payment received",
+        "modal_share": 0.0801
+       }
+      }
+     },
+     "secondary": {
+      "txnType": {
+       "correct": 3596,
+       "wrong_value": 484,
+       "null_when_populated": 5,
+       "hallucinated_when_null": 11,
+       "both_null": 1,
+       "n": 4097,
+       "correct_byte_identical": 3596,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 500,
+       "scored_n": 4096,
+       "accuracy": 0.8779296875,
+       "strict_serialisation_agreement": 0.8779296875,
+       "reference_profile": {
+        "rows_profiled": 4096,
+        "distinct_reference_values": 11,
+        "modal_reference_value": "PURCHASE",
+        "modal_share": 0.3931
+       }
+      },
+      "rewardPointsOnThisTransaction": {
+       "correct": 3892,
+       "wrong_value": 2,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 203,
+       "n": 4097,
+       "correct_byte_identical": 3892,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 2,
+       "scored_n": 3894,
+       "accuracy": 0.9994863893168978,
+       "strict_serialisation_agreement": 0.9994863893168978,
+       "reference_profile": {
+        "rows_profiled": 3894,
+        "distinct_reference_values": 346,
+        "modal_reference_value": "0",
+        "modal_share": 0.4484
+       }
+      }
+     }
+    },
+    "joint_row_correctness": {
+     "fields_required_correct": [
+      "date",
+      "amount",
+      "direction",
+      "currency",
+      "description"
+     ],
+     "matched_pairs": 4097,
+     "all_fields_correct": 3798,
+     "all_fields_correct_rate": 0.9270197705638272,
+     "rows_with_at_least_one_defect": 299,
+     "defect_signature_counts": {
+      "description": 294,
+      "direction": 3,
+      "amount+direction": 1,
+      "amount+direction+description": 1
+     },
+     "all_fields_correct_excluding_description_fidelity_only": 4081,
+     "all_fields_correct_rate_excluding_description_fidelity_only": 0.9960947034415426,
+     "description_defect_classes": {
+      "dropped_trailing_country_code": 92,
+      "spacing_only": 191,
+      "real_character_difference": 12
+     },
+     "_what_this_measures": "Row-level joint correctness over the description-matched pairs. This is the transaction headline to quote: unlike the pairing F1 it cannot be satisfied by a clean narration alone. The *_excluding_description_fidelity_only variant forgives spacing / dropped-trailing-'IN' narration slips only (per desc_defect_classes.py) and still charges every real character difference.",
+     "reference_rows": 4097,
+     "all_fields_correct_rate_over_reference_rows": 0.9270197705638272,
+     "all_fields_correct_rate_over_reference_rows_excl_desc_fidelity": 0.9960947034415426,
+     "_denominator_warning": "Compare arms on the *_over_reference_rows figures. The plain all_fields_correct_rate uses matched pairs only, which flatters an arm that dropped rows. This arm dropped none, so the two denominators coincide here -- they do NOT coincide for the incumbent arm."
+    }
+   },
+   "summary_field_audit": {
+    "_question": "Are the 1.0 non-transaction fields genuinely perfect, or artifacts -- constant corpus, arithmetic dependency, or a value compared against itself?",
+    "fields_at_exactly_1_0": [
+     "rewards.closingPoints",
+     "rewards.openingPoints",
+     "statementLevelSummary.availableCreditLimit",
+     "statementLevelSummary.totalAmountDue",
+     "statementLevelSummary.totalCreditLimit",
+     "statementLevelSummary.totalMinimumAmountDue",
+     "statementLevelSummary.utilisationPercent@derived",
+     "statementMeta.dueDate",
+     "statementMeta.issuerName",
+     "statementMeta.statementDate",
+     "statementMeta.statementPeriodEnd",
+     "statementMeta.statementPeriodStart"
+    ],
+    "n_fields_at_exactly_1_0": 12,
+    "n_non_transaction_fields_examined": 27,
+    "audit": {
+     "statementLevelSummary.totalAmountDue": {
+      "correct": 304,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 304,
+      "correct_byte_identical": 232,
+      "format_only": 72,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 72,
+      "scored_n": 304,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 0.7631578947368421,
+      "reference_profile": {
+       "rows_profiled": 304,
+       "distinct_reference_values": 272,
+       "modal_reference_value": "0.0",
+       "modal_share": 0.102
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_AFTER_NORMALISATION: reference is discriminating (272 distinct values) and zero pairs disagree on value, but 72 of 304 agree only after normalising serialisation (int-vs-float, date format). Earned, not by construction."
+     },
+     "statementLevelSummary.availableCreditLimit": {
+      "correct": 304,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 304,
+      "correct_byte_identical": 230,
+      "format_only": 74,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 74,
+      "scored_n": 304,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 0.756578947368421,
+      "reference_profile": {
+       "rows_profiled": 304,
+       "distinct_reference_values": 296,
+       "modal_reference_value": "0.0",
+       "modal_share": 0.0197
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_AFTER_NORMALISATION: reference is discriminating (296 distinct values) and zero pairs disagree on value, but 74 of 304 agree only after normalising serialisation (int-vs-float, date format). Earned, not by construction."
+     },
+     "statementLevelSummary.totalCreditLimit": {
+      "correct": 304,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 304,
+      "correct_byte_identical": 19,
+      "format_only": 285,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 285,
+      "scored_n": 304,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 0.0625,
+      "reference_profile": {
+       "rows_profiled": 304,
+       "distinct_reference_values": 120,
+       "modal_reference_value": "500000.0",
+       "modal_share": 0.0592
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_AFTER_NORMALISATION: reference is discriminating (120 distinct values) and zero pairs disagree on value, but 285 of 304 agree only after normalising serialisation (int-vs-float, date format). Earned, not by construction."
+     },
+     "statementLevelSummary.totalMinimumAmountDue": {
+      "correct": 304,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 304,
+      "correct_byte_identical": 34,
+      "format_only": 270,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 270,
+      "scored_n": 304,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 0.1118421052631579,
+      "reference_profile": {
+       "rows_profiled": 304,
+       "distinct_reference_values": 182,
+       "modal_reference_value": "0.0",
+       "modal_share": 0.1447
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_AFTER_NORMALISATION: reference is discriminating (182 distinct values) and zero pairs disagree on value, but 270 of 304 agree only after normalising serialisation (int-vs-float, date format). Earned, not by construction."
+     },
+     "statementMeta.issuerName": {
+      "correct": 304,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 304,
+      "correct_byte_identical": 304,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 304,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 304,
+       "distinct_reference_values": 1,
+       "modal_reference_value": "ICICI Bank",
+       "modal_share": 1.0
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__BY_CONSTRUCTION: the reference takes a single value across the whole corpus, so this field is solved by emitting a constant. NON-DIFFERENTIATING -- do not read as extraction skill."
+     },
+     "statementMeta.statementDate": {
+      "correct": 304,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 304,
+      "correct_byte_identical": 304,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 304,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 304,
+       "distinct_reference_values": 138,
+       "modal_reference_value": "12/06/2026",
+       "modal_share": 0.0428
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (138 distinct values) and every one of 304 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat)."
+     },
+     "statementMeta.dueDate": {
+      "correct": 304,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 304,
+      "correct_byte_identical": 304,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 304,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 304,
+       "distinct_reference_values": 139,
+       "modal_reference_value": "30/06/2026",
+       "modal_share": 0.0428
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (139 distinct values) and every one of 304 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat)."
+     },
+     "statementMeta.statementPeriodStart": {
+      "correct": 304,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 304,
+      "correct_byte_identical": 304,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 304,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 304,
+       "distinct_reference_values": 139,
+       "modal_reference_value": "13/05/2026",
+       "modal_share": 0.0395
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (139 distinct values) and every one of 304 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat)."
+     },
+     "statementMeta.statementPeriodEnd": {
+      "correct": 304,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 304,
+      "correct_byte_identical": 304,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 304,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 304,
+       "distinct_reference_values": 138,
+       "modal_reference_value": "12/06/2026",
+       "modal_share": 0.0428
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (138 distinct values) and every one of 304 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat)."
+     },
+     "rewards.openingPoints": {
+      "correct": 1,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 303,
+      "n": 304,
+      "correct_byte_identical": 1,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 1,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 1,
+       "distinct_reference_values": 1,
+       "modal_reference_value": "3852",
+       "modal_share": 1.0
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__NEGLIGIBLE_SAMPLE: only 1 of 304 pairs were scorable (303 both_null). Not a meaningful 1.0."
+     },
+     "rewards.closingPoints": {
+      "correct": 1,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 303,
+      "n": 304,
+      "correct_byte_identical": 1,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 1,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 1,
+       "distinct_reference_values": 1,
+       "modal_reference_value": "3852",
+       "modal_share": 1.0
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__NEGLIGIBLE_SAMPLE: only 1 of 304 pairs were scorable (303 both_null). Not a meaningful 1.0."
+     },
+     "statementLevelSummary.utilisationPercent@derived": {
+      "correct": 304,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 304,
+      "correct_byte_identical": 304,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 304,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 304,
+       "distinct_reference_values": 238,
+       "modal_reference_value": "0.0",
+       "modal_share": 0.1053
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__DERIVED_AND_DEPENDENT: score_lib.util_derive computes this from each side's OWN totalAmountDue and totalCreditLimit. Both of those fields already agree on 304/304, so this 1.0 follows arithmetically and carries NO independent information about utilisation extraction. The AS-EXTRACTED counterpart is both_null on 304/304 (neither side emits it), which is the finding that matters."
+     }
+    }
    }
   },
   "csv_vs_gt": {
@@ -859,18 +1397,264 @@
     }
    },
    "transaction_metrics": {
-    "statements": 304,
-    "rows_pred": 3932,
-    "rows_ref": 4097,
-    "rows_matched": 3932,
-    "micro_precision": 1.0,
-    "micro_recall": 0.959726629240908,
-    "micro_f1": 0.9794494955785278,
-    "macro_f1": 0.9883,
-    "mean_desc_sim": 0.9999,
-    "desc_exact_char_for_char": 3917,
-    "desc_exact_casefold": 3926,
-    "row_count_exact_match_statements": 295
+    "_schema": "SPLIT 2026-08-11 to repair a measurement defect: the previous single block reported description-pairing ratios (micro_precision/recall/f1, macro_f1) as transaction correctness. Alignment and correctness are now separate and separately labelled.",
+    "row_alignment": {
+     "_what_this_measures": "PAIRING-BASED ALIGNMENT ONLY -- NOT A CORRECTNESS CLAIM. Rows are admitted on description similarity alone (>=0.60, strict 1:1, order-insensitive); date, amount, direction and currency are excluded from admission by design. A 1.0 here means every row found a description twin. It says nothing about whether the paired values agree -- read value_correctness for that.",
+     "is_correctness_claim": false,
+     "admission_rule": "description similarity >= 0.60, strict 1:1, order-insensitive; date/amount/direction/currency excluded from admission",
+     "statements": 304,
+     "rows_pred": 3932,
+     "rows_ref": 4097,
+     "rows_matched": 3932,
+     "rows_missing_vs_reference": 165,
+     "pairing_precision": 1.0,
+     "pairing_recall": 0.959726629240908,
+     "pairing_f1": 0.9794494955785278,
+     "pairing_macro_f1": 0.9883,
+     "row_count_exact_match_statements": 295,
+     "mean_desc_sim": 0.9999,
+     "desc_exact_char_for_char": 3917,
+     "desc_exact_casefold": 3926,
+     "renamed_from": {
+      "pairing_precision": "micro_precision",
+      "pairing_recall": "micro_recall",
+      "pairing_f1": "micro_f1",
+      "pairing_macro_f1": "macro_f1"
+     },
+     "exactly_1_0_metrics": [
+      "pairing_precision"
+     ],
+     "exactly_1_0_annotation": "BY CONSTRUCTION on this corpus: mean description similarity is 0.9999, so every row finds a description twin and the pairing ratios saturate. These are NOT correctness numbers and must never be quoted as transaction accuracy."
+    },
+    "value_correctness": {
+     "_what_this_measures": "Per-field verdicts over the MATCHED PAIRS ONLY, using score_lib.cmp_scalar's established normalisation and verdict vocabulary. `format_only` = agrees after normalisation but serialised differently; it is NOT wrong_value. accuracy = correct / (n - both_null), the same denominator as the priority block.",
+     "denominator_note": "Matched pairs only. Rows that never paired are counted in row_alignment.rows_missing_vs_reference, not here.",
+     "priority": {
+      "date": {
+       "correct": 3930,
+       "wrong_value": 2,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3932,
+       "correct_byte_identical": 2461,
+       "format_only": 1469,
+       "format_only_scorer_kind": 1469,
+       "lenient_only": 0,
+       "naive_str_mismatch": 1471,
+       "scored_n": 3932,
+       "accuracy": 0.9994913530010173,
+       "strict_serialisation_agreement": 0.6258901322482198,
+       "reference_profile": {
+        "rows_profiled": 3932,
+        "distinct_reference_values": 467,
+        "modal_reference_value": "23/05/2026",
+        "modal_share": 0.0122
+       }
+      },
+      "amount": {
+       "correct": 3880,
+       "wrong_value": 52,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3932,
+       "correct_byte_identical": 1655,
+       "format_only": 2225,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 2277,
+       "scored_n": 3932,
+       "accuracy": 0.9867751780264497,
+       "strict_serialisation_agreement": 0.42090539165818924,
+       "reference_profile": {
+        "rows_profiled": 3932,
+        "distinct_reference_values": 2538,
+        "modal_reference_value": "2.0",
+        "modal_share": 0.0155
+       }
+      },
+      "direction": {
+       "correct": 3927,
+       "wrong_value": 5,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3932,
+       "correct_byte_identical": 3927,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 5,
+       "scored_n": 3932,
+       "accuracy": 0.9987283825025433,
+       "strict_serialisation_agreement": 0.9987283825025433,
+       "reference_profile": {
+        "rows_profiled": 3932,
+        "distinct_reference_values": 2,
+        "modal_reference_value": "DEBIT",
+        "modal_share": 0.8149
+       }
+      },
+      "currency": {
+       "correct": 3917,
+       "wrong_value": 3,
+       "null_when_populated": 12,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3932,
+       "correct_byte_identical": 3917,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 15,
+       "scored_n": 3932,
+       "accuracy": 0.9961851475076297,
+       "strict_serialisation_agreement": 0.9961851475076297,
+       "reference_profile": {
+        "rows_profiled": 3932,
+        "distinct_reference_values": 1,
+        "modal_reference_value": "INR",
+        "modal_share": 1.0
+       }
+      },
+      "description": {
+       "correct": 3926,
+       "wrong_value": 6,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3932,
+       "correct_byte_identical": 3917,
+       "format_only": 9,
+       "format_only_scorer_kind": 9,
+       "lenient_only": 0,
+       "naive_str_mismatch": 15,
+       "scored_n": 3932,
+       "accuracy": 0.9984740590030519,
+       "strict_serialisation_agreement": 0.9961851475076297,
+       "reference_profile": {
+        "rows_profiled": 3932,
+        "distinct_reference_values": 1877,
+        "modal_reference_value": "BBPS Payment received",
+        "modal_share": 0.0834
+       }
+      }
+     },
+     "secondary": {
+      "txnType": {
+       "correct": 742,
+       "wrong_value": 222,
+       "null_when_populated": 2956,
+       "hallucinated_when_null": 0,
+       "both_null": 12,
+       "n": 3932,
+       "correct_byte_identical": 742,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 3178,
+       "scored_n": 3920,
+       "accuracy": 0.18928571428571428,
+       "strict_serialisation_agreement": 0.18928571428571428,
+       "reference_profile": {
+        "rows_profiled": 3920,
+        "distinct_reference_values": 10,
+        "modal_reference_value": "PURCHASE",
+        "modal_share": 0.398
+       }
+      },
+      "rewardPointsOnThisTransaction": {
+       "correct": 3744,
+       "wrong_value": 0,
+       "null_when_populated": 28,
+       "hallucinated_when_null": 0,
+       "both_null": 160,
+       "n": 3932,
+       "correct_byte_identical": 3744,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 28,
+       "scored_n": 3772,
+       "accuracy": 0.9925768822905621,
+       "strict_serialisation_agreement": 0.9925768822905621,
+       "reference_profile": {
+        "rows_profiled": 3772,
+        "distinct_reference_values": 341,
+        "modal_reference_value": "0",
+        "modal_share": 0.448
+       }
+      }
+     }
+    },
+    "joint_row_correctness": {
+     "fields_required_correct": [
+      "date",
+      "amount",
+      "direction",
+      "currency",
+      "description"
+     ],
+     "matched_pairs": 3932,
+     "all_fields_correct": 3859,
+     "all_fields_correct_rate": 0.9814343845371313,
+     "rows_with_at_least_one_defect": 73,
+     "defect_signature_counts": {
+      "amount": 45,
+      "currency": 12,
+      "description": 5,
+      "amount+direction": 3,
+      "amount+currency": 3,
+      "direction": 2,
+      "date": 2,
+      "amount+description": 1
+     },
+     "all_fields_correct_excluding_description_fidelity_only": 3860,
+     "all_fields_correct_rate_excluding_description_fidelity_only": 0.9816887080366226,
+     "description_defect_classes": {
+      "real_character_difference": 5,
+      "spacing_only": 1
+     },
+     "_what_this_measures": "Row-level joint correctness over the description-matched pairs. This is the transaction headline to quote: unlike the pairing F1 it cannot be satisfied by a clean narration alone. The *_excluding_description_fidelity_only variant forgives spacing / dropped-trailing-'IN' narration slips only (per desc_defect_classes.py) and still charges every real character difference.",
+     "reference_rows": 4097,
+     "all_fields_correct_rate_over_reference_rows": 0.941908713692946,
+     "all_fields_correct_rate_over_reference_rows_excl_desc_fidelity": 0.9421527947278496,
+     "_denominator_warning": "Compare arms on the *_over_reference_rows figures. The plain all_fields_correct_rate uses matched pairs only, which flatters an arm that dropped rows: 165 reference rows never paired here and are excluded from it."
+    }
+   },
+   "summary_field_audit": {
+    "_question": "Are the 1.0 non-transaction fields genuinely perfect, or artifacts -- constant corpus, arithmetic dependency, or a value compared against itself?",
+    "fields_at_exactly_1_0": [
+     "rewards.openingPoints"
+    ],
+    "n_fields_at_exactly_1_0": 1,
+    "n_non_transaction_fields_examined": 27,
+    "audit": {
+     "rewards.openingPoints": {
+      "correct": 1,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 303,
+      "n": 304,
+      "correct_byte_identical": 1,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 1,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 1,
+       "distinct_reference_values": 1,
+       "modal_reference_value": "3852",
+       "modal_share": 1.0
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__NEGLIGIBLE_SAMPLE: only 1 of 304 pairs were scorable (303 both_null). Not a meaningful 1.0."
+     }
+    }
    }
   },
   "luna_vs_csv": {
@@ -1287,18 +2071,267 @@
     }
    },
    "transaction_metrics": {
-    "statements": 304,
-    "rows_pred": 4097,
-    "rows_ref": 3932,
-    "rows_matched": 3932,
-    "micro_precision": 0.959726629240908,
-    "micro_recall": 1.0,
-    "micro_f1": 0.9794494955785278,
-    "macro_f1": 0.9883,
-    "mean_desc_sim": 0.9991,
-    "desc_exact_char_for_char": 3618,
-    "desc_exact_casefold": 3632,
-    "row_count_exact_match_statements": 295
+    "_schema": "SPLIT 2026-08-11 to repair a measurement defect: the previous single block reported description-pairing ratios (micro_precision/recall/f1, macro_f1) as transaction correctness. Alignment and correctness are now separate and separately labelled.",
+    "row_alignment": {
+     "_what_this_measures": "PAIRING-BASED ALIGNMENT ONLY -- NOT A CORRECTNESS CLAIM. Rows are admitted on description similarity alone (>=0.60, strict 1:1, order-insensitive); date, amount, direction and currency are excluded from admission by design. A 1.0 here means every row found a description twin. It says nothing about whether the paired values agree -- read value_correctness for that.",
+     "is_correctness_claim": false,
+     "admission_rule": "description similarity >= 0.60, strict 1:1, order-insensitive; date/amount/direction/currency excluded from admission",
+     "statements": 304,
+     "rows_pred": 4097,
+     "rows_ref": 3932,
+     "rows_matched": 3932,
+     "rows_missing_vs_reference": 0,
+     "pairing_precision": 0.959726629240908,
+     "pairing_recall": 1.0,
+     "pairing_f1": 0.9794494955785278,
+     "pairing_macro_f1": 0.9883,
+     "row_count_exact_match_statements": 295,
+     "mean_desc_sim": 0.9991,
+     "desc_exact_char_for_char": 3618,
+     "desc_exact_casefold": 3632,
+     "renamed_from": {
+      "pairing_precision": "micro_precision",
+      "pairing_recall": "micro_recall",
+      "pairing_f1": "micro_f1",
+      "pairing_macro_f1": "macro_f1"
+     },
+     "exactly_1_0_metrics": [
+      "pairing_recall"
+     ],
+     "exactly_1_0_annotation": "BY CONSTRUCTION on this corpus: mean description similarity is 0.9991, so every row finds a description twin and the pairing ratios saturate. These are NOT correctness numbers and must never be quoted as transaction accuracy."
+    },
+    "value_correctness": {
+     "_what_this_measures": "Per-field verdicts over the MATCHED PAIRS ONLY, using score_lib.cmp_scalar's established normalisation and verdict vocabulary. `format_only` = agrees after normalisation but serialised differently; it is NOT wrong_value. accuracy = correct / (n - both_null), the same denominator as the priority block.",
+     "denominator_note": "Matched pairs only. Rows that never paired are counted in row_alignment.rows_missing_vs_reference, not here.",
+     "priority": {
+      "date": {
+       "correct": 3930,
+       "wrong_value": 2,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3932,
+       "correct_byte_identical": 2461,
+       "format_only": 1469,
+       "format_only_scorer_kind": 1469,
+       "lenient_only": 0,
+       "naive_str_mismatch": 1471,
+       "scored_n": 3932,
+       "accuracy": 0.9994913530010173,
+       "strict_serialisation_agreement": 0.6258901322482198,
+       "reference_profile": {
+        "rows_profiled": 3932,
+        "distinct_reference_values": 653,
+        "modal_reference_value": "23/05/2026",
+        "modal_share": 0.0094
+       }
+      },
+      "amount": {
+       "correct": 3878,
+       "wrong_value": 54,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3932,
+       "correct_byte_identical": 3868,
+       "format_only": 10,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 64,
+       "scored_n": 3932,
+       "accuracy": 0.986266531027467,
+       "strict_serialisation_agreement": 0.9837232960325534,
+       "reference_profile": {
+        "rows_profiled": 3932,
+        "distinct_reference_values": 2506,
+        "modal_reference_value": "2",
+        "modal_share": 0.015
+       }
+      },
+      "direction": {
+       "correct": 3922,
+       "wrong_value": 10,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3932,
+       "correct_byte_identical": 3922,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 10,
+       "scored_n": 3932,
+       "accuracy": 0.9974567650050865,
+       "strict_serialisation_agreement": 0.9974567650050865,
+       "reference_profile": {
+        "rows_profiled": 3932,
+        "distinct_reference_values": 2,
+        "modal_reference_value": "DEBIT",
+        "modal_share": 0.8161
+       }
+      },
+      "currency": {
+       "correct": 3917,
+       "wrong_value": 3,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 12,
+       "both_null": 0,
+       "n": 3932,
+       "correct_byte_identical": 3917,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 15,
+       "scored_n": 3932,
+       "accuracy": 0.9961851475076297,
+       "strict_serialisation_agreement": 0.9961851475076297,
+       "reference_profile": {
+        "rows_profiled": 3932,
+        "distinct_reference_values": 3,
+        "modal_reference_value": "INR",
+        "modal_share": 0.9962
+       }
+      },
+      "description": {
+       "correct": 3632,
+       "wrong_value": 300,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3932,
+       "correct_byte_identical": 3618,
+       "format_only": 14,
+       "format_only_scorer_kind": 14,
+       "lenient_only": 0,
+       "naive_str_mismatch": 314,
+       "scored_n": 3932,
+       "accuracy": 0.9237029501525941,
+       "strict_serialisation_agreement": 0.9201424211597151,
+       "reference_profile": {
+        "rows_profiled": 3932,
+        "distinct_reference_values": 1879,
+        "modal_reference_value": "BBPS Payment received",
+        "modal_share": 0.0834
+       }
+      }
+     },
+     "secondary": {
+      "txnType": {
+       "correct": 755,
+       "wrong_value": 206,
+       "null_when_populated": 3,
+       "hallucinated_when_null": 2965,
+       "both_null": 3,
+       "n": 3932,
+       "correct_byte_identical": 755,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 3174,
+       "scored_n": 3929,
+       "accuracy": 0.19216085517943496,
+       "strict_serialisation_agreement": 0.19216085517943496,
+       "reference_profile": {
+        "rows_profiled": 3929,
+        "distinct_reference_values": 7,
+        "modal_reference_value": "None",
+        "modal_share": 0.7546
+       }
+      },
+      "rewardPointsOnThisTransaction": {
+       "correct": 3742,
+       "wrong_value": 2,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 28,
+       "both_null": 160,
+       "n": 3932,
+       "correct_byte_identical": 3742,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 30,
+       "scored_n": 3772,
+       "accuracy": 0.9920466595970308,
+       "strict_serialisation_agreement": 0.9920466595970308,
+       "reference_profile": {
+        "rows_profiled": 3772,
+        "distinct_reference_values": 342,
+        "modal_reference_value": "0",
+        "modal_share": 0.4406
+       }
+      }
+     }
+    },
+    "joint_row_correctness": {
+     "fields_required_correct": [
+      "date",
+      "amount",
+      "direction",
+      "currency",
+      "description"
+     ],
+     "matched_pairs": 3932,
+     "all_fields_correct": 3562,
+     "all_fields_correct_rate": 0.9059003051881994,
+     "rows_with_at_least_one_defect": 370,
+     "defect_signature_counts": {
+      "description": 297,
+      "amount": 45,
+      "currency": 12,
+      "direction": 5,
+      "amount+direction": 4,
+      "amount+currency": 3,
+      "date": 1,
+      "date+description": 1,
+      "amount+direction+description": 1,
+      "amount+description": 1
+     },
+     "all_fields_correct_excluding_description_fidelity_only": 3844,
+     "all_fields_correct_rate_excluding_description_fidelity_only": 0.9776195320447609,
+     "description_defect_classes": {
+      "dropped_trailing_country_code": 91,
+      "spacing_only": 192,
+      "real_character_difference": 17
+     },
+     "_what_this_measures": "Row-level joint correctness over the description-matched pairs. This is the transaction headline to quote: unlike the pairing F1 it cannot be satisfied by a clean narration alone. The *_excluding_description_fidelity_only variant forgives spacing / dropped-trailing-'IN' narration slips only (per desc_defect_classes.py) and still charges every real character difference.",
+     "reference_rows": 3932,
+     "all_fields_correct_rate_over_reference_rows": 0.9059003051881994,
+     "all_fields_correct_rate_over_reference_rows_excl_desc_fidelity": 0.9776195320447609,
+     "_denominator_warning": "Compare arms on the *_over_reference_rows figures. The plain all_fields_correct_rate uses matched pairs only, which flatters an arm that dropped rows. This arm dropped none, so the two denominators coincide here -- they do NOT coincide for the incumbent arm."
+    }
+   },
+   "summary_field_audit": {
+    "_question": "Are the 1.0 non-transaction fields genuinely perfect, or artifacts -- constant corpus, arithmetic dependency, or a value compared against itself?",
+    "fields_at_exactly_1_0": [
+     "rewards.openingPoints"
+    ],
+    "n_fields_at_exactly_1_0": 1,
+    "n_non_transaction_fields_examined": 27,
+    "audit": {
+     "rewards.openingPoints": {
+      "correct": 1,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 303,
+      "n": 304,
+      "correct_byte_identical": 1,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 1,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 1,
+       "distinct_reference_values": 1,
+       "modal_reference_value": "3852",
+       "modal_share": 1.0
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__NEGLIGIBLE_SAMPLE: only 1 of 304 pairs were scorable (303 both_null). Not a meaningful 1.0."
+     }
+    }
    }
   }
  },
@@ -15548,7 +16581,128 @@
   "cardDisplayName": "lenient scoring",
   "currency": "near-constant INR; high accuracy is non-differentiating",
   "utilisation_printed_pdfs": 0,
-  "network": "PDF-adjudicated because GT is not reliable for this field"
+  "network": "PDF-adjudicated because GT is not reliable for this field",
+  "gt_instrument_caveat": "The GT is the Opus-5 native-PDF extraction and is the accuracy reference, not truth. It shares the schema instrument with the challenger, so a field on which both sides agree perfectly may be a shared blind spot rather than a solved field; transactions[].description is the clearest case where the GT is demonstrably the weaker side (see desc_defect_classes.json: 191 of Luna's 295 'defects' are the GT carrying an intra-cell line-wrap space mid-word). pdf_adjudication is the only PDF-grounded check here.",
+  "transaction_metrics_schema": "comparisons[*].transaction_metrics changed shape on 2026-08-11. The old micro_precision/micro_recall/micro_f1/macro_f1 keys now live under row_alignment as pairing_precision/pairing_recall/pairing_f1/pairing_macro_f1 with identical values and an explicit is_correctness_claim=false; see measurement_defect_correction. sbi/final_scores.json still carries the un-split `txn` block and has the same latent defect (precision=recall=f1=1.0 on 3,527/3,527 rows), though it never promoted it to a headline.",
+  "desc_defect_classes": {
+   "luna_refined_vs_GT__all": {
+    "rows_compared": 4097,
+    "defects": 295,
+    "classes": {
+     "dropped_trailing_country_code": 92,
+     "spacing_only": 191,
+     "real_character_difference": 12
+    },
+    "fidelity_only_share_of_defects": 0.9593,
+    "dropped_country_code_by_statement": {
+     "232344130": 49,
+     "629527188": 24,
+     "310385621": 13,
+     "283344944": 3,
+     "843301192": 2,
+     "203051285": 1
+    },
+    "real_character_differences": [
+     {
+      "statement_id": "310385621",
+      "pred": "GOOGLE *Discovery Plus g.co/helppay#",
+      "ref": "GOOGLE *Discovery Plus g.co/helppay# US"
+     },
+     {
+      "statement_id": "352358915",
+      "pred": "UPI-509039012131-CHURCHGATE HOSPITALITY IN",
+      "ref": "UPI-509039012131-CHURCHGA TE HOSPITALIT IN"
+     },
+     {
+      "statement_id": "357979545",
+      "pred": "UPI-493553130126-McDonald's IN",
+      "ref": "UPI-493553130126-McDonald s IN"
+     },
+     {
+      "statement_id": "426486404",
+      "pred": "UPI-389476433876-SK PAN H OUSE IN",
+      "ref": "UPI-291859843978-SK PAN H OUSE IN"
+     },
+     {
+      "statement_id": "516977279",
+      "pred": "MYNTRA DESIGNS PRIVATE L Bangalore IN",
+      "ref": "Myntra BANGALORE IN"
+     },
+     {
+      "statement_id": "1010092654",
+      "pred": "Interest Amount Amortization - <10/24>UPI-133114539429-Amaz",
+      "ref": "Interest Amount Amortization - <10/24>UPI-133114539429-Amazo"
+     },
+     {
+      "statement_id": "1010092654",
+      "pred": "UPI-118782170290-SHAMBU SINGH IN",
+      "ref": "UPI-118782170290-SHAMBHU SINGH IN"
+     },
+     {
+      "statement_id": "1066709581",
+      "pred": "UPI-953814541916-Google Pay IN",
+      "ref": "UPI-953814541916-Google P lay IN"
+     },
+     {
+      "statement_id": "1066709581",
+      "pred": "UPI-658313901825-Canara Hospital Canteen IN",
+      "ref": "UPI-658313901825-Canara H ospital Cante IN"
+     },
+     {
+      "statement_id": "1066709581",
+      "pred": "UPI-621766586776-Canara Hospital Canteen IN",
+      "ref": "UPI-621766586776-Canara H ospital Cante IN"
+     },
+     {
+      "statement_id": "1066709581",
+      "pred": "UPI-655766514331-DND BOSCH ADUGODI IN",
+      "ref": "UPI-655766514331-DND BOSC H ADUGODI 1 IN"
+     },
+     {
+      "statement_id": "1711342048",
+      "pred": "Interest Amount Amortization - <2/12>REALME MOBILE TELECOMM",
+      "ref": "Interest Amount Amortization - <2/12>REALME MOBILE TELECOMMU"
+     }
+    ]
+   },
+   "CSV_vs_GT__all": {
+    "rows_compared": 3932,
+    "defects": 6,
+    "classes": {
+     "real_character_difference": 5,
+     "spacing_only": 1
+    },
+    "fidelity_only_share_of_defects": 0.1667,
+    "dropped_country_code_by_statement": {},
+    "real_character_differences": [
+     {
+      "statement_id": "232344130",
+      "pred": "UPI-570367225227-Vishal T arachand Dhom IN",
+      "ref": "UPI-570367725227-Vishal T arachand Dhom IN"
+     },
+     {
+      "statement_id": "557648640",
+      "pred": "Principal Amount Amortization - <21/24>ONE MOBIWIK SYSTEM PVT",
+      "ref": "Principal Amount Amortization - <21/24>ONE MOBIWIK SYSTEM PV"
+     },
+     {
+      "statement_id": "651362650",
+      "pred": "IGST-CI@18% status",
+      "ref": "IGST-CI@18%"
+     },
+     {
+      "statement_id": "1729531088",
+      "pred": "UPI-53074758244-M/S.KAMA TH WINES IN",
+      "ref": "UPI-530774758244-M/S.KAMA TH WINES IN"
+     },
+     {
+      "statement_id": "2054837190",
+      "pred": "IGST-CI@18% internal-link",
+      "ref": "IGST-CI@18%"
+     }
+    ]
+   }
+  }
  },
  "heldout_comparisons": {
   "luna_vs_gt": {
@@ -15965,18 +17119,530 @@
     }
    },
    "transaction_metrics": {
-    "statements": 294,
-    "rows_pred": 3544,
-    "rows_ref": 3544,
-    "rows_matched": 3544,
-    "micro_precision": 1.0,
-    "micro_recall": 1.0,
-    "micro_f1": 1.0,
-    "macro_f1": 1.0,
-    "mean_desc_sim": 0.9992,
-    "desc_exact_char_for_char": 3228,
-    "desc_exact_casefold": 3252,
-    "row_count_exact_match_statements": 294
+    "_schema": "SPLIT 2026-08-11 to repair a measurement defect: the previous single block reported description-pairing ratios (micro_precision/recall/f1, macro_f1) as transaction correctness. Alignment and correctness are now separate and separately labelled.",
+    "row_alignment": {
+     "_what_this_measures": "PAIRING-BASED ALIGNMENT ONLY -- NOT A CORRECTNESS CLAIM. Rows are admitted on description similarity alone (>=0.60, strict 1:1, order-insensitive); date, amount, direction and currency are excluded from admission by design. A 1.0 here means every row found a description twin. It says nothing about whether the paired values agree -- read value_correctness for that.",
+     "is_correctness_claim": false,
+     "admission_rule": "description similarity >= 0.60, strict 1:1, order-insensitive; date/amount/direction/currency excluded from admission",
+     "statements": 294,
+     "rows_pred": 3544,
+     "rows_ref": 3544,
+     "rows_matched": 3544,
+     "rows_missing_vs_reference": 0,
+     "pairing_precision": 1.0,
+     "pairing_recall": 1.0,
+     "pairing_f1": 1.0,
+     "pairing_macro_f1": 1.0,
+     "row_count_exact_match_statements": 294,
+     "mean_desc_sim": 0.9992,
+     "desc_exact_char_for_char": 3228,
+     "desc_exact_casefold": 3252,
+     "renamed_from": {
+      "pairing_precision": "micro_precision",
+      "pairing_recall": "micro_recall",
+      "pairing_f1": "micro_f1",
+      "pairing_macro_f1": "macro_f1"
+     },
+     "exactly_1_0_metrics": [
+      "pairing_precision",
+      "pairing_recall",
+      "pairing_f1",
+      "pairing_macro_f1"
+     ],
+     "exactly_1_0_annotation": "BY CONSTRUCTION on this corpus: mean description similarity is 0.9992, so every row finds a description twin and the pairing ratios saturate. These are NOT correctness numbers and must never be quoted as transaction accuracy."
+    },
+    "value_correctness": {
+     "_what_this_measures": "Per-field verdicts over the MATCHED PAIRS ONLY, using score_lib.cmp_scalar's established normalisation and verdict vocabulary. `format_only` = agrees after normalisation but serialised differently; it is NOT wrong_value. accuracy = correct / (n - both_null), the same denominator as the priority block.",
+     "denominator_note": "Matched pairs only. Rows that never paired are counted in row_alignment.rows_missing_vs_reference, not here.",
+     "priority": {
+      "date": {
+       "correct": 3544,
+       "wrong_value": 0,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3544,
+       "correct_byte_identical": 3544,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 0,
+       "scored_n": 3544,
+       "accuracy": 1.0,
+       "strict_serialisation_agreement": 1.0,
+       "reference_profile": {
+        "rows_profiled": 3544,
+        "distinct_reference_values": 487,
+        "modal_reference_value": "23/05/2026",
+        "modal_share": 0.0104
+       },
+       "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (487 distinct values) and every one of 3544 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat)."
+      },
+      "amount": {
+       "correct": 3542,
+       "wrong_value": 2,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3544,
+       "correct_byte_identical": 1464,
+       "format_only": 2078,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 2080,
+       "scored_n": 3544,
+       "accuracy": 0.9994356659142212,
+       "strict_serialisation_agreement": 0.41309255079006774,
+       "reference_profile": {
+        "rows_profiled": 3544,
+        "distinct_reference_values": 2320,
+        "modal_reference_value": "2.0",
+        "modal_share": 0.0172
+       }
+      },
+      "direction": {
+       "correct": 3540,
+       "wrong_value": 4,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3544,
+       "correct_byte_identical": 3540,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 4,
+       "scored_n": 3544,
+       "accuracy": 0.9988713318284425,
+       "strict_serialisation_agreement": 0.9988713318284425,
+       "reference_profile": {
+        "rows_profiled": 3544,
+        "distinct_reference_values": 2,
+        "modal_reference_value": "DEBIT",
+        "modal_share": 0.8236
+       }
+      },
+      "currency": {
+       "correct": 3544,
+       "wrong_value": 0,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3544,
+       "correct_byte_identical": 3544,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 0,
+       "scored_n": 3544,
+       "accuracy": 1.0,
+       "strict_serialisation_agreement": 1.0,
+       "reference_profile": {
+        "rows_profiled": 3544,
+        "distinct_reference_values": 1,
+        "modal_reference_value": "INR",
+        "modal_share": 1.0
+       },
+       "exactly_1_0_annotation": "EXACTLY_1_0__BY_CONSTRUCTION: the reference takes a single value across the whole corpus, so this field is solved by emitting a constant. NON-DIFFERENTIATING -- do not read as extraction skill."
+      },
+      "description": {
+       "correct": 3252,
+       "wrong_value": 292,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3544,
+       "correct_byte_identical": 3228,
+       "format_only": 24,
+       "format_only_scorer_kind": 24,
+       "lenient_only": 0,
+       "naive_str_mismatch": 316,
+       "scored_n": 3544,
+       "accuracy": 0.917607223476298,
+       "strict_serialisation_agreement": 0.9108352144469526,
+       "reference_profile": {
+        "rows_profiled": 3544,
+        "distinct_reference_values": 1695,
+        "modal_reference_value": "BBPS Payment received",
+        "modal_share": 0.0821
+       }
+      }
+     },
+     "secondary": {
+      "txnType": {
+       "correct": 3143,
+       "wrong_value": 384,
+       "null_when_populated": 5,
+       "hallucinated_when_null": 11,
+       "both_null": 1,
+       "n": 3544,
+       "correct_byte_identical": 3143,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 400,
+       "scored_n": 3543,
+       "accuracy": 0.8871013265594129,
+       "strict_serialisation_agreement": 0.8871013265594129,
+       "reference_profile": {
+        "rows_profiled": 3543,
+        "distinct_reference_values": 11,
+        "modal_reference_value": "PURCHASE",
+        "modal_share": 0.4155
+       }
+      },
+      "rewardPointsOnThisTransaction": {
+       "correct": 3339,
+       "wrong_value": 2,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 203,
+       "n": 3544,
+       "correct_byte_identical": 3339,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 2,
+       "scored_n": 3341,
+       "accuracy": 0.9994013768332835,
+       "strict_serialisation_agreement": 0.9994013768332835,
+       "reference_profile": {
+        "rows_profiled": 3341,
+        "distinct_reference_values": 339,
+        "modal_reference_value": "0",
+        "modal_share": 0.4181
+       }
+      }
+     }
+    },
+    "joint_row_correctness": {
+     "fields_required_correct": [
+      "date",
+      "amount",
+      "direction",
+      "currency",
+      "description"
+     ],
+     "matched_pairs": 3544,
+     "all_fields_correct": 3249,
+     "all_fields_correct_rate": 0.9167607223476298,
+     "rows_with_at_least_one_defect": 295,
+     "defect_signature_counts": {
+      "description": 291,
+      "direction": 2,
+      "amount+direction": 1,
+      "amount+direction+description": 1
+     },
+     "all_fields_correct_excluding_description_fidelity_only": 3532,
+     "all_fields_correct_rate_excluding_description_fidelity_only": 0.9966139954853274,
+     "description_defect_classes": {
+      "dropped_trailing_country_code": 92,
+      "spacing_only": 191,
+      "real_character_difference": 9
+     },
+     "_what_this_measures": "Row-level joint correctness over the description-matched pairs. This is the transaction headline to quote: unlike the pairing F1 it cannot be satisfied by a clean narration alone. The *_excluding_description_fidelity_only variant forgives spacing / dropped-trailing-'IN' narration slips only (per desc_defect_classes.py) and still charges every real character difference.",
+     "reference_rows": 3544,
+     "all_fields_correct_rate_over_reference_rows": 0.9167607223476298,
+     "all_fields_correct_rate_over_reference_rows_excl_desc_fidelity": 0.9966139954853274,
+     "_denominator_warning": "Compare arms on the *_over_reference_rows figures. The plain all_fields_correct_rate uses matched pairs only, which flatters an arm that dropped rows. This arm dropped none, so the two denominators coincide here -- they do NOT coincide for the incumbent arm."
+    }
+   },
+   "summary_field_audit": {
+    "_question": "Are the 1.0 non-transaction fields genuinely perfect, or artifacts -- constant corpus, arithmetic dependency, or a value compared against itself?",
+    "fields_at_exactly_1_0": [
+     "rewards.closingPoints",
+     "rewards.openingPoints",
+     "statementLevelSummary.availableCreditLimit",
+     "statementLevelSummary.totalAmountDue",
+     "statementLevelSummary.totalCreditLimit",
+     "statementLevelSummary.totalMinimumAmountDue",
+     "statementLevelSummary.utilisationPercent@derived",
+     "statementMeta.dueDate",
+     "statementMeta.issuerName",
+     "statementMeta.statementDate",
+     "statementMeta.statementPeriodEnd",
+     "statementMeta.statementPeriodStart"
+    ],
+    "n_fields_at_exactly_1_0": 12,
+    "n_non_transaction_fields_examined": 27,
+    "audit": {
+     "statementLevelSummary.totalAmountDue": {
+      "correct": 294,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 294,
+      "correct_byte_identical": 224,
+      "format_only": 70,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 70,
+      "scored_n": 294,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 0.7619047619047619,
+      "reference_profile": {
+       "rows_profiled": 294,
+       "distinct_reference_values": 262,
+       "modal_reference_value": "0.0",
+       "modal_share": 0.1054
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_AFTER_NORMALISATION: reference is discriminating (262 distinct values) and zero pairs disagree on value, but 70 of 294 agree only after normalising serialisation (int-vs-float, date format). Earned, not by construction."
+     },
+     "statementLevelSummary.availableCreditLimit": {
+      "correct": 294,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 294,
+      "correct_byte_identical": 222,
+      "format_only": 72,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 72,
+      "scored_n": 294,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 0.7551020408163265,
+      "reference_profile": {
+       "rows_profiled": 294,
+       "distinct_reference_values": 287,
+       "modal_reference_value": "0.0",
+       "modal_share": 0.017
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_AFTER_NORMALISATION: reference is discriminating (287 distinct values) and zero pairs disagree on value, but 72 of 294 agree only after normalising serialisation (int-vs-float, date format). Earned, not by construction."
+     },
+     "statementLevelSummary.totalCreditLimit": {
+      "correct": 294,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 294,
+      "correct_byte_identical": 19,
+      "format_only": 275,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 275,
+      "scored_n": 294,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 0.06462585034013606,
+      "reference_profile": {
+       "rows_profiled": 294,
+       "distinct_reference_values": 118,
+       "modal_reference_value": "500000.0",
+       "modal_share": 0.0578
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_AFTER_NORMALISATION: reference is discriminating (118 distinct values) and zero pairs disagree on value, but 275 of 294 agree only after normalising serialisation (int-vs-float, date format). Earned, not by construction."
+     },
+     "statementLevelSummary.totalMinimumAmountDue": {
+      "correct": 294,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 294,
+      "correct_byte_identical": 33,
+      "format_only": 261,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 261,
+      "scored_n": 294,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 0.11224489795918367,
+      "reference_profile": {
+       "rows_profiled": 294,
+       "distinct_reference_values": 174,
+       "modal_reference_value": "0.0",
+       "modal_share": 0.1497
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_AFTER_NORMALISATION: reference is discriminating (174 distinct values) and zero pairs disagree on value, but 261 of 294 agree only after normalising serialisation (int-vs-float, date format). Earned, not by construction."
+     },
+     "statementMeta.issuerName": {
+      "correct": 294,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 294,
+      "correct_byte_identical": 294,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 294,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 294,
+       "distinct_reference_values": 1,
+       "modal_reference_value": "ICICI Bank",
+       "modal_share": 1.0
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__BY_CONSTRUCTION: the reference takes a single value across the whole corpus, so this field is solved by emitting a constant. NON-DIFFERENTIATING -- do not read as extraction skill."
+     },
+     "statementMeta.statementDate": {
+      "correct": 294,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 294,
+      "correct_byte_identical": 294,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 294,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 294,
+       "distinct_reference_values": 135,
+       "modal_reference_value": "12/06/2026",
+       "modal_share": 0.0442
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (135 distinct values) and every one of 294 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat)."
+     },
+     "statementMeta.dueDate": {
+      "correct": 294,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 294,
+      "correct_byte_identical": 294,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 294,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 294,
+       "distinct_reference_values": 136,
+       "modal_reference_value": "30/06/2026",
+       "modal_share": 0.0442
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (136 distinct values) and every one of 294 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat)."
+     },
+     "statementMeta.statementPeriodStart": {
+      "correct": 294,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 294,
+      "correct_byte_identical": 294,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 294,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 294,
+       "distinct_reference_values": 138,
+       "modal_reference_value": "13/05/2026",
+       "modal_share": 0.0408
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (138 distinct values) and every one of 294 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat)."
+     },
+     "statementMeta.statementPeriodEnd": {
+      "correct": 294,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 294,
+      "correct_byte_identical": 294,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 294,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 294,
+       "distinct_reference_values": 135,
+       "modal_reference_value": "12/06/2026",
+       "modal_share": 0.0442
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (135 distinct values) and every one of 294 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat)."
+     },
+     "rewards.openingPoints": {
+      "correct": 1,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 293,
+      "n": 294,
+      "correct_byte_identical": 1,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 1,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 1,
+       "distinct_reference_values": 1,
+       "modal_reference_value": "3852",
+       "modal_share": 1.0
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__NEGLIGIBLE_SAMPLE: only 1 of 294 pairs were scorable (293 both_null). Not a meaningful 1.0."
+     },
+     "rewards.closingPoints": {
+      "correct": 1,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 293,
+      "n": 294,
+      "correct_byte_identical": 1,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 1,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 1,
+       "distinct_reference_values": 1,
+       "modal_reference_value": "3852",
+       "modal_share": 1.0
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__NEGLIGIBLE_SAMPLE: only 1 of 294 pairs were scorable (293 both_null). Not a meaningful 1.0."
+     },
+     "statementLevelSummary.utilisationPercent@derived": {
+      "correct": 294,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 0,
+      "n": 294,
+      "correct_byte_identical": 294,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 294,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 294,
+       "distinct_reference_values": 228,
+       "modal_reference_value": "0.0",
+       "modal_share": 0.1088
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__DERIVED_AND_DEPENDENT: score_lib.util_derive computes this from each side's OWN totalAmountDue and totalCreditLimit. Both of those fields already agree on 304/304, so this 1.0 follows arithmetically and carries NO independent information about utilisation extraction. The AS-EXTRACTED counterpart is both_null on 304/304 (neither side emits it), which is the finding that matters."
+     }
+    }
    }
   },
   "csv_vs_gt": {
@@ -16393,18 +18059,263 @@
     }
    },
    "transaction_metrics": {
-    "statements": 294,
-    "rows_pred": 3379,
-    "rows_ref": 3544,
-    "rows_matched": 3379,
-    "micro_precision": 1.0,
-    "micro_recall": 0.9534424379232506,
-    "micro_f1": 0.9761664018489095,
-    "macro_f1": 0.9879,
-    "mean_desc_sim": 0.9999,
-    "desc_exact_char_for_char": 3366,
-    "desc_exact_casefold": 3374,
-    "row_count_exact_match_statements": 285
+    "_schema": "SPLIT 2026-08-11 to repair a measurement defect: the previous single block reported description-pairing ratios (micro_precision/recall/f1, macro_f1) as transaction correctness. Alignment and correctness are now separate and separately labelled.",
+    "row_alignment": {
+     "_what_this_measures": "PAIRING-BASED ALIGNMENT ONLY -- NOT A CORRECTNESS CLAIM. Rows are admitted on description similarity alone (>=0.60, strict 1:1, order-insensitive); date, amount, direction and currency are excluded from admission by design. A 1.0 here means every row found a description twin. It says nothing about whether the paired values agree -- read value_correctness for that.",
+     "is_correctness_claim": false,
+     "admission_rule": "description similarity >= 0.60, strict 1:1, order-insensitive; date/amount/direction/currency excluded from admission",
+     "statements": 294,
+     "rows_pred": 3379,
+     "rows_ref": 3544,
+     "rows_matched": 3379,
+     "rows_missing_vs_reference": 165,
+     "pairing_precision": 1.0,
+     "pairing_recall": 0.9534424379232506,
+     "pairing_f1": 0.9761664018489095,
+     "pairing_macro_f1": 0.9879,
+     "row_count_exact_match_statements": 285,
+     "mean_desc_sim": 0.9999,
+     "desc_exact_char_for_char": 3366,
+     "desc_exact_casefold": 3374,
+     "renamed_from": {
+      "pairing_precision": "micro_precision",
+      "pairing_recall": "micro_recall",
+      "pairing_f1": "micro_f1",
+      "pairing_macro_f1": "macro_f1"
+     },
+     "exactly_1_0_metrics": [
+      "pairing_precision"
+     ],
+     "exactly_1_0_annotation": "BY CONSTRUCTION on this corpus: mean description similarity is 0.9999, so every row finds a description twin and the pairing ratios saturate. These are NOT correctness numbers and must never be quoted as transaction accuracy."
+    },
+    "value_correctness": {
+     "_what_this_measures": "Per-field verdicts over the MATCHED PAIRS ONLY, using score_lib.cmp_scalar's established normalisation and verdict vocabulary. `format_only` = agrees after normalisation but serialised differently; it is NOT wrong_value. accuracy = correct / (n - both_null), the same denominator as the priority block.",
+     "denominator_note": "Matched pairs only. Rows that never paired are counted in row_alignment.rows_missing_vs_reference, not here.",
+     "priority": {
+      "date": {
+       "correct": 3377,
+       "wrong_value": 2,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3379,
+       "correct_byte_identical": 2187,
+       "format_only": 1190,
+       "format_only_scorer_kind": 1190,
+       "lenient_only": 0,
+       "naive_str_mismatch": 1192,
+       "scored_n": 3379,
+       "accuracy": 0.999408108907961,
+       "strict_serialisation_agreement": 0.6472329091447173,
+       "reference_profile": {
+        "rows_profiled": 3379,
+        "distinct_reference_values": 467,
+        "modal_reference_value": "23/05/2026",
+        "modal_share": 0.0109
+       }
+      },
+      "amount": {
+       "correct": 3338,
+       "wrong_value": 41,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3379,
+       "correct_byte_identical": 1372,
+       "format_only": 1966,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 2007,
+       "scored_n": 3379,
+       "accuracy": 0.9878662326131992,
+       "strict_serialisation_agreement": 0.40603728913879844,
+       "reference_profile": {
+        "rows_profiled": 3379,
+        "distinct_reference_values": 2240,
+        "modal_reference_value": "2.0",
+        "modal_share": 0.0181
+       }
+      },
+      "direction": {
+       "correct": 3374,
+       "wrong_value": 5,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3379,
+       "correct_byte_identical": 3374,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 5,
+       "scored_n": 3379,
+       "accuracy": 0.9985202722699024,
+       "strict_serialisation_agreement": 0.9985202722699024,
+       "reference_profile": {
+        "rows_profiled": 3379,
+        "distinct_reference_values": 2,
+        "modal_reference_value": "DEBIT",
+        "modal_share": 0.821
+       }
+      },
+      "currency": {
+       "correct": 3364,
+       "wrong_value": 3,
+       "null_when_populated": 12,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3379,
+       "correct_byte_identical": 3364,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 15,
+       "scored_n": 3379,
+       "accuracy": 0.995560816809707,
+       "strict_serialisation_agreement": 0.995560816809707,
+       "reference_profile": {
+        "rows_profiled": 3379,
+        "distinct_reference_values": 1,
+        "modal_reference_value": "INR",
+        "modal_share": 1.0
+       }
+      },
+      "description": {
+       "correct": 3374,
+       "wrong_value": 5,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3379,
+       "correct_byte_identical": 3366,
+       "format_only": 8,
+       "format_only_scorer_kind": 8,
+       "lenient_only": 0,
+       "naive_str_mismatch": 13,
+       "scored_n": 3379,
+       "accuracy": 0.9985202722699024,
+       "strict_serialisation_agreement": 0.996152707901746,
+       "reference_profile": {
+        "rows_profiled": 3379,
+        "distinct_reference_values": 1607,
+        "modal_reference_value": "BBPS Payment received",
+        "modal_share": 0.0861
+       }
+      }
+     },
+     "secondary": {
+      "txnType": {
+       "correct": 619,
+       "wrong_value": 124,
+       "null_when_populated": 2624,
+       "hallucinated_when_null": 0,
+       "both_null": 12,
+       "n": 3379,
+       "correct_byte_identical": 619,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 2748,
+       "scored_n": 3367,
+       "accuracy": 0.18384318384318385,
+       "strict_serialisation_agreement": 0.18384318384318385,
+       "reference_profile": {
+        "rows_profiled": 3367,
+        "distinct_reference_values": 10,
+        "modal_reference_value": "PURCHASE",
+        "modal_share": 0.4223
+       }
+      },
+      "rewardPointsOnThisTransaction": {
+       "correct": 3191,
+       "wrong_value": 0,
+       "null_when_populated": 28,
+       "hallucinated_when_null": 0,
+       "both_null": 160,
+       "n": 3379,
+       "correct_byte_identical": 3191,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 28,
+       "scored_n": 3219,
+       "accuracy": 0.9913016464740603,
+       "strict_serialisation_agreement": 0.9913016464740603,
+       "reference_profile": {
+        "rows_profiled": 3219,
+        "distinct_reference_values": 334,
+        "modal_reference_value": "0",
+        "modal_share": 0.4166
+       }
+      }
+     }
+    },
+    "joint_row_correctness": {
+     "fields_required_correct": [
+      "date",
+      "amount",
+      "direction",
+      "currency",
+      "description"
+     ],
+     "matched_pairs": 3379,
+     "all_fields_correct": 3317,
+     "all_fields_correct_rate": 0.981651376146789,
+     "rows_with_at_least_one_defect": 62,
+     "defect_signature_counts": {
+      "amount": 35,
+      "currency": 12,
+      "description": 5,
+      "amount+direction": 3,
+      "amount+currency": 3,
+      "direction": 2,
+      "date": 2
+     },
+     "all_fields_correct_excluding_description_fidelity_only": 3318,
+     "all_fields_correct_rate_excluding_description_fidelity_only": 0.9819473216928085,
+     "description_defect_classes": {
+      "real_character_difference": 4,
+      "spacing_only": 1
+     },
+     "_what_this_measures": "Row-level joint correctness over the description-matched pairs. This is the transaction headline to quote: unlike the pairing F1 it cannot be satisfied by a clean narration alone. The *_excluding_description_fidelity_only variant forgives spacing / dropped-trailing-'IN' narration slips only (per desc_defect_classes.py) and still charges every real character difference.",
+     "reference_rows": 3544,
+     "all_fields_correct_rate_over_reference_rows": 0.9359480812641083,
+     "all_fields_correct_rate_over_reference_rows_excl_desc_fidelity": 0.9362302483069977,
+     "_denominator_warning": "Compare arms on the *_over_reference_rows figures. The plain all_fields_correct_rate uses matched pairs only, which flatters an arm that dropped rows: 165 reference rows never paired here and are excluded from it."
+    }
+   },
+   "summary_field_audit": {
+    "_question": "Are the 1.0 non-transaction fields genuinely perfect, or artifacts -- constant corpus, arithmetic dependency, or a value compared against itself?",
+    "fields_at_exactly_1_0": [
+     "rewards.openingPoints"
+    ],
+    "n_fields_at_exactly_1_0": 1,
+    "n_non_transaction_fields_examined": 27,
+    "audit": {
+     "rewards.openingPoints": {
+      "correct": 1,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 293,
+      "n": 294,
+      "correct_byte_identical": 1,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 1,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 1,
+       "distinct_reference_values": 1,
+       "modal_reference_value": "3852",
+       "modal_share": 1.0
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__NEGLIGIBLE_SAMPLE: only 1 of 294 pairs were scorable (293 both_null). Not a meaningful 1.0."
+     }
+    }
    }
   },
   "luna_vs_csv": {
@@ -16821,18 +18732,266 @@
     }
    },
    "transaction_metrics": {
-    "statements": 294,
-    "rows_pred": 3544,
-    "rows_ref": 3379,
-    "rows_matched": 3379,
-    "micro_precision": 0.9534424379232506,
-    "micro_recall": 1.0,
-    "micro_f1": 0.9761664018489095,
-    "macro_f1": 0.9879,
-    "mean_desc_sim": 0.9991,
-    "desc_exact_char_for_char": 3069,
-    "desc_exact_casefold": 3083,
-    "row_count_exact_match_statements": 285
+    "_schema": "SPLIT 2026-08-11 to repair a measurement defect: the previous single block reported description-pairing ratios (micro_precision/recall/f1, macro_f1) as transaction correctness. Alignment and correctness are now separate and separately labelled.",
+    "row_alignment": {
+     "_what_this_measures": "PAIRING-BASED ALIGNMENT ONLY -- NOT A CORRECTNESS CLAIM. Rows are admitted on description similarity alone (>=0.60, strict 1:1, order-insensitive); date, amount, direction and currency are excluded from admission by design. A 1.0 here means every row found a description twin. It says nothing about whether the paired values agree -- read value_correctness for that.",
+     "is_correctness_claim": false,
+     "admission_rule": "description similarity >= 0.60, strict 1:1, order-insensitive; date/amount/direction/currency excluded from admission",
+     "statements": 294,
+     "rows_pred": 3544,
+     "rows_ref": 3379,
+     "rows_matched": 3379,
+     "rows_missing_vs_reference": 0,
+     "pairing_precision": 0.9534424379232506,
+     "pairing_recall": 1.0,
+     "pairing_f1": 0.9761664018489095,
+     "pairing_macro_f1": 0.9879,
+     "row_count_exact_match_statements": 285,
+     "mean_desc_sim": 0.9991,
+     "desc_exact_char_for_char": 3069,
+     "desc_exact_casefold": 3083,
+     "renamed_from": {
+      "pairing_precision": "micro_precision",
+      "pairing_recall": "micro_recall",
+      "pairing_f1": "micro_f1",
+      "pairing_macro_f1": "macro_f1"
+     },
+     "exactly_1_0_metrics": [
+      "pairing_recall"
+     ],
+     "exactly_1_0_annotation": "BY CONSTRUCTION on this corpus: mean description similarity is 0.9991, so every row finds a description twin and the pairing ratios saturate. These are NOT correctness numbers and must never be quoted as transaction accuracy."
+    },
+    "value_correctness": {
+     "_what_this_measures": "Per-field verdicts over the MATCHED PAIRS ONLY, using score_lib.cmp_scalar's established normalisation and verdict vocabulary. `format_only` = agrees after normalisation but serialised differently; it is NOT wrong_value. accuracy = correct / (n - both_null), the same denominator as the priority block.",
+     "denominator_note": "Matched pairs only. Rows that never paired are counted in row_alignment.rows_missing_vs_reference, not here.",
+     "priority": {
+      "date": {
+       "correct": 3377,
+       "wrong_value": 2,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3379,
+       "correct_byte_identical": 2187,
+       "format_only": 1190,
+       "format_only_scorer_kind": 1190,
+       "lenient_only": 0,
+       "naive_str_mismatch": 1192,
+       "scored_n": 3379,
+       "accuracy": 0.999408108907961,
+       "strict_serialisation_agreement": 0.6472329091447173,
+       "reference_profile": {
+        "rows_profiled": 3379,
+        "distinct_reference_values": 641,
+        "modal_reference_value": "23/05/2026",
+        "modal_share": 0.0109
+       }
+      },
+      "amount": {
+       "correct": 3336,
+       "wrong_value": 43,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3379,
+       "correct_byte_identical": 3326,
+       "format_only": 10,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 53,
+       "scored_n": 3379,
+       "accuracy": 0.9872743415211601,
+       "strict_serialisation_agreement": 0.9843148860609647,
+       "reference_profile": {
+        "rows_profiled": 3379,
+        "distinct_reference_values": 2205,
+        "modal_reference_value": "2",
+        "modal_share": 0.0175
+       }
+      },
+      "direction": {
+       "correct": 3370,
+       "wrong_value": 9,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3379,
+       "correct_byte_identical": 3370,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 9,
+       "scored_n": 3379,
+       "accuracy": 0.9973364900858243,
+       "strict_serialisation_agreement": 0.9973364900858243,
+       "reference_profile": {
+        "rows_profiled": 3379,
+        "distinct_reference_values": 2,
+        "modal_reference_value": "DEBIT",
+        "modal_share": 0.8224
+       }
+      },
+      "currency": {
+       "correct": 3364,
+       "wrong_value": 3,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 12,
+       "both_null": 0,
+       "n": 3379,
+       "correct_byte_identical": 3364,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 15,
+       "scored_n": 3379,
+       "accuracy": 0.995560816809707,
+       "strict_serialisation_agreement": 0.995560816809707,
+       "reference_profile": {
+        "rows_profiled": 3379,
+        "distinct_reference_values": 3,
+        "modal_reference_value": "INR",
+        "modal_share": 0.9956
+       }
+      },
+      "description": {
+       "correct": 3083,
+       "wrong_value": 296,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 0,
+       "both_null": 0,
+       "n": 3379,
+       "correct_byte_identical": 3069,
+       "format_only": 14,
+       "format_only_scorer_kind": 14,
+       "lenient_only": 0,
+       "naive_str_mismatch": 310,
+       "scored_n": 3379,
+       "accuracy": 0.9124001183782184,
+       "strict_serialisation_agreement": 0.908256880733945,
+       "reference_profile": {
+        "rows_profiled": 3379,
+        "distinct_reference_values": 1608,
+        "modal_reference_value": "BBPS Payment received",
+        "modal_share": 0.0861
+       }
+      }
+     },
+     "secondary": {
+      "txnType": {
+       "correct": 632,
+       "wrong_value": 108,
+       "null_when_populated": 3,
+       "hallucinated_when_null": 2633,
+       "both_null": 3,
+       "n": 3379,
+       "correct_byte_identical": 632,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 2744,
+       "scored_n": 3376,
+       "accuracy": 0.1872037914691943,
+       "strict_serialisation_agreement": 0.1872037914691943,
+       "reference_profile": {
+        "rows_profiled": 3376,
+        "distinct_reference_values": 7,
+        "modal_reference_value": "None",
+        "modal_share": 0.7799
+       }
+      },
+      "rewardPointsOnThisTransaction": {
+       "correct": 3189,
+       "wrong_value": 2,
+       "null_when_populated": 0,
+       "hallucinated_when_null": 28,
+       "both_null": 160,
+       "n": 3379,
+       "correct_byte_identical": 3189,
+       "format_only": 0,
+       "format_only_scorer_kind": 0,
+       "lenient_only": 0,
+       "naive_str_mismatch": 30,
+       "scored_n": 3219,
+       "accuracy": 0.9906803355079217,
+       "strict_serialisation_agreement": 0.9906803355079217,
+       "reference_profile": {
+        "rows_profiled": 3219,
+        "distinct_reference_values": 335,
+        "modal_reference_value": "0",
+        "modal_share": 0.4079
+       }
+      }
+     }
+    },
+    "joint_row_correctness": {
+     "fields_required_correct": [
+      "date",
+      "amount",
+      "direction",
+      "currency",
+      "description"
+     ],
+     "matched_pairs": 3379,
+     "all_fields_correct": 3024,
+     "all_fields_correct_rate": 0.894939331163066,
+     "rows_with_at_least_one_defect": 355,
+     "defect_signature_counts": {
+      "description": 294,
+      "amount": 35,
+      "currency": 12,
+      "direction": 4,
+      "amount+direction": 4,
+      "amount+currency": 3,
+      "date": 1,
+      "date+description": 1,
+      "amount+direction+description": 1
+     },
+     "all_fields_correct_excluding_description_fidelity_only": 3306,
+     "all_fields_correct_rate_excluding_description_fidelity_only": 0.9783959751405741,
+     "description_defect_classes": {
+      "dropped_trailing_country_code": 91,
+      "spacing_only": 192,
+      "real_character_difference": 13
+     },
+     "_what_this_measures": "Row-level joint correctness over the description-matched pairs. This is the transaction headline to quote: unlike the pairing F1 it cannot be satisfied by a clean narration alone. The *_excluding_description_fidelity_only variant forgives spacing / dropped-trailing-'IN' narration slips only (per desc_defect_classes.py) and still charges every real character difference.",
+     "reference_rows": 3379,
+     "all_fields_correct_rate_over_reference_rows": 0.894939331163066,
+     "all_fields_correct_rate_over_reference_rows_excl_desc_fidelity": 0.9783959751405741,
+     "_denominator_warning": "Compare arms on the *_over_reference_rows figures. The plain all_fields_correct_rate uses matched pairs only, which flatters an arm that dropped rows. This arm dropped none, so the two denominators coincide here -- they do NOT coincide for the incumbent arm."
+    }
+   },
+   "summary_field_audit": {
+    "_question": "Are the 1.0 non-transaction fields genuinely perfect, or artifacts -- constant corpus, arithmetic dependency, or a value compared against itself?",
+    "fields_at_exactly_1_0": [
+     "rewards.openingPoints"
+    ],
+    "n_fields_at_exactly_1_0": 1,
+    "n_non_transaction_fields_examined": 27,
+    "audit": {
+     "rewards.openingPoints": {
+      "correct": 1,
+      "wrong_value": 0,
+      "null_when_populated": 0,
+      "hallucinated_when_null": 0,
+      "both_null": 293,
+      "n": 294,
+      "correct_byte_identical": 1,
+      "format_only": 0,
+      "format_only_scorer_kind": 0,
+      "lenient_only": 0,
+      "naive_str_mismatch": 0,
+      "scored_n": 1,
+      "accuracy": 1.0,
+      "strict_serialisation_agreement": 1.0,
+      "reference_profile": {
+       "rows_profiled": 1,
+       "distinct_reference_values": 1,
+       "modal_reference_value": "3852",
+       "modal_share": 1.0
+      },
+      "exactly_1_0_annotation": "EXACTLY_1_0__NEGLIGIBLE_SAMPLE: only 1 of 294 pairs were scorable (293 both_null). Not a meaningful 1.0."
+     }
+    }
    }
   }
  },
@@ -16847,47 +19006,167 @@
   "non_numeric_filename_tokens_preserved": 4
  },
  "headline_verdicts": {
-  "luna_transaction_micro_f1": 1.0,
-  "incumbent_transaction_micro_f1": 0.9794494955785278,
-  "luna_transaction_rows_recovered": 4097,
-  "reference_transaction_rows": 4097,
-  "incumbent_transaction_rows_recovered": 3932,
+  "_reading_rule": "Nothing in this block may be quoted as transaction correctness unless it sits under a `value_correctness` key. Alignment figures are namespaced with NOT_A_CORRECTNESS_CLAIM.",
+  "transactions": {
+   "luna": {
+    "row_alignment__NOT_A_CORRECTNESS_CLAIM": {
+     "pairing_f1": 1.0,
+     "rows_recovered": 4097,
+     "reference_rows": 4097,
+     "rows_missing_vs_reference": 0,
+     "row_count_exact_match_statements": 304,
+     "exactly_1_0_metrics": [
+      "pairing_precision",
+      "pairing_recall",
+      "pairing_f1",
+      "pairing_macro_f1"
+     ],
+     "annotation": "BY CONSTRUCTION on this corpus: mean description similarity is 0.9992, so every row finds a description twin and the pairing ratios saturate. These are NOT correctness numbers and must never be quoted as transaction accuracy."
+    },
+    "value_correctness": {
+     "joint_all_5_priority_fields_correct_over_reference_rows": 0.9270197705638272,
+     "joint_all_5_priority_fields_correct_over_reference_rows_excl_description_fidelity": 0.9960947034415426,
+     "per_field_accuracy_over_matched_pairs": {
+      "date": 1.0,
+      "amount": 0.9995118379301928,
+      "direction": 0.9987795948254821,
+      "currency": 1.0,
+      "description": 0.9279960947034416
+     },
+     "per_field_wrong_value": {
+      "date": 0,
+      "amount": 2,
+      "direction": 5,
+      "currency": 0,
+      "description": 295
+     },
+     "per_field_format_only_not_charged_as_wrong": {
+      "date": 0,
+      "amount": 2345,
+      "direction": 0,
+      "currency": 0,
+      "description": 25
+     },
+     "fields_at_exactly_1_0": {
+      "date": "EXACTLY_1_0__EARNED_BYTE_FOR_BYTE: reference is discriminating (487 distinct values) and every one of 4097 pairs agrees on the raw value. Subject to the standing shared-prompt-instrument caveat on the GT (see notes.gt_instrument_caveat).",
+      "currency": "EXACTLY_1_0__BY_CONSTRUCTION: the reference takes a single value across the whole corpus, so this field is solved by emitting a constant. NON-DIFFERENTIATING -- do not read as extraction skill."
+     },
+     "description_defect_classes": {
+      "dropped_trailing_country_code": 92,
+      "spacing_only": 191,
+      "real_character_difference": 12
+     }
+    }
+   },
+   "incumbent_csv": {
+    "row_alignment__NOT_A_CORRECTNESS_CLAIM": {
+     "pairing_f1": 0.9794494955785278,
+     "rows_recovered": 3932,
+     "reference_rows": 4097,
+     "rows_missing_vs_reference": 165,
+     "row_count_exact_match_statements": 295,
+     "exactly_1_0_metrics": [
+      "pairing_precision"
+     ],
+     "annotation": "BY CONSTRUCTION on this corpus: mean description similarity is 0.9999, so every row finds a description twin and the pairing ratios saturate. These are NOT correctness numbers and must never be quoted as transaction accuracy."
+    },
+    "value_correctness": {
+     "joint_all_5_priority_fields_correct_over_reference_rows": 0.941908713692946,
+     "joint_all_5_priority_fields_correct_over_reference_rows_excl_description_fidelity": 0.9421527947278496,
+     "per_field_accuracy_over_matched_pairs": {
+      "date": 0.9994913530010173,
+      "amount": 0.9867751780264497,
+      "direction": 0.9987283825025433,
+      "currency": 0.9961851475076297,
+      "description": 0.9984740590030519
+     },
+     "per_field_wrong_value": {
+      "date": 2,
+      "amount": 52,
+      "direction": 5,
+      "currency": 3,
+      "description": 6
+     },
+     "per_field_format_only_not_charged_as_wrong": {
+      "date": 1469,
+      "amount": 2225,
+      "direction": 0,
+      "currency": 0,
+      "description": 9
+     },
+     "fields_at_exactly_1_0": {},
+     "description_defect_classes": {
+      "real_character_difference": 5,
+      "spacing_only": 1
+     }
+    }
+   }
+  },
   "luna_last_four_digit_accuracy": 0.9579207920792079,
   "luna_card_display_name_accuracy": 0.9185750636132316,
-  "luna_description_accuracy": 0.9279960947034416,
   "luna_network_fabrications_vs_pdf": 0,
   "incumbent_network_fabrications_vs_pdf": 72,
-  "verdict": "Luna recovers every GT transaction row and materially outperforms the incumbent on card identity; remaining headline weakness is card last-four accuracy."
+  "verdict": "TRANSACTION ROW RECOVERY (ALIGNMENT, not accuracy): Luna pairs 4,097/4,097 reference rows, the incumbent 3,932/4,097 (165 lost). Luna's 1.0000 there is saturated BY CONSTRUCTION on this corpus and is NOT an accuracy claim. TRANSACTION VALUE CORRECTNESS, strict, over all 4,097 reference rows -- rows correct on all five priority fields: Luna 92.70% vs incumbent 94.19%; the INCUMBENT LEADS on the strict reading because Luna's 295 description defects outnumber the incumbent's 6. Counting narration text-fidelity slips as non-defects instead (283 of Luna's 295 are intra-cell spacing or a dropped trailing 'IN', per desc_defect_classes.json), Luna leads 99.61% to 94.22%. Both readings are published because the ranking depends on which one the client wants. On date/amount/direction/currency alone Luna is clearly ahead: 5 defective rows vs 68. CARD IDENTITY: Luna materially better -- 0 network fabrications vs 72, PDF adjudication 349-23 in Luna's favour. Luna's weakest priority field remains card last-four at 95.79%."
  },
  "discrepancies": [
   {
-   "source": "ICICI_REPORT.md section 4",
+   "source": "ICICI_REPORT.md section 4 (current working copy, lines 162-164)",
    "prose_claim": {
     "heldout_luna_rows": 3961,
-    "heldout_csv_rows": 3802
+    "heldout_csv_rows": 3802,
+    "heldout_reference_rows": 3961
    },
-   "recomputed": {
+   "artifact": {
     "heldout_luna_rows": 3544,
-    "heldout_csv_rows": 3379
+    "heldout_csv_rows": 3379,
+    "heldout_reference_rows": 3544
    },
-   "resolution": "Used scores_phase3.json values; report_tables.md agrees with the artifact."
+   "adjudication": "ARTIFACT IS RIGHT; THE PROSE IS STALE.",
+   "reason": "Verified independently from the per-statement artifacts: the 10 tuning statements (phase1_sample.json) hold 553 GT transaction rows between them -- two of them alone hold 150 and 140 -- so held-out = 4,097-553 = 3,544 for Luna and 3,932-553 = 3,379 for the incumbent, exactly the artifact figures. The prose's 3,961 implies the 10 tuning statements hold only 136 rows, which contradicts the on-disk counts. The prose was written against an intermediate, partially-complete scores_phase3.json: the COMMITTED report_tables.md at c3100c2 still shows that snapshot (54/97 statements, 801/1,304 rows), while the regenerated report_tables.md agrees with the artifact at 3,544/3,379. The prose's 3,802 additionally coincides with Luna's all-scope `descriptions exact (casefold)` figure (3,802), i.e. a cell transcribed from the wrong row of the generated table.",
+   "prose_lines_to_correct": "ICICI_REPORT.md lines 162-164"
   },
   {
-   "source": "ICICI_REPORT.md/report_tables.md PDF adjudication prose",
+   "source": "ICICI_REPORT.md PDF adjudication prose (lines 53, 230, 247, 465)",
    "prose_claim": {
     "CSV_WRONG": 347,
-    "LUNA_WRONG": 25
+    "LUNA_WRONG": 25,
+    "decided": 372
    },
-   "recomputed": {
+   "artifact": {
     "CSV_WRONG": 349,
-    "LUNA_WRONG": 23
+    "LUNA_WRONG": 23,
+    "decided": 372
    },
-   "resolution": "Used current adjudication.json tally; total remains 788."
+   "adjudication": "ARTIFACT IS RIGHT; THE PROSE PREDATES A FIX TO THE ADJUDICATOR.",
+   "reason": "The decided total is 372 on both sides, so nothing was added or dropped -- exactly two items changed side. adjudicate.py's verdict_for was hardened after the prose was written (MARKETING and TXNROW snippet exclusions) so that a network token found only in a cross-sell advert or inside a transaction row no longer counts as evidence of THIS card's network. Statements 647130 and 870931682, field cards[].cardMeta.network, now carry adjudication=CSV_WRONG with zero pdf_evidence and the reason 'network appears only inside the four-network fuel-surcharge disclaimer, which identifies no card; Luna's null is correct'. They were previously charged as LUNA_WRONG. 25-2 = 23 and 347+2 = 349, which is the current tally exactly. The hardening is correct on the merits (the Opus GT independently returns null for both), so 349/23 stands and the 14:1 prose figure should read 15.2:1.",
+   "prose_lines_to_correct": "ICICI_REPORT.md lines 53, 230, 247, 465"
   }
  ],
+ "report_prose_corrections_required": {
+  "_why": "ICICI_REPORT.md is hand-written prose and still carries the withdrawn 1.0 transaction headline plus the two stale figures adjudicated above. It has uncommitted in-flight edits from another author and is deliberately NOT modified by this roll-up fix; these are the exact corrections it needs.",
+  "items": [
+   {
+    "lines": "48 (and 44)",
+    "current": "Transaction micro-F1 vs GT | 1.0000 | 0.9794/0.9762",
+    "required": "relabel as 'transaction ROW ALIGNMENT F1 (pairing only, not accuracy)' and add the value-correctness row: rows correct on all five priority fields, 92.70% Luna vs 94.19% incumbent strict / 99.58% vs 94.34% excluding narration fidelity-only slips"
+   },
+   {
+    "lines": "162-164",
+    "current": "held-out rows 3,961 / 3,802 / ref 3,961",
+    "required": "3,544 / 3,379 / ref 3,544"
+   },
+   {
+    "lines": "53, 230, 247, 465",
+    "current": "347 CSV_WRONG vs 25 LUNA_WRONG, '14:1'",
+    "required": "349 CSV_WRONG vs 23 LUNA_WRONG, '15.2:1'"
+   }
+  ]
+ },
  "provenance": {
   "score_artifact": "scores_phase3.json",
+  "transaction_decomposition": "txn_decomp.py (derived from the same artifact)",
   "no_model_inference": true,
+  "no_arm_regeneration": true,
   "join_reverified_during_build": true
  }
 }
