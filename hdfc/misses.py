@@ -80,7 +80,9 @@ def main():
         "luna_errors": luna_misses,
         "incumbent_errors": csv_misses,
         "both_wrong": both,
-        "ambiguous": ambig[:200],
+        "ambiguous_sample": ambig[:200],
+        "ambiguous_sample_limit": 200,
+        "ambiguous_sample_is_complete": len(ambig) <= 200,
         "row_divergence_luna_short": row_l,
         "row_divergence_csv_short": row_c,
     }
