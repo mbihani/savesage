@@ -276,3 +276,148 @@ boilerplate fence), which lowers fabrication risk rather than pattern-matching t
 are layout rules verified against the printed PDF, not against the incumbent's answers. If the
 held-out numbers come in materially worse than the all-statements numbers, that is stated plainly
 in `ICICI_REPORT.md`.
+
+---
+
+# v2 — post-full-run prompt repair (2026-08-11)
+
+Four edits to `ICICI_PROMPT.txt`, each traced to a defect **measured on the completed
+304-statement run** (`final_scores.json`, `notes.desc_defect_classes`, `network_vs_pdf.json`),
+not to the 10-statement Phase-1 baseline.
+
+**IMPACT IS UNVERIFIED.** No model inference was run for this change and no re-sweep was
+authorised, so every figure below is a **PREDICTION**. `final_scores.json`, `ICICI_FINAL.md`,
+`MEASUREMENT_FIX.md` and the report tables are **unchanged** and still describe the v1 prompt.
+Nothing here may be quoted as a measured improvement until a full re-sweep is scored.
+
+Prompt file: 11,885 bytes (v1, sha256 `2ba790951037a779a84043bdd2cf3a930514898be9b62a5d32c3eedbe74350f6`)
+→ 14,995 bytes (v2, sha256 `79325334991ca5ec423118cbb1c7d70236240bf05519100cc2884129b0f17105`).
+`luna_prompt/LUNA_SCHEMA.json` / `GT_SCHEMA` **untouched**, still byte-identical across
+icici/hdfc/sbi. No HDFC-only or SBI-only rule was imported: this file contains no rupee-`C`
+glyph rule (an HDFC ITFRupee artifact ICICI does not exhibit), no five-column layout rule and no
+`TRANSACTIONS FOR` header rule.
+
+## v2.1 — `lastFourDigit`: the mask is in the MIDDLE on this bank
+
+**Measured defect:** `cards[].cardMeta.lastFourDigit` = **95.79%** (387/404 correct; 15
+`wrong_value` + 2 `null_when_populated` charged, plus 1 `format_only` = 18 non-identical cells).
+**16** of those 18 are Luna returning an `X` mask where the GT has real digits: `XX02`/`5002`,
+`X001`/`8001`, `XX21`/`5021`, `XX18`/`4018`, `XX88`/`9188`, `XX05`/`1005`, `XX03`/`8003`,
+`XX07`/`5007`, `XX08`/`2008`.
+**Decisive corpus evidence:** all **404** GT `lastFourDigit` values are four real digits — zero
+contain a mask. ICICI never masks the final four; it prints `NNNNXXXXXXXXNNNN`, mask in the
+middle. (This corpus-wide check was performed by the reviewer against the GT extraction; the
+per-card JSON is gitignored client PII and is not present in this worktree, so it is not
+re-derivable from the committed artifacts here.)
+
+**Root cause is the inherited client rule**, not the model. Removed from `EDGE_CASES`:
+
+> Replace all masked characters with "X" and keep only the final 4 characters
+> (e.g. XXXXXXX56 → "XX56", ******56 → "XX56", 4111111111111234 → "1234").
+> ... Correct behavior: "XXXX XXXX XXXX XX12" → "XX12" (NOT "0012").
+
+That worked example is written for a **trailing** mask. Kept the anti-fabrication half of the
+rule (no padding, no expansion, no backfilling digits into masked positions) and re-pointed it:
+`X` is written only for a position that is itself masked in the print. Added to
+`ICICI_BANK_RULES` a bank-specific rule: take the four characters at the RIGHT END of that card's
+own masked card-number heading (`4315XXXXXXXX5002` → `"5002"`, `0000XXXXXXXX3225` → `"3225"`),
+never return `X` when those four printed characters are digits, do not slice from the middle, do
+not read the leading BIN fragment, and bind the value to the SAME card section (never another
+card's heading, the account number, the `Invoice No`, or a transaction reference).
+
+This supersedes the "Proposed v2 rule" recorded in the section above — it is now applied.
+
+**Cells targeted:** the 16 mask cells of 404. **PREDICTION (UNVERIFIED):** ceiling ≈ **99.3%**
+from 95.79%, i.e. ~14 of the 17 charged disagreements resolving. This is a prediction, not a
+measurement, and the accuracy figure of record remains **95.79%** until a re-sweep is scored.
+**Explicitly NOT fixed:** statement `205034973`, where Luna has both values but **swapped**
+between the two cards (`7212`/`2000` vs GT `2000`/`7212`). That is card **ordering**, not mask
+slicing, and this edit does not address it. The card-binding clause may or may not help; no
+claim is made. The existing `isPrimaryCard` / multi-card grouping rules were left alone rather
+than duplicated — they are already explicit ("the card whose transactions are listed first under
+the Statement Summary is the primary card").
+
+## v2.2 — trailing country code belongs to the description
+
+**Measured defect:** **92** of the 295 `description` defects are
+`dropped_trailing_country_code`, concentrated in six statements —
+`232344130` (49), `629527188` (24), `310385621` (13), `283344944` (3), `843301192` (2),
+`203051285` (1). A 13th-class case, `GOOGLE *Discovery Plus g.co/helppay#` vs
+`... g.co/helppay# US`, also appears among the 12 real character differences.
+
+The token **is printed** in the PDF (verified on `232344130`: `UPI-570397032082-Babasahe b IN`);
+the GT keeps it and **Luna drops it**, so Luna is the wrong side here. Added an ICICI rule: the
+terminal country-code token (`IN`, `US`, ...) is the last token of the narration, not a separate
+column, even though it is laid out flush to the right edge of the description cell — keep it with
+its separating space exactly as printed. Paired with a hard guard: **never supply a country code
+that is not visibly printed for that row** (not from merchant identity, billing currency, or a
+neighbouring row) — the rule must not become a fabrication licence.
+
+**Cells targeted:** 92 (+1 in the real-difference class). **PREDICTION (UNVERIFIED):** partial
+recovery only. The 92 concentrate in six statements, which points at a layout/template
+interaction in how that cell is rendered rather than a pure instruction gap; full recovery is
+**not** guaranteed and no accuracy figure is claimed.
+
+## v2.3 — narration is transcribed, not interpreted
+
+**Measured defect:** **12** `real_character_difference` cells (of 4,097 rows). They are **not**
+mostly casing: they are changed reference digits (`389476433876` vs `291859843978`,
+`352358915`/`426486404`), a spelling substitution (`SHAMBU` vs `SHAMBHU`), substituted merchant
+text (`MYNTRA DESIGNS PRIVATE L Bangalore IN` vs `Myntra BANGALORE IN`), differing truncation
+points (`...Amaz` vs `...Amazo`, `TELECOMM` vs `TELECOMMU`), intra-cell line-wrap spacing
+(`Google Pay` vs `Google P lay`) and one dropped character (`DND BOSCH ADUGODI` vs
+`DND BOSC H ADUGODI 1`).
+
+Strengthened the literal-transcription instruction into an explicit ICICI clause: preserve
+printed capitalisation character-for-character; copy reference/UPI numbers digit-for-digit from
+that row's own text; do not spell-correct, expand, abbreviate or substitute a merchant name;
+stop at ICICI's fixed-width mid-word truncation point exactly.
+
+**Cells targeted:** at most 12 of 4,097. **PREDICTION (UNVERIFIED):** a **small and uncertain**
+gain. Several of these 12 are cases where the **GT** carries the PDF line-wrap artifact and Luna
+is arguably the stronger side; a prompt instruction cannot make Luna reproduce the reference's
+artifact. **No 12-cell fix is claimed.** (Note also that `ICICI_FINAL.md` §1 characterises these
+12 as "largely casing" with `fuel Surcharge`/`MAKE MY TRIP` examples; the artifact's own
+`real_character_differences` list contains no casing-only case. Reports were out of scope for
+this change and were left untouched.)
+
+## v2.4 — `network`: the working rule preserved and sharpened
+
+**Measured result to protect:** Luna fabricates **0** networks; the incumbent **72**
+(`network_vs_pdf.json`: on the 190 PDF-adjudicated statements, Luna 248 correct nulls / 0
+unsupported, incumbent 41 unsupported, and even the Opus GT 7 unsupported). The v1 rule is
+working and was **not weakened**. Every v1 element is retained verbatim in substance: default
+null, the four-network fuel-surcharge disclaimer explicitly excluded as evidence, and no
+inference from BIN or product name.
+
+Sharpened into explicit evidence-first form: return a network only when the statement visibly
+prints **this** card's own network as its own label or logo caption in or beside that card's
+section; otherwise null. Extended the never-infer list to marketing/cross-sell copy, merchant
+names in the transaction table, rewards/offer wording, and another card's network on the same
+statement; added "if you cannot point to a printed network label for that specific card, the
+answer is null."
+
+**Cells targeted:** 0 (regression guard). **PREDICTION (UNVERIFIED):** no change to Luna's 0
+fabrications; the intent is to keep them at 0 under the other three edits.
+
+## Deliberately NOT changed in v2
+
+- **The 191 `spacing_only` description cells (the single largest defect class).** No rule
+  demanding exact whitespace reproduction was added. The **GT itself** carries PDF line-wrap
+  artifacts that split inside words (`Google P lay`, `SHIL PA`, `Canara H ospital Cante`), so on
+  these cells the reference is the weaker side. Instructing a model to reproduce a renderer's
+  arbitrary intra-cell spacing is brittle and template-specific. The recommended treatment is
+  **scorer normalisation**, which is a separate decision the user has not approved; no scorer,
+  adjudicator or artifact was touched here.
+- **`cardDisplayName` (91.86%, 32 disagreements).** Not tuned. The GT convention is incoherent —
+  some values generic (`ICICI Bank Credit Card`), some short (`Coral`), and at least two GT
+  values are **masked card numbers** (`0000XXXXXXXX1126`) which are plainly not product names;
+  the product name is image-only in 123 of 298 PDFs. Tuning against an incoherent reference
+  optimises toward noise. **Needs a client naming convention first.**
+- **`currency` (100%).** By construction — a single distinct reference value corpus-wide, so the
+  metric cannot move. No currency rule added.
+- **`isPrimaryCard` / card ordering.** The existing rule is already explicit; a near-duplicate
+  was not added.
+- **Reports and artifacts.** `final_scores.json`, `ICICI_FINAL.md`, `MEASUREMENT_FIX.md`,
+  `report_tables.md`, the scorers and the adjudicator are untouched. They describe the **v1**
+  prompt and remain correct as such.
