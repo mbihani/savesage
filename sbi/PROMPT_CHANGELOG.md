@@ -286,13 +286,82 @@ qualifiers, to be retained, while forbidding supply of tokens not printed. This 
 on statement 1349187066 are already emitted correctly and are reference defects, so the
 rule deliberately preserves rather than removes them.
 
-### Edit 4 — direction authority and marker-less SBI transfers
+### Edit 4 — direction authority (C/D marker is authoritative)
 
-Reinforced that SBI's printed C/D marker overrides narration wording whenever present,
-and added the SBI-specific fallback that marker-less `TRANSFER TO FLEXIPAY INSTALLMENT`,
-`TRANSFER TO MERCHANT EMI`, `TRANSFER TO ENCASH`, and similar transfers are `CREDIT`.
-This targets **5–6 of the 7 direction cells (PREDICTION / UNVERIFIED)**; one of the seven
-is a reference defect. SBI's C/D column is safe and no other bank's glyph caveat applies.
+Reinforced that SBI's printed C/D marker overrides narration wording whenever present:
+*"Never infer direction from narration when a C/D marker is present."* SBI's C/D column
+is safe and no other bank's glyph caveat applies. **Expected gain: 0 cells** — this is a
+robustness/wording improvement, not a defect fix, because all 7 disputed direction cells
+sit on rows that print no marker at all (see below).
+
+A first version of this edit also added a blanket *"marker-less `TRANSFER TO ...` rows ->
+`CREDIT`"* fallback. **That rule was wrong and has been removed.** It contradicted the
+very principle this edit introduced — it inferred direction from narration — and the
+evidence does not support it. See the next section.
+
+### Edit 4b — the 7 marker-less `TRANSFER TO` direction cells are NOT prompt-fixable
+
+**Finding: no reliable printed discriminator exists. No rule was written.** The blanket
+`CREDIT` mapping was removed and deliberately not replaced with any other
+narration-to-direction mapping. The generic marker-less fallback already in the prompt is
+the only route for these rows, and the prompt now explicitly forbids pinning a direction
+to a printed merchant phrase.
+
+**Evidence 1 — the reference itself splits these rows almost exactly evenly.** Across all
+300 statements there are exactly **14** `TRANSFER TO` rows, and the reference direction is
+**DEBIT 7 / CREDIT 7**. The *same* description string carries *opposite* directions on
+different statements:
+
+| statement | description | reference direction | amount |
+|---|---|---|---|
+| 1040768215 | TRANSFER TO MERCHANT EMI | DEBIT | 22,251.04 |
+| 162725042 | TRANSFER TO MERCHANT EMI | CREDIT | 5,114.00 |
+| 1784860961 | TRANSFER TO MERCHANT EMI | CREDIT | 12,705.00 |
+| 186548429 | TRANSFER TO MERCHANT EMI | CREDIT | 31,595.35 |
+| 1939828045 | TRANSFER TO MERCHANT EMI | DEBIT | 6,176.27 |
+| 423235138 | TRANSFER TO MERCHANT EMI | DEBIT | 27,528.36 |
+| 525973295 | TRANSFER TO MERCHANT EMI | DEBIT | 34,994.20 |
+| 664657130 | TRANSFER TO MERCHANT EMI | CREDIT | 32,778.70 |
+| 749834844 | TRANSFER TO MERCHANT EMI | DEBIT | 13,910.00 |
+| 807587861 | TRANSFER TO MERCHANT EMI | CREDIT | 88,770.63 |
+| 834382309 | TRANSFER TO MERCHANT EMI | DEBIT | 2,29,470.49 |
+| 273593709 | TRANSFER TO FLEXIPAY INSTALLMENT | CREDIT | 46,000.00 |
+| 648670268 | TRANSFER TO FLEXIPAY INSTALLMENT | DEBIT | 51,601.00 |
+| gmail_384287 | TRANSFER TO MERCHANT EMI | CREDIT | 74,857.60 |
+
+Any blanket direction for this phrase is therefore wrong on ~7 of the 14 rows by
+construction. A blanket `CREDIT` rule does not fix a 7-cell defect; it converts it into a
+differently-distributed 7-cell defect while hardcoding a merchant-string-to-direction
+mapping the data contradicts.
+
+**Evidence 2 — PyMuPDF probe of all 14 rows in the source PDFs (read-only).** Nine
+candidate discriminators were tested on raw, non-lowercased strings, with rows grouped by
+a y-BAND rather than an exact baseline so a marker one or two points off still binds to
+its row. Every one was eliminated:
+
+| candidate discriminator | result |
+|---|---|
+| printed `C`/`D`/`T` marker on the row | **absent on all 14.** Corpus sweep of all 300 PDFs: 14 `TRANSFER TO` rows, **0** carrying any `C`/`D`/`T`/`M` marker |
+| separate credit amount column | no — the amount's right edge matches the neighbouring `D` rows in the same layout (`x1=405.0`; `414.4` on the one page-2 case). Left edge varies only with digit count (right-aligned) |
+| `+`/`-`/`CR`/`DR`/parenthesis sign token | none present on any of the 14 |
+| text colour / font | identical on all 14 (colour `8355967`, font `SariOfLt`) |
+| grey shading (the footer's "highlighted in grey" band) | no filled vector rect behind any of the 14, at any width; image counts are layout-driven, not direction-driven |
+| section / table the row sits under | all 14 sit inside a `TRANSACTIONS FOR <NAME>` section (or the page-2 "Date / Transaction Details / Amount" continuation header). Same section type for both directions |
+| wrapped-cell inheritance from the row above | **killed.** Each of the 14 prints its OWN date and sits at exactly the table's median row pitch (11.8 pt). The row above is a `D` row for both a CREDIT case (162725042) and a DEBIT case (1040768215), and two DEBIT cases (525973295, 648670268) sit directly under the section header with no row above to inherit from |
+| `Previous Balance / Payments / Purchases` arithmetic strip | identical boilerplate on all 14; carries nothing direction-bearing |
+| pairing with the `#`-marked source row of the same amount | cross-cutting, explains nothing: 4 of 7 CREDIT have a same-amount `#` row, and so do 2 of 7 DEBIT |
+
+**Evidence 3 — the removed rule named a string that does not exist.** `TRANSFER TO ENCASH`
+appears **0 times** in the 300-PDF corpus, so that clause was unjustified by the data
+independently of the direction question.
+
+**Conclusion.** On these rows the direction is not determinable from the row text or from
+any printed structural feature of the document. The reference's own 7/7 split, on an
+identical printed phrase with no printed marker to distinguish the cases, means the split
+is either internally inconsistent or driven by information not present in the statement.
+**These ~7 cells are not reliably prompt-fixable, and no prompt rule should claim them.**
+Resolving them requires a client decision on how a marker-less balance transfer between
+the revolving balance and an instalment plan should be signed — not a prompt edit.
 
 ### Deliberately not changed — non-prompt-fixable or harmful targets
 
@@ -308,6 +377,10 @@ is a reference defect. SBI's C/D column is safe and no other bank's glyph caveat
   pinned and the expected gain is exactly zero cells.
 - **14 `rewards.closingPoints` null disagreements:** the client cashback instruction and
   shared GT rule 13 contradict each other; this requires a client decision.
+- **7 marker-less `TRANSFER TO` direction cells:** no printed discriminator separates the
+  DEBIT cases from the CREDIT ones — nine candidates tested and eliminated against the
+  PDFs, and the reference splits an identical phrase DEBIT 7 / CREDIT 7. No rule was
+  written and the blanket `CREDIT` mapping was removed. See Edit 4b.
 - The working leading-credit-band and two-reward-table rules were preserved; measured
   row alignment is 3,527/3,527 with zero lifetime leaks.
 - No HDFC or ICICI rules were added, and the shared `GT_SCHEMA` was not changed.

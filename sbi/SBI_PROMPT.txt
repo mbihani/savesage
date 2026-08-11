@@ -69,10 +69,10 @@ TRANSACTION RULES:
     received by SBI Card REDUCES the cardholder's balance; do not classify it as DEBIT.
   - Only if a row carries no C/D marker at all, infer: purchases, fees, taxes, interest,
     markup and EMI instalments -> DEBIT; payments received, refunds, reversals, cashback
-    credited and surcharge waivers -> CREDIT.
-  - For the marker-less SBI rows "TRANSFER TO FLEXIPAY INSTALLMENT", "TRANSFER TO MERCHANT
-    EMI", "TRANSFER TO ENCASH", and similar "TRANSFER TO ..." rows, use "CREDIT": the
-    amount moves out of the revolving purchase balance into an instalment plan.
+    credited and surcharge waivers -> CREDIT. That general rule is the ONLY route for a
+    marker-less row. Do not keep a merchant-or-narration-string lookup that pins a fixed
+    direction to a particular printed phrase: on these statements the same phrase carries
+    opposite directions on different statements, so such a mapping cannot be correct.
   - NEVER output raw statement markers (e.g., "DR", "CR", "+", "C", "D") as the direction
     value.
 - For currency:
