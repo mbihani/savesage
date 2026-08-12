@@ -349,3 +349,238 @@ Gemini-vs-GT difference on that field.
 ported (the generic prompt is silent) and no rule was invented — writing new guidance and
 measuring it on the same 15 statements would be tuning toward the metric. Measured capture
 is reported instead.
+
+---
+
+# Change — final-shape refactor + schema enums (HDFC only)
+
+Date 2026-08-12. Committed directly to `main` on explicit human authorisation (no PR).
+
+| | before | after |
+|---|---|---|
+| `HDFC_PROMPT.txt` | 278 lines / 20,506 B | 377 lines / 27,727 B |
+| | sha256 `6cc57f69…` | sha256 `2d9bc1fa5fdb54704cf9eee1ab7cc579efcd3f8b63e7271af160f15dfc097ee4` |
+| `gemini/GEMINI_SCHEMA.json` | 5,161 B, 26 leaves | 7,462 B, **26 leaves** |
+| | | sha256 `f8aae8495dd42267dcab4cb7fca04ba0d140eb6f85cfcdc5941269c23a4d676f` |
+
+This entry **supersedes the two "reported, NOT acted on" stances above** (orphan rules,
+and the four zero-guidance fields). Both were deliberate holds pending a decision; the
+decision was given, so both are now acted on.
+
+## Part E — schema: enums + descriptions. NO field added, removed or renamed.
+
+`enum` added to two leaves; `description` added to four. **Leaf count stays 26** and is
+now asserted in code by the new `gemini/assert_schema.py`, which fails on any drift.
+
+- `transactions[].direction` → `["DEBIT","CREDIT",null]`
+- `transactions[].txnType` → the 11-value closed list **read verbatim out of
+  `HDFC_PROMPT.txt`**, not invented: `PURCHASE, PAYMENT, REFUND, REVERSAL, CASHBACK, FEE,
+  TAX, INTEREST, EMI, CASH_ADVANCE, UPI`, plus `null`. The prior run happened to emit only
+  8 of these; the enum is the prompt's full closed list, because the 3 unused values
+  (REFUND, REVERSAL, CASH_ADVANCE) are legal answers that simply did not occur in 15 files.
+  Narrowing the enum to the 8 observed values would be fitting the schema to one sample.
+
+### The strict-mode nullability risk, and how it was resolved
+
+`response_format` is sent with `strict: true`, and every one of these leaves is NULLABLE
+(the client type-map says `string|null`). An enum that omits `null` on a nullable leaf can
+either 400 the call outright or — worse, because it is silent — make a correct `null`
+unrepresentable and force the model to emit a wrong non-null value.
+
+Nullability in this converted schema is expressed as a **TYPE ARRAY**
+(`"type": ["string","null"]`), not `anyOf`. So the enums were built to match that form,
+with `null` as an explicit enum member:
+
+```json
+"direction": { "type": ["string","null"], "enum": ["DEBIT","CREDIT",null] }
+```
+
+`assert_schema.py` enforces the biconditional `null in type  <=>  null in enum`, so this
+cannot silently regress. **Smoke-tested on ONE PDF before any sweep** (statement
+814964372, the smallest file, Pixel Play layout): HTTP **200**, `finish_reason=stop`,
+valid JSON parsed, 2 transactions. The enum shape is accepted. No revert needed.
+
+Residual limitation, stated rather than papered over: the smoke test proves the schema is
+ACCEPTED and that non-null enum members round-trip. It does not prove a `null` is
+*emittable* for `direction`/`txnType` at runtime, because that statement needed no null.
+`direction` should never be null anyway (every printed row has one, and the prompt now
+says so); for `txnType` the full run is the check.
+
+`convert_schema.py` was deliberately NOT re-run: it regenerates `GEMINI_SCHEMA.json` from
+the client source and would silently discard these enums and descriptions. It is
+provenance, not a build step. `assert_schema.py` is the check that replaces it.
+
+## Part A — deleted rules governing fields the schema cannot emit
+
+Verified absent from the schema, and now absent from the prompt (re-grepped: **0**
+remaining mentions of all six names):
+
+- the whole `INFERENCE_RULES (ALLOWLIST):` section. Both subjects
+  (`financeChargesThisCycle`, `utilisationPercent`) are unemittable, and the section's
+  first line commanded "MUST be inferred" for a field `additionalProperties:false`
+  forbids — an active instruction/schema conflict, not dead text.
+- the `bonusPointsThisCycle` field rule inside `BONUS_POINTS_RULE (STRICT):`.
+- the `statementPeriodStart`/`End` clause and the `rawStatementId` clause.
+
+**The live rule inside BONUS_POINTS_RULE was NOT deleted.** Its last clause — "On HDFC the
+combined label 'Feature + Bonus Reward Points Earned' is a SINGLE earned figure … It
+populates pointsEarnedThisCycle. Do NOT split" — governs `pointsEarnedThisCycle`, which IS
+in the schema, and is one of only four HDFC reward labels this prompt has that the client's
+lacks. It was **relocated verbatim into REWARDS_RULES** and is asserted present by
+`/tmp/verify_protected.py`-style string check during review.
+
+Two consequential edits the deletions forced, both reported rather than done quietly:
+
+1. `MISSING_DATA_RULE` said "EXCEPT for fields listed in INFERENCE_RULES, which must be
+   inferred". With INFERENCE_RULES gone that is a dangling reference, so the rule is now
+   unconditional: nothing in this schema is a computed field.
+2. The DD/MM/YYYY sanity check bounded transaction dates by
+   `statementPeriodStart`/`statementPeriodEnd`. Those field names are deleted, but the
+   day/month-swap mechanism they drive contributes to date 288/288, so the check was
+   **re-pointed at the statement's printed "Billing Period" range** instead of at two
+   output fields. The mechanism is preserved; only the referent changed. The
+   DD/MM/YYYY formatting instruction itself is byte-identical.
+
+## Part B — rules for the four fields that had ZERO guidance anywhere
+
+All four were previously held back on the grounds that inventing guidance and measuring it
+on the same 15 statements is tuning toward the metric. That objection still stands and is
+worth restating: **none of these four fields has a correctness oracle**, so every number
+reported for them is POPULATED_ONLY, never accuracy. What the new rules buy is
+determinism and a fabrication standard, not a measurable score.
+
+Each rule is grounded in a probe of the 15 PDFs, not in guesswork:
+
+- **`pointsExpiringNext30Days` / `pointsExpiringNext60Days`** — HDFC **does** print these.
+  8 of 15 statements print an expiry pair; 7 (cashback, NeuCoins, Marriott Bonvoy) print
+  none. Crucially, the prior run already matched that split **15/15** with zero guidance:
+  it emitted `0` on exactly the 8 that print `0`, and `null` on exactly the 7 that print
+  nothing. So the rule's job is to CODIFY a field that is already right, not to change it.
+  It documents both printed layouts — the classic run-together
+  `"POINTS EXPIRING IN 30 DAYS 0 IN 60 DAYS 0"` and the Pixel Play
+  headings-row/values-row form needing positional binding (6th and 7th values) — and it
+  states that a printed 0 is a real value, not a missing one.
+- **`productFamily`** — every one of the 15 files does carry a product name in the text
+  layer, so this is groundable. The prior run was inconsistent in GRANULARITY on the same
+  product family (`Swiggy` vs `Swiggy HDFC Bank Credit Card`; `UPI RuPay` vs
+  `UPI RuPay Credit Card`; and `null` on 838900283 despite the name being printed). The
+  rule fixes a single deterministic form — product name minus issuer minus the words
+  "Credit Card" — with seven worked examples, and forbids sourcing it from a promo block,
+  a narration, the filename, or the BIN.
+- **`isPrimaryCard`** — probed all 15 files for `Primary`, `Add-on`, `Add On`,
+  `Additional`, `Supplementary`, `Secondary`, `Card Type`, `Cardholder Type` as card
+  designations. **Not one statement prints any of them.** The only literal "PRIMARY" in the
+  corpus is inside a postal address (a street named for a "PRIMARY SCHL" on 567125239) —
+  exactly the kind of token a lazy rule would latch onto, so the rule names and excludes it.
+  The rule therefore follows the evidence-first pattern that made `network` 16/16 with zero
+  fabrications: **null unless a designation is printed.** It also blocks the four
+  tempting inferences (only card on the statement, addressed to the holder, listed first,
+  two cards ⇒ primary+add-on) and records that HDFC issues Pixel Play on TWO networks for
+  the SAME holder (495459059: one Visa, one RuPay), so a 2-card statement is not a
+  primary/add-on pair.
+
+  **This is a semantic judgement call with no oracle, and it changes behaviour**: the
+  prior run emitted `true` on 7 cards and `null` on 9; under this rule the expected result
+  is `null` on all 16. By the same standard that scores a fabricated `network` as worse
+  than `null`, `true` on a statement that prints no designation is a fabrication. If the
+  client's ground truth instead expects `true` for the sole card on a statement, this rule
+  is wrong and should be inverted — that is a contract question, not a measurement, and it
+  is flagged rather than assumed.
+
+## Part C — three live defects, one cell each
+
+**C1 `direction`.** Coordinate-verified on statement 1723515293 page 2: the row
+`Reinstating_Diff_1%_Swiggy_Cbk_Rev` at y=308.37 has amount spans in dark `0x333333` and
+**no `+` span at all** ⇒ DEBIT; the model returned CREDIT. PR #6's "marker-first" wording
+failed because it invited a comparison between marker and narration instead of forbidding
+the narration outright.
+
+The probe also surfaced that this defect class is **SYMMETRIC**, which the brief's C1
+framing did not cover and which a one-sided fix would have made worse. The same 15-file
+run has **two errors in the opposite direction** on statement 567125239: rows
+`UPICC-687912822278-17-07-2025` (₹704.00, y=760.37) and `UPICC-519872895172-17-07-2025`
+(₹124.00, y=774.54) both carry a `+` span at x0=526.84 in green `0x05c747` — they ARE
+CREDIT — yet the model returned DEBIT, because narration semantics ("a UPI row is a
+spend", reinforced by the prompt's own distribution note) overrode a **present** marker.
+
+So the rule was made absolute in BOTH directions rather than only in the no-marker
+direction: a two-step mechanical test on the printed amount, "run it, emit, and STOP",
+with marker-absent ⇒ DEBIT and marker-present ⇒ CREDIT each stated as unoverridable. Had
+C1 been implemented one-sidedly it would have pushed harder toward DEBIT and risked
+turning 2 errors into more.
+
+The worked examples are the real rows, chosen because they are self-refuting: the DEBIT
+`Reinstating_Diff_1%_Swiggy_Cbk_Rev` sits a few rows above the CREDIT
+`Reinstating_Diff_10%_Swiggy_Cashbac` (`+`, green `0x05c747`, y=336.72) **on the same
+statement**. Two rows in one narration family, opposite directions, distinguished only by
+the marker — which is precisely the point, and which also means the new rule must not flip
+those two legitimate CREDITs. That is checked explicitly in the regression gate.
+
+The prompt's pre-existing distribution note ("almost every row is a UPI DEBIT") is
+retained but demoted in the same edit: it is now explicitly a check on the rupee-glyph
+reading, "never a reason to change a row", and "not evidence about any individual row".
+It is implicated in the two 567125239 errors, so leaving it unqualified would have
+undercut the fix.
+
+**C2 `rewardPointsOnThisTransaction`.** Statement 838900283, page 1, y≈643–648. The row's
+spans are date (x0=169.51), narration (x0=250.74, text
+`IGST-VPS2713733665720-RATE 18.0 -19 (Ref#`), then the amount at x0=531.91–536.95. There
+is **no span between narration and amount** — no reward-points column value on that row —
+so the field is `null`; the model emitted `-19`, lifted from inside the narration string.
+This was the one field where the client's prompt beat ours (288/288 vs 287/288). The fix
+is a column-positional guard: the value is a standalone number to the RIGHT of the
+narration and LEFT of the amount, and characters inside the narration never populate it,
+"however number-like they look". The `-RATE 18.0 -NN` form is named as the trap.
+
+**C3 `pointsEarnedThisCycle`.** Statement 629227338 prints
+`Cash Back Summary … Total C 877.70` on page 2, and the model returned
+`pointsRedeemedThisCycle = 877.70` but `pointsEarnedThisCycle = null`. The gap was a
+missing link, not a bad rule: the prompt asserted "for cashback cards: cashback earned =
+pointsEarnedThisCycle" but never said WHERE cashback earned is printed, and listed the
+Cash Back Summary only as a REDEMPTION source. The statement's own printed note resolves
+it — "'Cashback Summary' will have cashback earned for the previous statement cycle" and
+"will be auto redeemed against the balance for this statement cycle" — so the Total is
+legitimately BOTH figures. The rule now says so explicitly, in both field entries, and
+states that populating one is never a reason to null the other, which is what protects
+`pointsRedeemedThisCycle` (currently 14/15 populated vs the client's 8/15). The likely
+trigger for the miss is also named: on 629227338 an
+`Eligible for EMI / TRANSACTIONS / TOTAL AMOUNT / CONVERT TO EMI` panel is printed
+directly above the Cash Back Summary, and the rule now tells the model not to let that
+panel cause it to skip the table.
+
+## Part F — the dangling schema reference
+
+Prompt line 4 said "strictly matching the provided schema" while no schema appears in the
+prompt text. It now states that the shape arrives with the request as an API
+`response_format` of type `json_schema` with `strict: true`, and that unlisted field names
+are rejected.
+
+**The full 26-leaf schema was deliberately NOT pasted into the prompt.** It would add
+~6 KB to every one of the 15 calls (~+37% on a 27.7 KB prompt) for no measured benefit:
+the shape is already enforced by the decoder, so the model cannot deviate from it whether
+or not the text is present. A one-line pointer removes the dangling reference at ~250
+bytes. If a later measurement shows the model reasoning better with the shape visible,
+that is a cheap experiment to run — but it should be run, not assumed.
+
+## DO-NOT-TOUCH sections — verified byte-identical
+
+Extracted from `HEAD` and from the working tree by start/end marker and compared verbatim:
+rupee-glyph/ITFRupee section (1,376 B), FX rupee-leg rule (394 B), column-bleed/positional
+narration rules (1,868 B), txnType closed-list wording (1,136 B), DD/MM/YYYY formatting
+instruction (520 B) — **all IDENTICAL**. Also grepped for banned cross-bank imports (no
+country-code rule, no ICICI `NNNNXXXXXXXXNNNN` mask wording, no SBI `TRANSACTIONS FOR` or
+`Amount ( \` )` wording): none present. HDFC-only scope held; `icici/` and `sbi/` untouched.
+
+### One stale sentence left in place, on purpose
+
+Inside the protected txnType block the prompt still says the closed list "is enforced by
+THIS INSTRUCTION ONLY — the response schema types txnType as a free string and will NOT
+reject an out-of-list value". Part E makes that **false**: the schema now pins an enum.
+The sentence sits inside a DO-NOT-TOUCH block, and the brief says to stop and report
+rather than edit one, so it was left alone and is reported here instead. It is stale, not
+harmful — it understates enforcement, so it can only push the model toward compliance,
+never away from it. Recommended as a one-line follow-up, not a blocker.
+
+The equivalent sentence in the `direction` block WAS corrected, because C1 puts that block
+in scope; it now states the enum pins two values plus null, and adds that `direction` is
+never legitimately null since every printed row has one.

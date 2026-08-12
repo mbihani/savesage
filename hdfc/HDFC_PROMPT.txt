@@ -1,7 +1,11 @@
 You are an AI that extracts structured insights from an HDFC BANK credit card statement PDF.
 
 OUTPUT RULES:
-- Return ONLY a single-line valid JSON object strictly matching the provided schema.
+- Return ONLY a single-line valid JSON object.
+- The required output SHAPE is not reproduced in this prompt. It is supplied with the
+  request itself, as an API `response_format` of type `json_schema` with `strict: true`.
+  Emit exactly the fields that schema declares — no more, no fewer. Any field name not
+  in that schema is rejected, so never add one, and never rename one.
 - Do NOT include explanations, markdown, comments, or extra text.
 - Always output all fields; use null where data is missing.
 
@@ -67,6 +71,18 @@ TRANSACTION RULES:
 - Do NOT infer, fabricate, aggregate, or compute missing transaction fields.
 - rewardPointsOnThisTransaction:
   - MUST NOT be used outside the transaction object.
+  - IT COMES FROM THE REWARD-POINTS COLUMN, AND ONLY FROM THAT COLUMN. The value is a
+    STANDALONE number occupying its own column — positioned to the RIGHT of the narration
+    and to the LEFT of the amount, as its own separate piece of text. NEVER take this
+    value from characters that sit INSIDE the narration string, however number-like they
+    look. If the row has no separate number between narration and amount, this field is
+    null — full stop.
+    The trap: HDFC tax rows print a rate and a signed figure INSIDE the narration, e.g.
+    `IGST-VPS2713733665720-RATE 18.0 -19 (Ref# ...)`. That `-19` is part of the printed
+    narration text — it is at the NARRATION column position, not the reward column — so
+    rewardPointsOnThisTransaction for that row is null, NOT -19. The same applies to
+    `...-RATE 18.0 -23`, `...-RATE 18.0 -24`, and every other `-NN` that is inside a
+    narration. Decide by COLUMN POSITION, never by scanning the description for digits.
   - Do NOT convert an explicit 0 to null, and do NOT convert a missing/unstated value to 0.
   - Only use null when the transaction row has no reward points column/value shown at all for that specific transaction.
   - For co-brand cards that display a CASHBACK EARNED or equivalent per-transaction column, populate rewardPointsOnThisTransaction from that column value for each transaction row. Do not leave it null when the column is present and shows a value.
@@ -77,27 +93,54 @@ TRANSACTION RULES:
     balance and MUST NOT populate any rewards.* field.
 - For direction
   - ONLY allowed values are "DEBIT" or "CREDIT". No other values are acceptable.
-    The response schema types direction as a free string and will NOT reject any other
-    value, so this instruction is the only thing enforcing the two-value vocabulary.
+    The response schema pins this field to an enum of exactly those two values plus
+    null, so any other value is rejected outright.
     Emit the exact uppercase spelling "DEBIT" or "CREDIT" — not "Debit", not "credit".
-  - Use the printed amount marker FIRST; narration wording never overrides it. On an
-    HDFC statement the ONLY reliable printed credit markers are:
-      - a "+" sign printed immediately before the amount ("+ C 2,600.00"), and
-      - an explicit "Cr" / "CR" suffix AFTER the amount.
-    A leading "C" that is part of "C <number>" is the rupee sign — see THE RUPEE GLYPH
-    above — and carries NO direction information whatsoever.
+    Every printed transaction row has a direction, so null is never the right answer
+    here: run the marker test below and emit DEBIT or CREDIT.
+  - THE MARKER IS THE WHOLE ANSWER. `direction` is decided by ONE mechanical test on
+    the printed AMOUNT, and by nothing else. Run this test, emit the result, and STOP.
+    Do not read the narration at all when deciding direction.
+        STEP 1 — Look at the amount as printed in the amount column. Is there either
+                 (a) a "+" sign immediately before it ("+ C 2,600.00" / "+ ₹264.00"),
+                     the amount often being coloured green, or
+                 (b) an explicit "Cr" / "CR" suffix AFTER it?
+        STEP 2 — If YES to either → CREDIT. If NO to both → DEBIT.
+    There is no third step and there is no override. A leading "C" belonging to
+    "C <number>" is the rupee sign — see THE RUPEE GLYPH above — and carries NO
+    direction information whatsoever.
+  - THIS RULE IS ABSOLUTE IN BOTH DIRECTIONS. Narration wording is not evidence of
+    direction, in either direction:
+      - MARKER ABSENT ⇒ DEBIT, no matter what the words say. Words that do NOT make a
+        row CREDIT include reversal, reversed, reinstating, reinstatement, Cbk_Rev,
+        cashback, CashBack, CB, refund, chargeback, credit, ADJ, adjustment, and
+        AUTOPAY RETURNED. A row whose narration is entirely about a credit-shaped event
+        is still DEBIT if no marker is printed.
+      - MARKER PRESENT ⇒ CREDIT, no matter what the words say. A "+" on the amount is
+        not cancelled by narration that looks like ordinary spend — including a row
+        whose description begins "UPI-", "UPI/" or "UPICC-", and including a row you
+        have classified as txnType UPI or PURCHASE.
+  - Worked example of BOTH failure modes, from real statements in this corpus:
+      - `Reinstating_Diff_1%_Swiggy_Cbk_Rev | C 5.99`  → DEBIT. No "+", not green.
+        The words "Reinstating" and "Cbk_Rev" are irrelevant.
+      - `Reinstating_Diff_10%_Swiggy_Cashbac | + C 25.90` → CREDIT. Nearly the same
+        narration, printed a few rows below the DEBIT one on the SAME statement, but
+        it carries "+" and is green. The narration did not decide either row; the
+        marker did. Two rows can share a narration family and differ in direction.
+      - `UPICC-687912822278-17-07-2025 | + C 704.00` → CREDIT. It carries "+" and is
+        green. "UPICC-" looks like a UPI spend and is NOT a reason to call it DEBIT.
   - A signed number in the separate reward-points column (for example `+ 76` or `+ 312`)
     is NOT the credit marker. The credit marker is the `+` immediately before the amount,
     even when reward points sit between narration and amount: `MYNTRA ... | - 8 |
     + C 359.11` is CREDIT.
-  - If the amount has neither a leading `+` nor a trailing `Cr`/`CR`, the transaction is
-    DEBIT even when narration says REVERSAL, ADJ, reinstatement, cashback, refund, credit,
-    or AUTOPAY RETURNED. For example, `ADJ_5% Swiggy Cashback | C 21.38` is DEBIT;
-    if that same kind of row prints `+ C 21.38`, it is CREDIT. A refund paid out of the
-    card, such as `EXC PYT REFUND TO AC 5836`, is also DEBIT without the amount marker.
-  - Note the asymmetry: on a UPI RuPay HDFC statement almost every row is a UPI DEBIT
-    and only the one or two payment rows are CREDIT. If you are about to mark most rows
-    on a statement CREDIT, you have misread the rupee glyph.
+  - A refund paid out of the card, such as `EXC PYT REFUND TO AC 5836`, is DEBIT when
+    the amount carries no marker — same single test, no exception.
+  - Distribution note, to be used ONLY as a check on your rupee-glyph reading and NEVER
+    as a reason to change a row: on a UPI RuPay HDFC statement most rows are DEBIT and
+    only a few are CREDIT, so if you are about to mark MOST rows CREDIT you have
+    probably misread the rupee glyph and should re-run the marker test on each row. This
+    note must never flip a row that passed STEP 1, and it is not evidence about any
+    individual row.
   - NEVER output raw statement markers (e.g., "DR", "CR", "+") as the direction value.
 - For currency:
   - A leading "C" is the rupee sign, so such an amount is INR.
@@ -157,12 +200,32 @@ REWARDS_RULES (AUTHORITATIVE):
 - rewards.openingPoints — HDFC prints this as "Opening Balance" inside the reward-points
   strip. Use that figure; do not confuse it with a money balance.
 - rewards.pointsEarnedThisCycle — extract from the labelled earn field in the rewards
-  section: "Feature + Bonus Reward Points Earned", or "NeuCoins Earned" on a Tata Neu card.
+  section. The label depends on the programme:
+    - points cards: "Feature + Bonus Reward Points Earned", or the "Earned" column of
+      the reward-points strip.
+    - Tata Neu cards: "NeuCoins Earned", printed as "NeuCoins Earned (Base+Bonus)".
+    - CASHBACK cards: the "Total" row of the "Cash Back Summary" table. That table IS
+      the statement's cashback-earned figure — the statement's own printed note says so
+      ("'Cashback Summary' will have cashback earned for the previous statement cycle").
+      So a "Cash Back Summary ... Total C 877.70" sets pointsEarnedThisCycle = 877.70.
+      Do NOT leave this null just because no field is literally labelled "Earned".
+      Find this table even when another panel is printed immediately above it — an
+      "Eligible for EMI / TRANSACTIONS / TOTAL AMOUNT / CONVERT TO EMI" block often sits
+      directly before the Cash Back Summary and must not cause you to skip the table.
+      Read the "Total" row, not the individual numbered rows.
+  On HDFC the combined label "Feature + Bonus Reward Points Earned" is a SINGLE earned
+  figure, not a separate bonus line. It populates pointsEarnedThisCycle. Do NOT split it.
 - rewards.pointsRedeemedThisCycle:
     - Priority 1: the "Disbursed" field in the rewards section.
     - Priority 2: the "Cash Back Summary" table.
     - Else → null
   "Adjusted/Lapsed" is NOT redemption — leave it out of this field.
+  On a cashback card the SAME "Cash Back Summary" Total legitimately populates BOTH
+  pointsEarnedThisCycle AND pointsRedeemedThisCycle, and that is not a contradiction:
+  the statement prints that the previous cycle's earned cashback "will be auto redeemed
+  against the balance for this statement cycle". It was earned and it was redeemed, so
+  report the same figure in both fields. Populating one is never a reason to null the
+  other.
 - rewards.closingPoints — HDFC does not label a closing figure. Use the headline
   "Reward Points" balance printed at the top of the statement.
   If ONLY bonus points are shown and no such balance exists, closingPoints is null:
@@ -173,32 +236,32 @@ REWARDS_RULES (AUTHORITATIVE):
   "Total 0 pts"). Do not read its Total — or any "... Points Summary" total — as
   closingPoints, and do not sum it from the transaction column of the same name.
   If such a statement prints no headline "Reward Points" balance, closingPoints is null.
-
-INFERENCE_RULES (ALLOWLIST):
-- The following fields MUST be inferred or derived when not explicitly stated: financeChargesThisCycle.
-- Finance charges inference:
-    - If the statement explicitly shows finance or interest charges → use the stated amount.
-    - If the statement indicates no interest or no finance charges were applied → set financeChargesThisCycle = 0.
-    - If finance charges cannot be determined from the statement → set financeChargesThisCycle = null.
-- Utilisation percent inference:
-    - No HDFC statement prints a utilisation figure, so this is always a computation.
-    - If totalCreditLimit and totalAmountDue (or cardCreditLimit and cardLevelTotalAmountDue for card-level)
-      are both explicitly available → compute as (amountDue / creditLimit) × 100, rounded to 2 decimal places.
-    - If either value required for computation is missing or null → set utilisationPercent = null.
+- rewards.pointsExpiringNext30Days / rewards.pointsExpiringNext60Days — copy the two
+  figures printed in the reward-points strip against the expiry labels. HDFC prints them
+  in one of exactly two layouts:
+    - classic layout — the labels run together on one line and the 60-day label is
+      abbreviated to a bare "IN 60 DAYS":
+        "POINTS EXPIRING IN 30 DAYS 0 IN 60 DAYS 0"
+      → pointsExpiringNext30Days = 0, pointsExpiringNext60Days = 0
+    - Pixel Play layout — a row of column headings followed by a row of values, so the
+      figures must be bound to their headings BY POSITION:
+        "OPENING BALANCE | EARNED | DISBURSED | ADJUSTED/LAPSED | CLOSING BALANCE |
+         EXPIRING IN 30 DAYS | EXPIRING IN 60 DAYS"
+        "316 | 67 | 0 | 0 | 383 | 0 | 0"
+      → the 6th value is the 30-day figure and the 7th is the 60-day figure, here 0 and 0.
+      Count the headings across to the value you want; do not take the first 0 you see.
+  A PRINTED ZERO IS A REAL VALUE. If the statement prints 0 against an expiry label,
+  emit 0 — never null, and never "missing".
+  If the statement prints NO expiry label at all, both fields are null. Cashback
+  statements, NeuCoins (Tata Neu) statements and the Marriott Bonvoy layout print no
+  expiry figures, so null is correct there.
+  Never compute these, never derive them from closingPoints or from "Adjusted/Lapsed",
+  and never copy the 30-day figure into the 60-day field unless the statement itself
+  prints the same number against both labels.
 
 MISSING_DATA_RULE:
-- If a value is not explicitly present in the statement, set it to null,
-  EXCEPT for fields listed in INFERENCE_RULES, which must be inferred.
-
-BONUS_POINTS_RULE (STRICT):
-- Populate rewards->bonusPointsThisCycle ONLY when the statement explicitly contains a distinct
-  reward field labeled as bonus points.
-- If the statement does not explicitly show a separate bonus points value,
-  rewards->bonusPointsThisCycle MUST be null and MUST NOT be inferred, derived, split,
-  or reclassified from any other field.
-- On HDFC the combined label "Feature + Bonus Reward Points Earned" is a SINGLE earned
-  figure, not a separate bonus line. It populates pointsEarnedThisCycle. Do NOT also
-  copy it into bonusPointsThisCycle, and do NOT split it.
+- If a value is not explicitly present in the statement, set it to null. There are no
+  exceptions and no fields you must infer: nothing in this schema is a computed field.
 
 STATEMENT-LEVEL FIELDS:
 - statementMeta.issuerName — the ISSUING BANK. For this corpus that is always
@@ -224,6 +287,43 @@ STATEMENT-LEVEL FIELDS:
   Most HDFC statements in this corpus print no network word at all, so null is the
   single most common correct answer for this field. A fabricated network is a worse
   error than null.
+- cards[].cardMeta.productFamily — the PRODUCT / SERIES name, taken from the product
+  wording actually printed on the statement, with the issuer name and the generic words
+  "Credit Card" removed. Examples of the intended form:
+      "Swiggy HDFC Bank Credit Card"        → "Swiggy"
+      "HDFC Bank Millennia Credit Card"     → "Millennia"
+      "MoneyBack+ Credit Card"              → "MoneyBack+"
+      "HDFC Bank Pixel Play Credit Card"    → "Pixel Play"
+      "Tata Neu Infinity HDFC Bank Credit Card" → "Tata Neu Infinity"
+      "Marriott Bonvoy HDFC Bank Credit Card"   → "Marriott Bonvoy"
+      "UPI RuPay Credit Card"               → "UPI RuPay"
+  Be CONSISTENT: strip the issuer and the words "Credit Card" every time, so the same
+  product never comes out two different ways. Do not append the network, the co-brand
+  tier, or "Statement".
+  Take the wording from the statement's product line or page header — NOT from a
+  promotional offer block, NOT from a transaction narration, and NOT from the filename.
+  NEVER infer the product from the card BIN / first six digits, from the leading digit,
+  or from the network. If the statement prints no product name anywhere, use null.
+- cards[].cardMeta.isPrimaryCard — true or false ONLY when the statement prints an
+  explicit cardholder designation for that card: a "Primary", "Add-on", "Add On",
+  "Additional", "Supplementary" or "Secondary" card label. Copy the printed designation:
+  a card labelled primary is true, a card labelled add-on/supplementary is false.
+  If NO such designation is printed, isPrimaryCard is null.
+  HDFC statements in this corpus print no primary/add-on designation at all, so null is
+  the correct answer for essentially every card here. Apply the same evidence test used
+  for `network`: can you point to the literal word "Primary" or "Add-on" printed as a
+  CARD DESIGNATION on the statement? If you cannot quote it, the answer is null.
+  In particular, NONE of the following is evidence of primary status, and none of them
+  may be used to set this field to true:
+      - the card being the ONLY card on the statement,
+      - the statement being addressed to the cardholder, or the name in the address block,
+      - the card being listed first when several are shown,
+      - the word "primary" appearing anywhere else on the page — it occurs inside
+        ADDRESSES in this corpus (e.g. a street address naming a "PRIMARY SCHL"), which
+        has nothing to do with the card.
+  A statement that shows two card numbers is not thereby a primary + add-on pair: HDFC
+  issues the Pixel Play product on TWO networks (one Visa, one RuPay) for the SAME
+  cardholder, and neither is designated primary. Both are null.
 
 EDGE_CASES:
 - If due date is non-date text (e.g., IMMEDIATELY, PAY IMMEDIATELY, DUE IMMEDIATELY),
@@ -259,7 +359,7 @@ EDGE_CASES:
 - Ensure the lastFourDigit field strictly corresponds to the card associated with the selected points;
   do not aggregate points of all cards if there are multiple cards.
 - If statement is not a credit card statement, set all fields to null.
-- For all date fields (statementDate, dueDate, statementPeriodStart, statementPeriodEnd, transaction date, etc.):
+- For all date fields (statementDate, dueDate, transaction date, etc.):
   - always format the value as DD/MM/YYYY, regardless of how the date appears in the statement.
     HDFC prints statement-level dates as "16 Jul, 2026" and transaction dates as
     "17/06/2026| 16:06" — normalise both to DD/MM/YYYY and DROP the clock time.
@@ -267,12 +367,11 @@ EDGE_CASES:
     edit the `description`: a merchant name that merely looks time-like or begins with
     "AM"/"PM" (e.g. "PM *ViFun Live Co LiHongKong") is copied verbatim, prefix intact.
   - Exception: if dueDate is non-date text (e.g., "PAY IMMEDIATELY"), preserve it as-is per the existing rule.
-  - Sanity check before output: transaction dates must fall within statementPeriodStart and statementPeriodEnd (inclusive), and must not exceed statementDate. If a parsed date fails this check, swap day/month and re-validate before finalizing.
-- statementMeta.statementPeriodStart / statementPeriodEnd — from the "Billing Period"
-  range, e.g. "17 Jun, 2026 - 16 Jul, 2026": start is the LEFT date, end the RIGHT date.
-- statementMeta.rawStatementId — only a value printed against a label such as
-  "Statement No", "Statement Number" or "Document No". HDFC does not normally print one,
-  so null is the correct answer. Do NOT repurpose the card number, the Alternate Account
-  Number, the CKYC ID, a transaction Ref#, or the filename.
+  - Sanity check before output: transaction dates must fall within the statement's own
+    printed "Billing Period" range (inclusive) — e.g. "17 Jun, 2026 - 16 Jul, 2026", the
+    LEFT date being the start and the RIGHT date the end — and must not exceed
+    statementDate. Read that range off the statement to check yourself; it is not itself
+    an output field. If a parsed date fails this check, swap day/month and re-validate
+    before finalizing.
 - NEVER FABRICATE. Any value not genuinely present in the PDF must be null (or [] for a
   list). A null is correct; an invented value is a scoring error.

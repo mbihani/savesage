@@ -104,7 +104,8 @@
                 "type": [
                   "string",
                   "null"
-                ]
+                ],
+                "description": "The HDFC product / series name as printed on the statement, with the issuer name and the generic words 'Credit Card' removed: e.g. 'Swiggy', 'Millennia', 'MoneyBack+', 'Pixel Play', 'Tata Neu Infinity', 'Marriott Bonvoy', 'UPI RuPay'. Take it from the statement or card header product line, never from a promotional offer or a transaction narration. Null only when no product name is printed anywhere on the statement. NEVER infer it from the card BIN, the leading digit, or the network."
               },
               "lastFourDigit": {
                 "type": [
@@ -122,7 +123,8 @@
                 "type": [
                   "boolean",
                   "null"
-                ]
+                ],
+                "description": "true or false ONLY when the statement prints an explicit cardholder designation for this card - a 'Primary', 'Add-on', 'Add On', 'Supplementary' or 'Secondary' card label. Null when no such designation is printed. Being the only card on the statement is NOT evidence of primary status; do not infer this field from card count, from the address block, or from the cardholder's name."
               }
             }
           }
@@ -166,12 +168,31 @@
             "type": [
               "string",
               "null"
+            ],
+            "enum": [
+              "DEBIT",
+              "CREDIT",
+              null
             ]
           },
           "txnType": {
             "type": [
               "string",
               "null"
+            ],
+            "enum": [
+              "PURCHASE",
+              "PAYMENT",
+              "REFUND",
+              "REVERSAL",
+              "CASHBACK",
+              "FEE",
+              "TAX",
+              "INTEREST",
+              "EMI",
+              "CASH_ADVANCE",
+              "UPI",
+              null
             ]
           },
           "rewardPointsOnThisTransaction": {
@@ -236,13 +257,15 @@
           "type": [
             "number",
             "null"
-          ]
+          ],
+          "description": "The number printed against the reward-strip label 'POINTS EXPIRING IN 30 DAYS' (classic HDFC layout) or 'EXPIRING IN 30 DAYS' (Pixel Play layout). Copy the printed figure verbatim, INCLUDING a printed 0 - a printed zero is a real value, not a missing one. Null only when the statement prints no such label at all, which is the case on cashback and NeuCoins statements. Never computed or carried over from another field."
         },
         "pointsExpiringNext60Days": {
           "type": [
             "number",
             "null"
-          ]
+          ],
+          "description": "The number printed against the reward-strip label 'POINTS EXPIRING IN 60 DAYS', which the classic HDFC layout prints as a bare 'IN 60 DAYS' immediately after the 30-day figure, and the Pixel Play layout prints as 'EXPIRING IN 60 DAYS'. Copy the printed figure verbatim, INCLUDING a printed 0. Null only when the statement prints no such label at all. Never computed, and never copied from the 30-day figure unless the statement prints the same number for both."
         }
       }
     }
