@@ -1,0 +1,107 @@
+{
+ "arm": "hdfc",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-12T17:49:42",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 11069,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 3,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "UPI RuPay Credit Card",
+     "isPrimaryCard": true,
+     "lastFourDigit": "8002",
+     "network": "RUPAY",
+     "productFamily": null
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": 409,
+   "openingPoints": 409,
+   "pointsEarnedThisCycle": 0,
+   "pointsExpiringNext30Days": 0,
+   "pointsExpiringNext60Days": 0,
+   "pointsRedeemedThisCycle": 0,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 86593,
+   "totalAmountDue": 19407,
+   "totalCreditLimit": 106000,
+   "totalMinimumAmountDue": 980
+  },
+  "statementMeta": {
+   "dueDate": "06/07/2026",
+   "issuerName": "HDFC Bank",
+   "statementDate": "16/06/2026"
+  },
+  "transactions": [
+   {
+    "amount": 127.77,
+    "currency": "INR",
+    "date": "16/05/2026",
+    "description": "IGST-VPS2713733665720-RATE 18.0 -19 (Ref# 19999999980516999184000)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": -19,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 980,
+    "currency": "INR",
+    "date": "31/05/2026",
+    "description": "CREDIT CARD PAYMENTNet Banking (Ref# 00000000000531018229538)",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 728.57,
+    "currency": "INR",
+    "date": "16/06/2026",
+    "description": "FINANCE CHARGES (Ref# 19999999980616999284210)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "INTEREST"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_838900283_19ed638ffeaff9c3_6530XXXXXXXXXX02_16-06-2026_471.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/gemini-schema-hdfc/hdfc/HDFC_PROMPT.txt",
+ "prompt_sha256": "7ddbce14c6ae82649520dfd32acfa97c3c48b5e3dc6f3bd40731f27147ba90c6",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"UPI RuPay Credit Card\",\"isPrimaryCard\":true,\"lastFourDigit\":\"8002\",\"network\":\"RUPAY\",\"productFamily\":null}}],\"rewards\":{\"closingPoints\":409,\"openingPoints\":409,\"pointsEarnedThisCycle\":0,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":0,\"pointsRedeemedThisCycle\":0,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":86593,\"totalAmountDue\":19407,\"totalCreditLimit\":106000,\"totalMinimumAmountDue\":980},\"statementMeta\":{\"dueDate\":\"06/07/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"16/06/2026\"},\"transactions\":[{\"amount\":127.77,\"currency\":\"INR\",\"date\":\"16/05/2026\",\"description\":\"IGST-VPS2713733665720-RATE 18.0 -19 (Ref# 19999999980516999184000)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":-19,\"txnType\":\"TAX\"},{\"amount\":980,\"currency\":\"INR\",\"date\":\"31/05/2026\",\"description\":\"CREDIT CARD PAYMENTNet Banking (Ref# 00000000000531018229538)\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":728.57,\"currency\":\"INR\",\"date\":\"16/06/2026\",\"description\":\"FINANCE CHARGES (Ref# 19999999980616999284210)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"INTEREST\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "decrypt_838900283_19ed638ffeaff9c3_6530XXXXXXXXXX02_16_06_2026_471",
+ "started_at": "2026-08-12T17:49:31",
+ "statement_id": "838900283",
+ "usage_raw": {
+  "completion_tokens": 657,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 287,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 8555,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 9212
+ }
+}

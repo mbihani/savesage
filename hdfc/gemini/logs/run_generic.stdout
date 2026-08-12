@@ -1,0 +1,17 @@
+17:38:47 START arm=generic n=15 conc=1 prompt_sha=7886583cba60 schema=GEMINI_SCHEMA(26 leaves)
+17:38:58 OK                     1036474356   txn=7 fr=stop pt=4664 ct=835 tt=5499 rl=0 ms=10549
+17:39:12 OK                     10378        txn=2 fr=stop pt=4963 ct=723 tt=5686 rl=0 ms=12145
+17:39:29 OK                     1403225883   txn=7 fr=stop pt=5868 ct=1281 tt=7149 rl=0 ms=16462
+17:39:57 OK                     1723515293   txn=23 fr=stop pt=6257 ct=2634 tt=8891 rl=0 ms=25077
+17:40:10 OK                     1741303904   txn=2 fr=stop pt=4639 ct=673 tt=5312 rl=0 ms=10537
+17:40:26 OK                     1787504092   txn=10 fr=stop pt=6022 ct=1218 tt=7240 rl=0 ms=13985
+17:40:40 OK                     368372182    txn=5 fr=stop pt=4939 ct=879 tt=5818 rl=0 ms=12976
+17:40:55 OK                     495459059    txn=12 fr=stop pt=4406 ct=1052 tt=5458 rl=0 ms=11874
+17:41:16 OK                     567125239    txn=31 fr=stop pt=6302 ct=2252 tt=8554 rl=0 ms=18391
+17:41:44 OK                     629227338    txn=21 fr=stop pt=6120 ct=2315 tt=8435 rl=0 ms=25732
+17:42:25 OK                     738368244    txn=109 fr=stop pt=10044 ct=5842 tt=15886 rl=0 ms=39295
+17:42:38 OK                     809843802    txn=1 fr=stop pt=4885 ct=601 tt=5486 rl=0 ms=11138
+17:42:39 cached                 814964372    txn=2 fr=stop pt=3881 ct=548 tt=4429 rl=0 ms=8721
+17:42:52 OK                     838900283    txn=3 fr=stop pt=4711 ct=860 tt=5571 rl=0 ms=12933
+17:43:24 OK                     853991354    txn=53 fr=stop pt=6960 ct=3790 tt=10750 rl=0 ms=30103
+17:43:27 DONE arm=generic ok=15/15 calls_that_saw_429=0

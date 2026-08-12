@@ -1,0 +1,75 @@
+{
+  "calls": {
+    "generic": {
+      "completion_to_prompt_ratio": 0.3012366969442837,
+      "count": 15,
+      "failure_classes": {
+        "None": 15
+      },
+      "finish_reasons": {
+        "stop": 15
+      },
+      "http_statuses": {
+        "200": 15
+      },
+      "neutral_filename_calls": 15,
+      "outcomes": {
+        "OK": 15
+      },
+      "prompt_plus_completion_equals_total_calls": 15,
+      "rate_limited": 0,
+      "usage_raw_totals": {
+        "completion_tokens": 25503,
+        "prompt_tokens": 84661,
+        "total_tokens": 110164
+      }
+    },
+    "hdfc": {
+      "completion_to_prompt_ratio": 0.16670062745483802,
+      "count": 15,
+      "failure_classes": {
+        "None": 15
+      },
+      "finish_reasons": {
+        "stop": 15
+      },
+      "http_statuses": {
+        "200": 15
+      },
+      "neutral_filename_calls": 15,
+      "outcomes": {
+        "OK": 15
+      },
+      "prompt_plus_completion_equals_total_calls": 15,
+      "rate_limited": 0,
+      "usage_raw_totals": {
+        "completion_tokens": 23725,
+        "prompt_tokens": 142321,
+        "total_tokens": 166046
+      }
+    }
+  },
+  "controls": {
+    "direction_by_layout": {
+      "A": {
+        "errors": 141,
+        "rows": 274
+      },
+      "B": {
+        "errors": 0,
+        "rows": 14
+      }
+    }
+  },
+  "generic_direction": {
+    "claimed_credit": 181,
+    "debit_called_credit": 141,
+    "debit_called_credit_with_itfrupee_C": 141,
+    "errors": 141,
+    "true_credit": 40
+  },
+  "overlap": {
+    "opus5_gt_statements": 15,
+    "prior_run_unattributable_statements": 15
+  }
+}

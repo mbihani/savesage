@@ -1,0 +1,256 @@
+{
+  "direction": [
+    {
+      "amount_bbox": [
+        535.73,
+        308.37,
+        549.73,
+        315.37
+      ],
+      "amount_color": "0x333333",
+      "date_bbox": [
+        25.51,
+        308.37,
+        80.18,
+        315.37
+      ],
+      "description": "Reinstating_Diff_1%_Swiggy_Cbk_Rev",
+      "model": "CREDIT",
+      "page": 2,
+      "pdf": "DEBIT",
+      "plus": false,
+      "statement": "1723515293"
+    },
+    {
+      "amount_bbox": [
+        536.95,
+        760.37,
+        558.04,
+        767.37
+      ],
+      "amount_color": "0x05c747",
+      "date_bbox": [
+        169.51,
+        760.37,
+        224.18,
+        767.37
+      ],
+      "description": "UPICC-687912822278-17-07-2025",
+      "model": "DEBIT",
+      "page": 1,
+      "pdf": "CREDIT",
+      "plus": true,
+      "statement": "567125239"
+    },
+    {
+      "amount_bbox": [
+        536.95,
+        774.54,
+        558.04,
+        781.54
+      ],
+      "amount_color": "0x05c747",
+      "date_bbox": [
+        169.51,
+        774.54,
+        224.18,
+        781.54
+      ],
+      "description": "UPICC-519872895172-17-07-2025",
+      "model": "DEBIT",
+      "page": 1,
+      "pdf": "CREDIT",
+      "plus": true,
+      "statement": "567125239"
+    }
+  ],
+  "emi_columns": [
+    {
+      "badge_bbox": [
+        240.58,
+        732.02,
+        251.99,
+        739.02
+      ],
+      "narration_bbox": [
+        260.17,
+        732.02,
+        347.56,
+        739.02
+      ],
+      "narration_sample": "RELIANCE DIGITALHYDERABAD",
+      "page": 1,
+      "statement": "1787504092"
+    },
+    {
+      "badge_bbox": [
+        240.58,
+        746.19,
+        251.99,
+        753.19
+      ],
+      "narration_bbox": [
+        260.17,
+        746.19,
+        347.56,
+        753.19
+      ],
+      "narration_sample": "RELIANCE DIGITALHYDERABAD",
+      "page": 1,
+      "statement": "1787504092"
+    },
+    {
+      "badge_bbox": [
+        106.93,
+        431.25,
+        123.22,
+        441.25
+      ],
+      "narration_bbox": [
+        494.4,
+        432.35,
+        552.42,
+        440.35
+      ],
+      "narration_sample": "CONVERT TO EMI",
+      "page": 2,
+      "statement": "1787504092"
+    },
+    {
+      "badge_bbox": [
+        114.36,
+        379.24,
+        125.76,
+        386.24
+      ],
+      "narration_bbox": [
+        136.29,
+        379.24,
+        233.65,
+        386.24
+      ],
+      "narration_sample": "UPI-PARADISE FOOD COURT PVT L",
+      "page": 2,
+      "statement": "567125239"
+    },
+    {
+      "badge_bbox": [
+        106.93,
+        648.39,
+        123.22,
+        658.39
+      ],
+      "narration_bbox": [
+        494.4,
+        649.49,
+        552.42,
+        657.49
+      ],
+      "narration_sample": "CONVERT TO EMI",
+      "page": 2,
+      "statement": "567125239"
+    },
+    {
+      "badge_bbox": [
+        240.58,
+        651.04,
+        251.99,
+        658.04
+      ],
+      "narration_bbox": [
+        260.17,
+        651.04,
+        312.78,
+        658.04
+      ],
+      "narration_sample": "AMAZONMUMBAI",
+      "page": 1,
+      "statement": "629227338"
+    },
+    {
+      "badge_bbox": [
+        106.93,
+        435.79,
+        123.22,
+        445.79
+      ],
+      "narration_bbox": [
+        494.4,
+        436.89,
+        552.42,
+        444.89
+      ],
+      "narration_sample": "CONVERT TO EMI",
+      "page": 2,
+      "statement": "629227338"
+    },
+    {
+      "badge_bbox": [
+        232.25,
+        732.02,
+        243.65,
+        739.02
+      ],
+      "narration_bbox": [
+        250.74,
+        732.02,
+        337.43,
+        739.02
+      ],
+      "narration_sample": "UPI-PARANJYOTI ENTERPRISES",
+      "page": 1,
+      "statement": "853991354"
+    },
+    {
+      "badge_bbox": [
+        232.25,
+        760.37,
+        243.65,
+        767.37
+      ],
+      "narration_bbox": [
+        250.74,
+        760.37,
+        330.99,
+        767.37
+      ],
+      "narration_sample": "UPI-Highway Service Station",
+      "page": 1,
+      "statement": "853991354"
+    },
+    {
+      "badge_bbox": [
+        114.36,
+        520.97,
+        125.76,
+        527.97
+      ],
+      "narration_bbox": [
+        136.29,
+        520.97,
+        216.54,
+        527.97
+      ],
+      "narration_sample": "UPI-Highway Service Station",
+      "page": 2,
+      "statement": "853991354"
+    },
+    {
+      "badge_bbox": [
+        106.93,
+        316.73,
+        123.22,
+        326.73
+      ],
+      "narration_bbox": [
+        494.4,
+        317.83,
+        552.42,
+        325.83
+      ],
+      "narration_sample": "CONVERT TO EMI",
+      "page": 3,
+      "statement": "853991354"
+    }
+  ]
+}

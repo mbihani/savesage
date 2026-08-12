@@ -242,3 +242,110 @@ below is a **PREDICTION / UNVERIFIED** pending an authorised re-sweep.
 Deliberately unchanged: the working rupee-`C` glyph section; `GT_SCHEMA`; reference,
 scorer and JSON artifacts; 49 GT/reference defects; 21-digit Ref# recognition; and the
 36 closed-space cells better handled by scorer normalisation.
+
+---
+
+## 2026-08-12 — adopt the client's ORIGINAL Gemini 3.0 Flash schema; port audit
+
+### What changed and what did not
+
+The response schema for HDFC was switched from `GT_SCHEMA` (32 leaves) to the client's
+own Gemini 3.0 Flash schema, converted to strict JSON Schema (**26 leaves**) — see
+`hdfc/gemini/GEMINI_SCHEMA.json`, sha256 `35ea9019c051…`, derived mechanically from line
+64 of `gemini-3-flash--prompt-shcema.txt` (source sha256 `aa286633fa77…`) by
+`hdfc/gemini/convert_schema.py`. The Gemini leaf set is a strict **subset** of
+`GT_SCHEMA`'s; no field exists in the Gemini schema that `GT_SCHEMA` lacks.
+
+`HDFC_PROMPT.txt`: `08f3bbd388ee…` → `7ddbce14c6ae…` (17,413 → 20,506 bytes).
+Base: `origin/main` = `d1319c0`, **which includes PR #6**. (The header table at the top
+of this file still records `6cc57f69…`, the *pre*-PR #6 content hash; PR #6 appended a
+section without refreshing that table. Noted so the two hashes are not mistaken for a
+discrepancy.)
+
+**The port yielded far less than expected, and that is the honest headline.** The current
+HDFC prompt is already a near-superset of the generic prompt's HDFC-applicable content —
+PR #6 and prior refinement absorbed it. Of the generic prompt's field guidance, 20 of 24
+covered leaves were already present, 2 were rejected on measured evidence, and 4 leaves
+are unguided by *both* prompts. Full inventory: `hdfc/gemini/ORPHAN_AND_GUIDANCE_AUDIT.md`.
+
+### Changes made
+
+- **C1 — `transactions.txnType`, wording fix forced by the schema change.**
+  Was: "exactly ONE value from **the schema's** closed list". The adopted schema types
+  `txnType` as a bare `string|null` and pins no enum, so that phrase became factually
+  false and pointed the model at a list that no longer exists in the contract. Now reads
+  "from THIS closed list", plus an explicit note that the instruction is the only thing
+  enforcing the vocabulary and that null is preferred over an invented label.
+  *Ported-from-generic:* **no** — the generic prompt gives no `txnType` guidance at all.
+  *Classification:* correctness repair caused by adopting the client's schema.
+- **C2 — `transactions.rewardPointsOnThisTransaction` + `rewards.closingPoints`:
+  the Marriott Bonvoy Points column.**
+  Two additions, from one measurement. The generic prompt (line 19) lists "Marriott
+  Bonvoy Points" among the labels that should populate `closingPoints`. On HDFC that is
+  **wrong**: on file `10378` the string `Marriott Bonvoy Points` is a *transaction table
+  column header* (`DATE & TIME | TRANSACTION DESCRIPTION | Marriott Bonvoy Points |
+  AMOUNT | PI`). Porting the generic clause as written would route a per-transaction
+  column into a statement-level field — exactly the transaction→rewards rollup that
+  `REWARDS_RULES` forbids. So instead: (a) the reward-points rule now names that column
+  as transaction-level, and (b) the `closingPoints` rule now states that a
+  `Marriott Bonvoy Points Summary` table is not a closing balance, citing its real shape
+  on that file (only numeric column headed `BONUS POINTS`; rows `-8 pts`, `8 pts`,
+  `Total 0 pts`; no headline balance printed ⇒ `closingPoints` is null).
+  *Ported-from-generic:* **inverted** — the generic clause was the trigger, and the ported
+  form is its correction. *Why it applies to HDFC:* the label occurs in this corpus.
+- **C3 — `transactions.direction`, enforcement note.** The adopted schema drops
+  `GT_SCHEMA`'s `["DEBIT","CREDIT",null]` enum, so the two-value vocabulary and its
+  uppercase spelling are now prompt-enforced only. One note added saying so. The
+  direction *logic* is untouched. *Ported-from-generic:* **no.**
+
+### Rules deliberately NOT ported
+
+- **`C` ⇒ CREDIT (generic line 8) — BANNED, and measured.** Independently reproduced on
+  these 15 PDFs: `ITFRupee` in **13/15** files; **274** of **288** transaction rows carry
+  an `ITFRupee` `C` before the amount; the true split from the `+`/green markers is
+  **40 CREDIT / 248 DEBIT**; a bare-`C` rule would call all 274 CREDIT, **238 wrongly**,
+  including **107 of 109** rows on `738368244`; and `TOTAL AMOUNT DUE` itself carries the
+  same `C` (`C13,507.00`) on all 13 layout-A files. The `+` and green signals agree on
+  **288/288** rows. The existing marker-first rule was kept **verbatim and not weakened**.
+  (The brief's split of 41/247 did not reproduce — I measure 40/248, a one-row difference
+  I could not reconcile; the probe agrees with an independent text-layer row count on
+  every file and finds **zero** `Cr`/`CR`-suffix rows, so no credit marker is missed.)
+- **`lastFourDigit` mask preservation (generic lines 33–36) — REJECTED for HDFC.**
+  All 15 statements print the mask in the **middle** and the last four as **real digits**
+  (`526873XXXXXX9821`, `442144-xxxxxx-1048`, `00361147XXXX4148`, `653029XXXXXX0012`). A
+  mask-preserving instruction has no correct work to do here and risks `XX21`-style
+  output — the defect ICICI suffered, which needed the *opposite* repair. Neither bank's
+  resolution was copied; the decision rests on the 15 measured printed forms. The existing
+  HDFC rule already resolves this correctly and is unchanged.
+- **All other banks' clauses — NOT ported**, per the standing HDFC-only scoping rule:
+  ICICI `closingPoints`/Adani One (41–44), Standard Chartered card ≠ account number
+  (49–51), IDFC FIRST SELECT card-number source (54–56), SBI current-cycle closing points
+  (57–59).
+- **`eDGE REWARD POINTS`** (in the generic `closingPoints` label list) — absent from all
+  15 files; it is Axis Bank's programme, not HDFC's. Not ported.
+- **The HDFC bonus-points clause the brief asked for** ("does not explicitly mention
+  Closing Points and only shows Bonus Points ⇒ do not aggregate") was **already present**
+  at lines 155–158 before this change. Recorded as **pre-existing**, not new work.
+
+### Orphan rules — reported, NOT acted on
+
+Nine prompt rules govern fields the 26-leaf schema cannot emit: `financeChargesThisCycle`
+(the generic prompt's entire `INFERENCE_RULES` allowlist), `rewards.bonusPointsThisCycle`,
+generic line 9's sign rule, and — pre-existing in this prompt — `utilisationPercent`,
+`statementPeriodStart`/`End`, `rawStatementId`, `cardCreditLimit`/`cardAvailableCreditLimit`.
+No field was added to the schema (that would break comparability with the client's Gemini
+baseline) and no orphan block was deleted (harmless under `strict` decoding, and the call
+is yours). Recommendations per orphan are in `ORPHAN_AND_GUIDANCE_AUDIT.md` Part 1.
+
+Correction to the brief on one point: **`utilisationPercent` is absent from `GT_SCHEMA`
+too**, not just from the Gemini schema — `gt298_lib.py:24–26` documents that it is never
+requested from the model and is computed in code (`gt298_lib.py:494`). There is no
+Gemini-vs-GT difference on that field.
+
+### Fields with NO guidance in either prompt
+
+`cards.cardMeta.productFamily`, `cards.cardMeta.isPrimaryCard`,
+`rewards.pointsExpiringNext30Days`, `rewards.pointsExpiringNext60Days`. Nothing was
+ported (the generic prompt is silent) and no rule was invented — writing new guidance and
+measuring it on the same 15 statements would be tuning toward the metric. Measured capture
+is reported instead.

@@ -1,0 +1,170 @@
+{
+ "arm": "hdfc",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-12T17:47:01",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 16033,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 10,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "MoneyBack+ Credit Card",
+     "isPrimaryCard": null,
+     "lastFourDigit": "3718",
+     "network": null,
+     "productFamily": "MoneyBack+"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": 10705,
+   "openingPoints": 9323,
+   "pointsEarnedThisCycle": 1382,
+   "pointsExpiringNext30Days": 0,
+   "pointsExpiringNext60Days": 0,
+   "pointsRedeemedThisCycle": 0,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 207146,
+   "totalAmountDue": 12920,
+   "totalCreditLimit": 256000,
+   "totalMinimumAmountDue": 8071
+  },
+  "statementMeta": {
+   "dueDate": "10/06/2026",
+   "issuerName": "HDFC Bank",
+   "statementDate": "21/05/2026"
+  },
+  "transactions": [
+   {
+    "amount": 376.2,
+    "currency": "INR",
+    "date": "24/04/2026",
+    "description": "KSS FATEPURIAHyderabad",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 77092,
+    "currency": "INR",
+    "date": "04/05/2026",
+    "description": "BPPY CC PAYMENT BD016124BALAAAJKGA6 (Ref# ST261250083000010130888)",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 44091,
+    "currency": "INR",
+    "date": "06/05/2026",
+    "description": "RELIANCE DIGITALHYDERABAD",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 4699.09,
+    "currency": "INR",
+    "date": "06/05/2026",
+    "description": "RELIANCE DIGITALHYDERABAD",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 44091,
+    "currency": "INR",
+    "date": "11/05/2026",
+    "description": "AGGREGATOR EMI - OFFUS CREDIT",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 299,
+    "currency": "INR",
+    "date": "12/05/2026",
+    "description": "OFFUS EMI,PROCNG FEE,00000000001401 (Ref# 09999999980512012819889)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 53.82,
+    "currency": "INR",
+    "date": "12/05/2026",
+    "description": "IGST-VPS2713316035632-RATE 18.0 -36 (Ref# 09999999980512012819889)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 6922,
+    "currency": "INR",
+    "date": "21/05/2026",
+    "description": "OFFUS EMI,PRIN NB:01,00000140132957 (Ref# 09999999980521010611958)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 536,
+    "currency": "INR",
+    "date": "21/05/2026",
+    "description": "OFFUS EMI,INT NBR:01,00000140132957 (Ref# 09999999980521010611966)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 33.59,
+    "currency": "INR",
+    "date": "21/04/2026",
+    "description": "IGST-VPS2711250826882-RATE 18.0 -36 (Ref# MT261120076000010023912)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_1787504092_19e5024075cbb6e1_5372XXXXXXXXXX18_21-05-2026_450.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/gemini-schema-hdfc/hdfc/HDFC_PROMPT.txt",
+ "prompt_sha256": "7ddbce14c6ae82649520dfd32acfa97c3c48b5e3dc6f3bd40731f27147ba90c6",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"MoneyBack+ Credit Card\",\"isPrimaryCard\":null,\"lastFourDigit\":\"3718\",\"network\":null,\"productFamily\":\"MoneyBack+\"}}],\"rewards\":{\"closingPoints\":10705,\"openingPoints\":9323,\"pointsEarnedThisCycle\":1382,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":0,\"pointsRedeemedThisCycle\":0,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":207146,\"totalAmountDue\":12920,\"totalCreditLimit\":256000,\"totalMinimumAmountDue\":8071},\"statementMeta\":{\"dueDate\":\"10/06/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"21/05/2026\"},\"transactions\":[{\"amount\":376.2,\"currency\":\"INR\",\"date\":\"24/04/2026\",\"description\":\"KSS FATEPURIAHyderabad\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":77092,\"currency\":\"INR\",\"date\":\"04/05/2026\",\"description\":\"BPPY CC PAYMENT BD016124BALAAAJKGA6 (Ref# ST261250083000010130888)\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":44091,\"currency\":\"INR\",\"date\":\"06/05/2026\",\"description\":\"RELIANCE DIGITALHYDERABAD\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":4699.09,\"currency\":\"INR\",\"date\":\"06/05/2026\",\"description\":\"RELIANCE DIGITALHYDERABAD\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":44091,\"currency\":\"INR\",\"date\":\"11/05/2026\",\"description\":\"AGGREGATOR EMI - OFFUS CREDIT\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":299,\"currency\":\"INR\",\"date\":\"12/05/2026\",\"description\":\"OFFUS EMI,PROCNG FEE,00000000001401 (Ref# 09999999980512012819889)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"FEE\"},{\"amount\":53.82,\"currency\":\"INR\",\"date\":\"12/05/2026\",\"description\":\"IGST-VPS2713316035632-RATE 18.0 -36 (Ref# 09999999980512012819889)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":6922,\"currency\":\"INR\",\"date\":\"21/05/2026\",\"description\":\"OFFUS EMI,PRIN NB:01,00000140132957 (Ref# 09999999980521010611958)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":536,\"currency\":\"INR\",\"date\":\"21/05/2026\",\"description\":\"OFFUS EMI,INT NBR:01,00000140132957 (Ref# 09999999980521010611966)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":33.59,\"currency\":\"INR\",\"date\":\"21/04/2026\",\"description\":\"IGST-VPS2711250826882-RATE 18.0 -36 (Ref# MT261120076000010023912)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "decrypt_1787504092_19e5024075cbb6e1_5372XXXXXXXXXX18_21_05_2026_450",
+ "started_at": "2026-08-12T17:46:45",
+ "statement_id": "1787504092",
+ "usage_raw": {
+  "completion_tokens": 1386,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 585,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 9866,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 11252
+ }
+}

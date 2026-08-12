@@ -1,0 +1,197 @@
+{
+ "arm": "generic",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-12T17:40:55",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 11874,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 2,
+ "n_transactions": 12,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "PIXEL Visa",
+     "isPrimaryCard": null,
+     "lastFourDigit": "1048",
+     "network": "Visa",
+     "productFamily": "PIXEL"
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": "PIXEL RuPay",
+     "isPrimaryCard": null,
+     "lastFourDigit": "4493",
+     "network": "RuPay",
+     "productFamily": "PIXEL"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": 383,
+   "openingPoints": 316,
+   "pointsEarnedThisCycle": 67,
+   "pointsExpiringNext30Days": 0,
+   "pointsExpiringNext60Days": 0,
+   "pointsRedeemedThisCycle": 0,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 91122,
+   "totalAmountDue": 2878,
+   "totalCreditLimit": 94000,
+   "totalMinimumAmountDue": 200
+  },
+  "statementMeta": {
+   "dueDate": "22 Feb 2026",
+   "issuerName": "HDFC Bank",
+   "statementDate": "2 Feb 2026"
+  },
+  "transactions": [
+   {
+    "amount": 264,
+    "currency": "\u20b9",
+    "date": "16 Jan 2026",
+    "description": "Payment received - UPI",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "payment"
+   },
+   {
+    "amount": 1490,
+    "currency": "\u20b9",
+    "date": "17 Jan 2026",
+    "description": "Payment received - UPI",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "payment"
+   },
+   {
+    "amount": 332.9,
+    "currency": "\u20b9",
+    "date": "18 Jan 2026",
+    "description": "Payment received - UPI",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "payment"
+   },
+   {
+    "amount": 1213.5,
+    "currency": "\u20b9",
+    "date": "29 Jan 2026",
+    "description": "Payment received - UPI",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "payment"
+   },
+   {
+    "amount": 264,
+    "currency": "\u20b9",
+    "date": "13 Jan 2026",
+    "description": "Blinkit",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 13,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 272,
+    "currency": "\u20b9",
+    "date": "17 Jan 2026",
+    "description": "PUNJABI BY NATURE EXPRESS",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 2,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 60.9,
+    "currency": "\u20b9",
+    "date": "17 Jan 2026",
+    "description": "CONNAUGHT PLAZA REST",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 1490,
+    "currency": "\u20b9",
+    "date": "17 Jan 2026",
+    "description": "Uniqlo",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 14,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 799,
+    "currency": "\u20b9",
+    "date": "26 Jan 2026",
+    "description": "Bharti Airtel Limited",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 7,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 224.5,
+    "currency": "\u20b9",
+    "date": "27 Jan 2026",
+    "description": "BBNOW",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 2,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 190,
+    "currency": "\u20b9",
+    "date": "28 Jan 2026",
+    "description": "ZEPTO",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 2878,
+    "currency": "\u20b9",
+    "date": "31 Jan 2026",
+    "description": "LA KABABIYAA PRIVATE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 28,
+    "txnType": "purchase"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_495459059_19c21a6837aba7f2_HDFC Bank Pixel Play Credit Card Statement  - 03Jan2026 to 02Feb2026.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/gemini-schema-hdfc/hdfc/gemini/GEMINI_GENERIC_PROMPT.txt",
+ "prompt_sha256": "7886583cba60ee6da1b62081994cb839b74d11f5b9220c8537453ef581a7505f",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"PIXEL Visa\",\"isPrimaryCard\":null,\"lastFourDigit\":\"1048\",\"network\":\"Visa\",\"productFamily\":\"PIXEL\"}},{\"cardMeta\":{\"cardDisplayName\":\"PIXEL RuPay\",\"isPrimaryCard\":null,\"lastFourDigit\":\"4493\",\"network\":\"RuPay\",\"productFamily\":\"PIXEL\"}}],\"rewards\":{\"closingPoints\":383,\"openingPoints\":316,\"pointsEarnedThisCycle\":67,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":0,\"pointsRedeemedThisCycle\":0,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":91122,\"totalAmountDue\":2878,\"totalCreditLimit\":94000,\"totalMinimumAmountDue\":200},\"statementMeta\":{\"dueDate\":\"22 Feb 2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"2 Feb 2026\"},\"transactions\":[{\"amount\":264,\"currency\":\"\u20b9\",\"date\":\"16 Jan 2026\",\"description\":\"Payment received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"payment\"},{\"amount\":1490,\"currency\":\"\u20b9\",\"date\":\"17 Jan 2026\",\"description\":\"Payment received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"payment\"},{\"amount\":332.9,\"currency\":\"\u20b9\",\"date\":\"18 Jan 2026\",\"description\":\"Payment received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"payment\"},{\"amount\":1213.5,\"currency\":\"\u20b9\",\"date\":\"29 Jan 2026\",\"description\":\"Payment received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"payment\"},{\"amount\":264,\"currency\":\"\u20b9\",\"date\":\"13 Jan 2026\",\"description\":\"Blinkit\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":13,\"txnType\":\"purchase\"},{\"amount\":272,\"currency\":\"\u20b9\",\"date\":\"17 Jan 2026\",\"description\":\"PUNJABI BY NATURE EXPRESS\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":2,\"txnType\":\"purchase\"},{\"amount\":60.9,\"currency\":\"\u20b9\",\"date\":\"17 Jan 2026\",\"description\":\"CONNAUGHT PLAZA REST\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":1490,\"currency\":\"\u20b9\",\"date\":\"17 Jan 2026\",\"description\":\"Uniqlo\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":14,\"txnType\":\"purchase\"},{\"amount\":799,\"currency\":\"\u20b9\",\"date\":\"26 Jan 2026\",\"description\":\"Bharti Airtel Limited\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":7,\"txnType\":\"purchase\"},{\"amount\":224.5,\"currency\":\"\u20b9\",\"date\":\"27 Jan 2026\",\"description\":\"BBNOW\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":2,\"txnType\":\"purchase\"},{\"amount\":190,\"currency\":\"\u20b9\",\"date\":\"28 Jan 2026\",\"description\":\"ZEPTO\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"purchase\"},{\"amount\":2878,\"currency\":\"\u20b9\",\"date\":\"31 Jan 2026\",\"description\":\"LA KABABIYAA PRIVATE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":28,\"txnType\":\"purchase\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "decrypt_495459059_19c21a6837aba7f2_HDFC_Bank_Pixel_Play_Credit_Card_Statement_03Jan2026_to_02Feb2026",
+ "started_at": "2026-08-12T17:40:43",
+ "statement_id": "495459059",
+ "usage_raw": {
+  "completion_tokens": 1052,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 331,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 4406,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 5458
+ }
+}
