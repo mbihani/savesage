@@ -1,0 +1,287 @@
+{
+ "arm": "hdfc",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-12T17:46:31",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 19921,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 23,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "Swiggy HDFC Bank Credit Card",
+     "isPrimaryCard": null,
+     "lastFourDigit": "9705",
+     "network": null,
+     "productFamily": "Swiggy"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 2158.37,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": 2158.37,
+   "programType": "Cashback"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 489526,
+   "totalAmountDue": 1702,
+   "totalCreditLimit": 492000,
+   "totalMinimumAmountDue": 200
+  },
+  "statementMeta": {
+   "dueDate": "06/06/2026",
+   "issuerName": "HDFC Bank",
+   "statementDate": "17/05/2026"
+  },
+  "transactions": [
+   {
+    "amount": 946.8,
+    "currency": "INR",
+    "date": "18/04/2026",
+    "description": "10% Swiggy Cashback",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 7.9,
+    "currency": "INR",
+    "date": "18/04/2026",
+    "description": "5% Swiggy Cashback",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 5.99,
+    "currency": "INR",
+    "date": "18/04/2026",
+    "description": "1% Swiggy Cashback",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 946.8,
+    "currency": "INR",
+    "date": "19/04/2026",
+    "description": "10% Swiggy CashBack",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 5.99,
+    "currency": "INR",
+    "date": "19/04/2026",
+    "description": "1% Swiggy CashBack",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 7.9,
+    "currency": "INR",
+    "date": "19/04/2026",
+    "description": "5% Swiggy CashBack",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 15.8,
+    "currency": "INR",
+    "date": "22/04/2026",
+    "description": "ADJ_5% Swiggy Cashback",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 972.7,
+    "currency": "INR",
+    "date": "22/04/2026",
+    "description": "ADJ_10% Swiggy CashBack",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 599,
+    "currency": "INR",
+    "date": "22/04/2026",
+    "description": "YOUTUBEGOOGLEMUMBAI",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 5.99,
+    "currency": "INR",
+    "date": "24/04/2026",
+    "description": "1% Swiggy CashBack",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 636,
+    "currency": "INR",
+    "date": "01/05/2026",
+    "description": "RSP*INSTAMARTBANGALORE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 63.6,
+    "currency": "INR",
+    "date": "03/05/2026",
+    "description": "10% Swiggy CashBack",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 7.9,
+    "currency": "INR",
+    "date": "05/05/2026",
+    "description": "Reinstating_Diff_5%_Swiggy_Cashback",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 10552,
+    "currency": "INR",
+    "date": "05/05/2026",
+    "description": "CC PAYMENT 127963157188 PayZapp (Ref# 00000000000505018974640)",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 335,
+    "currency": "INR",
+    "date": "05/05/2026",
+    "description": "BUNDL TECHNOLOGIESBENGALURU",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 5.99,
+    "currency": "INR",
+    "date": "07/05/2026",
+    "description": "Reinstating_Diff_1%_Swiggy_Cbk_Rev",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 33.5,
+    "currency": "INR",
+    "date": "07/05/2026",
+    "description": "10% Swiggy CashBack",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 25.9,
+    "currency": "INR",
+    "date": "07/05/2026",
+    "description": "Reinstating_Diff_10%_Swiggy_Cashbac",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 520,
+    "currency": "INR",
+    "date": "08/05/2026",
+    "description": "BUNDL TECHNOLOGIESBENGALURU",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 481,
+    "currency": "INR",
+    "date": "09/05/2026",
+    "description": "Cashfree*SWIGGY LIMITEBengaluru",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 52,
+    "currency": "INR",
+    "date": "10/05/2026",
+    "description": "10% Swiggy CashBack",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 48.1,
+    "currency": "INR",
+    "date": "11/05/2026",
+    "description": "10% Swiggy CashBack",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 295,
+    "currency": "INR",
+    "date": "16/05/2026",
+    "description": "RSP*INSTAMARTBANGALORE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_1723515293_19e3b5338033e3ad_5268XXXXXXXXXX05_17-05-2026_94.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/gemini-schema-hdfc/hdfc/HDFC_PROMPT.txt",
+ "prompt_sha256": "7ddbce14c6ae82649520dfd32acfa97c3c48b5e3dc6f3bd40731f27147ba90c6",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Swiggy HDFC Bank Credit Card\",\"isPrimaryCard\":null,\"lastFourDigit\":\"9705\",\"network\":null,\"productFamily\":\"Swiggy\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":2158.37,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":2158.37,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":489526,\"totalAmountDue\":1702,\"totalCreditLimit\":492000,\"totalMinimumAmountDue\":200},\"statementMeta\":{\"dueDate\":\"06/06/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"17/05/2026\"},\"transactions\":[{\"amount\":946.8,\"currency\":\"INR\",\"date\":\"18/04/2026\",\"description\":\"10% Swiggy Cashback\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":7.9,\"currency\":\"INR\",\"date\":\"18/04/2026\",\"description\":\"5% Swiggy Cashback\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":5.99,\"currency\":\"INR\",\"date\":\"18/04/2026\",\"description\":\"1% Swiggy Cashback\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":946.8,\"currency\":\"INR\",\"date\":\"19/04/2026\",\"description\":\"10% Swiggy CashBack\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":5.99,\"currency\":\"INR\",\"date\":\"19/04/2026\",\"description\":\"1% Swiggy CashBack\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":7.9,\"currency\":\"INR\",\"date\":\"19/04/2026\",\"description\":\"5% Swiggy CashBack\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":15.8,\"currency\":\"INR\",\"date\":\"22/04/2026\",\"description\":\"ADJ_5% Swiggy Cashback\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":972.7,\"currency\":\"INR\",\"date\":\"22/04/2026\",\"description\":\"ADJ_10% Swiggy CashBack\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":599,\"currency\":\"INR\",\"date\":\"22/04/2026\",\"description\":\"YOUTUBEGOOGLEMUMBAI\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":5.99,\"currency\":\"INR\",\"date\":\"24/04/2026\",\"description\":\"1% Swiggy CashBack\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":636,\"currency\":\"INR\",\"date\":\"01/05/2026\",\"description\":\"RSP*INSTAMARTBANGALORE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":63.6,\"currency\":\"INR\",\"date\":\"03/05/2026\",\"description\":\"10% Swiggy CashBack\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":7.9,\"currency\":\"INR\",\"date\":\"05/05/2026\",\"description\":\"Reinstating_Diff_5%_Swiggy_Cashback\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":10552,\"currency\":\"INR\",\"date\":\"05/05/2026\",\"description\":\"CC PAYMENT 127963157188 PayZapp (Ref# 00000000000505018974640)\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":335,\"currency\":\"INR\",\"date\":\"05/05/2026\",\"description\":\"BUNDL TECHNOLOGIESBENGALURU\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":5.99,\"currency\":\"INR\",\"date\":\"07/05/2026\",\"description\":\"Reinstating_Diff_1%_Swiggy_Cbk_Rev\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":33.5,\"currency\":\"INR\",\"date\":\"07/05/2026\",\"description\":\"10% Swiggy CashBack\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":25.9,\"currency\":\"INR\",\"date\":\"07/05/2026\",\"description\":\"Reinstating_Diff_10%_Swiggy_Cashbac\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":520,\"currency\":\"INR\",\"date\":\"08/05/2026\",\"description\":\"BUNDL TECHNOLOGIESBENGALURU\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":481,\"currency\":\"INR\",\"date\":\"09/05/2026\",\"description\":\"Cashfree*SWIGGY LIMITEBengaluru\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":52,\"currency\":\"INR\",\"date\":\"10/05/2026\",\"description\":\"10% Swiggy CashBack\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":48.1,\"currency\":\"INR\",\"date\":\"11/05/2026\",\"description\":\"10% Swiggy CashBack\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":295,\"currency\":\"INR\",\"date\":\"16/05/2026\",\"description\":\"RSP*INSTAMARTBANGALORE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "decrypt_1723515293_19e3b5338033e3ad_5268XXXXXXXXXX05_17_05_2026_94",
+ "started_at": "2026-08-12T17:46:11",
+ "statement_id": "1723515293",
+ "usage_raw": {
+  "completion_tokens": 2068,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 687,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 10101,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 12169
+ }
+}

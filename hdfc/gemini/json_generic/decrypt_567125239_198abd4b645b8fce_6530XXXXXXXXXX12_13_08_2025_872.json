@@ -1,0 +1,359 @@
+{
+ "arm": "generic",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-12T17:41:16",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 18391,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 31,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "UPI RuPay Credit Card",
+     "isPrimaryCard": null,
+     "lastFourDigit": "0012",
+     "network": "RuPay",
+     "productFamily": "UPI RuPay"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": 2007,
+   "openingPoints": 1833,
+   "pointsEarnedThisCycle": 182,
+   "pointsExpiringNext30Days": 0,
+   "pointsExpiringNext60Days": 0,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 57161,
+   "totalAmountDue": 2839,
+   "totalCreditLimit": 60000,
+   "totalMinimumAmountDue": 200
+  },
+  "statementMeta": {
+   "dueDate": "02 Sep, 2025",
+   "issuerName": "HDFC Bank",
+   "statementDate": "13 Aug, 2025"
+  },
+  "transactions": [
+   {
+    "amount": 221,
+    "currency": null,
+    "date": "16/07/2025| 11:59",
+    "description": "UPI-FLIPKART PAYMENTS",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 272,
+    "currency": null,
+    "date": "16/07/2025| 12:01",
+    "description": "UPI-Amazon Pay Groceries",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 704,
+    "currency": null,
+    "date": "17/07/2025| 22:53",
+    "description": "UPI-FLIPKART PAYMENTS",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 371,
+    "currency": null,
+    "date": "17/07/2025| 22:57",
+    "description": "UPI-FLIPKART PAYMENTS",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 704,
+    "currency": null,
+    "date": "17/07/2025| 00:00",
+    "description": "UPICC-687912822278-17-07-2025",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 124,
+    "currency": null,
+    "date": "17/07/2025| 00:00",
+    "description": "UPICC-519872895172-17-07-2025",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 500,
+    "currency": null,
+    "date": "18/07/2025| 10:07",
+    "description": "UPI-Sai Prasad Petrolatum",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 450,
+    "currency": null,
+    "date": "20/07/2025| 18:59",
+    "description": "UPI-JAVED SIKANDAR MULLA",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 380,
+    "currency": null,
+    "date": "20/07/2025| 19:04",
+    "description": "UPI-AMBIKA BEER SHOP",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 500,
+    "currency": null,
+    "date": "21/07/2025| 10:10",
+    "description": "UPI-Sai Prasad Petrolatum",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 500,
+    "currency": null,
+    "date": "22/07/2025| 17:47",
+    "description": "UPI-SHINDE ENERGY STATION",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 94,
+    "currency": null,
+    "date": "23/07/2025| 11:27",
+    "description": "UPI-Flipkart Payments",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 500,
+    "currency": null,
+    "date": "24/07/2025| 17:23",
+    "description": "UPI-SHINDE ENERGY STATION",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 203.54,
+    "currency": null,
+    "date": "25/07/2025| 09:16",
+    "description": "UPI-IDFC FASTag Recharge",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 1000,
+    "currency": null,
+    "date": "25/07/2025| 10:25",
+    "description": "UPI-NS Petroleum",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 3184.7,
+    "currency": null,
+    "date": "26/07/2025| 15:01",
+    "description": "EMI UPI-PARADISE FOOD COURT PVT L",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 1032.52,
+    "currency": null,
+    "date": "27/07/2025| 15:54",
+    "description": "UPI-PURE O NATURAL",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 1000,
+    "currency": null,
+    "date": "27/07/2025| 17:12",
+    "description": "UPI-Speaker 1 shivam bpcl",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 203.54,
+    "currency": null,
+    "date": "27/07/2025| 17:46",
+    "description": "UPI-IDFC FASTag Recharge",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 203.54,
+    "currency": null,
+    "date": "27/07/2025| 18:33",
+    "description": "UPI-IDFC FASTag Recharge",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 12839.84,
+    "currency": null,
+    "date": "28/07/2025| 13:10",
+    "description": "CREDIT CARD PAYMENTNet Banking (Ref# 00000000000728018204517)",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "payment"
+   },
+   {
+    "amount": 500,
+    "currency": null,
+    "date": "02/08/2025| 10:17",
+    "description": "UPI-Sai Prasad Petrolatum",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 450,
+    "currency": null,
+    "date": "03/08/2025| 11:59",
+    "description": "UPI-JAVED SIKANDAR MULLA",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 170,
+    "currency": null,
+    "date": "03/08/2025| 12:07",
+    "description": "UPI-Mr IRFAN YOUNUS SHAIKH",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 90,
+    "currency": null,
+    "date": "03/08/2025| 12:09",
+    "description": "UPI-SPECTRA NATURAL DAIR",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 500,
+    "currency": null,
+    "date": "05/08/2025| 10:17",
+    "description": "UPI-Sai Prasad Petrolatum",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 500,
+    "currency": null,
+    "date": "07/08/2025| 17:45",
+    "description": "UPI-SHINDE ENERGY STATION",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 952,
+    "currency": null,
+    "date": "08/08/2025| 10:35",
+    "description": "UPI-AMAZON PAY",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 500,
+    "currency": null,
+    "date": "11/08/2025| 17:47",
+    "description": "UPI-SHINDE ENERGY STATION",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 129,
+    "currency": null,
+    "date": "11/08/2025| 14:29",
+    "description": "UPI-Flipkart Payments",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "purchase"
+   },
+   {
+    "amount": 952,
+    "currency": null,
+    "date": "11/08/2025| 14:29",
+    "description": "CREDIT CARD PAYMENTNet Banking (Ref# 00000000000811017464942)",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "payment"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_567125239_198abd4b645b8fce_6530XXXXXXXXXX12_13-08-2025_872.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/gemini-schema-hdfc/hdfc/gemini/GEMINI_GENERIC_PROMPT.txt",
+ "prompt_sha256": "7886583cba60ee6da1b62081994cb839b74d11f5b9220c8537453ef581a7505f",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"UPI RuPay Credit Card\",\"isPrimaryCard\":null,\"lastFourDigit\":\"0012\",\"network\":\"RuPay\",\"productFamily\":\"UPI RuPay\"}}],\"rewards\":{\"closingPoints\":2007,\"openingPoints\":1833,\"pointsEarnedThisCycle\":182,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":0,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":57161,\"totalAmountDue\":2839,\"totalCreditLimit\":60000,\"totalMinimumAmountDue\":200},\"statementMeta\":{\"dueDate\":\"02 Sep, 2025\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"13 Aug, 2025\"},\"transactions\":[{\"amount\":221,\"currency\":null,\"date\":\"16/07/2025| 11:59\",\"description\":\"UPI-FLIPKART PAYMENTS\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":272,\"currency\":null,\"date\":\"16/07/2025| 12:01\",\"description\":\"UPI-Amazon Pay Groceries\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":704,\"currency\":null,\"date\":\"17/07/2025| 22:53\",\"description\":\"UPI-FLIPKART PAYMENTS\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":371,\"currency\":null,\"date\":\"17/07/2025| 22:57\",\"description\":\"UPI-FLIPKART PAYMENTS\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":704,\"currency\":null,\"date\":\"17/07/2025| 00:00\",\"description\":\"UPICC-687912822278-17-07-2025\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":124,\"currency\":null,\"date\":\"17/07/2025| 00:00\",\"description\":\"UPICC-519872895172-17-07-2025\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":500,\"currency\":null,\"date\":\"18/07/2025| 10:07\",\"description\":\"UPI-Sai Prasad Petrolatum\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":450,\"currency\":null,\"date\":\"20/07/2025| 18:59\",\"description\":\"UPI-JAVED SIKANDAR MULLA\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":380,\"currency\":null,\"date\":\"20/07/2025| 19:04\",\"description\":\"UPI-AMBIKA BEER SHOP\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":500,\"currency\":null,\"date\":\"21/07/2025| 10:10\",\"description\":\"UPI-Sai Prasad Petrolatum\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":500,\"currency\":null,\"date\":\"22/07/2025| 17:47\",\"description\":\"UPI-SHINDE ENERGY STATION\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":94,\"currency\":null,\"date\":\"23/07/2025| 11:27\",\"description\":\"UPI-Flipkart Payments\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":500,\"currency\":null,\"date\":\"24/07/2025| 17:23\",\"description\":\"UPI-SHINDE ENERGY STATION\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":203.54,\"currency\":null,\"date\":\"25/07/2025| 09:16\",\"description\":\"UPI-IDFC FASTag Recharge\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":1000,\"currency\":null,\"date\":\"25/07/2025| 10:25\",\"description\":\"UPI-NS Petroleum\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":3184.7,\"currency\":null,\"date\":\"26/07/2025| 15:01\",\"description\":\"EMI UPI-PARADISE FOOD COURT PVT L\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":1032.52,\"currency\":null,\"date\":\"27/07/2025| 15:54\",\"description\":\"UPI-PURE O NATURAL\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":1000,\"currency\":null,\"date\":\"27/07/2025| 17:12\",\"description\":\"UPI-Speaker 1 shivam bpcl\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":203.54,\"currency\":null,\"date\":\"27/07/2025| 17:46\",\"description\":\"UPI-IDFC FASTag Recharge\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":203.54,\"currency\":null,\"date\":\"27/07/2025| 18:33\",\"description\":\"UPI-IDFC FASTag Recharge\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":12839.84,\"currency\":null,\"date\":\"28/07/2025| 13:10\",\"description\":\"CREDIT CARD PAYMENTNet Banking (Ref# 00000000000728018204517)\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"payment\"},{\"amount\":500,\"currency\":null,\"date\":\"02/08/2025| 10:17\",\"description\":\"UPI-Sai Prasad Petrolatum\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":450,\"currency\":null,\"date\":\"03/08/2025| 11:59\",\"description\":\"UPI-JAVED SIKANDAR MULLA\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":170,\"currency\":null,\"date\":\"03/08/2025| 12:07\",\"description\":\"UPI-Mr IRFAN YOUNUS SHAIKH\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":90,\"currency\":null,\"date\":\"03/08/2025| 12:09\",\"description\":\"UPI-SPECTRA NATURAL DAIR\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":500,\"currency\":null,\"date\":\"05/08/2025| 10:17\",\"description\":\"UPI-Sai Prasad Petrolatum\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":500,\"currency\":null,\"date\":\"07/08/2025| 17:45\",\"description\":\"UPI-SHINDE ENERGY STATION\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":952,\"currency\":null,\"date\":\"08/08/2025| 10:35\",\"description\":\"UPI-AMAZON PAY\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":500,\"currency\":null,\"date\":\"11/08/2025| 17:47\",\"description\":\"UPI-SHINDE ENERGY STATION\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":129,\"currency\":null,\"date\":\"11/08/2025| 14:29\",\"description\":\"UPI-Flipkart Payments\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"purchase\"},{\"amount\":952,\"currency\":null,\"date\":\"11/08/2025| 14:29\",\"description\":\"CREDIT CARD PAYMENTNet Banking (Ref# 00000000000811017464942)\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"payment\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "decrypt_567125239_198abd4b645b8fce_6530XXXXXXXXXX12_13_08_2025_872",
+ "started_at": "2026-08-12T17:40:57",
+ "statement_id": "567125239",
+ "usage_raw": {
+  "completion_tokens": 2252,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 423,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 6302,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 8554
+ }
+}

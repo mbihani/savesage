@@ -1,0 +1,250 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "statementMeta",
+    "statementLevelSummary",
+    "cards",
+    "transactions",
+    "rewards"
+  ],
+  "properties": {
+    "statementMeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuerName",
+        "statementDate",
+        "dueDate"
+      ],
+      "properties": {
+        "issuerName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "statementDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dueDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "statementLevelSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "totalAmountDue",
+        "totalMinimumAmountDue",
+        "totalCreditLimit",
+        "availableCreditLimit"
+      ],
+      "properties": {
+        "totalAmountDue": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "totalMinimumAmountDue": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "totalCreditLimit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "availableCreditLimit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cardMeta"
+        ],
+        "properties": {
+          "cardMeta": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cardDisplayName",
+              "productFamily",
+              "lastFourDigit",
+              "network",
+              "isPrimaryCard"
+            ],
+            "properties": {
+              "cardDisplayName": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "productFamily": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "lastFourDigit": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "network": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "isPrimaryCard": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "transactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "description",
+          "amount",
+          "direction",
+          "txnType",
+          "rewardPointsOnThisTransaction",
+          "currency"
+        ],
+        "properties": {
+          "date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "amount": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "direction": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "txnType": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rewardPointsOnThisTransaction": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "currency": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "rewards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "programType",
+        "openingPoints",
+        "pointsEarnedThisCycle",
+        "pointsRedeemedThisCycle",
+        "closingPoints",
+        "pointsExpiringNext30Days",
+        "pointsExpiringNext60Days"
+      ],
+      "properties": {
+        "programType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "openingPoints": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pointsEarnedThisCycle": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pointsRedeemedThisCycle": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "closingPoints": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pointsExpiringNext30Days": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pointsExpiringNext60Days": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

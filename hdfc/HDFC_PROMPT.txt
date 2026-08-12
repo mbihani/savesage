@@ -70,8 +70,16 @@ TRANSACTION RULES:
   - Do NOT convert an explicit 0 to null, and do NOT convert a missing/unstated value to 0.
   - Only use null when the transaction row has no reward points column/value shown at all for that specific transaction.
   - For co-brand cards that display a CASHBACK EARNED or equivalent per-transaction column, populate rewardPointsOnThisTransaction from that column value for each transaction row. Do not leave it null when the column is present and shows a value.
+  - On an HDFC Marriott Bonvoy card the per-transaction reward column is headed
+    "Marriott Bonvoy Points", sitting between TRANSACTION DESCRIPTION and AMOUNT.
+    That header names a TRANSACTION-LEVEL column: read it into
+    rewardPointsOnThisTransaction for each row. It is NOT a statement-level rewards
+    balance and MUST NOT populate any rewards.* field.
 - For direction
   - ONLY allowed values are "DEBIT" or "CREDIT". No other values are acceptable.
+    The response schema types direction as a free string and will NOT reject any other
+    value, so this instruction is the only thing enforcing the two-value vocabulary.
+    Emit the exact uppercase spelling "DEBIT" or "CREDIT" — not "Debit", not "credit".
   - Use the printed amount marker FIRST; narration wording never overrides it. On an
     HDFC statement the ONLY reliable printed credit markers are:
       - a "+" sign printed immediately before the amount ("+ C 2,600.00"), and
@@ -103,9 +111,12 @@ TRANSACTION RULES:
   - If the transaction amount has a currency symbol (e.g., ₹ → INR, $ → USD) → map the symbol to its ISO 4217 currency code and use it.
   - If no currency is stated per transaction, inherit the default currency from the statement header or account summary section.
   - If currency cannot be determined by any of the above → set to null.
-- transactions->txnType — exactly ONE value from the schema's closed list, or null if
+- transactions->txnType — exactly ONE value from THIS closed list, or null if
   genuinely unclear: PURCHASE, PAYMENT, REFUND, REVERSAL, CASHBACK, FEE, TAX, INTEREST,
   EMI, CASH_ADVANCE, UPI.
+  This list is enforced by THIS INSTRUCTION ONLY — the response schema types txnType as
+  a free string and will NOT reject an out-of-list value. Emit nothing outside the list;
+  when no listed value fits, emit null rather than inventing a new label.
   - description begins "UPI-" or "UPI/" → UPI
   - "CREDIT CARD PAYMENT", "BPPY CC PAYMENT", "IMPS PMT", "NEFT", "TELE TRANSFER CREDIT",
     "Net Banking" repayment of this card → PAYMENT
@@ -156,6 +167,12 @@ REWARDS_RULES (AUTHORITATIVE):
   "Reward Points" balance printed at the top of the statement.
   If ONLY bonus points are shown and no such balance exists, closingPoints is null:
   do not aggregate bonus points into closingPoints.
+  A table headed "Marriott Bonvoy Points Summary" is NOT a closing balance. On the
+  Marriott Bonvoy card that table's only numeric column is headed "BONUS POINTS" and
+  its rows are per-program bonus lines with a "Total" (e.g. "-8 pts", "8 pts",
+  "Total 0 pts"). Do not read its Total — or any "... Points Summary" total — as
+  closingPoints, and do not sum it from the transaction column of the same name.
+  If such a statement prints no headline "Reward Points" balance, closingPoints is null.
 
 INFERENCE_RULES (ALLOWLIST):
 - The following fields MUST be inferred or derived when not explicitly stated: financeChargesThisCycle.
