@@ -1,17 +1,17 @@
-17:45:28 START arm=hdfc n=15 conc=1 prompt_sha=7ddbce14c6ae schema=GEMINI_SCHEMA(26 leaves)
-17:45:38 OK                     1036474356   txn=7 fr=stop pt=8508 ct=712 tt=9220 rl=0 ms=9513
-17:45:53 OK                     10378        txn=2 fr=stop pt=8807 ct=814 tt=9621 rl=0 ms=12564
-17:46:09 OK                     1403225883   txn=7 fr=stop pt=9712 ct=1039 tt=10751 rl=0 ms=15143
-17:46:31 OK                     1723515293   txn=23 fr=stop pt=10101 ct=2068 tt=12169 rl=0 ms=19921
-17:46:43 OK                     1741303904   txn=2 fr=stop pt=8483 ct=614 tt=9097 rl=0 ms=10820
-17:47:01 OK                     1787504092   txn=10 fr=stop pt=9866 ct=1386 tt=11252 rl=0 ms=16033
-17:47:15 OK                     368372182    txn=5 fr=stop pt=8783 ct=881 tt=9664 rl=0 ms=12196
-17:47:30 OK                     495459059    txn=12 fr=stop pt=8250 ct=1036 tt=9286 rl=0 ms=12925
-17:47:59 OK                     567125239    txn=31 fr=stop pt=10146 ct=2300 tt=12446 rl=0 ms=26357
-17:48:17 OK                     629227338    txn=21 fr=stop pt=9964 ct=1755 tt=11719 rl=0 ms=16830
-17:48:59 OK                     738368244    txn=109 fr=stop pt=13888 ct=5742 tt=19630 rl=0 ms=39270
-17:49:13 OK                     809843802    txn=1 fr=stop pt=8729 ct=652 tt=9381 rl=0 ms=12400
-17:49:29 OK                     814964372    txn=2 fr=stop pt=7725 ct=586 tt=8311 rl=0 ms=13986
-17:49:42 OK                     838900283    txn=3 fr=stop pt=8555 ct=657 tt=9212 rl=0 ms=11069
-17:50:14 OK                     853991354    txn=53 fr=stop pt=10804 ct=3483 tt=14287 rl=0 ms=29727
-17:50:16 DONE arm=hdfc ok=15/15 calls_that_saw_429=0
+19:29:46 START arm=hdfc n=15 conc=2 prompt_sha=2d9bc1fa5fdb schema=GEMINI_SCHEMA(26 leaves)
+19:29:56 OK                     1036474356   txn=7 fr=stop pt=10807 ct=813 tt=11620 rl=0 ms=10315
+19:30:00 OK                     10378        txn=2 fr=stop pt=11106 ct=1006 tt=12112 rl=0 ms=13833
+19:30:11 OK                     1403225883   txn=7 fr=stop pt=12011 ct=1111 tt=13122 rl=0 ms=12720
+19:30:23 OK                     1741303904   txn=2 fr=stop pt=10782 ct=692 tt=11474 rl=0 ms=9317
+19:30:30 OK                     1723515293   txn=23 fr=stop pt=12400 ct=2124 tt=14524 rl=0 ms=27401
+19:30:40 OK                     1787504092   txn=10 fr=stop pt=12165 ct=1631 tt=13796 rl=0 ms=16093
+19:30:43 OK                     368372182    txn=5 fr=stop pt=11082 ct=748 tt=11830 rl=0 ms=9881
+19:30:57 OK                     495459059    txn=12 fr=stop pt=10549 ct=1280 tt=11829 rl=0 ms=14618
+19:31:04 OK                     567125239    txn=31 fr=stop pt=12445 ct=2363 tt=14808 rl=0 ms=19710
+19:31:18 OK                     629227338    txn=21 fr=stop pt=12263 ct=1676 tt=13939 rl=0 ms=19135
+19:31:38 OK                     809843802    txn=1 fr=stop pt=11028 ct=699 tt=11727 rl=0 ms=17695
+19:31:44 OK                     738368244    txn=109 fr=stop pt=16187 ct=5824 tt=22011 rl=0 ms=37200
+19:31:48 OK                     814964372    txn=2 fr=stop pt=10024 ct=580 tt=10604 rl=0 ms=8464
+19:31:57 OK                     838900283    txn=3 fr=stop pt=10854 ct=662 tt=11516 rl=0 ms=9916
+19:32:14 OK                     853991354    txn=53 fr=stop pt=13103 ct=3503 tt=16606 rl=0 ms=25056
+19:32:17 DONE arm=hdfc ok=15/15 calls_that_saw_429=0

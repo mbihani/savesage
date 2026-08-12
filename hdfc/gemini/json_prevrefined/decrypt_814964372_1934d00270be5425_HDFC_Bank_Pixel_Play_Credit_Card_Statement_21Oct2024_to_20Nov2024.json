@@ -3,14 +3,14 @@
  "failure_class": null,
  "filename_sent_to_model": "statement.pdf",
  "finish_reason": "stop",
- "finished_at": "2026-08-12T19:31:48",
+ "finished_at": "2026-08-12T17:49:29",
  "max_tokens": 96000,
  "meta": {
   "attempts": 1,
   "error": null,
   "http_status": 200,
   "ip_acl": false,
-  "latency_ms": 8464,
+  "latency_ms": 13986,
   "rate_limited": 0
  },
  "model": "databricks-gpt-5-6-luna",
@@ -36,7 +36,7 @@
    "pointsExpiringNext30Days": 0,
    "pointsExpiringNext60Days": 0,
    "pointsRedeemedThisCycle": 0,
-   "programType": "Cashback"
+   "programType": "Reward Points"
   },
   "statementLevelSummary": {
    "availableCreditLimit": 99882,
@@ -54,7 +54,7 @@
     "amount": 100,
     "currency": "INR",
     "date": "17/11/2024",
-    "description": "CardReplacementFee",
+    "description": "CardReplacement Fee",
     "direction": "DEBIT",
     "rewardPointsOnThisTransaction": null,
     "txnType": "FEE"
@@ -71,28 +71,28 @@
   ]
  },
  "pdf_real_filename": "decrypt_814964372_1934d00270be5425_HDFC Bank Pixel Play Credit Card Statement  - 21Oct2024 to 20Nov2024.pdf",
- "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/hdfc/HDFC_PROMPT.txt",
- "prompt_sha256": "2d9bc1fa5fdb54704cf9eee1ab7cc579efcd3f8b63e7271af160f15dfc097ee4",
- "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Pixel Play\",\"isPrimaryCard\":null,\"lastFourDigit\":\"6463\",\"network\":null,\"productFamily\":\"Pixel Play\"}}],\"rewards\":{\"closingPoints\":500,\"openingPoints\":500,\"pointsEarnedThisCycle\":0,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":0,\"pointsRedeemedThisCycle\":0,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":99882,\"totalAmountDue\":118,\"totalCreditLimit\":100000,\"totalMinimumAmountDue\":118},\"statementMeta\":{\"dueDate\":\"10/12/2024\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"20/11/2024\"},\"transactions\":[{\"amount\":100,\"currency\":\"INR\",\"date\":\"17/11/2024\",\"description\":\"CardReplacementFee\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"FEE\"},{\"amount\":18,\"currency\":\"INR\",\"date\":\"17/11/2024\",\"description\":\"IGST on CARD REPLACEMENT FEE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"}]}",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/gemini-schema-hdfc/hdfc/HDFC_PROMPT.txt",
+ "prompt_sha256": "7ddbce14c6ae82649520dfd32acfa97c3c48b5e3dc6f3bd40731f27147ba90c6",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Pixel Play\",\"isPrimaryCard\":null,\"lastFourDigit\":\"6463\",\"network\":null,\"productFamily\":\"Pixel Play\"}}],\"rewards\":{\"closingPoints\":500,\"openingPoints\":500,\"pointsEarnedThisCycle\":0,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":0,\"pointsRedeemedThisCycle\":0,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":99882,\"totalAmountDue\":118,\"totalCreditLimit\":100000,\"totalMinimumAmountDue\":118},\"statementMeta\":{\"dueDate\":\"10/12/2024\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"20/11/2024\"},\"transactions\":[{\"amount\":100,\"currency\":\"INR\",\"date\":\"17/11/2024\",\"description\":\"CardReplacement Fee\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"FEE\"},{\"amount\":18,\"currency\":\"INR\",\"date\":\"17/11/2024\",\"description\":\"IGST on CARD REPLACEMENT FEE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"}]}",
  "reasoning_effort": "medium",
  "schema": "GEMINI_SCHEMA.json",
  "schema_leaf_count": 26,
  "sid": "decrypt_814964372_1934d00270be5425_HDFC_Bank_Pixel_Play_Credit_Card_Statement_21Oct2024_to_20Nov2024",
- "started_at": "2026-08-12T19:31:39",
+ "started_at": "2026-08-12T17:49:15",
  "statement_id": "814964372",
  "usage_raw": {
-  "completion_tokens": 580,
+  "completion_tokens": 586,
   "completion_tokens_details": {
    "accepted_prediction_tokens": 0,
    "audio_tokens": 0,
-   "reasoning_tokens": 316,
+   "reasoning_tokens": 322,
    "rejected_prediction_tokens": 0
   },
-  "prompt_tokens": 10024,
+  "prompt_tokens": 7725,
   "prompt_tokens_details": {
    "audio_tokens": 0,
    "cached_tokens": 0
   },
-  "total_tokens": 10604
+  "total_tokens": 8311
  }
 }

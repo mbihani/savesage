@@ -46,7 +46,12 @@ import pdf_scalars as PS  # noqa: E402
 HERE = os.path.dirname(os.path.abspath(__file__))
 GT_DIR = "/Users/mayanck.bihani/Savesage/bank_eval/hdfc/gt_full/json"
 PRIOR_DIR = "/Users/mayanck.bihani/Downloads/output/HDFC/JSON"
-ARMS = ("hdfc", "generic")
+
+# Arms are the json_<arm> directories to compare. Overridable so the same scoring
+# implementation serves the 2-arm and 3-arm comparisons -- duplicating the judging
+# logic into a second script would let the two copies drift silently.
+ARMS = tuple((os.environ.get("ARMS") or "hdfc,generic").split(","))
+OUT_JSON = os.environ.get("OUT_JSON") or "analysis.json"
 
 MONTHS = {m: i + 1 for i, m in enumerate(
     ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"])}
@@ -347,11 +352,28 @@ def main():
                 # currency: every row in this corpus is rupee-denominated (0 FX legs)
                 judge(a, "transactions[].currency",
                       nospace(mr.get("currency")) == "INR", sid, mr.get("currency"), "INR")
-                # reward points: the PDF has a signed-integer column on some layouts
-                if pr_["reward_points"] is not None:
-                    judge(a, "transactions[].rewardPointsOnThisTransaction",
-                          num(mr.get("rewardPointsOnThisTransaction")) == float(pr_["reward_points"]),
-                          sid, mr.get("rewardPointsOnThisTransaction"), pr_["reward_points"])
+                # reward points -- judged over EVERY paired row, in BOTH directions.
+                #
+                # The earlier version only judged rows where the PDF HAD a printed reward
+                # value, which structurally could not see a FALSE POSITIVE: a row with no
+                # reward column where the model invents a number. That is exactly the C2
+                # defect (a narration-internal '-RATE 18.0 -19' leaking into the field),
+                # so it has to be scored, not skipped. Absent column => null is the
+                # correct answer and a non-null is wrong.
+                got_rp = mr.get("rewardPointsOnThisTransaction")
+                ref_rp = pr_["reward_points"]
+                if ref_rp is None:
+                    ok_rp, note_rp = got_rp is None, "pdf row has NO reward column value"
+                else:
+                    ok_rp = num(got_rp) == float(ref_rp)
+                    note_rp = "pdf row has a printed reward value"
+                judge(a, "transactions[].rewardPointsOnThisTransaction", ok_rp, sid,
+                      got_rp, ref_rp, note=note_rp)
+                # sub-metric: only the rows that DO print a value (the older, narrower
+                # measure, kept so the two are never conflated)
+                if ref_rp is not None:
+                    judge(a, "transactions[].rewardPointsOnThisTransaction@printedonly",
+                          num(got_rp) == float(ref_rp), sid, got_rp, ref_rp)
 
             # ---- rewards (populated/null only; correctness needs per-file adjudication)
             for leaf in ("programType", "openingPoints", "pointsEarnedThisCycle",
@@ -371,24 +393,43 @@ def main():
         "gt_overlap": len([s for s in ids if s in gt]),
         "prior_overlap": len([s for s in ids if s in prior]),
     }
-    with open(os.path.join(HERE, "analysis.json"), "w") as fh:
+    with open(os.path.join(HERE, OUT_JSON), "w") as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
 
-    # ---------------- console summary (small: details live in analysis.json)
+    # ---------------- console summary (small: details live in the analysis json)
     print(f"statements={len(ids)}  pdf_rows={out['corpus']['pdf_transaction_rows']}"
           f"  gt_overlap={out['gt_overlap']}  prior_overlap={out['prior_overlap']}")
-    print(f"\n{'leaf':<52}{'A:pop/null':>13}{'A:acc':>9}{'B:pop/null':>13}{'B:acc':>9}")
-    for leaf in LEAVES:
-        cells = []
+    print(f"arms = {list(ARMS)}   ->  {OUT_JSON}")
+
+    # A leaf is CORRECTNESS_SCORED only if a PDF oracle actually produced comparisons.
+    # Everything else is POPULATED_ONLY: a populated tally is NOT accuracy and must
+    # never be printed in an accuracy column.
+    def label(leaf):
+        return ("CORRECTNESS_SCORED"
+                if any(correct[a][leaf]["cmp"] for a in ARMS) else "POPULATED_ONLY")
+
+    hdr = f"{'leaf':<50}{'metric':<20}"
+    for a in ARMS:
+        hdr += f"{a[:14]:>17}"
+    print("\n" + hdr)
+    print("-" * len(hdr))
+    for leaf in LEAVES + ["transactions[].rewardPointsOnThisTransaction@printedonly"]:
+        lab = label(leaf)
+        row = f"{leaf:<50}{lab:<20}"
         for a in ARMS:
             t, c = tally[a][leaf], correct[a][leaf]
-            cells.append(f"{t['populated']}/{t['null']}")
-            cells.append(f"{c['ok']}/{c['cmp']}" if c["cmp"] else "-")
-        print(f"{leaf:<52}{cells[0]:>13}{cells[1]:>9}{cells[2]:>13}{cells[3]:>9}")
-    print("\nvocabulary (schema pins NO enum, so this is measured):")
+            if lab == "CORRECTNESS_SCORED":
+                row += f"{c['ok']}/{c['cmp']}".rjust(17)
+            else:
+                row += f"pop {t['populated']}/{t['cells']}".rjust(17)
+        print(row)
+    # NOTE: as of the enum change the CURRENT schema pins direction and txnType, but the
+    # archived arms were run under the un-pinned schema, so this stays MEASURED rather
+    # than assumed -- it is the check that the enum did what it claims.
+    print("\nvocabulary (measured, never assumed):")
     for a in ARMS:
-        print(f"  {a:8s} direction={dict(vocab[a]['direction'])}")
-        print(f"  {a:8s} txnType={dict(vocab[a]['txnType'])}")
+        print(f"  {a:14s} direction={dict(vocab[a]['direction'])}")
+        print(f"  {a:14s} txnType={dict(vocab[a]['txnType'])}")
     print("\nformat conformance:")
     for a in ARMS:
         f = fmt[a]

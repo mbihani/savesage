@@ -3,14 +3,14 @@
  "failure_class": null,
  "filename_sent_to_model": "statement.pdf",
  "finish_reason": "stop",
- "finished_at": "2026-08-12T19:31:18",
+ "finished_at": "2026-08-12T17:48:17",
  "max_tokens": 96000,
  "meta": {
   "attempts": 1,
   "error": null,
   "http_status": 200,
   "ip_acl": false,
-  "latency_ms": 19135,
+  "latency_ms": 16830,
   "rate_limited": 0
  },
  "model": "databricks-gpt-5-6-luna",
@@ -22,7 +22,7 @@
    {
     "cardMeta": {
      "cardDisplayName": "Swiggy HDFC Bank Credit Card",
-     "isPrimaryCard": null,
+     "isPrimaryCard": true,
      "lastFourDigit": "7141",
      "network": null,
      "productFamily": "Swiggy"
@@ -32,7 +32,7 @@
   "rewards": {
    "closingPoints": null,
    "openingPoints": null,
-   "pointsEarnedThisCycle": 877.7,
+   "pointsEarnedThisCycle": null,
    "pointsExpiringNext30Days": null,
    "pointsExpiringNext60Days": null,
    "pointsRedeemedThisCycle": 877.7,
@@ -72,7 +72,7 @@
     "amount": 3170.4,
     "currency": "INR",
     "date": "17/01/2026",
-    "description": "AMAZONMUMBAI",
+    "description": "EMI AMAZONMUMBAI",
     "direction": "DEBIT",
     "rewardPointsOnThisTransaction": null,
     "txnType": "EMI"
@@ -242,28 +242,28 @@
   ]
  },
  "pdf_real_filename": "decrypt_629227338_19c5cfb16d520142_5268XXXXXXXXXX41_13-02-2026_512.pdf",
- "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/hdfc/HDFC_PROMPT.txt",
- "prompt_sha256": "2d9bc1fa5fdb54704cf9eee1ab7cc579efcd3f8b63e7271af160f15dfc097ee4",
- "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Swiggy HDFC Bank Credit Card\",\"isPrimaryCard\":null,\"lastFourDigit\":\"7141\",\"network\":null,\"productFamily\":\"Swiggy\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":877.7,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":877.7,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":36255,\"totalAmountDue\":7745,\"totalCreditLimit\":44000,\"totalMinimumAmountDue\":390},\"statementMeta\":{\"dueDate\":\"05/03/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"13/02/2026\"},\"transactions\":[{\"amount\":162,\"currency\":\"INR\",\"date\":\"13/01/2026\",\"description\":\"BLINKITGURGAON\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":827.9,\"currency\":\"INR\",\"date\":\"15/01/2026\",\"description\":\"10% Swiggy Cashback\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":3170.4,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"AMAZONMUMBAI\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":206,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":521,\"currency\":\"INR\",\"date\":\"18/01/2026\",\"description\":\"BUNDL TECHNOLOGIESBENGALURU\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":512,\"currency\":\"INR\",\"date\":\"18/01/2026\",\"description\":\"PTM*SWIGGY INBANGALORE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":214,\"currency\":\"INR\",\"date\":\"21/01/2026\",\"description\":\"RSP*INSTAMARTBANGALORE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":7443,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"BPPY CC PAYMENT BD016022BAKAAAFQOKD (Ref# ST260230083000010157891)\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":33.2,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"10% Swiggy BLCK Cashback\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":16.6,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"5% Swiggy ORNGE CB\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":370,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":434,\"currency\":\"INR\",\"date\":\"23/01/2026\",\"description\":\"RSP*INSTAMARTBANGALORE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":834,\"currency\":\"INR\",\"date\":\"23/01/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":329,\"currency\":\"INR\",\"date\":\"30/01/2026\",\"description\":\"SWIGGY INSTAMART PVT LBANGALORE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":508,\"currency\":\"INR\",\"date\":\"31/01/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":246,\"currency\":\"INR\",\"date\":\"01/02/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":299,\"currency\":\"INR\",\"date\":\"02/02/2026\",\"description\":\"BUNDL TECHNOLOGIESBENGALURU\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":229,\"currency\":\"INR\",\"date\":\"02/02/2026\",\"description\":\"Bundl Technologies PriBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":538,\"currency\":\"INR\",\"date\":\"03/02/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":33.2,\"currency\":\"INR\",\"date\":\"07/02/2026\",\"description\":\"ADJ 10% Swiggy BLCK Cashback\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":16.6,\"currency\":\"INR\",\"date\":\"07/02/2026\",\"description\":\"ADJ 5% Swiggy ORNGE CB\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"}]}",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/gemini-schema-hdfc/hdfc/HDFC_PROMPT.txt",
+ "prompt_sha256": "7ddbce14c6ae82649520dfd32acfa97c3c48b5e3dc6f3bd40731f27147ba90c6",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Swiggy HDFC Bank Credit Card\",\"isPrimaryCard\":true,\"lastFourDigit\":\"7141\",\"network\":null,\"productFamily\":\"Swiggy\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":null,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":877.7,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":36255,\"totalAmountDue\":7745,\"totalCreditLimit\":44000,\"totalMinimumAmountDue\":390},\"statementMeta\":{\"dueDate\":\"05/03/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"13/02/2026\"},\"transactions\":[{\"amount\":162,\"currency\":\"INR\",\"date\":\"13/01/2026\",\"description\":\"BLINKITGURGAON\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":827.9,\"currency\":\"INR\",\"date\":\"15/01/2026\",\"description\":\"10% Swiggy Cashback\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":3170.4,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"EMI AMAZONMUMBAI\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":206,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":521,\"currency\":\"INR\",\"date\":\"18/01/2026\",\"description\":\"BUNDL TECHNOLOGIESBENGALURU\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":512,\"currency\":\"INR\",\"date\":\"18/01/2026\",\"description\":\"PTM*SWIGGY INBANGALORE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":214,\"currency\":\"INR\",\"date\":\"21/01/2026\",\"description\":\"RSP*INSTAMARTBANGALORE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":7443,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"BPPY CC PAYMENT BD016022BAKAAAFQOKD (Ref# ST260230083000010157891)\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":33.2,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"10% Swiggy BLCK Cashback\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":16.6,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"5% Swiggy ORNGE CB\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":370,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":434,\"currency\":\"INR\",\"date\":\"23/01/2026\",\"description\":\"RSP*INSTAMARTBANGALORE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":834,\"currency\":\"INR\",\"date\":\"23/01/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":329,\"currency\":\"INR\",\"date\":\"30/01/2026\",\"description\":\"SWIGGY INSTAMART PVT LBANGALORE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":508,\"currency\":\"INR\",\"date\":\"31/01/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":246,\"currency\":\"INR\",\"date\":\"01/02/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":299,\"currency\":\"INR\",\"date\":\"02/02/2026\",\"description\":\"BUNDL TECHNOLOGIESBENGALURU\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":229,\"currency\":\"INR\",\"date\":\"02/02/2026\",\"description\":\"Bundl Technologies PriBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":538,\"currency\":\"INR\",\"date\":\"03/02/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":33.2,\"currency\":\"INR\",\"date\":\"07/02/2026\",\"description\":\"ADJ 10% Swiggy BLCK Cashback\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":16.6,\"currency\":\"INR\",\"date\":\"07/02/2026\",\"description\":\"ADJ 5% Swiggy ORNGE CB\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"}]}",
  "reasoning_effort": "medium",
  "schema": "GEMINI_SCHEMA.json",
  "schema_leaf_count": 26,
  "sid": "decrypt_629227338_19c5cfb16d520142_5268XXXXXXXXXX41_13_02_2026_512",
- "started_at": "2026-08-12T19:30:59",
+ "started_at": "2026-08-12T17:48:00",
  "statement_id": "629227338",
  "usage_raw": {
-  "completion_tokens": 1676,
+  "completion_tokens": 1755,
   "completion_tokens_details": {
    "accepted_prediction_tokens": 0,
    "audio_tokens": 0,
-   "reasoning_tokens": 423,
+   "reasoning_tokens": 504,
    "rejected_prediction_tokens": 0
   },
-  "prompt_tokens": 12263,
+  "prompt_tokens": 9964,
   "prompt_tokens_details": {
    "audio_tokens": 0,
    "cached_tokens": 0
   },
-  "total_tokens": 13939
+  "total_tokens": 11719
  }
 }
