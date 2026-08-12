@@ -124,7 +124,7 @@
                   "boolean",
                   "null"
                 ],
-                "description": "true or false ONLY when the statement prints an explicit cardholder designation for this card - a 'Primary', 'Add-on', 'Add On', 'Supplementary' or 'Secondary' card label. Null when no such designation is printed. Being the only card on the statement is NOT evidence of primary status; do not infer this field from card count, from the address block, or from the cardholder's name."
+                "description": "Whether this card is the primary card on the account - a question about account structure, not a word to transcribe. If the statement lists EXACTLY ONE card account (counted as distinct printed card numbers), that card is true, unless it is explicitly labelled 'Add-on', 'Add On', 'Additional', 'Supplementary' or 'Secondary', in which case false. If the statement lists MORE THAN ONE card account, use the printed per-card designation if there is one; if none is printed, null - never guess from listing order. The word 'primary' occurring elsewhere on the page (e.g. inside a postal address) is not a card designation."
               }
             }
           }

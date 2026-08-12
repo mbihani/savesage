@@ -584,3 +584,130 @@ never away from it. Recommended as a one-line follow-up, not a blocker.
 The equivalent sentence in the `direction` block WAS corrected, because C1 puts that block
 in scope; it now states the enum pins two values plus null, and adds that `direction` is
 never legitimately null since every printed row has one.
+
+---
+
+# Change — post-cross-review corrections (HDFC only)
+
+Date 2026-08-12. Committed directly to `main` on explicit human authorisation. Follows an
+independent codex cross-review of `e672591` / `169c5be` that returned PASS-WITH-CONCERNS,
+no BLOCKING. The review independently reproduced the 26-leaf traversal, the
+enum/nullability handling, direction 288/288 against the `+`/green PDF oracle, and the
+widened reward metric across all three arms (new 288/288, prev 287/288, client 288/288),
+confirming that metric is applied symmetrically and does not flatter the refined arm by
+construction. It also independently confirmed the description regression is genuine rather
+than a probe artifact, and agreed with not reverting.
+
+## Fix 1 — the false txnType enforcement sentence
+
+The txnType block still claimed the list "is enforced by THIS INSTRUCTION ONLY — the
+response schema types txnType as a free string and will NOT reject an out-of-list value".
+Part E made that **false**. The prior entry recorded it as stale-but-harmless and left it
+alone because it sat inside the DO-NOT-TOUCH set; that sentence has now been put in scope
+explicitly, and the reasoning for correcting it is accepted: a factually false statement
+about enforcement is not defensible merely because the enum prevents invalid output.
+
+It now states that the list is enforced by the response schema **as well as** by the
+instruction, that the schema pins a strict enum of the 11 values plus null, and that the
+set should be treated as genuinely closed.
+
+Verified byte-identical, so the protected closed-list content itself did not move:
+
+| sub-block | bytes | status |
+|---|---|---|
+| the closed VALUE LIST (`PURCHASE … UPI`) | 192 | **IDENTICAL** |
+| all mapping bullets + the trailing `Note:` | 778 | **IDENTICAL** |
+
+All 11 values remain present in the prompt list, matching the schema enum exactly. Only
+the enforcement sentence changed.
+
+The equivalent sentence in the `direction` block was corrected in the previous change and
+**was re-checked here: it is accurate post-enum.** It says the schema pins direction to an
+enum of exactly two values plus null, and the schema's enum is
+`["DEBIT","CREDIT",null]`.
+
+## Fix 2 — isPrimaryCard: reverting an evidence-first rule that was the wrong analogy
+
+The previous entry flagged this as a semantic judgement call with no oracle and said that
+if the client's truth expects `true` for the sole card, the rule was wrong and should be
+inverted. It was wrong, and it is inverted here.
+
+Measured on these 15 statements:
+
+| | isPrimaryCard |
+|---|---|
+| enum-run 1 (evidence-first null rule) | **null × 16** |
+| the arm before that | true × 7 / null × 9 |
+| Opus-5 GT, same 15 statements | **true × 15 / false × 1** |
+
+The error was the analogy, not the probe. `network` is a **print-transcription** field, so
+"null unless the word is printed" is right for it. `isPrimaryCard` is a **semantic** field
+about account structure, and no HDFC statement in this set prints a primary/add-on
+designation at all — so under a print-only rule the ONLY reachable output is null, which
+is how a field went from 7 populated to 0. That is materially worse, not safer.
+
+Re-probed all 15 PDFs before rewriting, counting distinct printed card numbers:
+
+- **14 statements list exactly ONE card account.**
+- **1 statement lists TWO** (495459059: `442144-XXXXXX-1048` and `652989-XXXXXX-4493` —
+  the Pixel Play product issued on a Visa BIN and a RuPay BIN to the same cardholder).
+- **ZERO statements print any** `Add-on` / `Add On` / `Additional` / `Supplementary` /
+  `Secondary` / `Primary Card` / `Card Type` / `Cardholder Type` designation. The only
+  literal "PRIMARY" in the corpus remains the postal-address false friend on 567125239 (a
+  street naming a "PRIMARY SCHL"), which the rule names and excludes.
+
+The PDFs therefore do not contradict the new rule, so it was implemented rather than
+escalated:
+
+- exactly ONE card account → `true`, unless that card is explicitly labelled add-on /
+  supplementary / secondary → `false`
+- MORE THAN ONE card account → the printed per-card designation if there is one, else
+  `null`; never guessed from listing order
+
+Expected on this set: `true × 14`, `null × 2`. Note this deliberately does **not** match
+GT's `true × 15 / false × 1`: GT resolves the two-card 495459059 by treating the
+first-listed card as primary and the second as add-on, which is precisely the
+listing-order inference the rule forbids. The residual 2-cell difference is that
+disagreement, not a failure to apply the rule.
+
+The schema `description` for this leaf was updated in the same commit, because the old
+description asserted the print-only rule and would have contradicted the prompt. Leaf
+count re-asserted at **26**.
+
+**Caveat, stated because it bounds every number above:** `isPrimaryCard` has **no
+correctness oracle** in the analyser — it is POPULATED_ONLY, and there is no PDF oracle
+for it either. It is also **not one of the client's 16 priority fields**. The Opus-5 GT is
+a strong reference but is itself a model output, not ground truth. So this change is
+**convention-alignment, not demonstrated correctness**, and no accuracy claim is made for
+it.
+
+## Fix 3 — two corrections to how the previous entry described its own work
+
+Both raised by the cross-review and both accepted:
+
+**(a) The 'Feature + Bonus' live rule was relocated SEMANTICALLY, not verbatim.** The
+previous entry said "relocated verbatim". The surviving clause preserves the load-bearing
+content — that the combined label is a SINGLE earned figure which populates
+`pointsEarnedThisCycle` and must not be split — but the sentence fragment instructing the
+model not to "also copy it into bonusPointsThisCycle" was dropped, because
+`bonusPointsThisCycle` is unemittable under the 26-leaf schema and reintroducing its name
+would have reintroduced an orphan reference. Dropping it is correct; describing the
+relocation as "verbatim" was not.
+
+**(b) The DD/MM/YYYY section is NOT byte-identical.** Its central formatting instructions
+are unchanged and were verified byte-identical (520 bytes), but two surrounding pieces were
+contextually edited to drop unemittable fields: the section header lost
+`statementPeriodStart, statementPeriodEnd` from its field list, and the billing-period
+sanity check was re-pointed from those two output fields to the statement's **printed**
+"Billing Period" range. The mechanism is preserved; the referent changed. The previous
+entry's byte-identical claim covered the formatting instruction only, and should have said
+so explicitly.
+
+**(c) The stash label undercounts its untracked set.** `stash@{0}` says "18 modified + 14
+untracked"; the true contents are **18 modified + 76 untracked** (+2,370/−747). The label
+counted the top-level untracked ENTRIES shown by `git status --porcelain`, which collapses
+wholly-untracked directories (`hdfc/logs/`, `sbi/var/`, `.claude/`) into one line each;
+those expand to 76 files. Nothing was lost — the stash always held all 76 — but a stash
+message cannot be rewritten in place, so the accurate inventory (including that
+`stash@{1}` is the prior superseded ICICI report rewrite, 1 file, +437/−408, 0 untracked)
+is recorded in `hdfc/STASH_NOTE.md`.

@@ -157,9 +157,11 @@ TRANSACTION RULES:
 - transactions->txnType — exactly ONE value from THIS closed list, or null if
   genuinely unclear: PURCHASE, PAYMENT, REFUND, REVERSAL, CASHBACK, FEE, TAX, INTEREST,
   EMI, CASH_ADVANCE, UPI.
-  This list is enforced by THIS INSTRUCTION ONLY — the response schema types txnType as
-  a free string and will NOT reject an out-of-list value. Emit nothing outside the list;
-  when no listed value fits, emit null rather than inventing a new label.
+  This list is now enforced by the response schema as well as by this instruction: the
+  schema pins txnType to a strict enum of exactly those 11 values plus null, so an
+  out-of-list value is rejected outright. Treat it as a genuinely closed set. Emit
+  nothing outside the list; when no listed value fits, emit null rather than inventing
+  a new label.
   - description begins "UPI-" or "UPI/" → UPI
   - "CREDIT CARD PAYMENT", "BPPY CC PAYMENT", "IMPS PMT", "NEFT", "TELE TRANSFER CREDIT",
     "Net Banking" repayment of this card → PAYMENT
@@ -304,26 +306,24 @@ STATEMENT-LEVEL FIELDS:
   promotional offer block, NOT from a transaction narration, and NOT from the filename.
   NEVER infer the product from the card BIN / first six digits, from the leading digit,
   or from the network. If the statement prints no product name anywhere, use null.
-- cards[].cardMeta.isPrimaryCard — true or false ONLY when the statement prints an
-  explicit cardholder designation for that card: a "Primary", "Add-on", "Add On",
-  "Additional", "Supplementary" or "Secondary" card label. Copy the printed designation:
-  a card labelled primary is true, a card labelled add-on/supplementary is false.
-  If NO such designation is printed, isPrimaryCard is null.
-  HDFC statements in this corpus print no primary/add-on designation at all, so null is
-  the correct answer for essentially every card here. Apply the same evidence test used
-  for `network`: can you point to the literal word "Primary" or "Add-on" printed as a
-  CARD DESIGNATION on the statement? If you cannot quote it, the answer is null.
-  In particular, NONE of the following is evidence of primary status, and none of them
-  may be used to set this field to true:
-      - the card being the ONLY card on the statement,
-      - the statement being addressed to the cardholder, or the name in the address block,
-      - the card being listed first when several are shown,
-      - the word "primary" appearing anywhere else on the page — it occurs inside
-        ADDRESSES in this corpus (e.g. a street address naming a "PRIMARY SCHL"), which
-        has nothing to do with the card.
-  A statement that shows two card numbers is not thereby a primary + add-on pair: HDFC
-  issues the Pixel Play product on TWO networks (one Visa, one RuPay) for the SAME
-  cardholder, and neither is designated primary. Both are null.
+- cards[].cardMeta.isPrimaryCard — this is a question about the ACCOUNT STRUCTURE, not a
+  word to transcribe. Decide it by counting the card accounts the statement lists:
+    - EXACTLY ONE card account listed → isPrimaryCard = true. A statement issued for a
+      single card account is that account's own card. The only exception: if that card is
+      explicitly labelled "Add-on", "Add On", "Additional", "Supplementary" or
+      "Secondary", then false.
+    - MORE THAN ONE card account listed → use the printed designation if the statement
+      prints one for each card ("Primary" → true, "Add-on"/"Supplementary" → false).
+      If no designation is printed, isPrimaryCard is null for those cards. Do NOT guess
+      from listing order, and do NOT assume the first card is primary.
+  Count card ACCOUNTS, which on HDFC means distinct printed card numbers (forms like
+  "526873XXXXXX9821" or "442144-XXXXXX-1048"), not the number of transaction sections.
+  Note for the multi-card case: HDFC issues the Pixel Play product on TWO networks (one
+  Visa, one RuPay) to the SAME cardholder. That is not automatically a primary + add-on
+  pair, which is why an unlabelled multi-card statement is null rather than a guess.
+  The word "primary" appearing elsewhere on the page is NOT a card designation — it
+  occurs inside ADDRESSES in this corpus (a street address naming a "PRIMARY SCHL"), and
+  must never be read as labelling a card.
 
 EDGE_CASES:
 - If due date is non-date text (e.g., IMMEDIATELY, PAY IMMEDIATELY, DUE IMMEDIATELY),
