@@ -3,14 +3,14 @@
  "failure_class": null,
  "filename_sent_to_model": "statement.pdf",
  "finish_reason": "stop",
- "finished_at": "2026-08-12T19:54:29",
+ "finished_at": "2026-08-12T19:29:56",
  "max_tokens": 96000,
  "meta": {
   "attempts": 1,
   "error": null,
   "http_status": 200,
   "ip_acl": false,
-  "latency_ms": 9649,
+  "latency_ms": 10315,
   "rate_limited": 0
  },
  "model": "databricks-gpt-5-6-luna",
@@ -22,7 +22,7 @@
    {
     "cardMeta": {
      "cardDisplayName": "Swiggy HDFC Bank Credit Card",
-     "isPrimaryCard": true,
+     "isPrimaryCard": null,
      "lastFourDigit": "9821",
      "network": null,
      "productFamily": "Swiggy"
@@ -36,7 +36,7 @@
    "pointsExpiringNext30Days": null,
    "pointsExpiringNext60Days": null,
    "pointsRedeemedThisCycle": null,
-   "programType": null
+   "programType": "Cashback"
   },
   "statementLevelSummary": {
    "availableCreditLimit": 354652,
@@ -117,27 +117,27 @@
  },
  "pdf_real_filename": "decrypt_1036474356_19d010a851c47e93_5268XXXXXXXXXX21_17-03-2026_924.pdf",
  "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/hdfc/HDFC_PROMPT.txt",
- "prompt_sha256": "fd92b25b878176bbb46bed2fd78e8cb5445c7f245ee983d9f8fd01da74ce07ef",
- "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Swiggy HDFC Bank Credit Card\",\"isPrimaryCard\":true,\"lastFourDigit\":\"9821\",\"network\":null,\"productFamily\":\"Swiggy\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":null,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":null},\"statementLevelSummary\":{\"availableCreditLimit\":354652,\"totalAmountDue\":5348,\"totalCreditLimit\":360000,\"totalMinimumAmountDue\":270},\"statementMeta\":{\"dueDate\":\"06/04/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"17/03/2026\"},\"transactions\":[{\"amount\":203,\"currency\":\"INR\",\"date\":\"18/02/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":2430,\"currency\":\"INR\",\"date\":\"21/02/2026\",\"description\":\"WWW SWIGGY COMGURGAON\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":422,\"currency\":\"INR\",\"date\":\"25/02/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":687,\"currency\":\"INR\",\"date\":\"28/02/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":754,\"currency\":\"INR\",\"date\":\"12/03/2026\",\"description\":\"WWW SWIGGY COMGURGAON\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":561,\"currency\":\"INR\",\"date\":\"13/03/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":291,\"currency\":\"INR\",\"date\":\"13/03/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"}]}",
+ "prompt_sha256": "2d9bc1fa5fdb54704cf9eee1ab7cc579efcd3f8b63e7271af160f15dfc097ee4",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Swiggy HDFC Bank Credit Card\",\"isPrimaryCard\":null,\"lastFourDigit\":\"9821\",\"network\":null,\"productFamily\":\"Swiggy\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":null,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":354652,\"totalAmountDue\":5348,\"totalCreditLimit\":360000,\"totalMinimumAmountDue\":270},\"statementMeta\":{\"dueDate\":\"06/04/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"17/03/2026\"},\"transactions\":[{\"amount\":203,\"currency\":\"INR\",\"date\":\"18/02/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":2430,\"currency\":\"INR\",\"date\":\"21/02/2026\",\"description\":\"WWW SWIGGY COMGURGAON\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":422,\"currency\":\"INR\",\"date\":\"25/02/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":687,\"currency\":\"INR\",\"date\":\"28/02/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":754,\"currency\":\"INR\",\"date\":\"12/03/2026\",\"description\":\"WWW SWIGGY COMGURGAON\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":561,\"currency\":\"INR\",\"date\":\"13/03/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":291,\"currency\":\"INR\",\"date\":\"13/03/2026\",\"description\":\"PYU*Swiggy FoodBangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"}]}",
  "reasoning_effort": "medium",
  "schema": "GEMINI_SCHEMA.json",
  "schema_leaf_count": 26,
  "sid": "decrypt_1036474356_19d010a851c47e93_5268XXXXXXXXXX21_17_03_2026_924",
- "started_at": "2026-08-12T19:54:19",
+ "started_at": "2026-08-12T19:29:46",
  "statement_id": "1036474356",
  "usage_raw": {
-  "completion_tokens": 733,
+  "completion_tokens": 813,
   "completion_tokens_details": {
    "accepted_prediction_tokens": 0,
    "audio_tokens": 0,
-   "reasoning_tokens": 211,
+   "reasoning_tokens": 289,
    "rejected_prediction_tokens": 0
   },
-  "prompt_tokens": 10877,
+  "prompt_tokens": 10807,
   "prompt_tokens_details": {
    "audio_tokens": 0,
    "cached_tokens": 0
   },
-  "total_tokens": 11610
+  "total_tokens": 11620
  }
 }

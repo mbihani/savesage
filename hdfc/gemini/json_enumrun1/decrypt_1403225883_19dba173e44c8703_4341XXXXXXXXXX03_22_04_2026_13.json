@@ -3,14 +3,14 @@
  "failure_class": null,
  "filename_sent_to_model": "statement.pdf",
  "finish_reason": "stop",
- "finished_at": "2026-08-12T19:54:42",
+ "finished_at": "2026-08-12T19:30:11",
  "max_tokens": 96000,
  "meta": {
   "attempts": 1,
   "error": null,
   "http_status": 200,
   "ip_acl": false,
-  "latency_ms": 12269,
+  "latency_ms": 12720,
   "rate_limited": 0
  },
  "model": "databricks-gpt-5-6-luna",
@@ -22,7 +22,7 @@
    {
     "cardMeta": {
      "cardDisplayName": "Millennia",
-     "isPrimaryCard": true,
+     "isPrimaryCard": null,
      "lastFourDigit": "9503",
      "network": null,
      "productFamily": "Millennia"
@@ -117,27 +117,27 @@
  },
  "pdf_real_filename": "decrypt_1403225883_19dba173e44c8703_4341XXXXXXXXXX03_22-04-2026_13.pdf",
  "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/hdfc/HDFC_PROMPT.txt",
- "prompt_sha256": "fd92b25b878176bbb46bed2fd78e8cb5445c7f245ee983d9f8fd01da74ce07ef",
- "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Millennia\",\"isPrimaryCard\":true,\"lastFourDigit\":\"9503\",\"network\":null,\"productFamily\":\"Millennia\"}}],\"rewards\":{\"closingPoints\":6520,\"openingPoints\":5457,\"pointsEarnedThisCycle\":1063,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":0,\"pointsRedeemedThisCycle\":0,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":472112,\"totalAmountDue\":5424,\"totalCreditLimit\":490000,\"totalMinimumAmountDue\":3421},\"statementMeta\":{\"dueDate\":\"12/05/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"22/04/2026\"},\"transactions\":[{\"amount\":32.4,\"currency\":\"INR\",\"date\":\"22/03/2026\",\"description\":\"IGST-VPS2608281526030-RATE 18.0 -27 (Ref# 09999999980322004302518)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":883.82,\"currency\":\"INR\",\"date\":\"01/04/2026\",\"description\":\"RELIANCE RETAIL LIMITEDNOIDA\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":98346,\"currency\":\"INR\",\"date\":\"05/04/2026\",\"description\":\"BPPY CC PAYMENT BD016095BAKAAAIGATT (Ref# ST260960830000010156932)\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":1235,\"currency\":\"INR\",\"date\":\"09/04/2026\",\"description\":\"FOXTALEMUMBAI\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":52,\"currency\":\"INR\",\"date\":\"17/04/2026\",\"description\":\"MYNTRA DESIGNS PRIVATEL Bangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":3015,\"currency\":\"INR\",\"date\":\"22/04/2026\",\"description\":\"OFFUS EMI,PRIN NB:02,00000137945812 (Ref# 09999999980422004505522)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":206,\"currency\":\"INR\",\"date\":\"22/04/2026\",\"description\":\"OFFUS EMI,INT NBR:02,00000137945812 (Ref# 09999999980422004505530)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"}]}",
+ "prompt_sha256": "2d9bc1fa5fdb54704cf9eee1ab7cc579efcd3f8b63e7271af160f15dfc097ee4",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Millennia\",\"isPrimaryCard\":null,\"lastFourDigit\":\"9503\",\"network\":null,\"productFamily\":\"Millennia\"}}],\"rewards\":{\"closingPoints\":6520,\"openingPoints\":5457,\"pointsEarnedThisCycle\":1063,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":0,\"pointsRedeemedThisCycle\":0,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":472112,\"totalAmountDue\":5424,\"totalCreditLimit\":490000,\"totalMinimumAmountDue\":3421},\"statementMeta\":{\"dueDate\":\"12/05/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"22/04/2026\"},\"transactions\":[{\"amount\":32.4,\"currency\":\"INR\",\"date\":\"22/03/2026\",\"description\":\"IGST-VPS2608281526030-RATE 18.0 -27 (Ref# 09999999980322004302518)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":883.82,\"currency\":\"INR\",\"date\":\"01/04/2026\",\"description\":\"RELIANCE RETAIL LIMITEDNOIDA\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":98346,\"currency\":\"INR\",\"date\":\"05/04/2026\",\"description\":\"BPPY CC PAYMENT BD016095BAKAAAIGATT (Ref# ST260960830000010156932)\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":1235,\"currency\":\"INR\",\"date\":\"09/04/2026\",\"description\":\"FOXTALEMUMBAI\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":52,\"currency\":\"INR\",\"date\":\"17/04/2026\",\"description\":\"MYNTRA DESIGNS PRIVATEL Bangalore\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":3015,\"currency\":\"INR\",\"date\":\"22/04/2026\",\"description\":\"OFFUS EMI,PRIN NB:02,00000137945812 (Ref# 09999999980422004505522)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":206,\"currency\":\"INR\",\"date\":\"22/04/2026\",\"description\":\"OFFUS EMI,INT NBR:02,00000137945812 (Ref# 09999999980422004505530)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"}]}",
  "reasoning_effort": "medium",
  "schema": "GEMINI_SCHEMA.json",
  "schema_leaf_count": 26,
  "sid": "decrypt_1403225883_19dba173e44c8703_4341XXXXXXXXXX03_22_04_2026_13",
- "started_at": "2026-08-12T19:54:30",
+ "started_at": "2026-08-12T19:29:59",
  "statement_id": "1403225883",
  "usage_raw": {
-  "completion_tokens": 1089,
+  "completion_tokens": 1111,
   "completion_tokens_details": {
    "accepted_prediction_tokens": 0,
    "audio_tokens": 0,
-   "reasoning_tokens": 490,
+   "reasoning_tokens": 512,
    "rejected_prediction_tokens": 0
   },
-  "prompt_tokens": 12081,
+  "prompt_tokens": 12011,
   "prompt_tokens_details": {
    "audio_tokens": 0,
    "cached_tokens": 0
   },
-  "total_tokens": 13170
+  "total_tokens": 13122
  }
 }

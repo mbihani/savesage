@@ -3,14 +3,14 @@
  "failure_class": null,
  "filename_sent_to_model": "statement.pdf",
  "finish_reason": "stop",
- "finished_at": "2026-08-12T19:55:16",
+ "finished_at": "2026-08-12T19:30:57",
  "max_tokens": 96000,
  "meta": {
   "attempts": 1,
   "error": null,
   "http_status": 200,
   "ip_acl": false,
-  "latency_ms": 12403,
+  "latency_ms": 14618,
   "rate_limited": 0
  },
  "model": "databricks-gpt-5-6-luna",
@@ -21,20 +21,20 @@
   "cards": [
    {
     "cardMeta": {
-     "cardDisplayName": "Pixel",
+     "cardDisplayName": "PIXEL",
      "isPrimaryCard": null,
      "lastFourDigit": "1048",
      "network": "VISA",
-     "productFamily": "Pixel"
+     "productFamily": "PIXEL"
     }
    },
    {
     "cardMeta": {
-     "cardDisplayName": "Pixel",
+     "cardDisplayName": "PIXEL",
      "isPrimaryCard": null,
      "lastFourDigit": "4493",
      "network": "RUPAY",
-     "productFamily": "Pixel"
+     "productFamily": "PIXEL"
     }
    }
   ],
@@ -63,7 +63,7 @@
     "amount": 264,
     "currency": "INR",
     "date": "16/01/2026",
-    "description": "Payment received - UPI",
+    "description": "Paym ent received - UPI",
     "direction": "CREDIT",
     "rewardPointsOnThisTransaction": null,
     "txnType": "PAYMENT"
@@ -72,7 +72,7 @@
     "amount": 1490,
     "currency": "INR",
     "date": "17/01/2026",
-    "description": "Payment received - UPI",
+    "description": "Paym ent received - UPI",
     "direction": "CREDIT",
     "rewardPointsOnThisTransaction": null,
     "txnType": "PAYMENT"
@@ -81,7 +81,7 @@
     "amount": 332.9,
     "currency": "INR",
     "date": "18/01/2026",
-    "description": "Payment received - UPI",
+    "description": "Paym ent received - UPI",
     "direction": "CREDIT",
     "rewardPointsOnThisTransaction": null,
     "txnType": "PAYMENT"
@@ -90,7 +90,7 @@
     "amount": 1213.5,
     "currency": "INR",
     "date": "29/01/2026",
-    "description": "Payment received - UPI",
+    "description": "Paym ent received - UPI",
     "direction": "CREDIT",
     "rewardPointsOnThisTransaction": null,
     "txnType": "PAYMENT"
@@ -135,7 +135,7 @@
     "amount": 799,
     "currency": "INR",
     "date": "26/01/2026",
-    "description": "Bharti Airtel Limited",
+    "description": "Bharti Airtel Lim ited",
     "direction": "DEBIT",
     "rewardPointsOnThisTransaction": 7,
     "txnType": "PURCHASE"
@@ -171,27 +171,27 @@
  },
  "pdf_real_filename": "decrypt_495459059_19c21a6837aba7f2_HDFC Bank Pixel Play Credit Card Statement  - 03Jan2026 to 02Feb2026.pdf",
  "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/hdfc/HDFC_PROMPT.txt",
- "prompt_sha256": "fd92b25b878176bbb46bed2fd78e8cb5445c7f245ee983d9f8fd01da74ce07ef",
- "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Pixel\",\"isPrimaryCard\":null,\"lastFourDigit\":\"1048\",\"network\":\"VISA\",\"productFamily\":\"Pixel\"}},{\"cardMeta\":{\"cardDisplayName\":\"Pixel\",\"isPrimaryCard\":null,\"lastFourDigit\":\"4493\",\"network\":\"RUPAY\",\"productFamily\":\"Pixel\"}}],\"rewards\":{\"closingPoints\":383,\"openingPoints\":316,\"pointsEarnedThisCycle\":67,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":0,\"pointsRedeemedThisCycle\":0,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":91122,\"totalAmountDue\":2878,\"totalCreditLimit\":94000,\"totalMinimumAmountDue\":200},\"statementMeta\":{\"dueDate\":\"22/02/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"02/02/2026\"},\"transactions\":[{\"amount\":264,\"currency\":\"INR\",\"date\":\"16/01/2026\",\"description\":\"Payment received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":1490,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"Payment received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":332.9,\"currency\":\"INR\",\"date\":\"18/01/2026\",\"description\":\"Payment received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":1213.5,\"currency\":\"INR\",\"date\":\"29/01/2026\",\"description\":\"Payment received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":264,\"currency\":\"INR\",\"date\":\"13/01/2026\",\"description\":\"Blinkit\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":13,\"txnType\":\"PURCHASE\"},{\"amount\":272,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"PUNJABI BY NATURE EXPRESS\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":2,\"txnType\":\"PURCHASE\"},{\"amount\":60.9,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"CONNAUGHT PLAZA REST\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1490,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"Uniqlo\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":14,\"txnType\":\"PURCHASE\"},{\"amount\":799,\"currency\":\"INR\",\"date\":\"26/01/2026\",\"description\":\"Bharti Airtel Limited\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":7,\"txnType\":\"PURCHASE\"},{\"amount\":224.5,\"currency\":\"INR\",\"date\":\"27/01/2026\",\"description\":\"BBNOW\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":2,\"txnType\":\"PURCHASE\"},{\"amount\":190,\"currency\":\"INR\",\"date\":\"28/01/2026\",\"description\":\"ZEPTO\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"PURCHASE\"},{\"amount\":2878,\"currency\":\"INR\",\"date\":\"31/01/2026\",\"description\":\"LA KABABIYAA PRIVATE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":28,\"txnType\":\"PURCHASE\"}]}",
+ "prompt_sha256": "2d9bc1fa5fdb54704cf9eee1ab7cc579efcd3f8b63e7271af160f15dfc097ee4",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"PIXEL\",\"isPrimaryCard\":null,\"lastFourDigit\":\"1048\",\"network\":\"VISA\",\"productFamily\":\"PIXEL\"}},{\"cardMeta\":{\"cardDisplayName\":\"PIXEL\",\"isPrimaryCard\":null,\"lastFourDigit\":\"4493\",\"network\":\"RUPAY\",\"productFamily\":\"PIXEL\"}}],\"rewards\":{\"closingPoints\":383,\"openingPoints\":316,\"pointsEarnedThisCycle\":67,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":0,\"pointsRedeemedThisCycle\":0,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":91122,\"totalAmountDue\":2878,\"totalCreditLimit\":94000,\"totalMinimumAmountDue\":200},\"statementMeta\":{\"dueDate\":\"22/02/2026\",\"issuerName\":\"HDFC Bank\",\"statementDate\":\"02/02/2026\"},\"transactions\":[{\"amount\":264,\"currency\":\"INR\",\"date\":\"16/01/2026\",\"description\":\"Paym ent received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":1490,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"Paym ent received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":332.9,\"currency\":\"INR\",\"date\":\"18/01/2026\",\"description\":\"Paym ent received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":1213.5,\"currency\":\"INR\",\"date\":\"29/01/2026\",\"description\":\"Paym ent received - UPI\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":264,\"currency\":\"INR\",\"date\":\"13/01/2026\",\"description\":\"Blinkit\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":13,\"txnType\":\"PURCHASE\"},{\"amount\":272,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"PUNJABI BY NATURE EXPRESS\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":2,\"txnType\":\"PURCHASE\"},{\"amount\":60.9,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"CONNAUGHT PLAZA REST\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1490,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"Uniqlo\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":14,\"txnType\":\"PURCHASE\"},{\"amount\":799,\"currency\":\"INR\",\"date\":\"26/01/2026\",\"description\":\"Bharti Airtel Lim ited\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":7,\"txnType\":\"PURCHASE\"},{\"amount\":224.5,\"currency\":\"INR\",\"date\":\"27/01/2026\",\"description\":\"BBNOW\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":2,\"txnType\":\"PURCHASE\"},{\"amount\":190,\"currency\":\"INR\",\"date\":\"28/01/2026\",\"description\":\"ZEPTO\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"PURCHASE\"},{\"amount\":2878,\"currency\":\"INR\",\"date\":\"31/01/2026\",\"description\":\"LA KABABIYAA PRIVATE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":28,\"txnType\":\"PURCHASE\"}]}",
  "reasoning_effort": "medium",
  "schema": "GEMINI_SCHEMA.json",
  "schema_leaf_count": 26,
  "sid": "decrypt_495459059_19c21a6837aba7f2_HDFC_Bank_Pixel_Play_Credit_Card_Statement_03Jan2026_to_02Feb2026",
- "started_at": "2026-08-12T19:55:04",
+ "started_at": "2026-08-12T19:30:42",
  "statement_id": "495459059",
  "usage_raw": {
-  "completion_tokens": 1214,
+  "completion_tokens": 1280,
   "completion_tokens_details": {
    "accepted_prediction_tokens": 0,
    "audio_tokens": 0,
-   "reasoning_tokens": 460,
+   "reasoning_tokens": 512,
    "rejected_prediction_tokens": 0
   },
-  "prompt_tokens": 10619,
+  "prompt_tokens": 10549,
   "prompt_tokens_details": {
    "audio_tokens": 0,
    "cached_tokens": 0
   },
-  "total_tokens": 11833
+  "total_tokens": 11829
  }
 }

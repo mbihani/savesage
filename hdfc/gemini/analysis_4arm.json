@@ -1,0 +1,2717 @@
+{
+ "corpus": {
+  "pdf_transaction_rows": 288,
+  "statements": 15
+ },
+ "correct": {
+  "enumrun1": {
+   "cards[].cardMeta.lastFourDigit": {
+    "cmp": 16,
+    "ok": 16,
+    "wrong": 0
+   },
+   "cards[].cardMeta.network": {
+    "cmp": 16,
+    "ok": 16,
+    "wrong": 0
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.dueDate": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.issuerName": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.statementDate": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "transactions[].amount": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].currency": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].date": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].description": {
+    "cmp": 288,
+    "ok": 285,
+    "wrong": 3
+   },
+   "transactions[].direction": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].rewardPointsOnThisTransaction@printedonly": {
+    "cmp": 7,
+    "ok": 7,
+    "wrong": 0
+   }
+  },
+  "generic": {
+   "cards[].cardMeta.lastFourDigit": {
+    "cmp": 16,
+    "ok": 16,
+    "wrong": 0
+   },
+   "cards[].cardMeta.network": {
+    "cmp": 16,
+    "ok": 15,
+    "wrong": 1
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.dueDate": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.issuerName": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.statementDate": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "transactions[].amount": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].currency": {
+    "cmp": 288,
+    "ok": 242,
+    "wrong": 46
+   },
+   "transactions[].date": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].description": {
+    "cmp": 288,
+    "ok": 280,
+    "wrong": 8
+   },
+   "transactions[].direction": {
+    "cmp": 288,
+    "ok": 147,
+    "wrong": 141
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].rewardPointsOnThisTransaction@printedonly": {
+    "cmp": 7,
+    "ok": 7,
+    "wrong": 0
+   }
+  },
+  "hdfc": {
+   "cards[].cardMeta.lastFourDigit": {
+    "cmp": 16,
+    "ok": 16,
+    "wrong": 0
+   },
+   "cards[].cardMeta.network": {
+    "cmp": 16,
+    "ok": 16,
+    "wrong": 0
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.dueDate": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.issuerName": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.statementDate": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "transactions[].amount": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].currency": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].date": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].description": {
+    "cmp": 288,
+    "ok": 285,
+    "wrong": 3
+   },
+   "transactions[].direction": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].rewardPointsOnThisTransaction@printedonly": {
+    "cmp": 7,
+    "ok": 7,
+    "wrong": 0
+   }
+  },
+  "prevrefined": {
+   "cards[].cardMeta.lastFourDigit": {
+    "cmp": 16,
+    "ok": 16,
+    "wrong": 0
+   },
+   "cards[].cardMeta.network": {
+    "cmp": 16,
+    "ok": 16,
+    "wrong": 0
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.dueDate": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.issuerName": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "statementMeta.statementDate": {
+    "cmp": 15,
+    "ok": 15,
+    "wrong": 0
+   },
+   "transactions[].amount": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].currency": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].date": {
+    "cmp": 288,
+    "ok": 288,
+    "wrong": 0
+   },
+   "transactions[].description": {
+    "cmp": 288,
+    "ok": 287,
+    "wrong": 1
+   },
+   "transactions[].direction": {
+    "cmp": 288,
+    "ok": 285,
+    "wrong": 3
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "cmp": 288,
+    "ok": 287,
+    "wrong": 1
+   },
+   "transactions[].rewardPointsOnThisTransaction@printedonly": {
+    "cmp": 7,
+    "ok": 7,
+    "wrong": 0
+   }
+  }
+ },
+ "format": {
+  "enumrun1": {
+   "date_cells": 288,
+   "date_ddmmyyyy": 288,
+   "desc_cells": 288,
+   "desc_exact": 284
+  },
+  "generic": {
+   "date_cells": 288,
+   "date_ddmmyyyy": 185,
+   "desc_cells": 288,
+   "desc_exact": 272
+  },
+  "hdfc": {
+   "date_cells": 288,
+   "date_ddmmyyyy": 288,
+   "desc_cells": 288,
+   "desc_exact": 279
+  },
+  "prevrefined": {
+   "date_cells": 288,
+   "date_ddmmyyyy": 288,
+   "desc_cells": 288,
+   "desc_exact": 285
+  }
+ },
+ "gt_overlap": 15,
+ "mismatches": {
+  "enumrun1|transactions[].description": [
+   {
+    "got": "UPI-YOUNOUS KHAN",
+    "note": "",
+    "pdf_ref": "UPI-YOUNUS KHAN",
+    "statement": "738368244"
+   },
+   {
+    "got": "UPI-YOUNOUS KHAN",
+    "note": "",
+    "pdf_ref": "UPI-YOUNUS KHAN",
+    "statement": "738368244"
+   },
+   {
+    "got": "BPPY CC PAYMENT BD016095BAKAAAIGATT (Ref# ST260960830000010156932)",
+    "note": "",
+    "pdf_ref": "BPPY CC PAYMENT BD016095BAKAAAIGATT (Ref# ST260960083000010156932)",
+    "statement": "1403225883"
+   }
+  ],
+  "generic|cards[].cardMeta.network": [
+   {
+    "got": "Mastercard",
+    "note": "",
+    "pdf_ref": null,
+    "statement": "809843802"
+   }
+  ],
+  "generic|transactions[].currency": [
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "10378"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "10378"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": "\u20b9",
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "495459059"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "567125239"
+   },
+   {
+    "got": null,
+    "note": "",
+    "pdf_ref": "INR",
+    "statement": "809843802"
+   }
+  ],
+  "generic|transactions[].description": [
+   {
+    "got": "EMI UPI-PARADISE FOOD COURT PVT L",
+    "note": "",
+    "pdf_ref": "UPI-PARADISE FOOD COURT PVT L",
+    "statement": "567125239"
+   },
+   {
+    "got": "EMI AMAZONMUMBAI",
+    "note": "",
+    "pdf_ref": "AMAZONMUMBAI",
+    "statement": "629227338"
+   },
+   {
+    "got": "EMI UPI-PARANJYOTI ENTERPRISES",
+    "note": "",
+    "pdf_ref": "UPI-PARANJYOTI ENTERPRISES",
+    "statement": "853991354"
+   },
+   {
+    "got": "EMI UPI-Highway Service Station",
+    "note": "",
+    "pdf_ref": "UPI-Highway Service Station",
+    "statement": "853991354"
+   },
+   {
+    "got": "EMI UPI-Highway Service Station",
+    "note": "",
+    "pdf_ref": "UPI-Highway Service Station",
+    "statement": "853991354"
+   },
+   {
+    "got": "BPPY CC PAYMENT BD016095BAKAAAIGATT (Ref# ST26096083000010156932)",
+    "note": "",
+    "pdf_ref": "BPPY CC PAYMENT BD016095BAKAAAIGATT (Ref# ST260960083000010156932)",
+    "statement": "1403225883"
+   },
+   {
+    "got": "EMI RELIANCE DIGITALHYDERABAD",
+    "note": "",
+    "pdf_ref": "RELIANCE DIGITALHYDERABAD",
+    "statement": "1787504092"
+   },
+   {
+    "got": "EMI RELIANCE DIGITALHYDERABAD",
+    "note": "",
+    "pdf_ref": "RELIANCE DIGITALHYDERABAD",
+    "statement": "1787504092"
+   }
+  ],
+  "generic|transactions[].direction": [
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "738368244"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "1036474356"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "1036474356"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "1036474356"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "1036474356"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "1036474356"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "1036474356"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "1036474356"
+   }
+  ],
+  "hdfc|transactions[].description": [
+   {
+    "got": "UPI-YOUNOUS KHAN",
+    "note": "",
+    "pdf_ref": "UPI-YOUNUS KHAN",
+    "statement": "738368244"
+   },
+   {
+    "got": "UPI-YOUNOUS KHAN",
+    "note": "",
+    "pdf_ref": "UPI-YOUNUS KHAN",
+    "statement": "738368244"
+   },
+   {
+    "got": "BPPY CC PAYMENT BD016095BAKAAAIGATT (Ref# ST260960830000010156932)",
+    "note": "",
+    "pdf_ref": "BPPY CC PAYMENT BD016095BAKAAAIGATT (Ref# ST260960083000010156932)",
+    "statement": "1403225883"
+   }
+  ],
+  "prevrefined|transactions[].description": [
+   {
+    "got": "EMI AMAZONMUMBAI",
+    "note": "",
+    "pdf_ref": "AMAZONMUMBAI",
+    "statement": "629227338"
+   }
+  ],
+  "prevrefined|transactions[].direction": [
+   {
+    "got": "DEBIT",
+    "note": "marker plus=True green=True",
+    "pdf_ref": "CREDIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "DEBIT",
+    "note": "marker plus=True green=True",
+    "pdf_ref": "CREDIT",
+    "statement": "567125239"
+   },
+   {
+    "got": "CREDIT",
+    "note": "marker plus=False green=False",
+    "pdf_ref": "DEBIT",
+    "statement": "1723515293"
+   }
+  ],
+  "prevrefined|transactions[].rewardPointsOnThisTransaction": [
+   {
+    "got": -19,
+    "note": "pdf row has NO reward column value",
+    "pdf_ref": null,
+    "statement": "838900283"
+   }
+  ]
+ },
+ "prior_overlap": 15,
+ "rowcounts": [
+  {
+   "arm": "hdfc",
+   "model": 2,
+   "pdf": 2,
+   "statement": "10378",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 2,
+   "pdf": 2,
+   "statement": "10378",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 2,
+   "pdf": 2,
+   "statement": "10378",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 2,
+   "pdf": 2,
+   "statement": "10378",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 5,
+   "pdf": 5,
+   "statement": "368372182",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 5,
+   "pdf": 5,
+   "statement": "368372182",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 5,
+   "pdf": 5,
+   "statement": "368372182",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 5,
+   "pdf": 5,
+   "statement": "368372182",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 12,
+   "pdf": 12,
+   "statement": "495459059",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 12,
+   "pdf": 12,
+   "statement": "495459059",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 12,
+   "pdf": 12,
+   "statement": "495459059",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 12,
+   "pdf": 12,
+   "statement": "495459059",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 31,
+   "pdf": 31,
+   "statement": "567125239",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 31,
+   "pdf": 31,
+   "statement": "567125239",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 31,
+   "pdf": 31,
+   "statement": "567125239",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 31,
+   "pdf": 31,
+   "statement": "567125239",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 21,
+   "pdf": 21,
+   "statement": "629227338",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 21,
+   "pdf": 21,
+   "statement": "629227338",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 21,
+   "pdf": 21,
+   "statement": "629227338",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 21,
+   "pdf": 21,
+   "statement": "629227338",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 109,
+   "pdf": 109,
+   "statement": "738368244",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 109,
+   "pdf": 109,
+   "statement": "738368244",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 109,
+   "pdf": 109,
+   "statement": "738368244",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 109,
+   "pdf": 109,
+   "statement": "738368244",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 1,
+   "pdf": 1,
+   "statement": "809843802",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 1,
+   "pdf": 1,
+   "statement": "809843802",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 1,
+   "pdf": 1,
+   "statement": "809843802",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 1,
+   "pdf": 1,
+   "statement": "809843802",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 2,
+   "pdf": 2,
+   "statement": "814964372",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 2,
+   "pdf": 2,
+   "statement": "814964372",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 2,
+   "pdf": 2,
+   "statement": "814964372",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 2,
+   "pdf": 2,
+   "statement": "814964372",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 3,
+   "pdf": 3,
+   "statement": "838900283",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 3,
+   "pdf": 3,
+   "statement": "838900283",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 3,
+   "pdf": 3,
+   "statement": "838900283",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 3,
+   "pdf": 3,
+   "statement": "838900283",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 53,
+   "pdf": 53,
+   "statement": "853991354",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 53,
+   "pdf": 53,
+   "statement": "853991354",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 53,
+   "pdf": 53,
+   "statement": "853991354",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 53,
+   "pdf": 53,
+   "statement": "853991354",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 7,
+   "pdf": 7,
+   "statement": "1036474356",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 7,
+   "pdf": 7,
+   "statement": "1036474356",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 7,
+   "pdf": 7,
+   "statement": "1036474356",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 7,
+   "pdf": 7,
+   "statement": "1036474356",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 7,
+   "pdf": 7,
+   "statement": "1403225883",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 7,
+   "pdf": 7,
+   "statement": "1403225883",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 7,
+   "pdf": 7,
+   "statement": "1403225883",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 7,
+   "pdf": 7,
+   "statement": "1403225883",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 23,
+   "pdf": 23,
+   "statement": "1723515293",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 23,
+   "pdf": 23,
+   "statement": "1723515293",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 23,
+   "pdf": 23,
+   "statement": "1723515293",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 23,
+   "pdf": 23,
+   "statement": "1723515293",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 2,
+   "pdf": 2,
+   "statement": "1741303904",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 2,
+   "pdf": 2,
+   "statement": "1741303904",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 2,
+   "pdf": 2,
+   "statement": "1741303904",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 2,
+   "pdf": 2,
+   "statement": "1741303904",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "hdfc",
+   "model": 10,
+   "pdf": 10,
+   "statement": "1787504092",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "enumrun1",
+   "model": 10,
+   "pdf": 10,
+   "statement": "1787504092",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "prevrefined",
+   "model": 10,
+   "pdf": 10,
+   "statement": "1787504092",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  },
+  {
+   "arm": "generic",
+   "model": 10,
+   "pdf": 10,
+   "statement": "1787504092",
+   "unmatched_model": 0,
+   "unmatched_pdf": 0
+  }
+ ],
+ "tally": {
+  "enumrun1": {
+   "cards[].cardMeta.cardDisplayName": {
+    "cells": 16,
+    "null": 0,
+    "populated": 16
+   },
+   "cards[].cardMeta.isPrimaryCard": {
+    "cells": 16,
+    "null": 16,
+    "populated": 0
+   },
+   "cards[].cardMeta.lastFourDigit": {
+    "cells": 16,
+    "null": 0,
+    "populated": 16
+   },
+   "cards[].cardMeta.network": {
+    "cells": 16,
+    "null": 10,
+    "populated": 6
+   },
+   "cards[].cardMeta.productFamily": {
+    "cells": 16,
+    "null": 0,
+    "populated": 16
+   },
+   "rewards.closingPoints": {
+    "cells": 15,
+    "null": 6,
+    "populated": 9
+   },
+   "rewards.openingPoints": {
+    "cells": 15,
+    "null": 6,
+    "populated": 9
+   },
+   "rewards.pointsEarnedThisCycle": {
+    "cells": 15,
+    "null": 1,
+    "populated": 14
+   },
+   "rewards.pointsExpiringNext30Days": {
+    "cells": 15,
+    "null": 7,
+    "populated": 8
+   },
+   "rewards.pointsExpiringNext60Days": {
+    "cells": 15,
+    "null": 7,
+    "populated": 8
+   },
+   "rewards.pointsRedeemedThisCycle": {
+    "cells": 15,
+    "null": 1,
+    "populated": 14
+   },
+   "rewards.programType": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.dueDate": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.issuerName": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.statementDate": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "transactions[].amount": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].currency": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].date": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].description": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].direction": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "cells": 288,
+    "null": 281,
+    "populated": 7
+   },
+   "transactions[].txnType": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   }
+  },
+  "generic": {
+   "cards[].cardMeta.cardDisplayName": {
+    "cells": 16,
+    "null": 0,
+    "populated": 16
+   },
+   "cards[].cardMeta.isPrimaryCard": {
+    "cells": 16,
+    "null": 13,
+    "populated": 3
+   },
+   "cards[].cardMeta.lastFourDigit": {
+    "cells": 16,
+    "null": 0,
+    "populated": 16
+   },
+   "cards[].cardMeta.network": {
+    "cells": 16,
+    "null": 9,
+    "populated": 7
+   },
+   "cards[].cardMeta.productFamily": {
+    "cells": 16,
+    "null": 1,
+    "populated": 15
+   },
+   "rewards.closingPoints": {
+    "cells": 15,
+    "null": 5,
+    "populated": 10
+   },
+   "rewards.openingPoints": {
+    "cells": 15,
+    "null": 6,
+    "populated": 9
+   },
+   "rewards.pointsEarnedThisCycle": {
+    "cells": 15,
+    "null": 1,
+    "populated": 14
+   },
+   "rewards.pointsExpiringNext30Days": {
+    "cells": 15,
+    "null": 7,
+    "populated": 8
+   },
+   "rewards.pointsExpiringNext60Days": {
+    "cells": 15,
+    "null": 7,
+    "populated": 8
+   },
+   "rewards.pointsRedeemedThisCycle": {
+    "cells": 15,
+    "null": 7,
+    "populated": 8
+   },
+   "rewards.programType": {
+    "cells": 15,
+    "null": 1,
+    "populated": 14
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.dueDate": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.issuerName": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.statementDate": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "transactions[].amount": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].currency": {
+    "cells": 288,
+    "null": 34,
+    "populated": 254
+   },
+   "transactions[].date": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].description": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].direction": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "cells": 288,
+    "null": 281,
+    "populated": 7
+   },
+   "transactions[].txnType": {
+    "cells": 288,
+    "null": 41,
+    "populated": 247
+   }
+  },
+  "hdfc": {
+   "cards[].cardMeta.cardDisplayName": {
+    "cells": 16,
+    "null": 0,
+    "populated": 16
+   },
+   "cards[].cardMeta.isPrimaryCard": {
+    "cells": 16,
+    "null": 2,
+    "populated": 14
+   },
+   "cards[].cardMeta.lastFourDigit": {
+    "cells": 16,
+    "null": 0,
+    "populated": 16
+   },
+   "cards[].cardMeta.network": {
+    "cells": 16,
+    "null": 10,
+    "populated": 6
+   },
+   "cards[].cardMeta.productFamily": {
+    "cells": 16,
+    "null": 0,
+    "populated": 16
+   },
+   "rewards.closingPoints": {
+    "cells": 15,
+    "null": 6,
+    "populated": 9
+   },
+   "rewards.openingPoints": {
+    "cells": 15,
+    "null": 6,
+    "populated": 9
+   },
+   "rewards.pointsEarnedThisCycle": {
+    "cells": 15,
+    "null": 2,
+    "populated": 13
+   },
+   "rewards.pointsExpiringNext30Days": {
+    "cells": 15,
+    "null": 7,
+    "populated": 8
+   },
+   "rewards.pointsExpiringNext60Days": {
+    "cells": 15,
+    "null": 7,
+    "populated": 8
+   },
+   "rewards.pointsRedeemedThisCycle": {
+    "cells": 15,
+    "null": 2,
+    "populated": 13
+   },
+   "rewards.programType": {
+    "cells": 15,
+    "null": 1,
+    "populated": 14
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.dueDate": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.issuerName": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.statementDate": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "transactions[].amount": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].currency": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].date": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].description": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].direction": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "cells": 288,
+    "null": 281,
+    "populated": 7
+   },
+   "transactions[].txnType": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   }
+  },
+  "prevrefined": {
+   "cards[].cardMeta.cardDisplayName": {
+    "cells": 16,
+    "null": 0,
+    "populated": 16
+   },
+   "cards[].cardMeta.isPrimaryCard": {
+    "cells": 16,
+    "null": 9,
+    "populated": 7
+   },
+   "cards[].cardMeta.lastFourDigit": {
+    "cells": 16,
+    "null": 0,
+    "populated": 16
+   },
+   "cards[].cardMeta.network": {
+    "cells": 16,
+    "null": 10,
+    "populated": 6
+   },
+   "cards[].cardMeta.productFamily": {
+    "cells": 16,
+    "null": 1,
+    "populated": 15
+   },
+   "rewards.closingPoints": {
+    "cells": 15,
+    "null": 6,
+    "populated": 9
+   },
+   "rewards.openingPoints": {
+    "cells": 15,
+    "null": 6,
+    "populated": 9
+   },
+   "rewards.pointsEarnedThisCycle": {
+    "cells": 15,
+    "null": 3,
+    "populated": 12
+   },
+   "rewards.pointsExpiringNext30Days": {
+    "cells": 15,
+    "null": 7,
+    "populated": 8
+   },
+   "rewards.pointsExpiringNext60Days": {
+    "cells": 15,
+    "null": 7,
+    "populated": 8
+   },
+   "rewards.pointsRedeemedThisCycle": {
+    "cells": 15,
+    "null": 1,
+    "populated": 14
+   },
+   "rewards.programType": {
+    "cells": 15,
+    "null": 1,
+    "populated": 14
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.dueDate": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.issuerName": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "statementMeta.statementDate": {
+    "cells": 15,
+    "null": 0,
+    "populated": 15
+   },
+   "transactions[].amount": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].currency": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].date": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].description": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].direction": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "cells": 288,
+    "null": 280,
+    "populated": 8
+   },
+   "transactions[].txnType": {
+    "cells": 288,
+    "null": 0,
+    "populated": 288
+   }
+  }
+ },
+ "vocab": {
+  "enumrun1": {
+   "direction": {
+    "CREDIT": 40,
+    "DEBIT": 248
+   },
+   "txnType": {
+    "CASHBACK": 24,
+    "EMI": 12,
+    "FEE": 2,
+    "INTEREST": 1,
+    "PAYMENT": 18,
+    "PURCHASE": 42,
+    "TAX": 5,
+    "UPI": 184
+   }
+  },
+  "generic": {
+   "direction": {
+    "CREDIT": 181,
+    "DEBIT": 107
+   },
+   "txnType": {
+    "CASHBACK": 1,
+    "CREDIT CARD PAYMENT": 3,
+    "Credit": 1,
+    "EMI": 7,
+    "EMI Interest": 1,
+    "EMI Principal": 1,
+    "FINANCE CHARGES": 1,
+    "Fee": 1,
+    "GST": 2,
+    "IGST": 1,
+    "None": 41,
+    "PAYMENT": 4,
+    "PURCHASE": 1,
+    "Payment": 1,
+    "Purchase": 1,
+    "UPI": 156,
+    "adjustment": 5,
+    "cashback": 11,
+    "payment": 7,
+    "purchase": 42
+   }
+  },
+  "hdfc": {
+   "direction": {
+    "CREDIT": 40,
+    "DEBIT": 248
+   },
+   "txnType": {
+    "CASHBACK": 23,
+    "EMI": 12,
+    "FEE": 2,
+    "INTEREST": 1,
+    "PAYMENT": 18,
+    "PURCHASE": 42,
+    "REVERSAL": 1,
+    "TAX": 5,
+    "UPI": 184
+   }
+  },
+  "prevrefined": {
+   "direction": {
+    "CREDIT": 39,
+    "DEBIT": 249
+   },
+   "txnType": {
+    "CASHBACK": 24,
+    "EMI": 12,
+    "FEE": 2,
+    "INTEREST": 1,
+    "PAYMENT": 18,
+    "PURCHASE": 42,
+    "TAX": 5,
+    "UPI": 184
+   }
+  }
+ }
+}
