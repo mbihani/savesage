@@ -1,0 +1,115 @@
+{
+  "cards": [
+    {
+      "bigPicture": {
+        "cardAvailableCreditLimit": 155947.23,
+        "cardCreditLimit": 241000
+      },
+      "cardMeta": {
+        "cardDisplayName": "CASHBACK SBI CARD",
+        "isPrimaryCard": true,
+        "lastFourDigit": "XX57",
+        "network": null,
+        "productFamily": "CASHBACK"
+      }
+    }
+  ],
+  "rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": null,
+    "openingPoints": null,
+    "pointsEarnedThisCycle": 453,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": null,
+    "programType": "Cashback"
+  },
+  "statementLevelSummary": {
+    "availableCreditLimit": 155947.23,
+    "totalAmountDue": 45638,
+    "totalCreditLimit": 241000,
+    "totalMinimumAmountDue": 37027
+  },
+  "statementMeta": {
+    "dueDate": "23/06/2026",
+    "issuerName": "SBI Card",
+    "rawStatementId": "A26060303272",
+    "statementDate": "03/06/2026",
+    "statementPeriodEnd": "03/06/2026",
+    "statementPeriodStart": "04/05/2026"
+  },
+  "transactions": [
+    {
+      "amount": 260,
+      "currency": "INR",
+      "date": "03/05/2026",
+      "description": "CARD CASHBACK CREDIT",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "CASHBACK"
+    },
+    {
+      "amount": 42987.65,
+      "currency": "INR",
+      "date": "05/05/2026",
+      "description": "PAYMENT RECEIVED 000BD016125BALAAAJK2ZQ9",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    },
+    {
+      "amount": 1702.29,
+      "currency": "INR",
+      "date": "03/06/2026",
+      "description": "FP EMI 03/06(EXCL TAX 16.29)",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "EMI"
+    },
+    {
+      "amount": 90.5,
+      "currency": "INR",
+      "date": "03/06/2026",
+      "description": "INTEREST ON EMI",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "INTEREST"
+    },
+    {
+      "amount": 34933.57,
+      "currency": "INR",
+      "date": "03/06/2026",
+      "description": "FP EMI 02/03(EXCL TAX 174.45)",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "EMI"
+    },
+    {
+      "amount": 969.14,
+      "currency": "INR",
+      "date": "03/06/2026",
+      "description": "INTEREST ON EMI",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "INTEREST"
+    },
+    {
+      "amount": 190.74,
+      "currency": "INR",
+      "date": "03/06/2026",
+      "description": "IGST DB @ 18.00%",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "TAX"
+    },
+    {
+      "amount": 9071,
+      "currency": "INR",
+      "date": "17/05/2026",
+      "description": "INDIGO AIRLINE GURGAON IN (Pay in EMIs)",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PURCHASE"
+    }
+  ]
+}

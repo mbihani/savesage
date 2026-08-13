@@ -1,0 +1,214 @@
+{
+ "arm": "C",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-13T12:07:50",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 13899,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 15,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "CASHBACK SBI CARD",
+     "isPrimaryCard": null,
+     "lastFourDigit": "XX77",
+     "network": null,
+     "productFamily": "CASHBACK"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 476,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": 782,
+   "programType": "CASHBACK"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 185155.66,
+   "totalAmountDue": 8844,
+   "totalCreditLimit": 194000,
+   "totalMinimumAmountDue": 442
+  },
+  "statementMeta": {
+   "dueDate": "2025-06-21",
+   "issuerName": "SBI Card",
+   "statementDate": "2025-06-01"
+  },
+  "transactions": [
+   {
+    "amount": 782,
+    "currency": "INR",
+    "date": "2025-05-01",
+    "description": "CARD CASHBACK CREDIT",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 20266,
+    "currency": "INR",
+    "date": "2025-05-20",
+    "description": "PAYMENT RECEIVED 000DP015140151308lBJ0Yy",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 255.36,
+    "currency": "INR",
+    "date": "2025-05-07",
+    "description": "RAZ*Hubble Bengaluru KA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1483,
+    "currency": "INR",
+    "date": "2025-05-09",
+    "description": "ZEPTO MUMBAI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 50,
+    "currency": "INR",
+    "date": "2025-05-11",
+    "description": "DISTRICT DINING NEW DELHI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 724.75,
+    "currency": "INR",
+    "date": "2025-05-11",
+    "description": "DISTRICT DINING RZP GURUGRAM IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 220.2,
+    "currency": "INR",
+    "date": "2025-05-12",
+    "description": "RAZ*OLA STORES TECHNOL Bengaluru KA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1081,
+    "currency": "INR",
+    "date": "2025-05-13",
+    "description": "Blinkit BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 674.47,
+    "currency": "INR",
+    "date": "2025-05-19",
+    "description": "RAZ*OLA STORES TECHNOL Bengaluru KA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1378,
+    "currency": "INR",
+    "date": "2025-05-19",
+    "description": "Meesho Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1989,
+    "currency": "INR",
+    "date": "2025-05-19",
+    "description": "AMAZON PAY INDIA PRIVA WWW.AMAZON.IN IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 590,
+    "currency": "INR",
+    "date": "2025-05-20",
+    "description": "FASHNEAR TECHNOLOGIES Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1759.7,
+    "currency": "INR",
+    "date": "2025-05-22",
+    "description": "RAZ*PLANT ORBIT Nainital UT IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 278,
+    "currency": "INR",
+    "date": "2025-05-28",
+    "description": "Meesho Bangalore IN",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": null
+   },
+   {
+    "amount": 301,
+    "currency": "INR",
+    "date": "2025-05-30",
+    "description": "FASHNEAR TECHNOLOGIES Bangalore IN",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": null
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_1511624796_19731f7d1d1e6105_8794369479959175_01062025.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/gemini/GEMINI_GENERIC_PROMPT.txt",
+ "prompt_sha256": "7886583cba60ee6da1b62081994cb839b74d11f5b9220c8537453ef581a7505f",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"CASHBACK SBI CARD\",\"isPrimaryCard\":null,\"lastFourDigit\":\"XX77\",\"network\":null,\"productFamily\":\"CASHBACK\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":476,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":782,\"programType\":\"CASHBACK\"},\"statementLevelSummary\":{\"availableCreditLimit\":185155.66,\"totalAmountDue\":8844,\"totalCreditLimit\":194000,\"totalMinimumAmountDue\":442},\"statementMeta\":{\"dueDate\":\"2025-06-21\",\"issuerName\":\"SBI Card\",\"statementDate\":\"2025-06-01\"},\"transactions\":[{\"amount\":782,\"currency\":\"INR\",\"date\":\"2025-05-01\",\"description\":\"CARD CASHBACK CREDIT\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":20266,\"currency\":\"INR\",\"date\":\"2025-05-20\",\"description\":\"PAYMENT RECEIVED 000DP015140151308lBJ0Yy\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":255.36,\"currency\":\"INR\",\"date\":\"2025-05-07\",\"description\":\"RAZ*Hubble Bengaluru KA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1483,\"currency\":\"INR\",\"date\":\"2025-05-09\",\"description\":\"ZEPTO MUMBAI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":50,\"currency\":\"INR\",\"date\":\"2025-05-11\",\"description\":\"DISTRICT DINING NEW DELHI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":724.75,\"currency\":\"INR\",\"date\":\"2025-05-11\",\"description\":\"DISTRICT DINING RZP GURUGRAM IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":220.2,\"currency\":\"INR\",\"date\":\"2025-05-12\",\"description\":\"RAZ*OLA STORES TECHNOL Bengaluru KA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1081,\"currency\":\"INR\",\"date\":\"2025-05-13\",\"description\":\"Blinkit BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":674.47,\"currency\":\"INR\",\"date\":\"2025-05-19\",\"description\":\"RAZ*OLA STORES TECHNOL Bengaluru KA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1378,\"currency\":\"INR\",\"date\":\"2025-05-19\",\"description\":\"Meesho Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1989,\"currency\":\"INR\",\"date\":\"2025-05-19\",\"description\":\"AMAZON PAY INDIA PRIVA WWW.AMAZON.IN IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":590,\"currency\":\"INR\",\"date\":\"2025-05-20\",\"description\":\"FASHNEAR TECHNOLOGIES Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1759.7,\"currency\":\"INR\",\"date\":\"2025-05-22\",\"description\":\"RAZ*PLANT ORBIT Nainital UT IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":278,\"currency\":\"INR\",\"date\":\"2025-05-28\",\"description\":\"Meesho Bangalore IN\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":null},{\"amount\":301,\"currency\":\"INR\",\"date\":\"2025-05-30\",\"description\":\"FASHNEAR TECHNOLOGIES Bangalore IN\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":null}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "1511624796",
+ "started_at": "2026-08-13T12:07:36",
+ "usage_raw": {
+  "completion_tokens": 1428,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 492,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 16665,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 18093
+ }
+}

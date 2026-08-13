@@ -1,0 +1,106 @@
+{
+  "cards": [
+    {
+      "bigPicture": {
+        "cardAvailableCreditLimit": 36094,
+        "cardCreditLimit": 40000
+      },
+      "cardMeta": {
+        "cardDisplayName": "CASHBACK SBI CARD",
+        "isPrimaryCard": true,
+        "lastFourDigit": "XX57",
+        "network": null,
+        "productFamily": "Cashback"
+      }
+    }
+  ],
+  "rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": null,
+    "openingPoints": null,
+    "pointsEarnedThisCycle": 106,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": null,
+    "programType": "Cashback"
+  },
+  "statementLevelSummary": {
+    "availableCreditLimit": 36094,
+    "totalAmountDue": 3906,
+    "totalCreditLimit": 40000,
+    "totalMinimumAmountDue": 200
+  },
+  "statementMeta": {
+    "dueDate": "23/08/2026",
+    "issuerName": "SBI Card",
+    "rawStatementId": "A26080289956",
+    "statementDate": "03/08/2026",
+    "statementPeriodEnd": "03/08/2026",
+    "statementPeriodStart": "04/07/2026"
+  },
+  "transactions": [
+    {
+      "amount": 390,
+      "currency": "INR",
+      "date": "03/07/2026",
+      "description": "CARD CASHBACK CREDIT",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "CASHBACK"
+    },
+    {
+      "amount": 8076,
+      "currency": "INR",
+      "date": "22/07/2026",
+      "description": "PAYMENT RECEIVED 000KM016203BALAAAAWALM7",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    },
+    {
+      "amount": 477,
+      "currency": "INR",
+      "date": "05/07/2026",
+      "description": "RAZ*Swiggy Bangalore KA IN",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PURCHASE"
+    },
+    {
+      "amount": 181,
+      "currency": "INR",
+      "date": "05/07/2026",
+      "description": "BLINKIT GURGAON IN",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PURCHASE"
+    },
+    {
+      "amount": 1489,
+      "currency": "INR",
+      "date": "05/07/2026",
+      "description": "Myntra Bangalore IN",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PURCHASE"
+    },
+    {
+      "amount": 1800,
+      "currency": "INR",
+      "date": "06/07/2026",
+      "description": "ICAI EXAM NEW DELHI IN",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PURCHASE"
+    },
+    {
+      "amount": 349,
+      "currency": "INR",
+      "date": "07/07/2026",
+      "description": "RELIANCE RETAIL LIMITE NOIDA IN",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PURCHASE"
+    }
+  ]
+}

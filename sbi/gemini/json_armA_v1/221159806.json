@@ -1,0 +1,97 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-13T12:03:19",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 10734,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 2,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "BPCL SBI Card OCTANE",
+     "isPrimaryCard": true,
+     "lastFourDigit": "XX27",
+     "network": null,
+     "productFamily": "BPCL OCTANE"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": 18068,
+   "openingPoints": 18068,
+   "pointsEarnedThisCycle": 0,
+   "pointsExpiringNext30Days": 0,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": 0,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 47231.63,
+   "totalAmountDue": 1768,
+   "totalCreditLimit": 49000,
+   "totalMinimumAmountDue": 1768
+  },
+  "statementMeta": {
+   "dueDate": "23/12/2025",
+   "issuerName": "SBI Card",
+   "statementDate": "03/12/2025"
+  },
+  "transactions": [
+   {
+    "amount": 1499,
+    "currency": "INR",
+    "date": "03/12/2025",
+    "description": "ANNUAL FEE CHARGED (EXCL TAX 269.82)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 269.82,
+    "currency": "INR",
+    "date": "03/12/2025",
+    "description": "IGST DB @ 18.00%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_encrypt_221159806_19aea0a8cd4684c4_8926898415575304_03122025.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/SBI_PROMPT.txt",
+ "prompt_sha256": "d26e649e3f3540da8b31b2216091ee76260862908324b41447261b5c7f3ba7a2",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"BPCL SBI Card OCTANE\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX27\",\"network\":null,\"productFamily\":\"BPCL OCTANE\"}}],\"rewards\":{\"closingPoints\":18068,\"openingPoints\":18068,\"pointsEarnedThisCycle\":0,\"pointsExpiringNext30Days\":0,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":0,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":47231.63,\"totalAmountDue\":1768,\"totalCreditLimit\":49000,\"totalMinimumAmountDue\":1768},\"statementMeta\":{\"dueDate\":\"23/12/2025\",\"issuerName\":\"SBI Card\",\"statementDate\":\"03/12/2025\"},\"transactions\":[{\"amount\":1499,\"currency\":\"INR\",\"date\":\"03/12/2025\",\"description\":\"ANNUAL FEE CHARGED (EXCL TAX 269.82)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"FEE\"},{\"amount\":269.82,\"currency\":\"INR\",\"date\":\"03/12/2025\",\"description\":\"IGST DB @ 18.00%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "221159806",
+ "started_at": "2026-08-13T12:03:08",
+ "usage_raw": {
+  "completion_tokens": 564,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 271,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 20000,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 20564
+ }
+}

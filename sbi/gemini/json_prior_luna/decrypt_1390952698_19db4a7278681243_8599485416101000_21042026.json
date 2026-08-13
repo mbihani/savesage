@@ -1,0 +1,79 @@
+{
+  "cards": [
+    {
+      "bigPicture": {
+        "cardAvailableCreditLimit": 75000,
+        "cardCreditLimit": 75000
+      },
+      "cardMeta": {
+        "cardDisplayName": "Club Vistara SBI Card PRIME",
+        "isPrimaryCard": true,
+        "lastFourDigit": "XX38",
+        "network": null,
+        "productFamily": "Club Vistara"
+      }
+    }
+  ],
+  "rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 53724,
+    "openingPoints": 53724,
+    "pointsEarnedThisCycle": 0,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": null,
+    "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+    "availableCreditLimit": 75000,
+    "totalAmountDue": 0,
+    "totalCreditLimit": 75000,
+    "totalMinimumAmountDue": 0
+  },
+  "statementMeta": {
+    "dueDate": "NO PAYMENT REQUIRED",
+    "issuerName": "SBI Card",
+    "rawStatementId": "I26042541090",
+    "statementDate": "21/04/2026",
+    "statementPeriodEnd": "21/04/2026",
+    "statementPeriodStart": "22/03/2026"
+  },
+  "transactions": [
+    {
+      "amount": 2572,
+      "currency": "INR",
+      "date": "30/03/2026",
+      "description": "PAYMENT RECEIVED 000DP016089234128nnr7Cq",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    },
+    {
+      "amount": 26007,
+      "currency": "INR",
+      "date": "05/04/2026",
+      "description": "PAYMENT RECEIVED 000AS016095130906iNxzwQ",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    },
+    {
+      "amount": 50000.04,
+      "currency": "INR",
+      "date": "06/04/2026",
+      "description": "PAYMENT RECEIVED 000BD016096BAKAAAIHL7CJ",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    },
+    {
+      "amount": 49999,
+      "currency": "INR",
+      "date": "07/04/2026",
+      "description": "PAYMENT RECEIVED 000BD016097BAKAAAIJ2812",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    }
+  ]
+}

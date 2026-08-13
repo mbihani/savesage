@@ -1,0 +1,23 @@
+12:05:17 START arm=B prompt=SBI_PROMPT_PREV.txt n=12 conc=2 prompt_sha=21d7c16174ba schema=GEMINI_SCHEMA(26 leaves)
+12:05:28 OK                     1120623464   txn=1 fr=stop pt=18958 ct=524 tt=19482 rl=0 ms=11109
+12:05:32 OK                     1036185244   txn=7 fr=stop pt=19234 ct=1183 tt=20417 rl=0 ms=14826
+12:05:40 OK                     1152718739   txn=4 fr=stop pt=14795 ct=639 tt=15434 rl=0 ms=8843
+12:05:51 OK                     1390952698   txn=4 fr=stop pt=19180 ct=1538 tt=20718 rl=0 ms=16666
+12:05:56 OK                     1511624796   txn=15 fr=stop pt=19136 ct=1340 tt=20476 rl=0 ms=12759
+12:06:14 OK                     369606524    txn=16 fr=stop pt=19471 ct=1758 tt=21229 rl=0 ms=15794
+12:06:23 OK                     1707857175   txn=70 fr=stop pt=21328 ct=4373 tt=25701 rl=0 ms=29974
+12:06:38 OK                     1118980175   txn=7 fr=stop pt=19179 ct=910 tt=20089 rl=0 ms=12554
+12:06:42 OK                     515948911    txn=56 fr=stop pt=20946 ct=3952 tt=24898 rl=0 ms=25500
+12:06:51 OK                     221159806    txn=2 fr=stop pt=19167 ct=503 tt=19670 rl=0 ms=9571
+12:06:56 OK                     393366914    txn=2 fr=stop pt=19137 ct=668 tt=19805 rl=0 ms=11361
+12:07:07 OK                     905768587    txn=8 fr=stop pt=19395 ct=1110 tt=20505 rl=0 ms=13964
+12:07:10 DONE arm=B ok=12/12 calls_that_saw_429=0
+12:17:56 START arm=B prompt=SBI_PROMPT_PREV.txt n=1 conc=1 prompt_sha=21d7c16174ba schema=GEMINI_SCHEMA(26 leaves)
+12:18:13 OK                     369606524    txn=16 fr=stop pt=19471 ct=1508 tt=20979 rl=0 ms=16607
+12:18:14 DONE arm=B ok=1/1 calls_that_saw_429=0
+12:18:14 START arm=B prompt=SBI_PROMPT_PREV.txt n=1 conc=1 prompt_sha=21d7c16174ba schema=GEMINI_SCHEMA(26 leaves)
+12:18:31 OK                     369606524    txn=16 fr=stop pt=19471 ct=1705 tt=21176 rl=0 ms=16843
+12:18:33 DONE arm=B ok=1/1 calls_that_saw_429=0
+12:18:33 START arm=B prompt=SBI_PROMPT_PREV.txt n=1 conc=1 prompt_sha=21d7c16174ba schema=GEMINI_SCHEMA(26 leaves)
+12:18:49 OK                     369606524    txn=16 fr=stop pt=19471 ct=1485 tt=20956 rl=0 ms=15674
+12:18:51 DONE arm=B ok=1/1 calls_that_saw_429=0

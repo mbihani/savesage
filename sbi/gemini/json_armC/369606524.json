@@ -1,0 +1,223 @@
+{
+ "arm": "C",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-13T12:08:11",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 18721,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 16,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "Flipkart SBI Credit Card",
+     "isPrimaryCard": null,
+     "lastFourDigit": "XX67",
+     "network": null,
+     "productFamily": "Flipkart"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 375.25,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": 424,
+   "programType": "CASHBACK"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 165566.94,
+   "totalAmountDue": 6433,
+   "totalCreditLimit": 172000,
+   "totalMinimumAmountDue": 200
+  },
+  "statementMeta": {
+   "dueDate": "13 Jul 2026",
+   "issuerName": "SBI Card",
+   "statementDate": "23 Jun 2026"
+  },
+  "transactions": [
+   {
+    "amount": 424,
+    "currency": "INR",
+    "date": "23 May 26",
+    "description": "CARD CASHBACK CREDIT",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 5564,
+    "currency": "INR",
+    "date": "02 Jun 26",
+    "description": "PAYMENT RECEIVED 000DP016153124806obOfja",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 1714.27,
+    "currency": "INR",
+    "date": "25 May 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 9521,
+    "currency": "INR",
+    "date": "27 May 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND (Pay in EMIs)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 1336,
+    "currency": "INR",
+    "date": "28 May 26",
+    "description": "Cashfree*FLIPKART IN Bengaluru IND",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 368.56,
+    "currency": "INR",
+    "date": "02 Jun 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 424.14,
+    "currency": "INR",
+    "date": "02 Jun 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 4252,
+    "currency": "INR",
+    "date": "03 Jun 26",
+    "description": "FLIPKART BENGALURU KAR IND (Pay in EMIs)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 196.96,
+    "currency": "INR",
+    "date": "03 Jun 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 2340.04,
+    "currency": "INR",
+    "date": "03 Jun 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 716.64,
+    "currency": "INR",
+    "date": "03 Jun 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 311.02,
+    "currency": "INR",
+    "date": "03 Jun 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 868.74,
+    "currency": "INR",
+    "date": "05 Jun 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 174.52,
+    "currency": "INR",
+    "date": "05 Jun 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 591.83,
+    "currency": "INR",
+    "date": "06 Jun 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 545.03,
+    "currency": "INR",
+    "date": "16 Jun 26",
+    "description": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_369606524_19efa7d79d05f33f_3459817525504000_23062026.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/gemini/GEMINI_GENERIC_PROMPT.txt",
+ "prompt_sha256": "7886583cba60ee6da1b62081994cb839b74d11f5b9220c8537453ef581a7505f",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Flipkart SBI Credit Card\",\"isPrimaryCard\":null,\"lastFourDigit\":\"XX67\",\"network\":null,\"productFamily\":\"Flipkart\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":375.25,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":424,\"programType\":\"CASHBACK\"},\"statementLevelSummary\":{\"availableCreditLimit\":165566.94,\"totalAmountDue\":6433,\"totalCreditLimit\":172000,\"totalMinimumAmountDue\":200},\"statementMeta\":{\"dueDate\":\"13 Jul 2026\",\"issuerName\":\"SBI Card\",\"statementDate\":\"23 Jun 2026\"},\"transactions\":[{\"amount\":424,\"currency\":\"INR\",\"date\":\"23 May 26\",\"description\":\"CARD CASHBACK CREDIT\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":5564,\"currency\":\"INR\",\"date\":\"02 Jun 26\",\"description\":\"PAYMENT RECEIVED 000DP016153124806obOfja\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":1714.27,\"currency\":\"INR\",\"date\":\"25 May 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":9521,\"currency\":\"INR\",\"date\":\"27 May 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND (Pay in EMIs)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":1336,\"currency\":\"INR\",\"date\":\"28 May 26\",\"description\":\"Cashfree*FLIPKART IN Bengaluru IND\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":368.56,\"currency\":\"INR\",\"date\":\"02 Jun 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":424.14,\"currency\":\"INR\",\"date\":\"02 Jun 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":4252,\"currency\":\"INR\",\"date\":\"03 Jun 26\",\"description\":\"FLIPKART BENGALURU KAR IND (Pay in EMIs)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":196.96,\"currency\":\"INR\",\"date\":\"03 Jun 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":2340.04,\"currency\":\"INR\",\"date\":\"03 Jun 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":716.64,\"currency\":\"INR\",\"date\":\"03 Jun 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":311.02,\"currency\":\"INR\",\"date\":\"03 Jun 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":868.74,\"currency\":\"INR\",\"date\":\"05 Jun 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":174.52,\"currency\":\"INR\",\"date\":\"05 Jun 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":591.83,\"currency\":\"INR\",\"date\":\"06 Jun 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":545.03,\"currency\":\"INR\",\"date\":\"16 Jun 26\",\"description\":\"MYNTRA DESIGNS PRIVATE Bangalore IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "369606524",
+ "started_at": "2026-08-13T12:07:52",
+ "usage_raw": {
+  "completion_tokens": 1531,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 551,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 17000,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 18531
+ }
+}

@@ -1,0 +1,467 @@
+{
+ "rows": [
+  {
+   "leaf": "statementMeta.issuerName",
+   "ours": 2,
+   "client_body": 0,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    223,
+    224
+   ],
+   "client_lines": []
+  },
+  {
+   "leaf": "statementMeta.statementDate",
+   "ours": 4,
+   "client_body": 2,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    196,
+    268,
+    269,
+    275
+   ],
+   "client_lines": [
+    32,
+    61
+   ]
+  },
+  {
+   "leaf": "statementMeta.dueDate",
+   "ours": 6,
+   "client_body": 2,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    266,
+    267,
+    269,
+    270,
+    275,
+    279
+   ],
+   "client_lines": [
+    30,
+    31
+   ]
+  },
+  {
+   "leaf": "statementLevelSummary.totalAmountDue",
+   "ours": 2,
+   "client_body": 1,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    113,
+    259
+   ],
+   "client_lines": [
+    39
+   ]
+  },
+  {
+   "leaf": "statementLevelSummary.totalMinimumAmountDue",
+   "ours": 1,
+   "client_body": 0,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    115
+   ],
+   "client_lines": []
+  },
+  {
+   "leaf": "statementLevelSummary.totalCreditLimit",
+   "ours": 6,
+   "client_body": 2,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    116,
+    117,
+    118,
+    119,
+    257,
+    259
+   ],
+   "client_lines": [
+    37,
+    40
+   ]
+  },
+  {
+   "leaf": "statementLevelSummary.availableCreditLimit",
+   "ours": 3,
+   "client_body": 1,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    117,
+    119,
+    257
+   ],
+   "client_lines": [
+    37
+   ]
+  },
+  {
+   "leaf": "cards[].cardMeta.cardDisplayName",
+   "ours": 1,
+   "client_body": 0,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    228
+   ],
+   "client_lines": []
+  },
+  {
+   "leaf": "cards[].cardMeta.productFamily",
+   "ours": 0,
+   "client_body": 0,
+   "client_schema_line64_only": 1,
+   "ours_lines": [],
+   "client_lines": []
+  },
+  {
+   "leaf": "cards[].cardMeta.lastFourDigit",
+   "ours": 2,
+   "client_body": 3,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    203,
+    248
+   ],
+   "client_lines": [
+    33,
+    50,
+    51
+   ]
+  },
+  {
+   "leaf": "cards[].cardMeta.network",
+   "ours": 11,
+   "client_body": 0,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    231,
+    233,
+    234,
+    235,
+    237,
+    238,
+    239,
+    240,
+    241,
+    245,
+    246
+   ],
+   "client_lines": []
+  },
+  {
+   "leaf": "cards[].cardMeta.isPrimaryCard",
+   "ours": 2,
+   "client_body": 1,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    260,
+    261
+   ],
+   "client_lines": [
+    56
+   ]
+  },
+  {
+   "leaf": "transactions[].date",
+   "ours": 3,
+   "client_body": 1,
+   "client_schema_line64_only": 0,
+   "ours_lines": [
+    38,
+    275,
+    281
+   ],
+   "client_lines": [
+    60
+   ]
+  },
+  {
+   "leaf": "transactions[].description",
+   "ours": 12,
+   "client_body": 1,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    21,
+    25,
+    38,
+    39,
+    42,
+    45,
+    68,
+    81,
+    89,
+    97,
+    215,
+    217
+   ],
+   "client_lines": [
+    21
+   ]
+  },
+  {
+   "leaf": "transactions[].amount",
+   "ours": 14,
+   "client_body": 4,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    25,
+    30,
+    31,
+    32,
+    34,
+    102,
+    105,
+    106,
+    108,
+    113,
+    115,
+    158,
+    205,
+    216
+   ],
+   "client_lines": [
+    9,
+    21,
+    25,
+    39
+   ]
+  },
+  {
+   "leaf": "transactions[].direction",
+   "ours": 32,
+   "client_body": 10,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    1,
+    22,
+    23,
+    30,
+    33,
+    65,
+    66,
+    68,
+    70,
+    71,
+    72,
+    73,
+    74,
+    76,
+    77,
+    79,
+    80,
+    82,
+    84,
+    95,
+    116,
+    117,
+    118,
+    119,
+    123,
+    136,
+    209,
+    215,
+    228,
+    240,
+    257,
+    274
+   ],
+   "client_lines": [
+    1,
+    8,
+    9,
+    21,
+    37,
+    40,
+    45,
+    46,
+    49,
+    50
+   ]
+  },
+  {
+   "leaf": "transactions[].txnType",
+   "ours": 1,
+   "client_body": 0,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    86
+   ],
+   "client_lines": []
+  },
+  {
+   "leaf": "transactions[].rewardPointsOnThisTransaction",
+   "ours": 4,
+   "client_body": 3,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    57,
+    63,
+    130,
+    216
+   ],
+   "client_lines": [
+    12,
+    17,
+    21
+   ]
+  },
+  {
+   "leaf": "transactions[].currency",
+   "ours": 7,
+   "client_body": 0,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    100,
+    101,
+    102,
+    103,
+    104,
+    109,
+    110
+   ],
+   "client_lines": []
+  },
+  {
+   "leaf": "rewards.programType",
+   "ours": 4,
+   "client_body": 1,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    132,
+    133,
+    134,
+    137
+   ],
+   "client_lines": [
+    18
+   ]
+  },
+  {
+   "leaf": "rewards.openingPoints",
+   "ours": 7,
+   "client_body": 0,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    55,
+    114,
+    147,
+    150,
+    163,
+    171,
+    179
+   ],
+   "client_lines": []
+  },
+  {
+   "leaf": "rewards.pointsEarnedThisCycle",
+   "ours": 10,
+   "client_body": 8,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    62,
+    128,
+    151,
+    158,
+    161,
+    169,
+    179,
+    198,
+    205,
+    213
+   ],
+   "client_lines": [
+    16,
+    19,
+    21,
+    28,
+    41,
+    44,
+    58,
+    59
+   ]
+  },
+  {
+   "leaf": "rewards.pointsRedeemedThisCycle",
+   "ours": 8,
+   "client_body": 4,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    147,
+    152,
+    163,
+    164,
+    207,
+    208,
+    210,
+    211
+   ],
+   "client_lines": [
+    21,
+    28,
+    42,
+    44
+   ]
+  },
+  {
+   "leaf": "rewards.closingPoints",
+   "ours": 10,
+   "client_body": 7,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    147,
+    149,
+    153,
+    162,
+    170,
+    179,
+    181,
+    182,
+    183,
+    208
+   ],
+   "client_lines": [
+    19,
+    20,
+    21,
+    41,
+    46,
+    47,
+    57
+   ]
+  },
+  {
+   "leaf": "rewards.pointsExpiringNext30Days",
+   "ours": 3,
+   "client_body": 0,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    188,
+    189,
+    192
+   ],
+   "client_lines": []
+  },
+  {
+   "leaf": "rewards.pointsExpiringNext60Days",
+   "ours": 1,
+   "client_body": 0,
+   "client_schema_line64_only": 1,
+   "ours_lines": [
+    191
+   ],
+   "client_lines": []
+  }
+ ],
+ "port_in": [],
+ "orphans": [],
+ "client_body_line_range": [
+  1,
+  61
+ ],
+ "client_schema_line_excluded": 64
+}

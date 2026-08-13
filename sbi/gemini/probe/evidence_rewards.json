@@ -1,0 +1,6165 @@
+{
+ "1036185244": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+      "x0": 101.3,
+      "x1": 335.0,
+      "y": 363.7
+     },
+     {
+      "t": "CASHBACK",
+      "x0": 23.1,
+      "x1": 70.2,
+      "y": 380.5
+     },
+     {
+      "t": "Card Cashback will be posted to your SBI Card Account within two working days after",
+      "x0": 84.0,
+      "x1": 417.9,
+      "y": 389.1
+     },
+     {
+      "t": "Amount",
+      "x0": 31.4,
+      "x1": 61.9,
+      "y": 390.7
+     },
+     {
+      "t": "statement Date. T&C Apply",
+      "x0": 84.0,
+      "x1": 189.9,
+      "y": 399.3
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 178.4,
+      "x1": 247.6,
+      "y": 431.1
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 416.0,
+      "y": 432.0
+     },
+     {
+      "t": "Date",
+      "x0": 35.2,
+      "x1": 51.9,
+      "y": 432.7
+     },
+     {
+      "t": "Amount",
+      "x0": 371.0,
+      "x1": 399.5,
+      "y": 432.7
+     },
+     {
+      "t": "for Statement Period: 04 Jul 26 to 03 Aug 26",
+      "x0": 157.0,
+      "x1": 291.5,
+      "y": 440.8
+     },
+     {
+      "t": "03 Jul 26",
+      "x0": 28.2,
+      "x1": 58.9,
+      "y": 459.4
+     },
+     {
+      "t": "CARD CASHBACK CREDIT",
+      "x0": 70.7,
+      "x1": 160.6,
+      "y": 459.4
+     },
+     {
+      "t": "22 Jul 26",
+      "x0": 28.2,
+      "x1": 58.9,
+      "y": 471.2
+     },
+     {
+      "t": "PAYMENT RECEIVED 000KM016203BALAAAAWALM7",
+      "x0": 70.7,
+      "x1": 258.9,
+      "y": 471.2
+     },
+     {
+      "t": "TRANSACTIONS FOR CHINMAYANAND WAGH",
+      "x0": 70.7,
+      "x1": 237.8,
+      "y": 483.0
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "106",
+      "value": 106.0,
+      "x": 42.2,
+      "y": 405.1,
+      "bound_label": "CASHBACK",
+      "label_y": 380.5,
+      "overlap_score": 13.6
+     },
+     {
+      "value_text": "390.00",
+      "value": 390.0,
+      "x": 380.1,
+      "y": 459.4,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 19.4
+     },
+     {
+      "value_text": "8,076.00",
+      "value": 8076.0,
+      "x": 373.3,
+      "y": 471.2,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 26.2
+     }
+    ],
+    "header": "CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+    "header_key": "CARD CASHBACK SUMMARY",
+    "page": 0,
+    "y": 363.7,
+    "raw_lines": [
+     "y=364 x=101 CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+     "y=380 x=23 CASHBACK",
+     "y=389 x=84 Card Cashback will be posted to your SBI Card Account within two working days af",
+     "y=391 x=31 Amount",
+     "y=399 x=84 statement Date. T&C Apply",
+     "y=405 x=42 106",
+     "y=431 x=178 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 04 Jul 26 to 03 Aug 26",
+     "y=459 x=28 03 Jul 26",
+     "y=459 x=71 CARD CASHBACK CREDIT",
+     "y=459 x=380 390.00",
+     "y=459 x=415 C",
+     "y=471 x=28 22 Jul 26",
+     "y=471 x=71 PAYMENT RECEIVED 000KM016203BALAAAAWALM7",
+     "y=471 x=373 8,076.00",
+     "y=471 x=415 C",
+     "y=483 x=71 TRANSACTIONS FOR CHINMAYANAND WAGH"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 213.1,
+      "x1": 403.8,
+      "y": 60.1
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.1,
+      "x1": 294.2,
+      "y": 83.4
+     },
+     {
+      "t": "For this year",
+      "x0": 354.4,
+      "x1": 408.0,
+      "y": 83.4
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 455.6,
+      "x1": 556.2,
+      "y": 83.4
+     },
+     {
+      "t": "( ` )#",
+      "x0": 97.3,
+      "x1": 116.3,
+      "y": 97.2
+     },
+     {
+      "t": "Offer Cashback",
+      "x0": 36.5,
+      "x1": 92.2,
+      "y": 97.8
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 37.4,
+      "x1": 125.8,
+      "y": 108.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 125.6,
+      "x1": 144.6,
+      "y": 109.0
+     },
+     {
+      "t": "Card Cashback",
+      "x0": 36.5,
+      "x1": 90.6,
+      "y": 120.6
+     },
+     {
+      "t": "( ` )#",
+      "x0": 94.2,
+      "x1": 113.2,
+      "y": 120.8
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 199.6,
+      "y": 134.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 97.8,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 109.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 109.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 109.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "106",
+      "value": 106.0,
+      "x": 251.2,
+      "y": 120.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 13.6
+     },
+     {
+      "value_text": "1247",
+      "value": 1247.0,
+      "x": 368.1,
+      "y": 120.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 18.2
+     },
+     {
+      "value_text": "4499",
+      "value": 4499.0,
+      "x": 497.6,
+      "y": 120.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 18.1
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 1,
+    "y": 60.1,
+    "raw_lines": [
+     "y=60 x=213 SAVINGS AND BENEFITS SECTION",
+     "y=83 x=220 For this statement",
+     "y=83 x=354 For this year",
+     "y=83 x=456 From the card issue date",
+     "y=97 x=97 ( ` )#",
+     "y=98 x=36 Offer Cashback",
+     "y=98 x=250 0.00",
+     "y=98 x=369 0.00",
+     "y=98 x=499 0.00",
+     "y=109 x=37 Petrol Surcharge Waiver",
+     "y=109 x=126 ( ` )#",
+     "y=110 x=250 0.00",
+     "y=110 x=369 0.00",
+     "y=110 x=499 0.00",
+     "y=121 x=36 Card Cashback",
+     "y=121 x=251 106",
+     "y=121 x=368 1247",
+     "y=121 x=498 4499",
+     "y=121 x=94 ( ` )#",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 456.0,
+      "y": 488.9
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 478.5,
+      "x1": 568.5,
+      "y": 488.9
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 274.9,
+      "y": 496.1
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 444.7,
+      "y": 500.7
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 540.0,
+      "y": 500.7
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 297.2,
+      "y": 506.3
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 438.3,
+      "x1": 513.9,
+      "y": 511.7
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 304.2,
+      "y": 516.5
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 542.7,
+      "y": 523.5
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 285.8,
+      "y": 526.7
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 424.9,
+      "x1": 574.6,
+      "y": 535.4
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 74.2,
+      "y": 536.9
+     },
+     {
+      "t": "W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+      "x0": 51.0,
+      "x1": 290.1,
+      "y": 547.0
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 333.7,
+      "x1": 562.0,
+      "y": 553.8
+     },
+     {
+      "t": "200 will be applicable on outstanding payments made via",
+      "x0": 51.0,
+      "x1": 274.4,
+      "y": 557.2
+     },
+     {
+      "t": "Cheque. This revision is reflective of the increased operational",
+      "x0": 51.0,
+      "x1": 293.8,
+      "y": 567.4
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 566.4,
+      "y": 569.7
+     },
+     {
+      "t": "cost associated with offline payment modes. Payments made",
+      "x0": 51.0,
+      "x1": 288.3,
+      "y": 577.6
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 557.3,
+      "y": 579.9
+     },
+     {
+      "t": "through digital channels such as UPI, BBPS, NEFT, etc will",
+      "x0": 51.0,
+      "x1": 275.2,
+      "y": 587.8
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 561.1,
+      "y": 590.1
+     },
+     {
+      "t": "continue to be free of any additional charges. We encourage our",
+      "x0": 51.0,
+      "x1": 302.3,
+      "y": 597.9
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 492.2,
+      "y": 600.3
+     },
+     {
+      "t": "cardholders to explore digital modes for hassle-free payments &",
+      "x0": 51.0,
+      "x1": 301.4,
+      "y": 608.1
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 568.9,
+      "y": 610.5
+     },
+     {
+      "t": "faster credits.",
+      "x0": 51.0,
+      "x1": 103.8,
+      "y": 618.3
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 1,
+    "y": 488.9,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=478 Subscribe to Estatement:",
+     "y=496 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=506 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=438 Duplicate Statement:",
+     "y=516 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=527 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=535 x=425 XXXX = Last 4 Digits of the Card No.",
+     "y=537 x=51 MITC.",
+     "y=547 x=51 W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+     "y=554 x=334 Important Information on Disputed Transaction(s):",
+     "y=557 x=51 200 will be applicable on outstanding payments made via",
+     "y=567 x=51 Cheque. This revision is reflective of the increased operational",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=578 x=51 cost associated with offline payment modes. Payments made",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=588 x=51 through digital channels such as UPI, BBPS, NEFT, etc will",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=598 x=51 continue to be free of any additional charges. We encourage our",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=608 x=51 cardholders to explore digital modes for hassle-free payments &",
+     "y=610 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=618 x=51 faster credits."
+    ]
+   }
+  ]
+ },
+ "1120623464": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary",
+      "x0": 180.0,
+      "x1": 285.9,
+      "y": 364.5
+     },
+     {
+      "t": "Please note:",
+      "x0": 119.3,
+      "x1": 155.7,
+      "y": 386.5
+     },
+     {
+      "t": "Points Earned",
+      "x0": 34.8,
+      "x1": 84.3,
+      "y": 387.0
+     },
+     {
+      "t": "> All your SBI Card Reward Points will be transferred to IRCTC at the end of every month",
+      "x0": 119.3,
+      "x1": 388.1,
+      "y": 394.6
+     },
+     {
+      "t": "> These Reward Points can be redeemed at www.irctc.co.in for free railway tickets",
+      "x0": 119.3,
+      "x1": 368.9,
+      "y": 402.7
+     },
+     {
+      "t": "> The redemption of Reward Points will be governed by the Terms & Conditions of SBICPSL & IRCTC",
+      "x0": 119.3,
+      "x1": 424.4,
+      "y": 410.9
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 178.4,
+      "x1": 247.6,
+      "y": 431.1
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 416.0,
+      "y": 432.0
+     },
+     {
+      "t": "Date",
+      "x0": 35.2,
+      "x1": 51.9,
+      "y": 432.7
+     },
+     {
+      "t": "Amount",
+      "x0": 371.0,
+      "x1": 399.5,
+      "y": 432.7
+     },
+     {
+      "t": "for Statement Period: 26 Feb 26 to 25 Mar 26",
+      "x0": 157.0,
+      "x1": 295.4,
+      "y": 440.8
+     },
+     {
+      "t": "04 Mar 26",
+      "x0": 25.4,
+      "x1": 61.7,
+      "y": 459.4
+     },
+     {
+      "t": "PAYMENT RECEIVED 000DP016063184952z1QEsy",
+      "x0": 70.7,
+      "x1": 247.2,
+      "y": 459.4
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0",
+      "value": 0.0,
+      "x": 55.5,
+      "y": 402.8,
+      "bound_label": "Points Earned",
+      "label_y": 387.0,
+      "overlap_score": 4.6
+     },
+     {
+      "value_text": "34.00",
+      "value": 34.0,
+      "x": 384.6,
+      "y": 459.4,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 14.9
+     }
+    ],
+    "header": "Reward Point Summary",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 0,
+    "y": 364.5,
+    "raw_lines": [
+     "y=364 x=180 Reward Point Summary",
+     "y=386 x=119 Please note:",
+     "y=387 x=35 Points Earned",
+     "y=395 x=119 > All your SBI Card Reward Points will be transferred to IRCTC at the end of eve",
+     "y=403 x=119 > These Reward Points can be redeemed at www.irctc.co.in for free railway ticket",
+     "y=403 x=56 0",
+     "y=411 x=119 > The redemption of Reward Points will be governed by the Terms & Conditions of ",
+     "y=431 x=178 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 26 Feb 26 to 25 Mar 26",
+     "y=459 x=25 04 Mar 26",
+     "y=459 x=71 PAYMENT RECEIVED 000DP016063184952z1QEsy",
+     "y=459 x=385 34.00",
+     "y=459 x=415 C"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 213.1,
+      "x1": 403.8,
+      "y": 60.1
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.1,
+      "x1": 294.2,
+      "y": 83.4
+     },
+     {
+      "t": "For this year",
+      "x0": 354.4,
+      "x1": 408.0,
+      "y": 83.4
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 455.6,
+      "x1": 556.2,
+      "y": 83.4
+     },
+     {
+      "t": "Cash Back",
+      "x0": 37.2,
+      "x1": 74.5,
+      "y": 97.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 75.4,
+      "x1": 94.3,
+      "y": 97.9
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 38.2,
+      "x1": 126.6,
+      "y": 108.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 128.0,
+      "x1": 146.9,
+      "y": 109.0
+     },
+     {
+      "t": "Reward Points",
+      "x0": 37.5,
+      "x1": 89.6,
+      "y": 120.6
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 199.6,
+      "y": 134.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 97.8,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 109.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 109.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "27.80",
+      "value": 27.8,
+      "x": 496.5,
+      "y": 109.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 20.4
+     },
+     {
+      "value_text": "0",
+      "value": 0.0,
+      "x": 255.8,
+      "y": 120.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 4.5
+     },
+     {
+      "value_text": "0",
+      "value": 0.0,
+      "x": 375.0,
+      "y": 120.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 4.5
+     },
+     {
+      "value_text": "4791",
+      "value": 4791.0,
+      "x": 497.6,
+      "y": 120.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 18.1
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 1,
+    "y": 60.1,
+    "raw_lines": [
+     "y=60 x=213 SAVINGS AND BENEFITS SECTION",
+     "y=83 x=220 For this statement",
+     "y=83 x=354 For this year",
+     "y=83 x=456 From the card issue date",
+     "y=98 x=37 Cash Back",
+     "y=98 x=250 0.00",
+     "y=98 x=369 0.00",
+     "y=98 x=499 0.00",
+     "y=98 x=75 ( ` )#",
+     "y=109 x=38 Petrol Surcharge Waiver",
+     "y=109 x=128 ( ` )#",
+     "y=110 x=250 0.00",
+     "y=110 x=369 0.00",
+     "y=110 x=496 27.80",
+     "y=121 x=38 Reward Points",
+     "y=121 x=256 0",
+     "y=121 x=375 0",
+     "y=121 x=498 4791",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 456.0,
+      "y": 488.9
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 478.5,
+      "x1": 568.5,
+      "y": 488.9
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 274.9,
+      "y": 496.1
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 444.7,
+      "y": 500.7
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 540.0,
+      "y": 500.7
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 297.2,
+      "y": 506.3
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 438.3,
+      "x1": 513.9,
+      "y": 511.7
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 304.2,
+      "y": 516.5
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 542.7,
+      "y": 523.5
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 285.8,
+      "y": 526.7
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 424.9,
+      "x1": 574.6,
+      "y": 535.4
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 74.2,
+      "y": 536.9
+     },
+     {
+      "t": "W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+      "x0": 51.0,
+      "x1": 290.1,
+      "y": 547.0
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 333.7,
+      "x1": 562.0,
+      "y": 553.8
+     },
+     {
+      "t": "200 will be applicable on outstanding payments made via",
+      "x0": 51.0,
+      "x1": 274.4,
+      "y": 557.2
+     },
+     {
+      "t": "Cheque. This revision is reflective of the increased operational",
+      "x0": 51.0,
+      "x1": 293.8,
+      "y": 567.4
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 566.4,
+      "y": 569.7
+     },
+     {
+      "t": "cost associated with offline payment modes. Payments made",
+      "x0": 51.0,
+      "x1": 288.3,
+      "y": 577.6
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 557.3,
+      "y": 579.9
+     },
+     {
+      "t": "through digital channels such as UPI, BBPS, NEFT, etc will",
+      "x0": 51.0,
+      "x1": 275.2,
+      "y": 587.8
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 561.1,
+      "y": 590.1
+     },
+     {
+      "t": "continue to be free of any additional charges. We encourage our",
+      "x0": 51.0,
+      "x1": 302.3,
+      "y": 597.9
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 492.2,
+      "y": 600.3
+     },
+     {
+      "t": "cardholders to explore digital modes for hassle-free payments &",
+      "x0": 51.0,
+      "x1": 301.4,
+      "y": 608.1
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 568.9,
+      "y": 610.5
+     },
+     {
+      "t": "faster credits.",
+      "x0": 51.0,
+      "x1": 103.8,
+      "y": 618.3
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 1,
+    "y": 488.9,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=478 Subscribe to Estatement:",
+     "y=496 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=506 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=438 Duplicate Statement:",
+     "y=516 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=527 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=535 x=425 XXXX = Last 4 Digits of the Card No.",
+     "y=537 x=51 MITC.",
+     "y=547 x=51 W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+     "y=554 x=334 Important Information on Disputed Transaction(s):",
+     "y=557 x=51 200 will be applicable on outstanding payments made via",
+     "y=567 x=51 Cheque. This revision is reflective of the increased operational",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=578 x=51 cost associated with offline payment modes. Payments made",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=588 x=51 through digital channels such as UPI, BBPS, NEFT, etc will",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=598 x=51 continue to be free of any additional charges. We encourage our",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=608 x=51 cardholders to explore digital modes for hassle-free payments &",
+     "y=610 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=618 x=51 faster credits."
+    ]
+   }
+  ]
+ },
+ "1152718739": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary",
+      "x0": 180.0,
+      "x1": 285.9,
+      "y": 364.5
+     },
+     {
+      "t": "Please note:",
+      "x0": 119.3,
+      "x1": 155.7,
+      "y": 386.5
+     },
+     {
+      "t": "Points Earned",
+      "x0": 34.8,
+      "x1": 84.3,
+      "y": 387.0
+     },
+     {
+      "t": "> All your SBI Card Reward Points will be transferred to IRCTC at the end of every month",
+      "x0": 119.3,
+      "x1": 388.1,
+      "y": 394.6
+     },
+     {
+      "t": "> These Reward Points can be redeemed at www.irctc.co.in for free railway tickets",
+      "x0": 119.3,
+      "x1": 368.9,
+      "y": 402.7
+     },
+     {
+      "t": "> The redemption of Reward Points will be governed by the Terms & Conditions of SBICPSL & IRCTC",
+      "x0": 119.3,
+      "x1": 424.4,
+      "y": 410.9
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 178.4,
+      "x1": 247.6,
+      "y": 431.1
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 416.0,
+      "y": 432.0
+     },
+     {
+      "t": "Date",
+      "x0": 35.2,
+      "x1": 51.9,
+      "y": 432.7
+     },
+     {
+      "t": "Amount",
+      "x0": 371.0,
+      "x1": 399.5,
+      "y": 432.7
+     },
+     {
+      "t": "for Statement dated 13 Oct 2022",
+      "x0": 157.0,
+      "x1": 257.2,
+      "y": 440.8
+     },
+     {
+      "t": "03 Oct 22",
+      "x0": 26.0,
+      "x1": 61.1,
+      "y": 459.4
+     },
+     {
+      "t": "PAYMENT RECEIVED 000HGA6P0BF710055168417",
+      "x0": 70.7,
+      "x1": 250.5,
+      "y": 459.4
+     },
+     {
+      "t": "TRANSACTIONS FOR MONU KUMAR GOYAL",
+      "x0": 70.7,
+      "x1": 229.4,
+      "y": 471.2
+     },
+     {
+      "t": "16 Sep 22",
+      "x0": 25.9,
+      "x1": 61.2,
+      "y": 483.0
+     },
+     {
+      "t": "UBER                                 356",
+      "x0": 70.7,
+      "x1": 176.0,
+      "y": 483.0
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "12",
+      "value": 12.0,
+      "x": 53.1,
+      "y": 402.8,
+      "bound_label": "Points Earned",
+      "label_y": 387.0,
+      "overlap_score": 9.1
+     },
+     {
+      "value_text": "926.00",
+      "value": 926.0,
+      "x": 380.1,
+      "y": 459.4,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 19.4
+     },
+     {
+      "value_text": "578.99",
+      "value": 578.99,
+      "x": 380.1,
+      "y": 483.0,
+      "bound_label": null,
+      "label_y": null,
+      "overlap_score": -1.0
+     }
+    ],
+    "header": "Reward Point Summary",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 0,
+    "y": 364.5,
+    "raw_lines": [
+     "y=364 x=180 Reward Point Summary",
+     "y=386 x=119 Please note:",
+     "y=387 x=35 Points Earned",
+     "y=395 x=119 > All your SBI Card Reward Points will be transferred to IRCTC at the end of eve",
+     "y=403 x=119 > These Reward Points can be redeemed at www.irctc.co.in for free railway ticket",
+     "y=403 x=53 12",
+     "y=411 x=119 > The redemption of Reward Points will be governed by the Terms & Conditions of ",
+     "y=431 x=178 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement dated 13 Oct 2022",
+     "y=459 x=26 03 Oct 22",
+     "y=459 x=71 PAYMENT RECEIVED 000HGA6P0BF710055168417",
+     "y=459 x=380 926.00",
+     "y=459 x=415 C",
+     "y=471 x=71 TRANSACTIONS FOR MONU KUMAR GOYAL",
+     "y=483 x=26 16 Sep 22",
+     "y=483 x=71 UBER                                 356",
+     "y=483 x=380 578.99",
+     "y=483 x=415 D"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 213.1,
+      "x1": 403.8,
+      "y": 60.4
+     },
+     {
+      "t": "For this statement",
+      "x0": 213.9,
+      "x1": 287.9,
+      "y": 83.7
+     },
+     {
+      "t": "For this year",
+      "x0": 354.4,
+      "x1": 408.0,
+      "y": 83.7
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 455.6,
+      "x1": 556.2,
+      "y": 83.7
+     },
+     {
+      "t": "Cash Back",
+      "x0": 37.2,
+      "x1": 74.5,
+      "y": 98.1
+     },
+     {
+      "t": "( ` )#",
+      "x0": 75.4,
+      "x1": 94.3,
+      "y": 98.3
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 37.4,
+      "x1": 125.8,
+      "y": 109.1
+     },
+     {
+      "t": "( ` )#",
+      "x0": 127.2,
+      "x1": 146.2,
+      "y": 110.1
+     },
+     {
+      "t": "Reward Points",
+      "x0": 36.8,
+      "x1": 88.8,
+      "y": 120.9
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 199.6,
+      "y": 132.9
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 241.3,
+      "y": 98.1,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.4,
+      "overlap_score": 15.9
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 98.1,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 98.1,
+      "bound_label": "From the card issue date",
+      "label_y": 83.7,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 241.3,
+      "y": 109.9,
+      "bound_label": "For this statement",
+      "label_y": 83.7,
+      "overlap_score": 15.9
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 109.9,
+      "bound_label": "For this year",
+      "label_y": 83.7,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 109.9,
+      "bound_label": "From the card issue date",
+      "label_y": 83.7,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "12",
+      "value": 12.0,
+      "x": 244.7,
+      "y": 121.7,
+      "bound_label": "For this statement",
+      "label_y": 83.7,
+      "overlap_score": 9.1
+     },
+     {
+      "value_text": "720",
+      "value": 720.0,
+      "x": 370.4,
+      "y": 121.7,
+      "bound_label": "For this year",
+      "label_y": 83.7,
+      "overlap_score": 13.6
+     },
+     {
+      "value_text": "1879",
+      "value": 1879.0,
+      "x": 497.6,
+      "y": 121.7,
+      "bound_label": "From the card issue date",
+      "label_y": 83.7,
+      "overlap_score": 18.1
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 1,
+    "y": 60.4,
+    "raw_lines": [
+     "y=60 x=213 SAVINGS AND BENEFITS SECTION",
+     "y=84 x=214 For this statement",
+     "y=84 x=354 For this year",
+     "y=84 x=456 From the card issue date",
+     "y=98 x=37 Cash Back",
+     "y=98 x=241 0.00",
+     "y=98 x=369 0.00",
+     "y=98 x=499 0.00",
+     "y=98 x=75 ( ` )#",
+     "y=109 x=37 Petrol Surcharge Waiver",
+     "y=110 x=241 0.00",
+     "y=110 x=369 0.00",
+     "y=110 x=499 0.00",
+     "y=110 x=127 ( ` )#",
+     "y=121 x=37 Reward Points",
+     "y=122 x=245 12",
+     "y=122 x=370 720",
+     "y=122 x=498 1879",
+     "y=133 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 456.0,
+      "y": 489.2
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 478.5,
+      "x1": 568.5,
+      "y": 489.2
+     },
+     {
+      "t": "subsequent monthly statement. SBI Card shall be",
+      "x0": 51.0,
+      "x1": 275.7,
+      "y": 493.2
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 444.7,
+      "y": 501.0
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 540.0,
+      "y": 501.0
+     },
+     {
+      "t": "entitled to demand  immediate repayment of such",
+      "x0": 51.0,
+      "x1": 279.1,
+      "y": 504.4
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 438.3,
+      "x1": 513.9,
+      "y": 512.0
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the",
+      "x0": 51.0,
+      "x1": 285.1,
+      "y": 515.6
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 542.7,
+      "y": 523.9
+     },
+     {
+      "t": "Credit Card Account, this balance will now attract all",
+      "x0": 51.0,
+      "x1": 292.5,
+      "y": 526.8
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 424.9,
+      "x1": 574.6,
+      "y": 535.7
+     },
+     {
+      "t": "the charges including finance charges at the credit card",
+      "x0": 51.0,
+      "x1": 305.2,
+      "y": 538.0
+     },
+     {
+      "t": "rate of interest, over-limit charges in the event account",
+      "x0": 51.0,
+      "x1": 303.9,
+      "y": 549.2
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 333.7,
+      "x1": 562.0,
+      "y": 554.1
+     },
+     {
+      "t": "balance post  transfer of  loan outstanding  if any",
+      "x0": 51.0,
+      "x1": 276.5,
+      "y": 560.4
+     },
+     {
+      "t": "exceeds the existing Credit Card limit as mentioned in",
+      "x0": 51.0,
+      "x1": 297.2,
+      "y": 571.6
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 566.4,
+      "y": 571.6
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 557.3,
+      "y": 581.8
+     },
+     {
+      "t": "the cardholders MITC.",
+      "x0": 51.0,
+      "x1": 151.4,
+      "y": 582.8
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 561.1,
+      "y": 592.0
+     },
+     {
+      "t": "Any increase in fees or charges shall be notified in",
+      "x0": 51.0,
+      "x1": 281.8,
+      "y": 594.0
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 492.2,
+      "y": 602.2
+     },
+     {
+      "t": "advance to the Cardholders on SBI Card website",
+      "x0": 51.0,
+      "x1": 272.6,
+      "y": 605.2
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 568.9,
+      "y": 612.3
+     },
+     {
+      "t": "(www.sbicard.com/en/customer-notices.page)",
+      "x0": 51.0,
+      "x1": 263.9,
+      "y": 616.4
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 1,
+    "y": 489.2,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=478 Subscribe to Estatement:",
+     "y=493 x=51 subsequent monthly statement. SBI Card shall be",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=504 x=51 entitled to demand  immediate repayment of such",
+     "y=512 x=438 Duplicate Statement:",
+     "y=516 x=51 consolidated outstanding amounts. As a part of the",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=527 x=51 Credit Card Account, this balance will now attract all",
+     "y=536 x=425 XXXX = Last 4 Digits of the Card No.",
+     "y=538 x=51 the charges including finance charges at the credit card",
+     "y=549 x=51 rate of interest, over-limit charges in the event account",
+     "y=554 x=334 Important Information on Disputed Transaction(s):",
+     "y=560 x=51 balance post  transfer of  loan outstanding  if any",
+     "y=572 x=51 exceeds the existing Credit Card limit as mentioned in",
+     "y=572 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=582 x=316 you in the interim and though the amount is included in your",
+     "y=583 x=51 the cardholders MITC.",
+     "y=592 x=316 available credit limit, you will not be able to spend the amount",
+     "y=594 x=51 Any increase in fees or charges shall be notified in",
+     "y=602 x=316 while the dispute is  still under investigation.",
+     "y=605 x=51 advance to the Cardholders on SBI Card website",
+     "y=612 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=616 x=51 (www.sbicard.com/en/customer-notices.page)"
+    ]
+   }
+  ]
+ },
+ "1390952698": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "REWARD SUMMARY",
+      "x0": 188.1,
+      "x1": 277.8,
+      "y": 363.9
+     },
+     {
+      "t": "Current Stmt Period",
+      "x0": 45.5,
+      "x1": 116.8,
+      "y": 387.2
+     },
+     {
+      "t": "Till Last Cycle",
+      "x0": 195.9,
+      "x1": 244.4,
+      "y": 387.2
+     },
+     {
+      "t": "Earned Till Date",
+      "x0": 328.3,
+      "x1": 383.9,
+      "y": 387.2
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 179.0,
+      "x1": 246.9,
+      "y": 431.2
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 415.8,
+      "y": 432.2
+     },
+     {
+      "t": "Date",
+      "x0": 35.3,
+      "x1": 51.8,
+      "y": 432.8
+     },
+     {
+      "t": "Amount",
+      "x0": 371.3,
+      "x1": 399.2,
+      "y": 432.8
+     },
+     {
+      "t": "for Statement Period: 22 Mar 26 to 21 Apr 26",
+      "x0": 157.0,
+      "x1": 292.8,
+      "y": 440.9
+     },
+     {
+      "t": "30 Mar 26",
+      "x0": 25.7,
+      "x1": 61.4,
+      "y": 459.6
+     },
+     {
+      "t": "PAYMENT RECEIVED 000DP016089234128nnr7Cq",
+      "x0": 70.7,
+      "x1": 244.1,
+      "y": 459.6
+     },
+     {
+      "t": "05 Apr 26",
+      "x0": 26.4,
+      "x1": 60.7,
+      "y": 471.4
+     },
+     {
+      "t": "PAYMENT RECEIVED 000AS016095130906iNxzwQ",
+      "x0": 70.7,
+      "x1": 244.5,
+      "y": 471.4
+     },
+     {
+      "t": "06 Apr 26",
+      "x0": 26.4,
+      "x1": 60.7,
+      "y": 483.2
+     },
+     {
+      "t": "PAYMENT RECEIVED 000BD016096BAKAAAIHL7CJ",
+      "x0": 70.7,
+      "x1": 244.7,
+      "y": 483.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0",
+      "value": 0.0,
+      "x": 80.1,
+      "y": 403.7,
+      "bound_label": "Current Stmt Period",
+      "label_y": 387.2,
+      "overlap_score": 4.4
+     },
+     {
+      "value_text": "53724",
+      "value": 53724.0,
+      "x": 211.9,
+      "y": 403.7,
+      "bound_label": "REWARD SUMMARY",
+      "label_y": 363.9,
+      "overlap_score": 22.3
+     },
+     {
+      "value_text": "12380",
+      "value": 12380.0,
+      "x": 356.4,
+      "y": 403.7,
+      "bound_label": "Earned Till Date",
+      "label_y": 387.2,
+      "overlap_score": 22.2
+     },
+     {
+      "value_text": "2,572.00",
+      "value": 2572.0,
+      "x": 373.9,
+      "y": 459.6,
+      "bound_label": "Amount",
+      "label_y": 432.8,
+      "overlap_score": 25.3
+     },
+     {
+      "value_text": "26,007.00",
+      "value": 26007.0,
+      "x": 369.5,
+      "y": 471.4,
+      "bound_label": "Amount",
+      "label_y": 432.8,
+      "overlap_score": 27.9
+     },
+     {
+      "value_text": "50,000.04",
+      "value": 50000.04,
+      "x": 369.5,
+      "y": 483.2,
+      "bound_label": null,
+      "label_y": null,
+      "overlap_score": -1.0
+     }
+    ],
+    "header": "REWARD SUMMARY",
+    "header_key": "REWARD SUMMARY",
+    "page": 0,
+    "y": 363.9,
+    "raw_lines": [
+     "y=364 x=188 REWARD SUMMARY",
+     "y=387 x=46 Current Stmt Period",
+     "y=387 x=196 Till Last Cycle",
+     "y=387 x=328 Earned Till Date",
+     "y=404 x=80 0",
+     "y=404 x=212 53724",
+     "y=404 x=356 12380",
+     "y=431 x=179 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 22 Mar 26 to 21 Apr 26",
+     "y=460 x=26 30 Mar 26",
+     "y=460 x=71 PAYMENT RECEIVED 000DP016089234128nnr7Cq",
+     "y=460 x=374 2,572.00",
+     "y=460 x=415 C",
+     "y=471 x=26 05 Apr 26",
+     "y=471 x=71 PAYMENT RECEIVED 000AS016095130906iNxzwQ",
+     "y=471 x=370 26,007.00",
+     "y=471 x=415 C",
+     "y=483 x=26 06 Apr 26",
+     "y=483 x=71 PAYMENT RECEIVED 000BD016096BAKAAAIHL7CJ",
+     "y=483 x=370 50,000.04",
+     "y=483 x=415 C"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 214.9,
+      "x1": 401.9,
+      "y": 60.3
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.9,
+      "x1": 293.5,
+      "y": 83.6
+     },
+     {
+      "t": "For this year",
+      "x0": 354.9,
+      "x1": 407.5,
+      "y": 83.6
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 456.6,
+      "x1": 555.2,
+      "y": 83.6
+     },
+     {
+      "t": "Cash Back",
+      "x0": 37.5,
+      "x1": 74.1,
+      "y": 97.9
+     },
+     {
+      "t": "( ` )#",
+      "x0": 75.4,
+      "x1": 94.0,
+      "y": 98.1
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 196.5,
+      "y": 134.4
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.3,
+      "y": 97.9,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.3,
+      "overlap_score": 15.5
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.5,
+      "y": 97.9,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.3,
+      "overlap_score": 15.5
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.9,
+      "y": 97.9,
+      "bound_label": "From the card issue date",
+      "label_y": 83.6,
+      "overlap_score": 15.5
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 1,
+    "y": 60.3,
+    "raw_lines": [
+     "y=60 x=215 SAVINGS AND BENEFITS SECTION",
+     "y=84 x=221 For this statement",
+     "y=84 x=355 For this year",
+     "y=84 x=457 From the card issue date",
+     "y=98 x=38 Cash Back",
+     "y=98 x=250 0.00",
+     "y=98 x=370 0.00",
+     "y=98 x=499 0.00",
+     "y=98 x=75 ( ` )#",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 454.2,
+      "y": 489.1
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 479.4,
+      "x1": 567.7,
+      "y": 489.1
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 270.5,
+      "y": 494.9
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 443.5,
+      "y": 500.9
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 538.6,
+      "y": 500.9
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 292.4,
+      "y": 504.9
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 439.0,
+      "x1": 513.1,
+      "y": 511.9
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 299.2,
+      "y": 514.9
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 539.4,
+      "y": 523.7
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 281.2,
+      "y": 524.9
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 73.8,
+      "y": 534.9
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 427.8,
+      "x1": 574.6,
+      "y": 535.5
+     },
+     {
+      "t": "W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+      "x0": 51.0,
+      "x1": 285.4,
+      "y": 544.9
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 336.0,
+      "x1": 559.7,
+      "y": 554.0
+     },
+     {
+      "t": "200 will be applicable on outstanding payments made via",
+      "x0": 51.0,
+      "x1": 270.0,
+      "y": 554.9
+     },
+     {
+      "t": "Cheque. This revision is reflective of the increased operational",
+      "x0": 51.0,
+      "x1": 289.0,
+      "y": 564.9
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 561.5,
+      "y": 569.9
+     },
+     {
+      "t": "cost associated with offline payment modes. Payments made",
+      "x0": 51.0,
+      "x1": 283.7,
+      "y": 574.9
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 552.6,
+      "y": 579.9
+     },
+     {
+      "t": "through digital channels such as UPI, BBPS, NEFT, etc will",
+      "x0": 51.0,
+      "x1": 270.8,
+      "y": 584.9
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 556.3,
+      "y": 589.9
+     },
+     {
+      "t": "continue to be free of any additional charges. We encourage our",
+      "x0": 51.0,
+      "x1": 297.4,
+      "y": 594.9
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 488.8,
+      "y": 599.9
+     },
+     {
+      "t": "cardholders to explore digital modes for hassle-free payments &",
+      "x0": 51.0,
+      "x1": 296.5,
+      "y": 604.9
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 564.0,
+      "y": 609.9
+     },
+     {
+      "t": "faster credits.",
+      "x0": 51.0,
+      "x1": 102.8,
+      "y": 614.9
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 1,
+    "y": 489.1,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=479 Subscribe to Estatement:",
+     "y=495 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=505 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=439 Duplicate Statement:",
+     "y=515 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=525 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=535 x=51 MITC.",
+     "y=536 x=428 XXXX = Last 4 Digits of the Card No.",
+     "y=545 x=51 W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+     "y=554 x=336 Important Information on Disputed Transaction(s):",
+     "y=555 x=51 200 will be applicable on outstanding payments made via",
+     "y=565 x=51 Cheque. This revision is reflective of the increased operational",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=575 x=51 cost associated with offline payment modes. Payments made",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=585 x=51 through digital channels such as UPI, BBPS, NEFT, etc will",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=595 x=51 continue to be free of any additional charges. We encourage our",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=605 x=51 cardholders to explore digital modes for hassle-free payments &",
+     "y=610 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=615 x=51 faster credits."
+    ]
+   }
+  ]
+ },
+ "1511624796": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+      "x0": 101.3,
+      "x1": 335.0,
+      "y": 363.7
+     },
+     {
+      "t": "CASHBACK",
+      "x0": 23.1,
+      "x1": 70.2,
+      "y": 380.5
+     },
+     {
+      "t": "Card Cashback will be posted to your SBI Card Account within two working days after",
+      "x0": 84.0,
+      "x1": 417.9,
+      "y": 389.1
+     },
+     {
+      "t": "Amount",
+      "x0": 31.4,
+      "x1": 61.9,
+      "y": 390.7
+     },
+     {
+      "t": "statement Date. T&C Apply",
+      "x0": 84.0,
+      "x1": 189.9,
+      "y": 399.3
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 178.4,
+      "x1": 247.6,
+      "y": 431.1
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 416.0,
+      "y": 432.0
+     },
+     {
+      "t": "Date",
+      "x0": 35.2,
+      "x1": 51.9,
+      "y": 432.7
+     },
+     {
+      "t": "Amount",
+      "x0": 371.0,
+      "x1": 399.5,
+      "y": 432.7
+     },
+     {
+      "t": "for Statement Period: 02 May 25 to 01 Jun 25",
+      "x0": 157.0,
+      "x1": 294.8,
+      "y": 440.8
+     },
+     {
+      "t": "01 May 25",
+      "x0": 24.8,
+      "x1": 62.3,
+      "y": 459.4
+     },
+     {
+      "t": "CARD CASHBACK CREDIT",
+      "x0": 70.7,
+      "x1": 160.6,
+      "y": 459.4
+     },
+     {
+      "t": "20 May 25",
+      "x0": 24.8,
+      "x1": 62.3,
+      "y": 471.2
+     },
+     {
+      "t": "PAYMENT RECEIVED 000DP015140151308lBJ0Yy",
+      "x0": 70.7,
+      "x1": 243.6,
+      "y": 471.2
+     },
+     {
+      "t": "TRANSACTIONS FOR BHAVANA KS",
+      "x0": 70.7,
+      "x1": 197.1,
+      "y": 483.0
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "476",
+      "value": 476.0,
+      "x": 42.9,
+      "y": 405.1,
+      "bound_label": "CASHBACK",
+      "label_y": 380.5,
+      "overlap_score": 13.6
+     },
+     {
+      "value_text": "782.00",
+      "value": 782.0,
+      "x": 380.1,
+      "y": 459.4,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 19.4
+     },
+     {
+      "value_text": "20,266.00",
+      "value": 20266.0,
+      "x": 368.8,
+      "y": 471.2,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 28.5
+     }
+    ],
+    "header": "CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+    "header_key": "CARD CASHBACK SUMMARY",
+    "page": 0,
+    "y": 363.7,
+    "raw_lines": [
+     "y=364 x=101 CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+     "y=380 x=23 CASHBACK",
+     "y=389 x=84 Card Cashback will be posted to your SBI Card Account within two working days af",
+     "y=391 x=31 Amount",
+     "y=399 x=84 statement Date. T&C Apply",
+     "y=405 x=43 476",
+     "y=431 x=178 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 02 May 25 to 01 Jun 25",
+     "y=459 x=25 01 May 25",
+     "y=459 x=71 CARD CASHBACK CREDIT",
+     "y=459 x=380 782.00",
+     "y=459 x=415 C",
+     "y=471 x=25 20 May 25",
+     "y=471 x=71 PAYMENT RECEIVED 000DP015140151308lBJ0Yy",
+     "y=471 x=369 20,266.00",
+     "y=471 x=415 C",
+     "y=483 x=71 TRANSACTIONS FOR BHAVANA KS"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 213.1,
+      "x1": 403.8,
+      "y": 60.3
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.1,
+      "x1": 294.2,
+      "y": 83.6
+     },
+     {
+      "t": "For this year",
+      "x0": 354.4,
+      "x1": 408.0,
+      "y": 83.6
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 455.6,
+      "x1": 556.2,
+      "y": 83.6
+     },
+     {
+      "t": "( ` )#",
+      "x0": 97.3,
+      "x1": 116.3,
+      "y": 97.4
+     },
+     {
+      "t": "Offer Cashback",
+      "x0": 36.5,
+      "x1": 92.2,
+      "y": 98.0
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 37.4,
+      "x1": 125.8,
+      "y": 109.0
+     },
+     {
+      "t": "( ` )#",
+      "x0": 123.2,
+      "x1": 142.2,
+      "y": 109.2
+     },
+     {
+      "t": "Card Cashback",
+      "x0": 36.5,
+      "x1": 90.6,
+      "y": 120.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 94.2,
+      "x1": 113.2,
+      "y": 121.0
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 199.6,
+      "y": 134.5
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 98.0,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.3,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 98.0,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.3,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 98.0,
+      "bound_label": "From the card issue date",
+      "label_y": 83.6,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 109.8,
+      "bound_label": "For this statement",
+      "label_y": 83.6,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 109.8,
+      "bound_label": "For this year",
+      "label_y": 83.6,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 109.8,
+      "bound_label": "From the card issue date",
+      "label_y": 83.6,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "476",
+      "value": 476.0,
+      "x": 251.2,
+      "y": 121.6,
+      "bound_label": "For this statement",
+      "label_y": 83.6,
+      "overlap_score": 13.6
+     },
+     {
+      "value_text": "4058",
+      "value": 4058.0,
+      "x": 368.1,
+      "y": 121.6,
+      "bound_label": "For this year",
+      "label_y": 83.6,
+      "overlap_score": 18.2
+     },
+     {
+      "value_text": "4417",
+      "value": 4417.0,
+      "x": 497.6,
+      "y": 121.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.6,
+      "overlap_score": 18.1
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 1,
+    "y": 60.3,
+    "raw_lines": [
+     "y=60 x=213 SAVINGS AND BENEFITS SECTION",
+     "y=84 x=220 For this statement",
+     "y=84 x=354 For this year",
+     "y=84 x=456 From the card issue date",
+     "y=97 x=97 ( ` )#",
+     "y=98 x=36 Offer Cashback",
+     "y=98 x=250 0.00",
+     "y=98 x=369 0.00",
+     "y=98 x=499 0.00",
+     "y=109 x=37 Petrol Surcharge Waiver",
+     "y=109 x=123 ( ` )#",
+     "y=110 x=250 0.00",
+     "y=110 x=369 0.00",
+     "y=110 x=499 0.00",
+     "y=121 x=36 Card Cashback",
+     "y=121 x=94 ( ` )#",
+     "y=122 x=251 476",
+     "y=122 x=368 4058",
+     "y=122 x=498 4417",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 456.0,
+      "y": 489.2
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 478.5,
+      "x1": 568.5,
+      "y": 489.2
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 274.9,
+      "y": 496.4
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 444.7,
+      "y": 501.0
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 540.0,
+      "y": 501.0
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 297.2,
+      "y": 506.6
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 438.3,
+      "x1": 513.9,
+      "y": 512.0
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 304.2,
+      "y": 516.7
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 542.7,
+      "y": 523.8
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 285.8,
+      "y": 526.9
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 424.9,
+      "x1": 574.6,
+      "y": 535.6
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 74.2,
+      "y": 537.1
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 333.7,
+      "x1": 562.0,
+      "y": 554.0
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 566.4,
+      "y": 570.0
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 557.3,
+      "y": 580.2
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 561.1,
+      "y": 590.3
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 492.2,
+      "y": 600.5
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 568.9,
+      "y": 610.7
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 1,
+    "y": 489.2,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=478 Subscribe to Estatement:",
+     "y=496 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=507 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=438 Duplicate Statement:",
+     "y=517 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=527 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=536 x=425 XXXX = Last 4 Digits of the Card No.",
+     "y=537 x=51 MITC.",
+     "y=554 x=334 Important Information on Disputed Transaction(s):",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=611 x=316 \u2022As we are dependent on feedback from external parties such as"
+    ]
+   }
+  ]
+ },
+ "1707857175": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "NeuCoins Summary",
+      "x0": 189.3,
+      "x1": 276.6,
+      "y": 364.7
+     },
+     {
+      "t": "Please Note:",
+      "x0": 104.4,
+      "x1": 141.4,
+      "y": 385.0
+     },
+     {
+      "t": "NeuCoins",
+      "x0": 37.5,
+      "x1": 71.5,
+      "y": 387.2
+     },
+     {
+      "t": "\u2022NeuCoins earned will be automatically credited to your NeuPass account within 7 working days.",
+      "x0": 104.4,
+      "x1": 390.5,
+      "y": 393.0
+     },
+     {
+      "t": "\u2022The redemption of NeuCoins will be governed by Terms & Conditions of SBICPSL and TDPL.",
+      "x0": 104.4,
+      "x1": 379.8,
+      "y": 401.0
+     },
+     {
+      "t": "\u2022You can view your NeuCoins in the Tata Neu Mobile App.",
+      "x0": 104.4,
+      "x1": 277.8,
+      "y": 409.0
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 179.0,
+      "x1": 246.9,
+      "y": 431.2
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 415.8,
+      "y": 432.2
+     },
+     {
+      "t": "Date",
+      "x0": 35.3,
+      "x1": 51.8,
+      "y": 432.8
+     },
+     {
+      "t": "Amount",
+      "x0": 371.3,
+      "x1": 399.2,
+      "y": 432.8
+     },
+     {
+      "t": "for Statement Period: 17 Apr 26 to 16 May 26",
+      "x0": 157.0,
+      "x1": 293.7,
+      "y": 440.9
+     },
+     {
+      "t": "01 May 26",
+      "x0": 25.2,
+      "x1": 61.9,
+      "y": 459.6
+     },
+     {
+      "t": "PAYMENT RECEIVED 000BD016121BALAAAJGB4VZ",
+      "x0": 70.7,
+      "x1": 247.5,
+      "y": 459.6
+     },
+     {
+      "t": "03 May 26",
+      "x0": 25.2,
+      "x1": 61.9,
+      "y": 471.4
+     },
+     {
+      "t": "FUEL SURCHARGE WAIVER EXCL TAX",
+      "x0": 70.7,
+      "x1": 197.8,
+      "y": 471.4
+     },
+     {
+      "t": "TRANSACTIONS FOR KAUSTUBH KUMBHAR",
+      "x0": 70.7,
+      "x1": 225.2,
+      "y": 483.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "1072",
+      "value": 1072.0,
+      "x": 48.8,
+      "y": 402.9,
+      "bound_label": "NeuCoins",
+      "label_y": 387.2,
+      "overlap_score": 17.8
+     },
+     {
+      "value_text": "1,28,100.00",
+      "value": 128100.0,
+      "x": 362.9,
+      "y": 459.6,
+      "bound_label": "Amount",
+      "label_y": 432.8,
+      "overlap_score": 27.9
+     },
+     {
+      "value_text": "5.36",
+      "value": 5.36,
+      "x": 389.5,
+      "y": 471.4,
+      "bound_label": "Amount",
+      "label_y": 432.8,
+      "overlap_score": 9.7
+     }
+    ],
+    "header": "NeuCoins Summary",
+    "header_key": "NEUCOINS SUMMARY",
+    "page": 0,
+    "y": 364.7,
+    "raw_lines": [
+     "y=365 x=189 NeuCoins Summary",
+     "y=385 x=104 Please Note:",
+     "y=387 x=38 NeuCoins",
+     "y=393 x=104 \u2022NeuCoins earned will be automatically credited to your NeuPass account within 7",
+     "y=401 x=104 \u2022The redemption of NeuCoins will be governed by Terms & Conditions of SBICPSL an",
+     "y=403 x=49 1072",
+     "y=409 x=104 \u2022You can view your NeuCoins in the Tata Neu Mobile App.",
+     "y=431 x=179 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 17 Apr 26 to 16 May 26",
+     "y=460 x=25 01 May 26",
+     "y=460 x=71 PAYMENT RECEIVED 000BD016121BALAAAJGB4VZ",
+     "y=460 x=363 1,28,100.00",
+     "y=460 x=415 C",
+     "y=471 x=25 03 May 26",
+     "y=471 x=71 FUEL SURCHARGE WAIVER EXCL TAX",
+     "y=471 x=390 5.36",
+     "y=471 x=415 C",
+     "y=483 x=71 TRANSACTIONS FOR KAUSTUBH KUMBHAR"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 214.9,
+      "x1": 401.9,
+      "y": 60.3
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.9,
+      "x1": 293.5,
+      "y": 83.6
+     },
+     {
+      "t": "For this year",
+      "x0": 354.9,
+      "x1": 407.5,
+      "y": 83.6
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 456.6,
+      "x1": 555.2,
+      "y": 83.6
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 39.0,
+      "x1": 125.7,
+      "y": 97.9
+     },
+     {
+      "t": "( ` )#",
+      "x0": 128.7,
+      "x1": 147.3,
+      "y": 98.1
+     },
+     {
+      "t": "NeuCoins",
+      "x0": 38.6,
+      "x1": 72.6,
+      "y": 113.7
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 196.5,
+      "y": 134.4
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "5.36",
+      "value": 5.36,
+      "x": 250.3,
+      "y": 99.5,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.3,
+      "overlap_score": 15.5
+     },
+     {
+      "value_text": "5.36",
+      "value": 5.36,
+      "x": 369.5,
+      "y": 99.5,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.3,
+      "overlap_score": 15.5
+     },
+     {
+      "value_text": "5.36",
+      "value": 5.36,
+      "x": 498.9,
+      "y": 99.5,
+      "bound_label": "From the card issue date",
+      "label_y": 83.6,
+      "overlap_score": 15.5
+     },
+     {
+      "value_text": "1072",
+      "value": 1072.0,
+      "x": 249.1,
+      "y": 115.3,
+      "bound_label": "For this statement",
+      "label_y": 83.6,
+      "overlap_score": 17.8
+     },
+     {
+      "value_text": "5077",
+      "value": 5077.0,
+      "x": 368.3,
+      "y": 115.3,
+      "bound_label": "For this year",
+      "label_y": 83.6,
+      "overlap_score": 17.8
+     },
+     {
+      "value_text": "6590",
+      "value": 6590.0,
+      "x": 497.8,
+      "y": 115.3,
+      "bound_label": "From the card issue date",
+      "label_y": 83.6,
+      "overlap_score": 17.8
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 2,
+    "y": 60.3,
+    "raw_lines": [
+     "y=60 x=215 SAVINGS AND BENEFITS SECTION",
+     "y=84 x=221 For this statement",
+     "y=84 x=355 For this year",
+     "y=84 x=457 From the card issue date",
+     "y=98 x=39 Petrol Surcharge Waiver",
+     "y=98 x=129 ( ` )#",
+     "y=100 x=250 5.36",
+     "y=100 x=370 5.36",
+     "y=100 x=499 5.36",
+     "y=114 x=39 NeuCoins",
+     "y=115 x=249 1072",
+     "y=115 x=368 5077",
+     "y=115 x=498 6590",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 454.2,
+      "y": 489.1
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 479.4,
+      "x1": 567.7,
+      "y": 489.1
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 270.5,
+      "y": 494.9
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 443.5,
+      "y": 500.9
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 538.6,
+      "y": 500.9
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 292.4,
+      "y": 504.9
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 439.0,
+      "x1": 513.1,
+      "y": 511.9
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 299.2,
+      "y": 514.9
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 539.4,
+      "y": 523.7
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 281.2,
+      "y": 524.9
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 73.8,
+      "y": 534.9
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 427.8,
+      "x1": 574.6,
+      "y": 535.5
+     },
+     {
+      "t": "W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+      "x0": 51.0,
+      "x1": 285.4,
+      "y": 544.9
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 336.0,
+      "x1": 559.7,
+      "y": 554.0
+     },
+     {
+      "t": "200 will be applicable on outstanding payments made via",
+      "x0": 51.0,
+      "x1": 270.0,
+      "y": 554.9
+     },
+     {
+      "t": "Cheque. This revision is reflective of the increased operational",
+      "x0": 51.0,
+      "x1": 289.0,
+      "y": 564.9
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 561.5,
+      "y": 569.9
+     },
+     {
+      "t": "cost associated with offline payment modes. Payments made",
+      "x0": 51.0,
+      "x1": 283.7,
+      "y": 574.9
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 552.6,
+      "y": 579.9
+     },
+     {
+      "t": "through digital channels such as UPI, BBPS, NEFT, etc will",
+      "x0": 51.0,
+      "x1": 270.8,
+      "y": 584.9
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 556.3,
+      "y": 589.9
+     },
+     {
+      "t": "continue to be free of any additional charges. We encourage our",
+      "x0": 51.0,
+      "x1": 297.4,
+      "y": 594.9
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 488.8,
+      "y": 599.9
+     },
+     {
+      "t": "cardholders to explore digital modes for hassle-free payments &",
+      "x0": 51.0,
+      "x1": 296.5,
+      "y": 604.9
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 564.0,
+      "y": 609.9
+     },
+     {
+      "t": "faster credits.",
+      "x0": 51.0,
+      "x1": 102.8,
+      "y": 614.9
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 2,
+    "y": 489.1,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=479 Subscribe to Estatement:",
+     "y=495 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=505 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=439 Duplicate Statement:",
+     "y=515 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=525 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=535 x=51 MITC.",
+     "y=536 x=428 XXXX = Last 4 Digits of the Card No.",
+     "y=545 x=51 W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+     "y=554 x=336 Important Information on Disputed Transaction(s):",
+     "y=555 x=51 200 will be applicable on outstanding payments made via",
+     "y=565 x=51 Cheque. This revision is reflective of the increased operational",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=575 x=51 cost associated with offline payment modes. Payments made",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=585 x=51 through digital channels such as UPI, BBPS, NEFT, etc will",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=595 x=51 continue to be free of any additional charges. We encourage our",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=605 x=51 cardholders to explore digital modes for hassle-free payments &",
+     "y=610 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=615 x=51 faster credits."
+    ]
+   }
+  ]
+ },
+ "369606524": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "CASHBACK SUMMARY FOR THIS STATEMENT",
+      "x0": 101.3,
+      "x1": 306.1,
+      "y": 363.7
+     },
+     {
+      "t": "CASHBACK",
+      "x0": 27.2,
+      "x1": 69.1,
+      "y": 383.1
+     },
+     {
+      "t": "Cashback will be posted to your SBI Card Account within two working days after",
+      "x0": 104.4,
+      "x1": 417.5,
+      "y": 389.1
+     },
+     {
+      "t": "Amount",
+      "x0": 34.6,
+      "x1": 61.8,
+      "y": 392.2
+     },
+     {
+      "t": "statement Date. T&C Apply",
+      "x0": 104.4,
+      "x1": 210.3,
+      "y": 399.3
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 178.4,
+      "x1": 247.6,
+      "y": 431.1
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 416.0,
+      "y": 432.0
+     },
+     {
+      "t": "Date",
+      "x0": 35.2,
+      "x1": 51.9,
+      "y": 432.7
+     },
+     {
+      "t": "Amount",
+      "x0": 371.0,
+      "x1": 399.5,
+      "y": 432.7
+     },
+     {
+      "t": "for Statement Period: 24 May 26 to 23 Jun 26",
+      "x0": 157.0,
+      "x1": 294.8,
+      "y": 440.8
+     },
+     {
+      "t": "23 May 26",
+      "x0": 24.8,
+      "x1": 62.3,
+      "y": 459.4
+     },
+     {
+      "t": "CARD CASHBACK CREDIT",
+      "x0": 70.7,
+      "x1": 160.6,
+      "y": 459.4
+     },
+     {
+      "t": "02 Jun 26",
+      "x0": 27.0,
+      "x1": 60.1,
+      "y": 471.2
+     },
+     {
+      "t": "PAYMENT RECEIVED 000DP016153124806obOfja",
+      "x0": 70.7,
+      "x1": 245.0,
+      "y": 471.2
+     },
+     {
+      "t": "TRANSACTIONS FOR SRAVAN MALPANI",
+      "x0": 70.7,
+      "x1": 215.7,
+      "y": 483.0
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "375.25",
+      "value": 375.25,
+      "x": 32.6,
+      "y": 402.0,
+      "bound_label": "CASHBACK",
+      "label_y": 383.1,
+      "overlap_score": 24.9
+     },
+     {
+      "value_text": "424.00",
+      "value": 424.0,
+      "x": 380.1,
+      "y": 459.4,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 19.4
+     },
+     {
+      "value_text": "5,564.00",
+      "value": 5564.0,
+      "x": 373.3,
+      "y": 471.2,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 26.2
+     }
+    ],
+    "header": "CASHBACK SUMMARY FOR THIS STATEMENT",
+    "header_key": "CASHBACK SUMMARY",
+    "page": 0,
+    "y": 363.7,
+    "raw_lines": [
+     "y=364 x=101 CASHBACK SUMMARY FOR THIS STATEMENT",
+     "y=383 x=27 CASHBACK",
+     "y=389 x=104 Cashback will be posted to your SBI Card Account within two working days after",
+     "y=392 x=35 Amount",
+     "y=399 x=104 statement Date. T&C Apply",
+     "y=402 x=33 375.25",
+     "y=431 x=178 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 24 May 26 to 23 Jun 26",
+     "y=459 x=25 23 May 26",
+     "y=459 x=71 CARD CASHBACK CREDIT",
+     "y=459 x=380 424.00",
+     "y=459 x=415 C",
+     "y=471 x=27 02 Jun 26",
+     "y=471 x=71 PAYMENT RECEIVED 000DP016153124806obOfja",
+     "y=471 x=373 5,564.00",
+     "y=471 x=415 C",
+     "y=483 x=71 TRANSACTIONS FOR SRAVAN MALPANI"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 213.1,
+      "x1": 403.8,
+      "y": 60.1
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.1,
+      "x1": 294.2,
+      "y": 83.4
+     },
+     {
+      "t": "For this year",
+      "x0": 354.4,
+      "x1": 408.0,
+      "y": 83.4
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 455.6,
+      "x1": 556.2,
+      "y": 83.4
+     },
+     {
+      "t": "( ` )#",
+      "x0": 97.3,
+      "x1": 116.3,
+      "y": 97.2
+     },
+     {
+      "t": "Offer Cashback",
+      "x0": 36.5,
+      "x1": 92.2,
+      "y": 97.8
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 37.4,
+      "x1": 125.8,
+      "y": 108.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 125.6,
+      "x1": 144.6,
+      "y": 109.0
+     },
+     {
+      "t": "Card Cashback",
+      "x0": 36.5,
+      "x1": 90.6,
+      "y": 120.6
+     },
+     {
+      "t": "( ` )#",
+      "x0": 94.2,
+      "x1": 113.2,
+      "y": 120.8
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 199.6,
+      "y": 134.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 97.8,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 108.8,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 108.8,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 108.8,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "375.25",
+      "value": 375.25,
+      "x": 245.8,
+      "y": 120.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 24.9
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.1,
+      "y": 120.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 500.2,
+      "y": 120.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 1,
+    "y": 60.1,
+    "raw_lines": [
+     "y=60 x=213 SAVINGS AND BENEFITS SECTION",
+     "y=83 x=220 For this statement",
+     "y=83 x=354 For this year",
+     "y=83 x=456 From the card issue date",
+     "y=97 x=97 ( ` )#",
+     "y=98 x=36 Offer Cashback",
+     "y=98 x=250 0.00",
+     "y=98 x=369 0.00",
+     "y=98 x=499 0.00",
+     "y=109 x=37 Petrol Surcharge Waiver",
+     "y=109 x=250 0.00",
+     "y=109 x=369 0.00",
+     "y=109 x=499 0.00",
+     "y=109 x=126 ( ` )#",
+     "y=121 x=36 Card Cashback",
+     "y=121 x=246 375.25",
+     "y=121 x=369 0.00",
+     "y=121 x=500 0.00",
+     "y=121 x=94 ( ` )#",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 456.0,
+      "y": 488.9
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 478.5,
+      "x1": 568.5,
+      "y": 488.9
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 274.9,
+      "y": 496.1
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 444.7,
+      "y": 500.7
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 540.0,
+      "y": 500.7
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 297.2,
+      "y": 506.3
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 438.3,
+      "x1": 513.9,
+      "y": 511.7
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 304.2,
+      "y": 516.5
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 542.7,
+      "y": 523.5
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 285.8,
+      "y": 526.7
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 424.9,
+      "x1": 574.6,
+      "y": 535.4
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 74.2,
+      "y": 536.9
+     },
+     {
+      "t": "W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+      "x0": 51.0,
+      "x1": 290.1,
+      "y": 547.0
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 333.7,
+      "x1": 562.0,
+      "y": 553.8
+     },
+     {
+      "t": "200 will be applicable on outstanding payments made via",
+      "x0": 51.0,
+      "x1": 274.4,
+      "y": 557.2
+     },
+     {
+      "t": "Cheque. This revision is reflective of the increased operational",
+      "x0": 51.0,
+      "x1": 293.8,
+      "y": 567.4
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 566.4,
+      "y": 569.7
+     },
+     {
+      "t": "cost associated with offline payment modes. Payments made",
+      "x0": 51.0,
+      "x1": 288.3,
+      "y": 577.6
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 557.3,
+      "y": 579.9
+     },
+     {
+      "t": "through digital channels such as UPI, BBPS, NEFT, etc will",
+      "x0": 51.0,
+      "x1": 275.2,
+      "y": 587.8
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 561.1,
+      "y": 590.1
+     },
+     {
+      "t": "continue to be free of any additional charges. We encourage our",
+      "x0": 51.0,
+      "x1": 302.3,
+      "y": 597.9
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 492.2,
+      "y": 600.3
+     },
+     {
+      "t": "cardholders to explore digital modes for hassle-free payments &",
+      "x0": 51.0,
+      "x1": 301.4,
+      "y": 608.1
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 568.9,
+      "y": 610.5
+     },
+     {
+      "t": "faster credits.",
+      "x0": 51.0,
+      "x1": 103.8,
+      "y": 618.3
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 1,
+    "y": 488.9,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=478 Subscribe to Estatement:",
+     "y=496 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=506 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=438 Duplicate Statement:",
+     "y=516 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=527 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=535 x=425 XXXX = Last 4 Digits of the Card No.",
+     "y=537 x=51 MITC.",
+     "y=547 x=51 W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+     "y=554 x=334 Important Information on Disputed Transaction(s):",
+     "y=557 x=51 200 will be applicable on outstanding payments made via",
+     "y=567 x=51 Cheque. This revision is reflective of the increased operational",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=578 x=51 cost associated with offline payment modes. Payments made",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=588 x=51 through digital channels such as UPI, BBPS, NEFT, etc will",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=598 x=51 continue to be free of any additional charges. We encourage our",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=608 x=51 cardholders to explore digital modes for hassle-free payments &",
+     "y=610 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=618 x=51 faster credits."
+    ]
+   }
+  ]
+ },
+ "515948911": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+      "x0": 101.3,
+      "x1": 335.0,
+      "y": 363.7
+     },
+     {
+      "t": "CASHBACK",
+      "x0": 23.1,
+      "x1": 70.2,
+      "y": 380.5
+     },
+     {
+      "t": "Card Cashback will be posted to your SBI Card Account within two working days after",
+      "x0": 84.0,
+      "x1": 417.9,
+      "y": 389.1
+     },
+     {
+      "t": "Amount",
+      "x0": 31.4,
+      "x1": 61.9,
+      "y": 390.7
+     },
+     {
+      "t": "statement Date. T&C Apply",
+      "x0": 84.0,
+      "x1": 189.9,
+      "y": 399.3
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 178.4,
+      "x1": 247.6,
+      "y": 431.1
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 416.0,
+      "y": 432.0
+     },
+     {
+      "t": "Date",
+      "x0": 35.2,
+      "x1": 51.9,
+      "y": 432.7
+     },
+     {
+      "t": "Amount",
+      "x0": 371.0,
+      "x1": 399.5,
+      "y": 432.7
+     },
+     {
+      "t": "for Statement Period: 04 Jan 26 to 03 Feb 26",
+      "x0": 157.0,
+      "x1": 292.3,
+      "y": 440.8
+     },
+     {
+      "t": "03 Jan 26",
+      "x0": 27.2,
+      "x1": 59.9,
+      "y": 459.4
+     },
+     {
+      "t": "CARD CASHBACK CREDIT",
+      "x0": 70.7,
+      "x1": 160.6,
+      "y": 459.4
+     },
+     {
+      "t": "20 Jan 26",
+      "x0": 27.2,
+      "x1": 59.9,
+      "y": 471.2
+     },
+     {
+      "t": "PAYMENT RECEIVED 000BD016020BAKAAAFOMS6O",
+      "x0": 70.7,
+      "x1": 257.0,
+      "y": 471.2
+     },
+     {
+      "t": "TRANSACTIONS FOR SHUBHAM DESHMUKH",
+      "x0": 70.7,
+      "x1": 231.1,
+      "y": 483.0
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "-1467",
+      "value": -1467.0,
+      "x": 39.3,
+      "y": 405.1,
+      "bound_label": "CASHBACK",
+      "label_y": 380.5,
+      "overlap_score": 20.8
+     },
+     {
+      "value_text": "4,191.00",
+      "value": 4191.0,
+      "x": 373.3,
+      "y": 459.4,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 26.2
+     },
+     {
+      "value_text": "61,532.13",
+      "value": 61532.13,
+      "x": 368.8,
+      "y": 471.2,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 28.5
+     }
+    ],
+    "header": "CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+    "header_key": "CARD CASHBACK SUMMARY",
+    "page": 0,
+    "y": 363.7,
+    "raw_lines": [
+     "y=364 x=101 CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+     "y=380 x=23 CASHBACK",
+     "y=389 x=84 Card Cashback will be posted to your SBI Card Account within two working days af",
+     "y=391 x=31 Amount",
+     "y=399 x=84 statement Date. T&C Apply",
+     "y=405 x=39 -1467",
+     "y=431 x=178 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 04 Jan 26 to 03 Feb 26",
+     "y=459 x=27 03 Jan 26",
+     "y=459 x=71 CARD CASHBACK CREDIT",
+     "y=459 x=373 4,191.00",
+     "y=459 x=415 C",
+     "y=471 x=27 20 Jan 26",
+     "y=471 x=71 PAYMENT RECEIVED 000BD016020BAKAAAFOMS6O",
+     "y=471 x=369 61,532.13",
+     "y=471 x=415 C",
+     "y=483 x=71 TRANSACTIONS FOR SHUBHAM DESHMUKH"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 213.1,
+      "x1": 403.8,
+      "y": 60.1
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.1,
+      "x1": 294.2,
+      "y": 83.4
+     },
+     {
+      "t": "For this year",
+      "x0": 354.4,
+      "x1": 408.0,
+      "y": 83.4
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 455.6,
+      "x1": 556.2,
+      "y": 83.4
+     },
+     {
+      "t": "( ` )#",
+      "x0": 97.3,
+      "x1": 116.3,
+      "y": 97.2
+     },
+     {
+      "t": "Offer Cashback",
+      "x0": 36.5,
+      "x1": 92.2,
+      "y": 97.8
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 37.4,
+      "x1": 125.8,
+      "y": 108.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 125.6,
+      "x1": 144.6,
+      "y": 109.0
+     },
+     {
+      "t": "Card Cashback",
+      "x0": 36.5,
+      "x1": 90.6,
+      "y": 120.6
+     },
+     {
+      "t": "( ` )#",
+      "x0": 94.2,
+      "x1": 113.2,
+      "y": 120.8
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 199.6,
+      "y": 134.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 97.8,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 109.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 109.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 109.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "-1467",
+      "value": -1467.0,
+      "x": 247.6,
+      "y": 121.4,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 20.8
+     },
+     {
+      "value_text": "-1467",
+      "value": -1467.0,
+      "x": 366.8,
+      "y": 121.4,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 20.8
+     },
+     {
+      "value_text": "44136",
+      "value": 44136.0,
+      "x": 495.3,
+      "y": 121.4,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 22.7
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 2,
+    "y": 60.1,
+    "raw_lines": [
+     "y=60 x=213 SAVINGS AND BENEFITS SECTION",
+     "y=83 x=220 For this statement",
+     "y=83 x=354 For this year",
+     "y=83 x=456 From the card issue date",
+     "y=97 x=97 ( ` )#",
+     "y=98 x=36 Offer Cashback",
+     "y=98 x=250 0.00",
+     "y=98 x=369 0.00",
+     "y=98 x=499 0.00",
+     "y=109 x=37 Petrol Surcharge Waiver",
+     "y=109 x=126 ( ` )#",
+     "y=110 x=250 0.00",
+     "y=110 x=369 0.00",
+     "y=110 x=499 0.00",
+     "y=121 x=36 Card Cashback",
+     "y=121 x=94 ( ` )#",
+     "y=121 x=248 -1467",
+     "y=121 x=367 -1467",
+     "y=121 x=495 44136",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 456.0,
+      "y": 488.9
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 478.5,
+      "x1": 568.5,
+      "y": 488.9
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 274.9,
+      "y": 496.1
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 444.7,
+      "y": 500.7
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 540.0,
+      "y": 500.7
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 297.2,
+      "y": 506.3
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 438.3,
+      "x1": 513.9,
+      "y": 511.7
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 304.2,
+      "y": 516.5
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 542.7,
+      "y": 523.5
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 285.8,
+      "y": 526.7
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 424.9,
+      "x1": 574.6,
+      "y": 535.4
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 74.2,
+      "y": 536.9
+     },
+     {
+      "t": "W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+      "x0": 51.0,
+      "x1": 290.1,
+      "y": 547.0
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 333.7,
+      "x1": 562.0,
+      "y": 553.8
+     },
+     {
+      "t": "200 will be applicable on outstanding payments made via",
+      "x0": 51.0,
+      "x1": 274.4,
+      "y": 557.2
+     },
+     {
+      "t": "Cheque. This revision is reflective of the increased operational",
+      "x0": 51.0,
+      "x1": 293.8,
+      "y": 567.4
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 566.4,
+      "y": 569.7
+     },
+     {
+      "t": "cost associated with offline payment modes. Payments made",
+      "x0": 51.0,
+      "x1": 288.3,
+      "y": 577.6
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 557.3,
+      "y": 579.9
+     },
+     {
+      "t": "through digital channels such as UPI, BBPS, NEFT, etc will",
+      "x0": 51.0,
+      "x1": 275.2,
+      "y": 587.8
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 561.1,
+      "y": 590.1
+     },
+     {
+      "t": "continue to be free of any additional charges. We encourage our",
+      "x0": 51.0,
+      "x1": 302.3,
+      "y": 597.9
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 492.2,
+      "y": 600.3
+     },
+     {
+      "t": "cardholders to explore digital modes for hassle-free payments &",
+      "x0": 51.0,
+      "x1": 301.4,
+      "y": 608.1
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 568.9,
+      "y": 610.5
+     },
+     {
+      "t": "faster credits.",
+      "x0": 51.0,
+      "x1": 103.8,
+      "y": 618.3
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 2,
+    "y": 488.9,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=478 Subscribe to Estatement:",
+     "y=496 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=506 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=438 Duplicate Statement:",
+     "y=516 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=527 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=535 x=425 XXXX = Last 4 Digits of the Card No.",
+     "y=537 x=51 MITC.",
+     "y=547 x=51 W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+     "y=554 x=334 Important Information on Disputed Transaction(s):",
+     "y=557 x=51 200 will be applicable on outstanding payments made via",
+     "y=567 x=51 Cheque. This revision is reflective of the increased operational",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=578 x=51 cost associated with offline payment modes. Payments made",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=588 x=51 through digital channels such as UPI, BBPS, NEFT, etc will",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=598 x=51 continue to be free of any additional charges. We encourage our",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=608 x=51 cardholders to explore digital modes for hassle-free payments &",
+     "y=610 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=618 x=51 faster credits."
+    ]
+   }
+  ]
+ },
+ "1118980175": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "CASHBACK SUMMARY FOR THIS STATEMENT",
+      "x0": 101.3,
+      "x1": 306.1,
+      "y": 363.7
+     },
+     {
+      "t": "CASHBACK",
+      "x0": 27.2,
+      "x1": 69.1,
+      "y": 383.1
+     },
+     {
+      "t": "Cashback will be posted to your SBI Card Account within two working days after",
+      "x0": 104.4,
+      "x1": 417.5,
+      "y": 389.1
+     },
+     {
+      "t": "Amount",
+      "x0": 34.6,
+      "x1": 61.8,
+      "y": 392.2
+     },
+     {
+      "t": "statement Date. T&C Apply",
+      "x0": 104.4,
+      "x1": 210.3,
+      "y": 399.3
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 178.4,
+      "x1": 247.6,
+      "y": 431.1
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 416.0,
+      "y": 432.0
+     },
+     {
+      "t": "Date",
+      "x0": 35.2,
+      "x1": 51.9,
+      "y": 432.7
+     },
+     {
+      "t": "Amount",
+      "x0": 371.0,
+      "x1": 399.5,
+      "y": 432.7
+     },
+     {
+      "t": "for Statement Period: 20 Jan 26 to 19 Feb 26",
+      "x0": 157.0,
+      "x1": 292.3,
+      "y": 440.8
+     },
+     {
+      "t": "19 Jan 26",
+      "x0": 27.2,
+      "x1": 59.9,
+      "y": 459.4
+     },
+     {
+      "t": "CARD CASHBACK CREDIT",
+      "x0": 70.7,
+      "x1": 160.6,
+      "y": 459.4
+     },
+     {
+      "t": "04 Feb 26",
+      "x0": 26.1,
+      "x1": 61.0,
+      "y": 471.2
+     },
+     {
+      "t": "PAYMENT RECEIVED 000DP0160351314507LHznU",
+      "x0": 70.7,
+      "x1": 248.5,
+      "y": 471.2
+     },
+     {
+      "t": "06 Feb 26",
+      "x0": 26.1,
+      "x1": 61.0,
+      "y": 483.0
+     },
+     {
+      "t": "PAYMENT RECEIVED 000DP0160371907445iL8s8",
+      "x0": 70.7,
+      "x1": 244.8,
+      "y": 483.0
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "1,525.25",
+      "value": 1525.25,
+      "x": 29.2,
+      "y": 402.0,
+      "bound_label": "CASHBACK",
+      "label_y": 383.1,
+      "overlap_score": 31.7
+     },
+     {
+      "value_text": "1,544.50",
+      "value": 1544.5,
+      "x": 373.3,
+      "y": 459.4,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 26.2
+     },
+     {
+      "value_text": "28,548.00",
+      "value": 28548.0,
+      "x": 368.8,
+      "y": 471.2,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 28.5
+     },
+     {
+      "value_text": "75,000.00",
+      "value": 75000.0,
+      "x": 368.8,
+      "y": 483.0,
+      "bound_label": null,
+      "label_y": null,
+      "overlap_score": -1.0
+     }
+    ],
+    "header": "CASHBACK SUMMARY FOR THIS STATEMENT",
+    "header_key": "CASHBACK SUMMARY",
+    "page": 0,
+    "y": 363.7,
+    "raw_lines": [
+     "y=364 x=101 CASHBACK SUMMARY FOR THIS STATEMENT",
+     "y=383 x=27 CASHBACK",
+     "y=389 x=104 Cashback will be posted to your SBI Card Account within two working days after",
+     "y=392 x=35 Amount",
+     "y=399 x=104 statement Date. T&C Apply",
+     "y=402 x=29 1,525.25",
+     "y=431 x=178 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 20 Jan 26 to 19 Feb 26",
+     "y=459 x=27 19 Jan 26",
+     "y=459 x=71 CARD CASHBACK CREDIT",
+     "y=459 x=373 1,544.50",
+     "y=459 x=415 C",
+     "y=471 x=26 04 Feb 26",
+     "y=471 x=71 PAYMENT RECEIVED 000DP0160351314507LHznU",
+     "y=471 x=369 28,548.00",
+     "y=471 x=415 C",
+     "y=483 x=26 06 Feb 26",
+     "y=483 x=71 PAYMENT RECEIVED 000DP0160371907445iL8s8",
+     "y=483 x=369 75,000.00",
+     "y=483 x=415 C"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 213.1,
+      "x1": 403.8,
+      "y": 60.1
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.1,
+      "x1": 294.2,
+      "y": 83.4
+     },
+     {
+      "t": "For this year",
+      "x0": 354.4,
+      "x1": 408.0,
+      "y": 83.4
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 455.6,
+      "x1": 556.2,
+      "y": 83.4
+     },
+     {
+      "t": "( ` )#",
+      "x0": 97.3,
+      "x1": 116.3,
+      "y": 97.2
+     },
+     {
+      "t": "Offer Cashback",
+      "x0": 36.5,
+      "x1": 92.2,
+      "y": 97.8
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 37.4,
+      "x1": 125.8,
+      "y": 108.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 125.6,
+      "x1": 144.6,
+      "y": 109.0
+     },
+     {
+      "t": "Card Cashback",
+      "x0": 36.5,
+      "x1": 90.6,
+      "y": 120.6
+     },
+     {
+      "t": "( ` )#",
+      "x0": 94.2,
+      "x1": 113.2,
+      "y": 120.8
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 199.6,
+      "y": 134.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 97.8,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 109.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "5.40",
+      "value": 5.4,
+      "x": 369.3,
+      "y": 109.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "5.40",
+      "value": 5.4,
+      "x": 498.8,
+      "y": 109.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "1,525.25",
+      "value": 1525.25,
+      "x": 242.9,
+      "y": 120.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 31.7
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 120.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 15.9
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 500.4,
+      "y": 120.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 1,
+    "y": 60.1,
+    "raw_lines": [
+     "y=60 x=213 SAVINGS AND BENEFITS SECTION",
+     "y=83 x=220 For this statement",
+     "y=83 x=354 For this year",
+     "y=83 x=456 From the card issue date",
+     "y=97 x=97 ( ` )#",
+     "y=98 x=36 Offer Cashback",
+     "y=98 x=250 0.00",
+     "y=98 x=369 0.00",
+     "y=98 x=499 0.00",
+     "y=109 x=37 Petrol Surcharge Waiver",
+     "y=109 x=126 ( ` )#",
+     "y=110 x=250 0.00",
+     "y=110 x=369 5.40",
+     "y=110 x=499 5.40",
+     "y=121 x=36 Card Cashback",
+     "y=121 x=243 1,525.25",
+     "y=121 x=369 0.00",
+     "y=121 x=500 0.00",
+     "y=121 x=94 ( ` )#",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 456.0,
+      "y": 488.9
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 478.5,
+      "x1": 568.5,
+      "y": 488.9
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 274.9,
+      "y": 496.1
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 444.7,
+      "y": 500.7
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 540.0,
+      "y": 500.7
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 297.2,
+      "y": 506.3
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 438.3,
+      "x1": 513.9,
+      "y": 511.7
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 304.2,
+      "y": 516.5
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 542.7,
+      "y": 523.5
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 285.8,
+      "y": 526.7
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 424.9,
+      "x1": 574.6,
+      "y": 535.4
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 74.2,
+      "y": 536.9
+     },
+     {
+      "t": "W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+      "x0": 51.0,
+      "x1": 290.1,
+      "y": 547.0
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 333.7,
+      "x1": 562.0,
+      "y": 553.8
+     },
+     {
+      "t": "200 will be applicable on outstanding payments made via",
+      "x0": 51.0,
+      "x1": 274.4,
+      "y": 557.2
+     },
+     {
+      "t": "Cheque. This revision is reflective of the increased operational",
+      "x0": 51.0,
+      "x1": 293.8,
+      "y": 567.4
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 566.4,
+      "y": 569.7
+     },
+     {
+      "t": "cost associated with offline payment modes. Payments made",
+      "x0": 51.0,
+      "x1": 288.3,
+      "y": 577.6
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 557.3,
+      "y": 579.9
+     },
+     {
+      "t": "through digital channels such as UPI, BBPS, NEFT, etc will",
+      "x0": 51.0,
+      "x1": 275.2,
+      "y": 587.8
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 561.1,
+      "y": 590.1
+     },
+     {
+      "t": "continue to be free of any additional charges. We encourage our",
+      "x0": 51.0,
+      "x1": 302.3,
+      "y": 597.9
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 492.2,
+      "y": 600.3
+     },
+     {
+      "t": "cardholders to explore digital modes for hassle-free payments &",
+      "x0": 51.0,
+      "x1": 301.4,
+      "y": 608.1
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 568.9,
+      "y": 610.5
+     },
+     {
+      "t": "faster credits.",
+      "x0": 51.0,
+      "x1": 103.8,
+      "y": 618.3
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 1,
+    "y": 488.9,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=478 Subscribe to Estatement:",
+     "y=496 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=506 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=438 Duplicate Statement:",
+     "y=516 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=527 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=535 x=425 XXXX = Last 4 Digits of the Card No.",
+     "y=537 x=51 MITC.",
+     "y=547 x=51 W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+     "y=554 x=334 Important Information on Disputed Transaction(s):",
+     "y=557 x=51 200 will be applicable on outstanding payments made via",
+     "y=567 x=51 Cheque. This revision is reflective of the increased operational",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=578 x=51 cost associated with offline payment modes. Payments made",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=588 x=51 through digital channels such as UPI, BBPS, NEFT, etc will",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=598 x=51 continue to be free of any additional charges. We encourage our",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=608 x=51 cardholders to explore digital modes for hassle-free payments &",
+     "y=610 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=618 x=51 faster credits."
+    ]
+   }
+  ]
+ },
+ "221159806": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "SHOP & SMILE SUMMARY",
+      "x0": 175.0,
+      "x1": 292.8,
+      "y": 362.2
+     },
+     {
+      "t": "Redeemed/Expired",
+      "x0": 160.3,
+      "x1": 209.5,
+      "y": 387.0
+     },
+     {
+      "t": "Previous Balance",
+      "x0": 27.6,
+      "x1": 71.8,
+      "y": 391.7
+     },
+     {
+      "t": "Earned",
+      "x0": 107.9,
+      "x1": 125.7,
+      "y": 391.7
+     },
+     {
+      "t": "Closing Balance",
+      "x0": 229.6,
+      "x1": 270.5,
+      "y": 391.7
+     },
+     {
+      "t": "Points Expiry Details",
+      "x0": 326.4,
+      "x1": 379.3,
+      "y": 391.7
+     },
+     {
+      "t": "/Forfeited",
+      "x0": 171.7,
+      "x1": 198.0,
+      "y": 392.8
+     },
+     {
+      "t": "NONE",
+      "x0": 341.5,
+      "x1": 365.9,
+      "y": 405.7
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 178.4,
+      "x1": 247.6,
+      "y": 431.1
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 416.0,
+      "y": 432.0
+     },
+     {
+      "t": "Date",
+      "x0": 35.2,
+      "x1": 51.9,
+      "y": 432.7
+     },
+     {
+      "t": "Amount",
+      "x0": 371.0,
+      "x1": 399.5,
+      "y": 432.7
+     },
+     {
+      "t": "for Statement Period: 04 Nov 25 to 03 Dec 25",
+      "x0": 157.0,
+      "x1": 296.9,
+      "y": 440.8
+     },
+     {
+      "t": "03 Dec 25",
+      "x0": 25.5,
+      "x1": 61.6,
+      "y": 459.4
+     },
+     {
+      "t": "ANNUAL FEE CHARGED    (EXCL TAX  269.82)",
+      "x0": 70.7,
+      "x1": 231.3,
+      "y": 459.4
+     },
+     {
+      "t": "IGST DB @ 18.00%",
+      "x0": 70.7,
+      "x1": 139.7,
+      "y": 471.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "18068",
+      "value": 18068.0,
+      "x": 36.8,
+      "y": 405.1,
+      "bound_label": "Previous Balance",
+      "label_y": 391.7,
+      "overlap_score": 22.7
+     },
+     {
+      "value_text": "0",
+      "value": 0.0,
+      "x": 112.6,
+      "y": 405.1,
+      "bound_label": "Earned",
+      "label_y": 391.7,
+      "overlap_score": 4.5
+     },
+     {
+      "value_text": "0",
+      "value": 0.0,
+      "x": 179.3,
+      "y": 405.1,
+      "bound_label": "Redeemed/Expired",
+      "label_y": 387.0,
+      "overlap_score": 4.5
+     },
+     {
+      "value_text": "18068",
+      "value": 18068.0,
+      "x": 238.5,
+      "y": 405.1,
+      "bound_label": "Closing Balance",
+      "label_y": 391.7,
+      "overlap_score": 22.7
+     },
+     {
+      "value_text": "1,499.00",
+      "value": 1499.0,
+      "x": 373.3,
+      "y": 459.4,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 26.2
+     },
+     {
+      "value_text": "269.82",
+      "value": 269.82,
+      "x": 380.1,
+      "y": 471.2,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 19.4
+     }
+    ],
+    "header": "SHOP & SMILE SUMMARY",
+    "header_key": "SHOP & SMILE SUMMARY",
+    "page": 0,
+    "y": 362.2,
+    "raw_lines": [
+     "y=362 x=175 SHOP & SMILE SUMMARY",
+     "y=387 x=160 Redeemed/Expired",
+     "y=392 x=28 Previous Balance",
+     "y=392 x=108 Earned",
+     "y=392 x=230 Closing Balance",
+     "y=392 x=326 Points Expiry Details",
+     "y=393 x=172 /Forfeited",
+     "y=405 x=37 18068",
+     "y=405 x=113 0",
+     "y=405 x=179 0",
+     "y=405 x=238 18068",
+     "y=406 x=342 NONE",
+     "y=431 x=178 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 04 Nov 25 to 03 Dec 25",
+     "y=459 x=26 03 Dec 25",
+     "y=459 x=71 ANNUAL FEE CHARGED    (EXCL TAX  269.82)",
+     "y=459 x=373 1,499.00",
+     "y=459 x=415 D",
+     "y=471 x=71 IGST DB @ 18.00%",
+     "y=471 x=380 269.82",
+     "y=471 x=415 D"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 213.1,
+      "x1": 403.8,
+      "y": 60.1
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.1,
+      "x1": 294.2,
+      "y": 83.4
+     },
+     {
+      "t": "For this year",
+      "x0": 354.4,
+      "x1": 408.0,
+      "y": 83.4
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 455.6,
+      "x1": 556.2,
+      "y": 83.4
+     },
+     {
+      "t": "Cash Back",
+      "x0": 37.2,
+      "x1": 74.5,
+      "y": 97.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 75.4,
+      "x1": 94.3,
+      "y": 97.9
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 38.2,
+      "x1": 126.6,
+      "y": 108.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 128.0,
+      "x1": 146.9,
+      "y": 109.0
+     },
+     {
+      "t": "Reward Points",
+      "x0": 37.5,
+      "x1": 89.6,
+      "y": 120.6
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 199.6,
+      "y": 134.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 97.8,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 109.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 109.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "318.83",
+      "value": 318.83,
+      "x": 494.2,
+      "y": 109.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 24.9
+     },
+     {
+      "value_text": "0",
+      "value": 0.0,
+      "x": 255.8,
+      "y": 121.4,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 4.5
+     },
+     {
+      "value_text": "2",
+      "value": 2.0,
+      "x": 375.0,
+      "y": 121.4,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 4.5
+     },
+     {
+      "value_text": "18068",
+      "value": 18068.0,
+      "x": 495.3,
+      "y": 121.4,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 22.7
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 1,
+    "y": 60.1,
+    "raw_lines": [
+     "y=60 x=213 SAVINGS AND BENEFITS SECTION",
+     "y=83 x=220 For this statement",
+     "y=83 x=354 For this year",
+     "y=83 x=456 From the card issue date",
+     "y=98 x=37 Cash Back",
+     "y=98 x=250 0.00",
+     "y=98 x=369 0.00",
+     "y=98 x=499 0.00",
+     "y=98 x=75 ( ` )#",
+     "y=109 x=38 Petrol Surcharge Waiver",
+     "y=109 x=128 ( ` )#",
+     "y=110 x=250 0.00",
+     "y=110 x=369 0.00",
+     "y=110 x=494 318.83",
+     "y=121 x=38 Reward Points",
+     "y=121 x=256 0",
+     "y=121 x=375 2",
+     "y=121 x=495 18068",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 456.0,
+      "y": 488.9
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 478.5,
+      "x1": 568.5,
+      "y": 488.9
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 274.9,
+      "y": 496.1
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 444.7,
+      "y": 500.7
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 540.0,
+      "y": 500.7
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 297.2,
+      "y": 506.3
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 438.3,
+      "x1": 513.9,
+      "y": 511.7
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 304.2,
+      "y": 516.5
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 542.7,
+      "y": 523.5
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 285.8,
+      "y": 526.7
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 424.9,
+      "x1": 574.6,
+      "y": 535.4
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 74.2,
+      "y": 536.9
+     },
+     {
+      "t": "W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+      "x0": 51.0,
+      "x1": 290.1,
+      "y": 547.0
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 333.7,
+      "x1": 562.0,
+      "y": 553.8
+     },
+     {
+      "t": "200 will be applicable on outstanding payments made via",
+      "x0": 51.0,
+      "x1": 274.4,
+      "y": 557.2
+     },
+     {
+      "t": "Cheque. This revision is reflective of the increased operational",
+      "x0": 51.0,
+      "x1": 293.8,
+      "y": 567.4
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 566.4,
+      "y": 569.7
+     },
+     {
+      "t": "cost associated with offline payment modes. Payments made",
+      "x0": 51.0,
+      "x1": 288.3,
+      "y": 577.6
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 557.3,
+      "y": 579.9
+     },
+     {
+      "t": "through digital channels such as UPI, BBPS, NEFT, etc will",
+      "x0": 51.0,
+      "x1": 275.2,
+      "y": 587.8
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 561.1,
+      "y": 590.1
+     },
+     {
+      "t": "continue to be free of any additional charges. We encourage our",
+      "x0": 51.0,
+      "x1": 302.3,
+      "y": 597.9
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 492.2,
+      "y": 600.3
+     },
+     {
+      "t": "cardholders to explore digital modes for hassle-free payments &",
+      "x0": 51.0,
+      "x1": 301.4,
+      "y": 608.1
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 568.9,
+      "y": 610.5
+     },
+     {
+      "t": "faster credits.",
+      "x0": 51.0,
+      "x1": 103.8,
+      "y": 618.3
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 1,
+    "y": 488.9,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=478 Subscribe to Estatement:",
+     "y=496 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=506 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=438 Duplicate Statement:",
+     "y=516 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=527 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=535 x=425 XXXX = Last 4 Digits of the Card No.",
+     "y=537 x=51 MITC.",
+     "y=547 x=51 W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+     "y=554 x=334 Important Information on Disputed Transaction(s):",
+     "y=557 x=51 200 will be applicable on outstanding payments made via",
+     "y=567 x=51 Cheque. This revision is reflective of the increased operational",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=578 x=51 cost associated with offline payment modes. Payments made",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=588 x=51 through digital channels such as UPI, BBPS, NEFT, etc will",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=598 x=51 continue to be free of any additional charges. We encourage our",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=608 x=51 cardholders to explore digital modes for hassle-free payments &",
+     "y=610 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=618 x=51 faster credits."
+    ]
+   }
+  ]
+ },
+ "393366914": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "REWARD SUMMARY",
+      "x0": 187.2,
+      "x1": 278.7,
+      "y": 364.5
+     },
+     {
+      "t": "Please Note:",
+      "x0": 104.4,
+      "x1": 142.2,
+      "y": 384.9
+     },
+     {
+      "t": "Reward Points",
+      "x0": 28.5,
+      "x1": 80.5,
+      "y": 387.0
+     },
+     {
+      "t": "\u2022 Reward Points earned will be automatically credited to your OLA Money account.",
+      "x0": 104.4,
+      "x1": 354.3,
+      "y": 393.0
+     },
+     {
+      "t": "\u2022The redemption of Reward Points will be governed by Terms & Conditions of SBICPSL and OLA Money.",
+      "x0": 104.4,
+      "x1": 419.1,
+      "y": 401.2
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 178.4,
+      "x1": 247.6,
+      "y": 431.1
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 416.0,
+      "y": 432.0
+     },
+     {
+      "t": "Date",
+      "x0": 35.2,
+      "x1": 51.9,
+      "y": 432.7
+     },
+     {
+      "t": "Amount",
+      "x0": 371.0,
+      "x1": 399.5,
+      "y": 432.7
+     },
+     {
+      "t": "for Statement Period: 24 Dec 25 to 23 Jan 26",
+      "x0": 157.0,
+      "x1": 293.3,
+      "y": 440.8
+     },
+     {
+      "t": "02 Jan 26",
+      "x0": 27.2,
+      "x1": 59.9,
+      "y": 459.4
+     },
+     {
+      "t": "PAYMENT RECEIVED 000PP016002BB4FD0TIJ265",
+      "x0": 70.7,
+      "x1": 243.5,
+      "y": 459.4
+     },
+     {
+      "t": "02 Jan 26",
+      "x0": 27.2,
+      "x1": 59.9,
+      "y": 471.2
+     },
+     {
+      "t": "PAYMENT RECEIVED 000PP016002BB6FZ0TLZ150",
+      "x0": 70.7,
+      "x1": 246.6,
+      "y": 471.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0",
+      "value": 0.0,
+      "x": 55.2,
+      "y": 402.8,
+      "bound_label": "Reward Points",
+      "label_y": 387.0,
+      "overlap_score": 4.6
+     },
+     {
+      "value_text": "5.00",
+      "value": 5.0,
+      "x": 389.1,
+      "y": 459.4,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 10.4
+     },
+     {
+      "value_text": "10,681.00",
+      "value": 10681.0,
+      "x": 368.8,
+      "y": 471.2,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 28.5
+     }
+    ],
+    "header": "REWARD SUMMARY",
+    "header_key": "REWARD SUMMARY",
+    "page": 0,
+    "y": 364.5,
+    "raw_lines": [
+     "y=364 x=187 REWARD SUMMARY",
+     "y=385 x=104 Please Note:",
+     "y=387 x=28 Reward Points",
+     "y=393 x=104 \u2022 Reward Points earned will be automatically credited to your OLA Money account.",
+     "y=401 x=104 \u2022The redemption of Reward Points will be governed by Terms & Conditions of SBICP",
+     "y=403 x=55 0",
+     "y=431 x=178 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 24 Dec 25 to 23 Jan 26",
+     "y=459 x=27 02 Jan 26",
+     "y=459 x=71 PAYMENT RECEIVED 000PP016002BB4FD0TIJ265",
+     "y=459 x=389 5.00",
+     "y=459 x=415 C",
+     "y=471 x=27 02 Jan 26",
+     "y=471 x=71 PAYMENT RECEIVED 000PP016002BB6FZ0TLZ150",
+     "y=471 x=369 10,681.00",
+     "y=471 x=415 C"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 213.1,
+      "x1": 403.8,
+      "y": 60.1
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.1,
+      "x1": 294.2,
+      "y": 83.4
+     },
+     {
+      "t": "For this year",
+      "x0": 354.4,
+      "x1": 408.0,
+      "y": 83.4
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 455.6,
+      "x1": 556.2,
+      "y": 83.4
+     },
+     {
+      "t": "Cash Back",
+      "x0": 37.2,
+      "x1": 74.5,
+      "y": 97.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 75.4,
+      "x1": 94.3,
+      "y": 97.9
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 38.2,
+      "x1": 126.6,
+      "y": 108.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 128.0,
+      "x1": 146.9,
+      "y": 109.0
+     },
+     {
+      "t": "Reward Points",
+      "x0": 37.5,
+      "x1": 89.6,
+      "y": 120.6
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 199.6,
+      "y": 134.2
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 97.8,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 109.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 109.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 109.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0",
+      "value": 0.0,
+      "x": 255.8,
+      "y": 121.4,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 4.5
+     },
+     {
+      "value_text": "0",
+      "value": 0.0,
+      "x": 375.0,
+      "y": 121.4,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 4.5
+     },
+     {
+      "value_text": "5828",
+      "value": 5828.0,
+      "x": 497.6,
+      "y": 121.4,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 18.1
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 1,
+    "y": 60.1,
+    "raw_lines": [
+     "y=60 x=213 SAVINGS AND BENEFITS SECTION",
+     "y=83 x=220 For this statement",
+     "y=83 x=354 For this year",
+     "y=83 x=456 From the card issue date",
+     "y=98 x=37 Cash Back",
+     "y=98 x=250 0.00",
+     "y=98 x=369 0.00",
+     "y=98 x=499 0.00",
+     "y=98 x=75 ( ` )#",
+     "y=109 x=38 Petrol Surcharge Waiver",
+     "y=109 x=128 ( ` )#",
+     "y=110 x=250 0.00",
+     "y=110 x=369 0.00",
+     "y=110 x=499 0.00",
+     "y=121 x=38 Reward Points",
+     "y=121 x=256 0",
+     "y=121 x=375 0",
+     "y=121 x=498 5828",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011."
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 456.0,
+      "y": 488.9
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 478.5,
+      "x1": 568.5,
+      "y": 488.9
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 274.9,
+      "y": 496.1
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 444.7,
+      "y": 500.7
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 540.0,
+      "y": 500.7
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 297.2,
+      "y": 506.3
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 438.3,
+      "x1": 513.9,
+      "y": 511.7
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 304.2,
+      "y": 516.5
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 542.7,
+      "y": 523.5
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 285.8,
+      "y": 526.7
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 424.9,
+      "x1": 574.6,
+      "y": 535.4
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 74.2,
+      "y": 536.9
+     },
+     {
+      "t": "W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+      "x0": 51.0,
+      "x1": 290.1,
+      "y": 547.0
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 333.7,
+      "x1": 562.0,
+      "y": 553.8
+     },
+     {
+      "t": "200 will be applicable on outstanding payments made via",
+      "x0": 51.0,
+      "x1": 274.4,
+      "y": 557.2
+     },
+     {
+      "t": "Cheque. This revision is reflective of the increased operational",
+      "x0": 51.0,
+      "x1": 293.8,
+      "y": 567.4
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 566.4,
+      "y": 569.7
+     },
+     {
+      "t": "cost associated with offline payment modes. Payments made",
+      "x0": 51.0,
+      "x1": 288.3,
+      "y": 577.6
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 557.3,
+      "y": 579.9
+     },
+     {
+      "t": "through digital channels such as UPI, BBPS, NEFT, etc will",
+      "x0": 51.0,
+      "x1": 275.2,
+      "y": 587.8
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 561.1,
+      "y": 590.1
+     },
+     {
+      "t": "continue to be free of any additional charges. We encourage our",
+      "x0": 51.0,
+      "x1": 302.3,
+      "y": 597.9
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 492.2,
+      "y": 600.3
+     },
+     {
+      "t": "cardholders to explore digital modes for hassle-free payments &",
+      "x0": 51.0,
+      "x1": 301.4,
+      "y": 608.1
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 568.9,
+      "y": 610.5
+     },
+     {
+      "t": "faster credits.",
+      "x0": 51.0,
+      "x1": 103.8,
+      "y": 618.3
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 1,
+    "y": 488.9,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=478 Subscribe to Estatement:",
+     "y=496 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=506 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=438 Duplicate Statement:",
+     "y=516 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=527 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=535 x=425 XXXX = Last 4 Digits of the Card No.",
+     "y=537 x=51 MITC.",
+     "y=547 x=51 W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+     "y=554 x=334 Important Information on Disputed Transaction(s):",
+     "y=557 x=51 200 will be applicable on outstanding payments made via",
+     "y=567 x=51 Cheque. This revision is reflective of the increased operational",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=578 x=51 cost associated with offline payment modes. Payments made",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=588 x=51 through digital channels such as UPI, BBPS, NEFT, etc will",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=598 x=51 continue to be free of any additional charges. We encourage our",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=608 x=51 cardholders to explore digital modes for hassle-free payments &",
+     "y=610 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=618 x=51 faster credits."
+    ]
+   }
+  ]
+ },
+ "905768587": {
+  "blocks": [
+   {
+    "labels": [
+     {
+      "t": "CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+      "x0": 101.3,
+      "x1": 335.0,
+      "y": 363.7
+     },
+     {
+      "t": "CASHBACK",
+      "x0": 23.1,
+      "x1": 70.2,
+      "y": 380.5
+     },
+     {
+      "t": "Card Cashback will be posted to your SBI Card Account within two working days after",
+      "x0": 84.0,
+      "x1": 417.9,
+      "y": 389.1
+     },
+     {
+      "t": "Amount",
+      "x0": 31.4,
+      "x1": 61.9,
+      "y": 390.7
+     },
+     {
+      "t": "statement Date. T&C Apply",
+      "x0": 84.0,
+      "x1": 189.9,
+      "y": 399.3
+     },
+     {
+      "t": "Transaction Details",
+      "x0": 178.4,
+      "x1": 247.6,
+      "y": 431.1
+     },
+     {
+      "t": "( ` )",
+      "x0": 402.7,
+      "x1": 416.0,
+      "y": 432.0
+     },
+     {
+      "t": "Date",
+      "x0": 35.2,
+      "x1": 51.9,
+      "y": 432.7
+     },
+     {
+      "t": "Amount",
+      "x0": 371.0,
+      "x1": 399.5,
+      "y": 432.7
+     },
+     {
+      "t": "for Statement Period: 04 May 26 to 03 Jun 26",
+      "x0": 157.0,
+      "x1": 294.8,
+      "y": 440.8
+     },
+     {
+      "t": "03 May 26",
+      "x0": 24.8,
+      "x1": 62.3,
+      "y": 459.4
+     },
+     {
+      "t": "CARD CASHBACK CREDIT",
+      "x0": 70.7,
+      "x1": 160.6,
+      "y": 459.4
+     },
+     {
+      "t": "05 May 26",
+      "x0": 24.8,
+      "x1": 62.3,
+      "y": 471.2
+     },
+     {
+      "t": "PAYMENT RECEIVED 000BD016125BALAAAJK2ZQ9",
+      "x0": 70.7,
+      "x1": 250.5,
+      "y": 471.2
+     },
+     {
+      "t": "03 Jun 26",
+      "x0": 27.0,
+      "x1": 60.1,
+      "y": 483.0
+     },
+     {
+      "t": "FP EMI 03/06(EXCL TAX   16.29)",
+      "x0": 70.7,
+      "x1": 185.3,
+      "y": 483.0
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "453",
+      "value": 453.0,
+      "x": 42.2,
+      "y": 405.1,
+      "bound_label": "CASHBACK",
+      "label_y": 380.5,
+      "overlap_score": 13.6
+     },
+     {
+      "value_text": "260.00",
+      "value": 260.0,
+      "x": 380.1,
+      "y": 459.4,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 19.4
+     },
+     {
+      "value_text": "42,987.65",
+      "value": 42987.65,
+      "x": 368.8,
+      "y": 471.2,
+      "bound_label": "Amount",
+      "label_y": 432.7,
+      "overlap_score": 28.5
+     },
+     {
+      "value_text": "1,702.29",
+      "value": 1702.29,
+      "x": 373.3,
+      "y": 483.0,
+      "bound_label": null,
+      "label_y": null,
+      "overlap_score": -1.0
+     }
+    ],
+    "header": "CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+    "header_key": "CARD CASHBACK SUMMARY",
+    "page": 0,
+    "y": 363.7,
+    "raw_lines": [
+     "y=364 x=101 CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+     "y=380 x=23 CASHBACK",
+     "y=389 x=84 Card Cashback will be posted to your SBI Card Account within two working days af",
+     "y=391 x=31 Amount",
+     "y=399 x=84 statement Date. T&C Apply",
+     "y=405 x=42 453",
+     "y=431 x=178 Transaction Details",
+     "y=432 x=403 ( ` )",
+     "y=433 x=35 Date",
+     "y=433 x=371 Amount",
+     "y=441 x=157 for Statement Period: 04 May 26 to 03 Jun 26",
+     "y=459 x=25 03 May 26",
+     "y=459 x=71 CARD CASHBACK CREDIT",
+     "y=459 x=380 260.00",
+     "y=459 x=415 C",
+     "y=471 x=25 05 May 26",
+     "y=471 x=71 PAYMENT RECEIVED 000BD016125BALAAAJK2ZQ9",
+     "y=471 x=369 42,987.65",
+     "y=471 x=415 C",
+     "y=483 x=27 03 Jun 26",
+     "y=483 x=71 FP EMI 03/06(EXCL TAX   16.29)",
+     "y=483 x=373 1,702.29",
+     "y=483 x=414 M"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "SAVINGS AND BENEFITS SECTION",
+      "x0": 213.1,
+      "x1": 403.8,
+      "y": 60.1
+     },
+     {
+      "t": "For this statement",
+      "x0": 220.1,
+      "x1": 294.2,
+      "y": 83.4
+     },
+     {
+      "t": "For this year",
+      "x0": 354.4,
+      "x1": 408.0,
+      "y": 83.4
+     },
+     {
+      "t": "From the card issue date",
+      "x0": 455.6,
+      "x1": 556.2,
+      "y": 83.4
+     },
+     {
+      "t": "( ` )#",
+      "x0": 97.3,
+      "x1": 116.3,
+      "y": 97.2
+     },
+     {
+      "t": "Offer Cashback",
+      "x0": 36.5,
+      "x1": 92.2,
+      "y": 97.8
+     },
+     {
+      "t": "Petrol Surcharge Waiver",
+      "x0": 37.4,
+      "x1": 125.8,
+      "y": 108.8
+     },
+     {
+      "t": "( ` )#",
+      "x0": 125.6,
+      "x1": 144.6,
+      "y": 109.0
+     },
+     {
+      "t": "Card Cashback",
+      "x0": 36.5,
+      "x1": 90.6,
+      "y": 120.6
+     },
+     {
+      "t": "( ` )#",
+      "x0": 94.2,
+      "x1": 113.2,
+      "y": 120.8
+     },
+     {
+      "t": "# with effect from transactions dated 17-Nov-2011.",
+      "x0": 43.2,
+      "x1": 199.6,
+      "y": 134.2
+     },
+     {
+      "t": "VALUE ADDED SERVICES",
+      "x0": 247.8,
+      "x1": 370.0,
+      "y": 183.7
+     }
+    ],
+    "bindings": [
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 97.8,
+      "bound_label": "SAVINGS AND BENEFITS SECTION",
+      "label_y": 60.1,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 97.8,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 250.1,
+      "y": 109.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 369.3,
+      "y": 109.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "0.00",
+      "value": 0.0,
+      "x": 498.8,
+      "y": 109.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 15.8
+     },
+     {
+      "value_text": "453",
+      "value": 453.0,
+      "x": 251.2,
+      "y": 120.6,
+      "bound_label": "For this statement",
+      "label_y": 83.4,
+      "overlap_score": 13.6
+     },
+     {
+      "value_text": "1623",
+      "value": 1623.0,
+      "x": 368.1,
+      "y": 120.6,
+      "bound_label": "For this year",
+      "label_y": 83.4,
+      "overlap_score": 18.2
+     },
+     {
+      "value_text": "13868",
+      "value": 13868.0,
+      "x": 495.3,
+      "y": 120.6,
+      "bound_label": "From the card issue date",
+      "label_y": 83.4,
+      "overlap_score": 22.7
+     }
+    ],
+    "header": "SAVINGS AND BENEFITS SECTION",
+    "header_key": "SAVINGS AND BENEFITS SECTION",
+    "page": 1,
+    "y": 60.1,
+    "raw_lines": [
+     "y=60 x=213 SAVINGS AND BENEFITS SECTION",
+     "y=83 x=220 For this statement",
+     "y=83 x=354 For this year",
+     "y=83 x=456 From the card issue date",
+     "y=97 x=97 ( ` )#",
+     "y=98 x=36 Offer Cashback",
+     "y=98 x=250 0.00",
+     "y=98 x=369 0.00",
+     "y=98 x=499 0.00",
+     "y=109 x=37 Petrol Surcharge Waiver",
+     "y=109 x=126 ( ` )#",
+     "y=110 x=250 0.00",
+     "y=110 x=369 0.00",
+     "y=110 x=499 0.00",
+     "y=121 x=36 Card Cashback",
+     "y=121 x=251 453",
+     "y=121 x=368 1623",
+     "y=121 x=495 13868",
+     "y=121 x=94 ( ` )#",
+     "y=134 x=43 # with effect from transactions dated 17-Nov-2011.",
+     "y=184 x=248 VALUE ADDED SERVICES"
+    ]
+   },
+   {
+    "labels": [
+     {
+      "t": "Reward Point Summary:",
+      "x0": 369.0,
+      "x1": 456.0,
+      "y": 488.9
+     },
+     {
+      "t": "Subscribe to Estatement:",
+      "x0": 478.5,
+      "x1": 568.5,
+      "y": 488.9
+     },
+     {
+      "t": "shall be entitled to demand immediate repayment of such",
+      "x0": 51.0,
+      "x1": 274.9,
+      "y": 496.1
+     },
+     {
+      "t": "REWARD XXXX",
+      "x0": 383.9,
+      "x1": 444.7,
+      "y": 500.7
+     },
+     {
+      "t": "ESTMT XXXX",
+      "x0": 471.0,
+      "x1": 540.0,
+      "y": 500.7
+     },
+     {
+      "t": "consolidated outstanding amounts. As a part of the Credit Card",
+      "x0": 51.0,
+      "x1": 297.2,
+      "y": 506.3
+     },
+     {
+      "t": "Duplicate Statement:",
+      "x0": 438.3,
+      "x1": 513.9,
+      "y": 511.7
+     },
+     {
+      "t": "Account, this balance will attract all applicable charges (including",
+      "x0": 51.0,
+      "x1": 304.2,
+      "y": 516.5
+     },
+     {
+      "t": "DSTMT XXXX Statement Period in MMYY",
+      "x0": 377.6,
+      "x1": 542.7,
+      "y": 523.5
+     },
+     {
+      "t": "finance charges at applicable interest rate) as outlined in the",
+      "x0": 51.0,
+      "x1": 285.8,
+      "y": 526.7
+     },
+     {
+      "t": "XXXX = Last 4 Digits of the Card No.",
+      "x0": 424.9,
+      "x1": 574.6,
+      "y": 535.4
+     },
+     {
+      "t": "MITC.",
+      "x0": 51.0,
+      "x1": 74.2,
+      "y": 536.9
+     },
+     {
+      "t": "W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+      "x0": 51.0,
+      "x1": 290.1,
+      "y": 547.0
+     },
+     {
+      "t": "Important Information on Disputed Transaction(s):",
+      "x0": 333.7,
+      "x1": 562.0,
+      "y": 553.8
+     },
+     {
+      "t": "200 will be applicable on outstanding payments made via",
+      "x0": 51.0,
+      "x1": 274.4,
+      "y": 557.2
+     },
+     {
+      "t": "Cheque. This revision is reflective of the increased operational",
+      "x0": 51.0,
+      "x1": 293.8,
+      "y": 567.4
+     },
+     {
+      "t": "\u2022Kindly note that this temporary credit (T) has been rendered to",
+      "x0": 316.4,
+      "x1": 566.4,
+      "y": 569.7
+     },
+     {
+      "t": "cost associated with offline payment modes. Payments made",
+      "x0": 51.0,
+      "x1": 288.3,
+      "y": 577.6
+     },
+     {
+      "t": "you in the interim and though the amount is included in your",
+      "x0": 316.4,
+      "x1": 557.3,
+      "y": 579.9
+     },
+     {
+      "t": "through digital channels such as UPI, BBPS, NEFT, etc will",
+      "x0": 51.0,
+      "x1": 275.2,
+      "y": 587.8
+     },
+     {
+      "t": "available credit limit, you will not be able to spend the amount",
+      "x0": 316.4,
+      "x1": 561.1,
+      "y": 590.1
+     },
+     {
+      "t": "continue to be free of any additional charges. We encourage our",
+      "x0": 51.0,
+      "x1": 302.3,
+      "y": 597.9
+     },
+     {
+      "t": "while the dispute is  still under investigation.",
+      "x0": 316.4,
+      "x1": 492.2,
+      "y": 600.3
+     },
+     {
+      "t": "cardholders to explore digital modes for hassle-free payments &",
+      "x0": 51.0,
+      "x1": 301.4,
+      "y": 608.1
+     },
+     {
+      "t": "\u2022As we are dependent on feedback from external parties such as",
+      "x0": 316.4,
+      "x1": 568.9,
+      "y": 610.5
+     },
+     {
+      "t": "faster credits.",
+      "x0": 51.0,
+      "x1": 103.8,
+      "y": 618.3
+     }
+    ],
+    "bindings": [],
+    "header": "Reward Point Summary:",
+    "header_key": "REWARD POINT SUMMARY",
+    "page": 1,
+    "y": 488.9,
+    "raw_lines": [
+     "y=489 x=369 Reward Point Summary:",
+     "y=489 x=478 Subscribe to Estatement:",
+     "y=496 x=51 shall be entitled to demand immediate repayment of such",
+     "y=501 x=384 REWARD XXXX",
+     "y=501 x=471 ESTMT XXXX",
+     "y=506 x=51 consolidated outstanding amounts. As a part of the Credit Card",
+     "y=512 x=438 Duplicate Statement:",
+     "y=516 x=51 Account, this balance will attract all applicable charges (including",
+     "y=524 x=378 DSTMT XXXX Statement Period in MMYY",
+     "y=527 x=51 finance charges at applicable interest rate) as outlined in the",
+     "y=535 x=425 XXXX = Last 4 Digits of the Card No.",
+     "y=537 x=51 MITC.",
+     "y=547 x=51 W.e.f. 15 Sep 2025, a revised \u2018Cheque Processing Fee\u2019 of Rs.",
+     "y=554 x=334 Important Information on Disputed Transaction(s):",
+     "y=557 x=51 200 will be applicable on outstanding payments made via",
+     "y=567 x=51 Cheque. This revision is reflective of the increased operational",
+     "y=570 x=316 \u2022Kindly note that this temporary credit (T) has been rendered to",
+     "y=578 x=51 cost associated with offline payment modes. Payments made",
+     "y=580 x=316 you in the interim and though the amount is included in your",
+     "y=588 x=51 through digital channels such as UPI, BBPS, NEFT, etc will",
+     "y=590 x=316 available credit limit, you will not be able to spend the amount",
+     "y=598 x=51 continue to be free of any additional charges. We encourage our",
+     "y=600 x=316 while the dispute is  still under investigation.",
+     "y=608 x=51 cardholders to explore digital modes for hassle-free payments &",
+     "y=610 x=316 \u2022As we are dependent on feedback from external parties such as",
+     "y=618 x=51 faster credits."
+    ]
+   }
+  ]
+ }
+}

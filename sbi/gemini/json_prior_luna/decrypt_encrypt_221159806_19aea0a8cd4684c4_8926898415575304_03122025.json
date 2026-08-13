@@ -1,0 +1,61 @@
+{
+  "cards": [
+    {
+      "bigPicture": {
+        "cardAvailableCreditLimit": 47231.63,
+        "cardCreditLimit": 49000
+      },
+      "cardMeta": {
+        "cardDisplayName": "BPCL SBI Card OCTANE",
+        "isPrimaryCard": true,
+        "lastFourDigit": "XX27",
+        "network": null,
+        "productFamily": "BPCL SBI Card"
+      }
+    }
+  ],
+  "rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 18068,
+    "openingPoints": 18068,
+    "pointsEarnedThisCycle": 0,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": 0,
+    "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+    "availableCreditLimit": 47231.63,
+    "totalAmountDue": 1768,
+    "totalCreditLimit": 49000,
+    "totalMinimumAmountDue": 1768
+  },
+  "statementMeta": {
+    "dueDate": "23/12/2025",
+    "issuerName": "SBI Card",
+    "rawStatementId": "C25120266624",
+    "statementDate": "03/12/2025",
+    "statementPeriodEnd": "03/12/2025",
+    "statementPeriodStart": "04/11/2025"
+  },
+  "transactions": [
+    {
+      "amount": 1499,
+      "currency": "INR",
+      "date": "03/12/2025",
+      "description": "ANNUAL FEE CHARGED (EXCL TAX 269.82)",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "FEE"
+    },
+    {
+      "amount": 269.82,
+      "currency": "INR",
+      "date": "03/12/2025",
+      "description": "IGST DB @ 18.00%",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "TAX"
+    }
+  ]
+}

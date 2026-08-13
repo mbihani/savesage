@@ -1,0 +1,106 @@
+{
+  "cards": [
+    {
+      "bigPicture": {
+        "cardAvailableCreditLimit": 95999.99,
+        "cardCreditLimit": 247000
+      },
+      "cardMeta": {
+        "cardDisplayName": "Flipkart SBI Credit Card",
+        "isPrimaryCard": true,
+        "lastFourDigit": "XX76",
+        "network": null,
+        "productFamily": "Flipkart SBI Credit Card"
+      }
+    }
+  ],
+  "rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": null,
+    "openingPoints": null,
+    "pointsEarnedThisCycle": 1525.25,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": null,
+    "programType": "Cashback"
+  },
+  "statementLevelSummary": {
+    "availableCreditLimit": 95999.99,
+    "totalAmountDue": 151000,
+    "totalCreditLimit": 247000,
+    "totalMinimumAmountDue": 3020
+  },
+  "statementMeta": {
+    "dueDate": "11/03/2026",
+    "issuerName": "SBI Card",
+    "rawStatementId": "I26022156798",
+    "statementDate": "19/02/2026",
+    "statementPeriodEnd": "19/02/2026",
+    "statementPeriodStart": "20/01/2026"
+  },
+  "transactions": [
+    {
+      "amount": 1544.5,
+      "currency": "INR",
+      "date": "19/01/2026",
+      "description": "CARD CASHBACK CREDIT",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "CASHBACK"
+    },
+    {
+      "amount": 28548,
+      "currency": "INR",
+      "date": "04/02/2026",
+      "description": "PAYMENT RECEIVED 000DP0160351314507LHznU",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    },
+    {
+      "amount": 75000,
+      "currency": "INR",
+      "date": "06/02/2026",
+      "description": "PAYMENT RECEIVED 000DP0160371907445iL8s8",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    },
+    {
+      "amount": 47447,
+      "currency": "INR",
+      "date": "08/02/2026",
+      "description": "PAYMENT RECEIVED 000DP0160391158007hAkb8",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    },
+    {
+      "amount": 20000,
+      "currency": "INR",
+      "date": "04/02/2026",
+      "description": "SHIV SHAKTI FLOUR MIL SURAT IN (Pay in EMIs)",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "EMI"
+    },
+    {
+      "amount": 75000,
+      "currency": "INR",
+      "date": "06/02/2026",
+      "description": "SHIV SHAKTI FLOUR MIL SURAT IN (Pay in EMIs)",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "EMI"
+    },
+    {
+      "amount": 57545,
+      "currency": "INR",
+      "date": "08/02/2026",
+      "description": "SHIV SHAKTI FLOUR MIL SURAT IN (Pay in EMIs)",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "EMI"
+    }
+  ]
+}

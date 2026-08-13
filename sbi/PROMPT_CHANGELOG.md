@@ -403,3 +403,247 @@ scorer would have charged the *incumbent* a fabricated 72.5% date-defect rate an
 handed Luna an unearned win, while also corrupting the matcher's date tie-break.
 `score_lib_sbi.date_norm` now wraps the canonical one (rather than editing it, so the
 other two banks keep the identical yardstick).
+
+---
+
+## 2026-08-13 — SBI under the CLIENT's 26-leaf Gemini schema (`sbi/gemini/`)
+
+Scope: the 12 PDFs in `~/Downloads/output/SBI/PDF` (the human said 15; the folder holds
+12 — verified). Schema is the client's line-64 type map, converted by
+`gemini/convert_schema.py` and tightened by `gemini/patch_schema.py`; the 26-leaf
+contract is guarded by `gemini/assert_schema.py`, which is negative-tested in both
+directions (enum-omits-null → exit 1, field-removed → exit 1).
+
+**The comparator is NOT human ground truth.** The `data` blob in
+`remaining pdfs ground truth/sbi.csv` carries `modelName: gemini-3-flash-preview` /
+`databricks-gemini-3-flash` and `detectionSource: GEMINI`. It is the client's
+INCUMBENT MODEL OUTPUT, i.e. the contract to match, and cells where it is contradicted
+by the PDF are recorded as GT defects, not as our failures.
+
+### Diagnosis first — 3 of the 5 "weak" fields were already correct
+
+`gemini/probe_5fields.py` + `gemini/adjudicate_5fields.py`, evidence in
+`gemini/probe/`:
+
+- **`network` — no change made; null was already right.** Every VISA / MasterCard /
+  Rupay / Amex occurrence in all 12 PDFs is boilerplate: the dispute-resolution
+  paragraph, the international-fee table (`$175 for VISA and $148 … for Mastercard`),
+  the "VISA Credit Card Pay" blurb and the "NEFT, Visa Money Transfer, MasterCard
+  MoneySend" channel list. **Zero network tokens appear anywhere on page 1**, where the
+  masked card number is printed (card number at x≈317–398, y≈75–85 on all 12). The
+  page-1 header art was rendered and inspected visually: it carries the co-brand product
+  logo and the SBI Card logo only — no network mark, so this is not an IMAGE_ONLY
+  ceiling either. Incumbent says `RuPay` on **221159806**, whose only RuPay occurrence
+  in the whole document is the dispute boilerplate → **GT_DEFECT**. 11/12 agree.
+  Corpus-wide the incumbent populates `network` on just 37/315 rows, with case-variant
+  values (`VISA`/`Visa`/`RUPAY`/`Rupay`/`Mastercard`), i.e. the field is unstable in the
+  comparator itself. No rule was added, because any rule that produced a network here
+  would have to fabricate from boilerplate or from the card number.
+- **`pointsExpiringNext60Days` — no change; nothing is printed.** No 60-day figure
+  exists in any of the 12 PDFs. 12/12 both-null. **NON-DISCRIMINATING — this field
+  cannot be reported as an accuracy figure.**
+- **`pointsRedeemedThisCycle` — rule deliberately NOT added.** The incumbent sources it
+  from the `CARD CASHBACK CREDIT` **transaction row** on **1511624796** (782.00),
+  **515948911** (4,191.00) and **1118980175** (1,544.50). But it leaves the field null
+  on **1036185244** and **369606524**, which print the identical row type
+  (390.00 and 424.00). The comparator is self-inconsistent, so a
+  "cashback-credit row → pointsRedeemedThisCycle" rule would win 3 cells and **break 2
+  that are currently correct**, while also violating "never roll up rewards from
+  transactions". See Edit 4.
+
+### Edit 1 — `closingPoints`: restore the clause our refined prompt had dropped
+
+**The single real gap between our prompt and the client's.** The mention-count audit
+(`gemini/gap_audit.py`, client body = lines 1–61 only, **line 64 excluded** because it
+is the type map, not guidance) returns an **EMPTY PORT_IN list** — as on HDFC. But a
+clause-level read found one decisive omission inside a sentence we had *kept*.
+
+Client, lines 57–59: *"For SBI cards if any closing points and cashback is not mentioned
+in the statement, 'closing points' should not be taken total cashback earned or total
+reward points earned from card issue date. **it should be how much cashback earned on
+current statement**."*
+
+Ours had paraphrased that to *"it should reflect only the current statement cycle"* —
+keeping the prohibition and **dropping the positive instruction**. Combined with our own
+"set closingPoints = null ONLY if no numeric rewards **balance** is explicitly shown",
+the model correctly concluded "no balance printed → null" and emitted null on 8 of 12,
+against an incumbent that populates `closingPoints` on **314/315 rows corpus-wide**.
+
+Also replaced the prompt's **factually wrong claim that SBI prints two reward tables**.
+Measured on the 12 (`gemini/probe_rewards.py`): the four-cell
+`Previous Balance | Earned | Redeemed/Expired/Forfeited | Closing Balance` strip our
+prompt called "the ONLY source" is present on **1 of 12 statements** (221159806). The
+other 11 use one of two single-figure shapes. The prompt now enumerates the three
+measured shapes and maps each explicitly:
+
+| shape | statements | closingPoints source |
+|---|---|---|
+| 1 — four-cell balance strip | 221159806 | `Closing Balance` |
+| 2 — one current-statement figure (`CARD CASHBACK SUMMARY…`, `Reward Point Summary`, `NeuCoins Summary`) | 1036185244, 1120623464, 1152718739, 1511624796, 1707857175, 369606524, 515948911, 1118980175, 393366914, 905768587 | that figure (also `pointsEarnedThisCycle`) |
+| 3 — `Current Stmt Period \| Till Last Cycle \| Earned Till Date` | 1390952698 | `Current Stmt Period` |
+
+Added `closingPoints is NEVER COMPUTED`. This targets a measured live defect:
+**1390952698**, where the prior output emitted `closingPoints = 53724` =
+`openingPoints (53724) + earned (0)`, a derivation both prompts forbid; the incumbent
+says `0`, the `Current Stmt Period` cell.
+
+PREDICTED, UNVERIFIED until measured: `closingPoints` 3/12 → ~10/12, and
+`pointsEarnedThisCycle` repaired on **1707857175** (was null, printed `1072` under
+`NeuCoins`) and **393366914** (was null, printed `0` under `Reward Points`). Two cells
+stay wrong for GT reasons: **1152718739** (incumbent `1879` = the `From the card issue
+date` LIFETIME column, which the client's own prompt forbids) and **515948911**
+(incumbent `1467` where the PDF prints `-1467`).
+
+### Edit 2 — `pointsExpiringNext30Days`: zero guidance → the printed-"NONE" reading
+
+Both prompts had **0 mentions** of this field. **221159806** prints a
+`Points Expiry Details` cell whose value is the word **`NONE`**, and the incumbent
+records `pointsExpiringNext30Days = 0` — a defensible reading: the label is printed and
+says nothing is expiring. Rule added, scoped so it can only fire where the label
+actually appears: `NONE` → 0, a printed figure → that figure verbatim including 0, and
+null when no expiry cell is printed (every shape-2 and shape-3 statement, i.e. 11/12).
+Confirmed live on the one-PDF smoke test: arm A now emits `0`.
+
+### Edit 3 — `txnType` vocabulary: zero guidance in either prompt
+
+0 mentions in ours, 0 in the client body. Added the closed vocabulary
+`PURCHASE, PAYMENT, REFUND, REVERSAL, CASHBACK, FEE, TAX, INTEREST, EMI, CASH_ADVANCE,
+UPI` with SBI-specific anchors (`PAYMENT RECEIVED…`→PAYMENT, `IGST DB @…`→TAX,
+`ANNUAL FEE CHARGED`/`FUEL SURCHARGE WAIVER EXCL TAX`→FEE, `FP EMI nn/nn`→EMI,
+`CARD CASHBACK CREDIT`→CASHBACK), and mirrored it VERBATIM as the schema enum.
+`CASH_ADVANCE` is included although this 12-file sample never emits it — narrowing the
+enum to the sample would bake the sample into the contract. Note the incumbent leaves
+`txnType` null on 138/193 rows here, so this field has a weak oracle.
+
+### Edit 4 — `CARD CASHBACK CREDIT` is a transaction, not a rewards cell
+
+Our prompt said "cashback credited or transferred = pointsRedeemedThisCycle" while also
+saying "extract rewards ONLY from statement-level rewards sections" — an internal
+contradiction, since on SBI the only place a cashback credit appears is a transaction
+row. Resolved in the safe direction and stated explicitly, per the DO-NOT-PORT finding
+above: that row must not populate any `rewards.*` field. This preserves the 2 correct
+cells (1036185244, 369606524) rather than chasing the 3 the incumbent populates.
+
+### Edit 5 — direction markers: the prompt's marker list was wrong
+
+Prompt said "a single-character direction column: C, D or T". Measured on the 12: the
+markers actually printed are **C, D and M** — `M` appears on **905768587**'s two
+`FP EMI nn/nn` Flexipay instalment rows. Added `M → DEBIT` (which is what the prior
+output already produced via the fall-through rule, so this documents rather than changes
+behaviour) and a fall-through for any other marker. `T → CREDIT` kept. `FP`/`EN` were
+NOT added: neither appears in this sample.
+
+**Verified, not assumed: there is no ITFRupee font in any of the 12 files, and zero bare
+`C` tokens outside the direction column on page 1.** The client's
+`CR, C, + as CREDIT` clause — catastrophic on HDFC, where ITFRupee maps the rupee sign
+to ASCII `C` — is therefore **harmless on SBI**, where `C` genuinely is the credit
+marker and the rupee sign is a backtick (`Amount ( ` )`).
+
+### Edit 6 — deleted rules for fields the 26-leaf schema cannot emit
+
+`additionalProperties: false` makes these dead instructions at best and an
+instruction/schema conflict at worst. Removed: the whole `INFERENCE_RULES` allowlist
+(`financeChargesThisCycle`, `utilisationPercent`), `BONUS_POINTS_RULE`
+(`bonusPointsThisCycle`), `cards[].bigPicture.cardCreditLimit /
+cardAvailableCreditLimit`, `statementMeta.rawStatementId`, and the
+`statementPeriodStart / statementPeriodEnd` output rule. `gemini/gap_audit.py` now
+reports **zero orphan lines**.
+
+Two live rules were RELOCATED rather than lost with their sections:
+1. the transaction-date sanity check needs the printed statement period, so the
+   `"for Statement Period: <start> to <end>"` sentence is retained explicitly as an
+   **internal reference that is not an output field**;
+2. `MISSING_DATA_RULE` referenced "fields listed in INFERENCE_RULES", which would have
+   dangled — rewritten to the now-unconditional "nothing in this schema is ever
+   inferred, derived or computed".
+The `isPrimaryCard` rule was added in the freed space (1 mention → 2), and the
+date-field list was trimmed to the emittable dates.
+
+### Edit 7 — the dangling schema reference
+
+`"strictly matching the provided schema"` named a schema the prompt does not contain;
+the schema arrives via `response_format`. Reworded to refer to the schema supplied with
+the request.
+
+### Deliberately NOT changed
+
+- The **undated tax/IGST continuation row** contract divergence (our prompt inherits the
+  parent date; the incumbent nulls it; 71 rows charged for it on the 300-corpus). Nulling
+  those rows would raise the measured date score while **destroying the parent date on
+  71+ rows**. Not applied; it is a contract divergence, not a misread.
+- Any `TRANSFER TO …` → direction rule. Already tried and removed: the incumbent splits
+  those rows 7 DEBIT / 7 CREDIT on identical narration with no discriminator.
+- HDFC/ICICI-specific rules (ITFRupee glyph, HDFC column layout, ICICI mask scheme).
+  SBI's mask is `XXXX XXXX XXXX XX57` — only the last TWO digits are real, and the prior
+  output already matched the PDF 12/12 on `lastFourDigit`.
+- `Points Earned Till Date` as a `closingPoints` label. It is in the client's label list
+  but is an other-bank label; on SBI it maps to the lifetime column that the client's own
+  SBI-specific sentence forbids.
+
+### Edit 8 — `txnType` REFUND anchor: fixing a regression Edit 3 itself caused
+
+Edit 3 gave anchors for PAYMENT / TAX / FEE / EMI / CASHBACK / CASH_ADVANCE / PURCHASE but
+**none for REFUND or REVERSAL**, and then said "use null when the row's kind is not
+determinable". The first arm-A run measured the consequence: **4 rows on 515948911** where
+the incumbent says `REFUND` and arm A emitted `null`, all four merchant rows carrying a
+CREDIT marker —
+
+```
+AMAZON PAY INDIA PRIVA WWW.AMAZON.IN IN   29,899  CREDIT
+WWW DYSON IN GURGAON IN                   29,400  CREDIT
+Razorpay Payments GURGAON IN               2,990  CREDIT
+BLINK COMMERCE PVT LTD BANGALORE IN        2,313  CREDIT
+```
+
+Arm B (the previous prompt, no txnType guidance) got all 4 right. Added the anchor "a
+MERCHANT row carrying a CREDIT marker → REFUND", plus a REVERSAL anchor and a narrowing of
+the null instruction to "do not null a row whose direction and narration already identify
+it". **Re-measured: arm A now 55/55 on the cells the incumbent populates, identical to
+arms B and C. Regression closed.**
+
+## Measured outcome of this pass (12 statements, 3 arms, 36/36 calls OK, zero 429s)
+
+| field | A (new) | B (previous) | C (client) | note |
+|---|---|---|---|---|
+| **rewards.closingPoints** | **10/12** | 3/12 | 3/12 | Edit 1. Both remaining misses are GT defects; vs the PDF arm A is right 12/12 |
+| rewards.pointsEarnedThisCycle | 11/12 | 11/12 | 10/12 | Edit 1 also repaired 1707857175 + 393366914 relative to the client arm |
+| rewards.openingPoints | 10/12 | 9/12 | 10/12 | Edit 1 (SHAPE 3 `Till Last Cycle` binding) |
+| rewards.pointsExpiringNext30Days | 12/12 | 12/12 | 12/12 | Edit 2 fires on 221159806; NON-DISCRIMINATING on this sample |
+| rewards.programType | 11/12 | 11/12 | 9/12 | pre-existing refinement, not this pass |
+| transactions[].txnType (incumbent-populated cells) | 55/55 | 55/55 | 55/55 | Edit 3 + Edit 8 net-neutral vs B |
+| transactions[].direction / amount / currency | 100% | 100% | 100% / 100% / 96.3% | direction unaffected by Edit 5, as expected |
+| cards[].cardMeta.network | 11/12 | 11/12 | 11/12 | no rule changed; the 1 miss is a GT defect |
+
+Full tables, adjudication verdicts, PORT_IN/DO_NOT_PORT and the UNVERIFIED section:
+`gemini/SBI_GEMINI_SCHEMA_TEST_REPORT.md`.
+
+### Two measurement defects found and corrected during this pass (not model findings)
+
+1. **Greedy transaction matching manufactured a fake regression.** `analyse.py` first
+   matched rows greedily on (amount, description). SBI repeats identical
+   description+amount pairs across dates (1707857175 has a long `UPI-REDEFINED PRIVATE L`
+   @ 20.00 run), so one dropped row shifted the whole run and produced a cascade of
+   phantom date mismatches — reporting **arm A at 93.8% on `date`** and a false
+   `description` regression. Replaced with order-preserving LCS alignment; the date is
+   excluded from the match key because it is under measurement. Corrected figures: `date`
+   A 99.5% (one cell), `description` 100%.
+2. **A whitespace-collapsed numeric probe falsely accused the ground truth.** Searching
+   for numbers in text with all whitespace stripped destroys token boundaries
+   (`12 720 1879` → `127201879`), so a word-bounded search for `1879` reported NOT PRINTED
+   for a figure that IS printed on 1152718739. Numbers are now matched against the word
+   token list; collapsed text is used only for alphabetic labels, where mid-word line-wrap
+   is the genuine hazard.
+
+### Deltas that were repeat-tested rather than claimed
+
+- `transactions[].date`, arm A 188/189 vs B 190/190 — the single cell is 905768587's
+  undated `IGST DB @ 18.00%` row. Three fresh arm-A calls: `03/06/2026`, `03/06/2026`,
+  `null`. **Non-deterministic; not an effect of any edit. No revert.**
+- `Cashfree*FLIPKART INTE` truncated to `IN` on 369606524 — stable 3/3 in arm A, **but
+  arm B is only 1/3 correct and arm C also truncates.** Model-level transcription
+  weakness across all arms, not a regression from this pass.
+- Row completeness on the 71-row statement 1707857175: A=69, B=70, C=**71**. Arm A
+  repeats: 70, 69, 70. **Both refined prompts reproducibly drop rows on the longest
+  statement while the client's shorter prompt does not.** Pre-existing, present in B,
+  and A is within variance of B — but it is a real open issue and is flagged for
+  follow-up rather than fixed here. The `closingPoints` gain is not traded for it.

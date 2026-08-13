@@ -1,0 +1,52 @@
+{
+  "cards": [
+    {
+      "bigPicture": {
+        "cardAvailableCreditLimit": 183999.79,
+        "cardCreditLimit": 184000
+      },
+      "cardMeta": {
+        "cardDisplayName": "IRCTC SBI Platinum Card",
+        "isPrimaryCard": true,
+        "lastFourDigit": "XX02",
+        "network": null,
+        "productFamily": null
+      }
+    }
+  ],
+  "rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": null,
+    "openingPoints": null,
+    "pointsEarnedThisCycle": 0,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": null,
+    "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+    "availableCreditLimit": 183999.79,
+    "totalAmountDue": 0,
+    "totalCreditLimit": 184000,
+    "totalMinimumAmountDue": 0
+  },
+  "statementMeta": {
+    "dueDate": "NO PAYMENT REQUIRED",
+    "issuerName": "SBI Card",
+    "rawStatementId": "C26032109845",
+    "statementDate": "25/03/2026",
+    "statementPeriodEnd": "25/03/2026",
+    "statementPeriodStart": "26/02/2026"
+  },
+  "transactions": [
+    {
+      "amount": 34,
+      "currency": "INR",
+      "date": "04/03/2026",
+      "description": "PAYMENT RECEIVED 000DP016063184952z1QEsy",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    }
+  ]
+}

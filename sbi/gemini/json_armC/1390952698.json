@@ -1,0 +1,115 @@
+{
+ "arm": "C",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-13T12:07:37",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 12941,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 4,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "Club Vistara SBI Card PRIME",
+     "isPrimaryCard": null,
+     "lastFourDigit": "XX38",
+     "network": null,
+     "productFamily": "Club Vistara PRIME"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": 12380,
+   "openingPoints": 53724,
+   "pointsEarnedThisCycle": 0,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Club Vistara"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 75000,
+   "totalAmountDue": 0,
+   "totalCreditLimit": 75000,
+   "totalMinimumAmountDue": 0
+  },
+  "statementMeta": {
+   "dueDate": "NO PAYMENT REQUIRED",
+   "issuerName": "SBI Card",
+   "statementDate": "21 Apr 2026"
+  },
+  "transactions": [
+   {
+    "amount": 2572,
+    "currency": "INR",
+    "date": "30 Mar 26",
+    "description": "PAYMENT RECEIVED 000DP016089234128nnr7Cq",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 26007,
+    "currency": "INR",
+    "date": "05 Apr 26",
+    "description": "PAYMENT RECEIVED 000AS016095130906iNxzwQ",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 50000.04,
+    "currency": "INR",
+    "date": "06 Apr 26",
+    "description": "PAYMENT RECEIVED 000BD016096BAKAAAIHL7CJ",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 49999,
+    "currency": "INR",
+    "date": "07 Apr 26",
+    "description": "PAYMENT RECEIVED 000BD016097BAKAAAIJ2812",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_1390952698_19db4a7278681243_8599485416101000_21042026.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/gemini/GEMINI_GENERIC_PROMPT.txt",
+ "prompt_sha256": "7886583cba60ee6da1b62081994cb839b74d11f5b9220c8537453ef581a7505f",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Club Vistara SBI Card PRIME\",\"isPrimaryCard\":null,\"lastFourDigit\":\"XX38\",\"network\":null,\"productFamily\":\"Club Vistara PRIME\"}}],\"rewards\":{\"closingPoints\":12380,\"openingPoints\":53724,\"pointsEarnedThisCycle\":0,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Club Vistara\"},\"statementLevelSummary\":{\"availableCreditLimit\":75000,\"totalAmountDue\":0,\"totalCreditLimit\":75000,\"totalMinimumAmountDue\":0},\"statementMeta\":{\"dueDate\":\"NO PAYMENT REQUIRED\",\"issuerName\":\"SBI Card\",\"statementDate\":\"21 Apr 2026\"},\"transactions\":[{\"amount\":2572,\"currency\":\"INR\",\"date\":\"30 Mar 26\",\"description\":\"PAYMENT RECEIVED 000DP016089234128nnr7Cq\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":26007,\"currency\":\"INR\",\"date\":\"05 Apr 26\",\"description\":\"PAYMENT RECEIVED 000AS016095130906iNxzwQ\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":50000.04,\"currency\":\"INR\",\"date\":\"06 Apr 26\",\"description\":\"PAYMENT RECEIVED 000BD016096BAKAAAIHL7CJ\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":49999,\"currency\":\"INR\",\"date\":\"07 Apr 26\",\"description\":\"PAYMENT RECEIVED 000BD016097BAKAAAIJ2812\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "1390952698",
+ "started_at": "2026-08-13T12:07:24",
+ "usage_raw": {
+  "completion_tokens": 1087,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 680,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 16709,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 17796
+ }
+}

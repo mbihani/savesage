@@ -1,0 +1,61 @@
+{
+  "cards": [
+    {
+      "bigPicture": {
+        "cardAvailableCreditLimit": 136999.9,
+        "cardCreditLimit": 137000
+      },
+      "cardMeta": {
+        "cardDisplayName": "OLA Money SBI Card",
+        "isPrimaryCard": true,
+        "lastFourDigit": "XX69",
+        "network": null,
+        "productFamily": null
+      }
+    }
+  ],
+  "rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": 0,
+    "openingPoints": null,
+    "pointsEarnedThisCycle": null,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": null,
+    "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+    "availableCreditLimit": 136999.9,
+    "totalAmountDue": 0,
+    "totalCreditLimit": 137000,
+    "totalMinimumAmountDue": 0
+  },
+  "statementMeta": {
+    "dueDate": "NO PAYMENT REQUIRED",
+    "issuerName": "SBI Card",
+    "rawStatementId": "F26011705843",
+    "statementDate": "23/01/2026",
+    "statementPeriodEnd": "23/01/2026",
+    "statementPeriodStart": "24/12/2025"
+  },
+  "transactions": [
+    {
+      "amount": 5,
+      "currency": "INR",
+      "date": "02/01/2026",
+      "description": "PAYMENT RECEIVED 000PP016002BB4FD0TIJ265",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    },
+    {
+      "amount": 10681,
+      "currency": "INR",
+      "date": "02/01/2026",
+      "description": "PAYMENT RECEIVED 000PP016002BB6FZ0TLZ150",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    }
+  ]
+}

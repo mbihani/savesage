@@ -1,0 +1,278 @@
+{
+ "1036185244": {
+  "rewardPoints": "106",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "programType": "CASHBACK",
+   "closingPoints": 106,
+   "openingPoints": null,
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 106,
+   "pointsRedeemedThisCycle": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "modelName": "databricks-gemini-3-flash",
+  "detectionSource": "GEMINI"
+ },
+ "1120623464": {
+  "rewardPoints": "0",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "earnBreakup": [],
+   "programType": "Reward Points",
+   "closingPoints": 0,
+   "openingPoints": 0,
+   "rewardsSummary": null,
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 0,
+   "pointsRedeemedThisCycle": 0,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "estimatedBlendedRewardRatePercent": null
+  },
+  "modelName": "gemini-3-flash-preview",
+  "detectionSource": "GEMINI"
+ },
+ "1152718739": {
+  "rewardPoints": "1,879",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "earnBreakup": [
+    {
+     "label": "Reward Points",
+     "points": 12,
+     "approxRatePercent": null
+    }
+   ],
+   "programType": "Reward Points",
+   "closingPoints": 1879,
+   "openingPoints": 1867,
+   "rewardsSummary": null,
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 12,
+   "pointsRedeemedThisCycle": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "estimatedBlendedRewardRatePercent": null
+  },
+  "modelName": "gemini-3-flash-preview",
+  "detectionSource": "GEMINI"
+ },
+ "1390952698": {
+  "rewardPoints": "0",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "earnBreakup": [],
+   "programType": "Club Vistara Points",
+   "closingPoints": 0,
+   "openingPoints": 53724,
+   "rewardsSummary": "Current Stmt Period: 0, Till Last Cycle: 53724, Earned Till Date: 12380",
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 0,
+   "pointsRedeemedThisCycle": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "estimatedBlendedRewardRatePercent": null
+  },
+  "modelName": "gemini-3-flash-preview",
+  "detectionSource": "GEMINI"
+ },
+ "1511624796": {
+  "rewardPoints": "476",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "earnBreakup": [],
+   "programType": "Cashback",
+   "closingPoints": 476,
+   "openingPoints": null,
+   "rewardsSummary": null,
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 476,
+   "pointsRedeemedThisCycle": 782,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "estimatedBlendedRewardRatePercent": null
+  },
+  "modelName": "gemini-3-flash-preview",
+  "detectionSource": "GEMINI"
+ },
+ "1707857175": {
+  "rewardPoints": "1,072",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "earnBreakup": [],
+   "programType": "NeuCoins",
+   "closingPoints": 1072,
+   "openingPoints": null,
+   "rewardsSummary": null,
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 1072,
+   "pointsRedeemedThisCycle": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "estimatedBlendedRewardRatePercent": null
+  },
+  "modelName": "gemini-3-flash-preview",
+  "detectionSource": "GEMINI"
+ },
+ "369606524": {
+  "rewardPoints": "375",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "earnBreakup": [],
+   "programType": "cashback",
+   "closingPoints": 375.25,
+   "openingPoints": null,
+   "rewardsSummary": null,
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 375.25,
+   "pointsRedeemedThisCycle": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "estimatedBlendedRewardRatePercent": null
+  },
+  "modelName": "databricks-gemini-3-flash",
+  "detectionSource": "GEMINI"
+ },
+ "515948911": {
+  "rewardPoints": "1,467",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "earnBreakup": [],
+   "programType": "Cashback",
+   "closingPoints": 1467,
+   "openingPoints": null,
+   "rewardsSummary": "\u20b91467 cashback earned this cycle; \u20b94191 cashback was credited to the account.",
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 1467,
+   "pointsRedeemedThisCycle": 4191,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "estimatedBlendedRewardRatePercent": null
+  },
+  "modelName": "gemini-3-flash-preview",
+  "detectionSource": "GEMINI"
+ },
+ "1118980175": {
+  "rewardPoints": "1,525",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "earnBreakup": [],
+   "programType": "cashback",
+   "closingPoints": 1525.25,
+   "openingPoints": null,
+   "rewardsSummary": null,
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 1525.25,
+   "pointsRedeemedThisCycle": -1544.5,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "estimatedBlendedRewardRatePercent": null
+  },
+  "modelName": "gemini-3-flash-preview",
+  "detectionSource": "GEMINI"
+ },
+ "221159806": {
+  "rewardPoints": "18,068",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   "RuPay"
+  ],
+  "rewards": {
+   "earnBreakup": [],
+   "programType": "Reward Points",
+   "closingPoints": 18068,
+   "openingPoints": 18068,
+   "rewardsSummary": "The current reward point balance is 18068.",
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 0,
+   "pointsRedeemedThisCycle": 0,
+   "pointsExpiringNext30Days": 0,
+   "pointsExpiringNext60Days": null,
+   "estimatedBlendedRewardRatePercent": null
+  },
+  "modelName": "gemini-3-flash-preview",
+  "detectionSource": "GEMINI"
+ },
+ "393366914": {
+  "rewardPoints": "0",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "earnBreakup": [],
+   "programType": "Reward Points",
+   "closingPoints": 0,
+   "openingPoints": null,
+   "rewardsSummary": null,
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 0,
+   "pointsRedeemedThisCycle": 0,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "estimatedBlendedRewardRatePercent": null
+  },
+  "modelName": "gemini-3-flash-preview",
+  "detectionSource": "GEMINI"
+ },
+ "905768587": {
+  "rewardPoints": "453",
+  "pe30": "",
+  "pe60": "",
+  "network": [
+   null
+  ],
+  "rewards": {
+   "programType": "CASHBACK",
+   "closingPoints": 453,
+   "openingPoints": null,
+   "bonusPointsThisCycle": null,
+   "pointsEarnedThisCycle": 453,
+   "pointsRedeemedThisCycle": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "modelName": "databricks-gemini-3-flash",
+  "detectionSource": "GEMINI"
+ }
+}

@@ -1,0 +1,79 @@
+{
+  "cards": [
+    {
+      "bigPicture": {
+        "cardAvailableCreditLimit": 141377.33,
+        "cardCreditLimit": 143000
+      },
+      "cardMeta": {
+        "cardDisplayName": "IRCTC SBI Platinum Card",
+        "isPrimaryCard": true,
+        "lastFourDigit": "XX41",
+        "network": null,
+        "productFamily": null
+      }
+    }
+  ],
+  "rewards": {
+    "bonusPointsThisCycle": null,
+    "closingPoints": null,
+    "openingPoints": null,
+    "pointsEarnedThisCycle": 12,
+    "pointsExpiringNext30Days": null,
+    "pointsExpiringNext60Days": null,
+    "pointsRedeemedThisCycle": null,
+    "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+    "availableCreditLimit": 141377.33,
+    "totalAmountDue": 1623,
+    "totalCreditLimit": 143000,
+    "totalMinimumAmountDue": 200
+  },
+  "statementMeta": {
+    "dueDate": "02/11/2022",
+    "issuerName": "SBI Card",
+    "rawStatementId": "B22103686670",
+    "statementDate": "13/10/2022",
+    "statementPeriodEnd": null,
+    "statementPeriodStart": null
+  },
+  "transactions": [
+    {
+      "amount": 926,
+      "currency": "INR",
+      "date": "03/10/2022",
+      "description": "PAYMENT RECEIVED 000HGA6P0BF710055168417",
+      "direction": "CREDIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PAYMENT"
+    },
+    {
+      "amount": 578.99,
+      "currency": "INR",
+      "date": "16/09/2022",
+      "description": "UBER 356",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PURCHASE"
+    },
+    {
+      "amount": 543.08,
+      "currency": "INR",
+      "date": "24/09/2022",
+      "description": "IRCTC Train Ticketing 356",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PURCHASE"
+    },
+    {
+      "amount": 500.71,
+      "currency": "INR",
+      "date": "26/09/2022",
+      "description": "IRCTC Train Ticketing 356",
+      "direction": "DEBIT",
+      "rewardPointsOnThisTransaction": null,
+      "txnType": "PURCHASE"
+    }
+  ]
+}

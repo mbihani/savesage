@@ -1,0 +1,151 @@
+{
+ "arm": "B",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-13T12:07:07",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 13964,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 8,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "CASHBACK SBI CARD",
+     "isPrimaryCard": true,
+     "lastFourDigit": "XX57",
+     "network": null,
+     "productFamily": "CASHBACK"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 453,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Cashback"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 155947.23,
+   "totalAmountDue": 45638,
+   "totalCreditLimit": 241000,
+   "totalMinimumAmountDue": 37027
+  },
+  "statementMeta": {
+   "dueDate": "23/06/2026",
+   "issuerName": "SBI Card",
+   "statementDate": "03/06/2026"
+  },
+  "transactions": [
+   {
+    "amount": 260,
+    "currency": "INR",
+    "date": "03/05/2026",
+    "description": "CARD CASHBACK CREDIT",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 42987.65,
+    "currency": "INR",
+    "date": "05/05/2026",
+    "description": "PAYMENT RECEIVED 000BD016125BALAAAJK2ZQ9",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 1702.29,
+    "currency": "INR",
+    "date": "03/06/2026",
+    "description": "FP EMI 03/06(EXCL TAX 16.29)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 90.5,
+    "currency": "INR",
+    "date": "03/06/2026",
+    "description": "INTEREST ON EMI",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "INTEREST"
+   },
+   {
+    "amount": 34933.57,
+    "currency": "INR",
+    "date": "03/06/2026",
+    "description": "FP EMI 02/03(EXCL TAX 174.45)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 969.14,
+    "currency": "INR",
+    "date": "03/06/2026",
+    "description": "INTEREST ON EMI",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "INTEREST"
+   },
+   {
+    "amount": 190.74,
+    "currency": "INR",
+    "date": "03/06/2026",
+    "description": "IGST DB @ 18.00%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 9071,
+    "currency": "INR",
+    "date": "17/05/2026",
+    "description": "INDIGO AIRLINE GURGAON IN (Pay in EMIs)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_encrypt_905768587_19e92b8dbf4fc8a0_8799397479959188_03062026.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/gemini/SBI_PROMPT_PREV.txt",
+ "prompt_sha256": "21d7c16174ba640c8fe0e58f65fe0fced0d8263950302c1377344dcecea85e2c",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"CASHBACK SBI CARD\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX57\",\"network\":null,\"productFamily\":\"CASHBACK\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":453,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":155947.23,\"totalAmountDue\":45638,\"totalCreditLimit\":241000,\"totalMinimumAmountDue\":37027},\"statementMeta\":{\"dueDate\":\"23/06/2026\",\"issuerName\":\"SBI Card\",\"statementDate\":\"03/06/2026\"},\"transactions\":[{\"amount\":260,\"currency\":\"INR\",\"date\":\"03/05/2026\",\"description\":\"CARD CASHBACK CREDIT\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":42987.65,\"currency\":\"INR\",\"date\":\"05/05/2026\",\"description\":\"PAYMENT RECEIVED 000BD016125BALAAAJK2ZQ9\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":1702.29,\"currency\":\"INR\",\"date\":\"03/06/2026\",\"description\":\"FP EMI 03/06(EXCL TAX 16.29)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":90.5,\"currency\":\"INR\",\"date\":\"03/06/2026\",\"description\":\"INTEREST ON EMI\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"INTEREST\"},{\"amount\":34933.57,\"currency\":\"INR\",\"date\":\"03/06/2026\",\"description\":\"FP EMI 02/03(EXCL TAX 174.45)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":969.14,\"currency\":\"INR\",\"date\":\"03/06/2026\",\"description\":\"INTEREST ON EMI\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"INTEREST\"},{\"amount\":190.74,\"currency\":\"INR\",\"date\":\"03/06/2026\",\"description\":\"IGST DB @ 18.00%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":9071,\"currency\":\"INR\",\"date\":\"17/05/2026\",\"description\":\"INDIGO AIRLINE GURGAON IN (Pay in EMIs)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "905768587",
+ "started_at": "2026-08-13T12:06:53",
+ "usage_raw": {
+  "completion_tokens": 1110,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 512,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 19395,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 20505
+ }
+}

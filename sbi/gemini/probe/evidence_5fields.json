@@ -1,0 +1,9553 @@
+[
+ {
+  "sid": "1036185244",
+  "filename": "decrypt_1036185244_19fccf62f39f2d74_8798353479959158_03082026.pdf",
+  "n_pages": 7,
+  "collapsed_chars": 28457,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX57",
+    "bbox": [
+     316.9,
+     74.6,
+     397.9,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX57"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 5,
+    "bbox": [
+     249.6,
+     727.7,
+     584.8,
+     741.3
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 5,
+    "bbox": [
+     249.6,
+     741.8,
+     332.8,
+     755.5
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 5,
+    "bbox": [
+     249.6,
+     741.8,
+     332.8,
+     755.5
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     755.2,
+     194.7,
+     769.1
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     769.7,
+     596.6,
+     783.2
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1223.9,
+     599.7,
+     1237.3
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, IMPS, BBPS, Paynet,",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT",
+     "IMPS"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 2,
+   "MASTER CARD": 2,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 20
+   },
+   {
+    "page": 0,
+    "bbox": [
+     16.5,
+     678.5,
+     425.5,
+     855.6
+    ],
+    "w": 409.0,
+    "h": 177.1,
+    "xref": 24
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 22
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 21
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 23
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.5,
+     611.5,
+     35.9
+    ],
+    "w": 611.5,
+    "h": 35.4,
+    "xref": 33
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     57.1,
+     572.3,
+     97.3
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 32
+   },
+   {
+    "page": 1,
+    "bbox": [
+     314.8,
+     429.4,
+     368.2,
+     466.4
+    ],
+    "w": 53.4,
+    "h": 37.0,
+    "xref": 35
+   },
+   {
+    "page": 1,
+    "bbox": [
+     48.7,
+     833.1,
+     124.8,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 34
+   },
+   {
+    "page": 1,
+    "bbox": [
+     139.7,
+     833.1,
+     215.9,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 37
+   },
+   {
+    "page": 1,
+    "bbox": [
+     45.5,
+     1341.5,
+     97.3,
+     1378.5
+    ],
+    "w": 51.8,
+    "h": 37.0,
+    "xref": 36
+   },
+   {
+    "page": 1,
+    "bbox": [
+     226.9,
+     833.1,
+     301.4,
+     856.7
+    ],
+    "w": 74.6,
+    "h": 23.6,
+    "xref": 31
+   }
+  ],
+  "n_page12_images": 12,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [],
+  "expiry_hits_method2": [],
+  "expiry_hits_with_number": [],
+  "expiry_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     29.8,
+     303.8,
+     83.8,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     20.4,
+     968.1,
+     493.7,
+     975.4
+    ],
+    "text": "Due and the Total Outstanding is the balance on the Flexipay/Encash/Installments as applicable.** To keep your credit card in good standing,you have the option of paying atleast the minimum"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     101.3,
+     363.7,
+     335.0,
+     376.4
+    ],
+    "text": "CARD CASHBACK SUMMARY FOR THIS STATEMENT"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.8,
+     864.7,
+     432.0,
+     872.0
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     70.7,
+     459.4,
+     160.6,
+     469.6
+    ],
+    "text": "CARD CASHBACK CREDIT"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     23.1,
+     380.5,
+     70.2,
+     391.9
+    ],
+    "text": "CASHBACK"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     84.0,
+     389.1,
+     417.9,
+     400.6
+    ],
+    "text": "Card Cashback will be posted to your SBI Card Account within two working days after"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     516.5,
+     304.2,
+     527.9
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     316.4,
+     691.9,
+     563.0,
+     703.3
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     379.9,
+     440.1,
+     439.8,
+     450.3
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     369.0,
+     488.9,
+     456.0,
+     499.1
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     383.9,
+     500.7,
+     444.7,
+     510.9
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     1011.9,
+     123.0,
+     1023.4
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 1,
+    "bbox": [
+     213.1,
+     60.1,
+     403.8,
+     74.1
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.5,
+     97.8,
+     92.2,
+     107.9
+    ],
+    "text": "Offer Cashback"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.5,
+     120.6,
+     90.6,
+     130.8
+    ],
+    "text": "Card Cashback"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     387.2,
+     138.5,
+     400.9
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     249.6,
+     38.4,
+     536.9,
+     51.9
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     249.6,
+     134.3,
+     419.2,
+     147.9
+    ],
+    "text": "remaining balance outstanding."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     15.7,
+     908.6,
+     159.4,
+     922.4
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     254.5,
+     1641.2,
+     353.7,
+     1655.1
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     1670.1,
+     595.6,
+     1684.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     1730.0,
+     255.9,
+     1744.1
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     2284.7,
+     595.7,
+     2298.9
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     15.7,
+     1522.3,
+     599.5,
+     1536.3
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1356.9,
+     561.3,
+     1370.3
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1371.0,
+     533.0,
+     1384.5
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1571.1,
+     482.8,
+     1587.9
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1702.0,
+     598.2,
+     1715.9
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1860.4,
+     588.0,
+     1874.0
+    ],
+    "text": "against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges, Balance"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     22.8,
+     2183.1,
+     591.1,
+     2196.7
+    ],
+    "text": "If one card has a credit balance (excess payment), it will not be set off against the outstanding balance on"
+   }
+  ],
+  "n_reward_lines": 31,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": false,
+   "Redeemed": false,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": false,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Cashback",
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 106,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "1120623464",
+  "filename": "decrypt_1120623464_19d2a6dfa219a6b5_6004251437748360_25032026.pdf",
+  "n_pages": 7,
+  "collapsed_chars": 27656,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX02",
+    "bbox": [
+     316.9,
+     74.6,
+     397.9,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX02"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 5,
+    "bbox": [
+     249.6,
+     703.3,
+     584.8,
+     716.9
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 5,
+    "bbox": [
+     249.6,
+     717.4,
+     332.8,
+     731.1
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 5,
+    "bbox": [
+     249.6,
+     717.4,
+     332.8,
+     731.1
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     754.6,
+     194.7,
+     768.5
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     769.1,
+     596.6,
+     782.6
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     847.3,
+     210.4,
+     861.4
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     847.3,
+     210.4,
+     861.4
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     861.9,
+     584.0,
+     875.4
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     861.9,
+     584.0,
+     875.4
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1235.8,
+     547.1,
+     1249.2
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1235.8,
+     547.1,
+     1249.2
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1235.8,
+     547.1,
+     1249.2
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 5,
+   "MASTER CARD": 5,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 20
+   },
+   {
+    "page": 0,
+    "bbox": [
+     16.5,
+     678.5,
+     425.5,
+     855.6
+    ],
+    "w": 409.0,
+    "h": 177.1,
+    "xref": 24
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 22
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 21
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 23
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.5,
+     611.5,
+     35.9
+    ],
+    "w": 611.5,
+    "h": 35.4,
+    "xref": 33
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     57.1,
+     572.3,
+     97.3
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 32
+   },
+   {
+    "page": 1,
+    "bbox": [
+     314.8,
+     429.4,
+     368.2,
+     466.4
+    ],
+    "w": 53.4,
+    "h": 37.0,
+    "xref": 35
+   },
+   {
+    "page": 1,
+    "bbox": [
+     48.7,
+     833.1,
+     124.8,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 34
+   },
+   {
+    "page": 1,
+    "bbox": [
+     139.7,
+     833.1,
+     215.9,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 37
+   },
+   {
+    "page": 1,
+    "bbox": [
+     45.5,
+     1341.5,
+     97.3,
+     1378.5
+    ],
+    "w": 51.8,
+    "h": 37.0,
+    "xref": 36
+   },
+   {
+    "page": 1,
+    "bbox": [
+     226.9,
+     833.1,
+     301.4,
+     856.7
+    ],
+    "w": 74.6,
+    "h": 23.6,
+    "xref": 31
+   }
+  ],
+  "n_page12_images": 12,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [],
+  "expiry_hits_method2": [],
+  "expiry_hits_with_number": [],
+  "expiry_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     29.8,
+     303.8,
+     83.8,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     20.4,
+     968.1,
+     493.7,
+     975.4
+    ],
+    "text": "Due and the Total Outstanding is the balance on the Flexipay/Encash/Installments as applicable.** To keep your credit card in good standing,you have the option of paying atleast the minimum"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.8,
+     864.7,
+     432.0,
+     872.0
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     34.8,
+     387.0,
+     84.3,
+     397.2
+    ],
+    "text": "Points Earned"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     180.0,
+     364.5,
+     285.9,
+     377.2
+    ],
+    "text": "Reward Point Summary"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     119.3,
+     394.6,
+     388.1,
+     403.5
+    ],
+    "text": "> All your SBI Card Reward Points will be transferred to IRCTC at the end of every month"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     119.3,
+     402.7,
+     368.9,
+     411.6
+    ],
+    "text": "> These Reward Points can be redeemed at www.irctc.co.in for free railway tickets"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     119.3,
+     410.9,
+     424.4,
+     419.8
+    ],
+    "text": "> The redemption of Reward Points will be governed by the Terms & Conditions of SBICPSL & IRCTC"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     516.5,
+     304.2,
+     527.9
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     316.4,
+     691.9,
+     563.0,
+     703.3
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     379.9,
+     440.1,
+     439.8,
+     450.3
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     369.0,
+     488.9,
+     456.0,
+     499.1
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     383.9,
+     500.7,
+     444.7,
+     510.9
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     1011.9,
+     123.0,
+     1023.4
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 1,
+    "bbox": [
+     213.1,
+     60.1,
+     403.8,
+     74.1
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     37.2,
+     97.8,
+     74.5,
+     107.9
+    ],
+    "text": "Cash Back"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     37.5,
+     120.6,
+     89.6,
+     130.8
+    ],
+    "text": "Reward Points"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     387.2,
+     138.5,
+     400.9
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     249.6,
+     35.2,
+     536.9,
+     48.8
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     249.6,
+     141.4,
+     419.2,
+     155.0
+    ],
+    "text": "remaining balance outstanding."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     15.7,
+     877.9,
+     159.4,
+     891.7
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     254.5,
+     1641.2,
+     353.7,
+     1655.1
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     1670.1,
+     595.6,
+     1684.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     1730.0,
+     255.9,
+     1744.1
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     2284.7,
+     595.7,
+     2298.9
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     15.7,
+     1522.3,
+     599.5,
+     1536.3
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1356.2,
+     561.3,
+     1369.6
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1370.4,
+     533.0,
+     1383.8
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1570.5,
+     482.8,
+     1587.3
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1701.3,
+     598.2,
+     1715.2
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1859.7,
+     588.0,
+     1873.4
+    ],
+    "text": "against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges, Balance"
+   }
+  ],
+  "n_reward_lines": 31,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": true,
+   "Redeemed": true,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": false,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Reward Points",
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 0,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "1152718739",
+  "filename": "decrypt_1152718739_183d7c4fefb995a8_9400219652898353_13102022.pdf",
+  "n_pages": 6,
+  "collapsed_chars": 17454,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX41",
+    "bbox": [
+     316.7,
+     74.6,
+     397.6,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX41"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 1,
+    "bbox": [
+     316.4,
+     765.0,
+     562.8,
+     776.5
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     765.0,
+     562.8,
+     776.5
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     765.0,
+     562.8,
+     776.5
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 1,
+    "bbox": [
+     316.4,
+     765.0,
+     562.8,
+     776.5
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 1,
+    "bbox": [
+     316.4,
+     765.0,
+     562.8,
+     776.5
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 4,
+    "bbox": [
+     248.1,
+     775.4,
+     583.3,
+     789.0
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 4,
+    "bbox": [
+     248.1,
+     790.2,
+     331.3,
+     803.9
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 4,
+    "bbox": [
+     248.1,
+     790.2,
+     331.3,
+     803.9
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 2,
+   "MASTERCARD": 2,
+   "MASTER CARD": 2,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 21
+   },
+   {
+    "page": 0,
+    "bbox": [
+     16.5,
+     678.5,
+     425.5,
+     855.6
+    ],
+    "w": 409.0,
+    "h": 177.1,
+    "xref": 25
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 23
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 22
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 24
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.8,
+     611.5,
+     36.2
+    ],
+    "w": 611.5,
+    "h": 35.4,
+    "xref": 34
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     57.4,
+     572.3,
+     97.6
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 33
+   },
+   {
+    "page": 1,
+    "bbox": [
+     314.8,
+     429.7,
+     368.2,
+     466.7
+    ],
+    "w": 53.4,
+    "h": 37.0,
+    "xref": 36
+   },
+   {
+    "page": 1,
+    "bbox": [
+     48.7,
+     833.4,
+     124.8,
+     858.6
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 35
+   },
+   {
+    "page": 1,
+    "bbox": [
+     139.7,
+     833.4,
+     215.9,
+     858.6
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 38
+   },
+   {
+    "page": 1,
+    "bbox": [
+     45.5,
+     1115.2,
+     97.3,
+     1152.2
+    ],
+    "w": 51.8,
+    "h": 37.0,
+    "xref": 37
+   },
+   {
+    "page": 1,
+    "bbox": [
+     226.9,
+     833.4,
+     301.4,
+     857.0
+    ],
+    "w": 74.6,
+    "h": 23.6,
+    "xref": 32
+   }
+  ],
+  "n_page12_images": 12,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [],
+  "expiry_hits_method2": [],
+  "expiry_hits_with_number": [],
+  "expiry_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     29.8,
+     303.8,
+     83.8,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.0,
+     971.3,
+     216.2,
+     978.5
+    ],
+    "text": "Outstanding is the balance on the Flexipay/Encash/Installments as applicable."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     20.4,
+     863.9,
+     423.3,
+     871.2
+    ],
+    "text": "C=Credit; D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     34.8,
+     387.0,
+     84.3,
+     397.2
+    ],
+    "text": "Points Earned"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     180.0,
+     364.5,
+     285.9,
+     377.2
+    ],
+    "text": "Reward Point Summary"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     119.3,
+     394.6,
+     388.1,
+     403.5
+    ],
+    "text": "> All your SBI Card Reward Points will be transferred to IRCTC at the end of every month"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     119.3,
+     402.7,
+     368.9,
+     411.6
+    ],
+    "text": "> These Reward Points can be redeemed at www.irctc.co.in for free railway tickets"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     119.3,
+     410.9,
+     424.4,
+     419.8
+    ],
+    "text": "> The redemption of Reward Points will be governed by the Terms & Conditions of SBICPSL & IRCTC"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     526.8,
+     292.5,
+     539.5
+    ],
+    "text": "Credit Card Account, this balance will now attract all"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     560.4,
+     276.5,
+     573.1
+    ],
+    "text": "balance post  transfer of  loan outstanding  if any"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     316.4,
+     693.8,
+     563.0,
+     705.2
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     379.9,
+     440.4,
+     439.8,
+     450.6
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     369.0,
+     489.2,
+     456.0,
+     499.4
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     383.9,
+     501.0,
+     444.7,
+     511.2
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     213.1,
+     60.4,
+     403.8,
+     74.4
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     37.2,
+     98.1,
+     74.5,
+     108.3
+    ],
+    "text": "Cash Back"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.8,
+     120.9,
+     88.8,
+     131.1
+    ],
+    "text": "Reward Points"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     248.1,
+     121.4,
+     535.4,
+     135.0
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     14.1,
+     875.1,
+     157.8,
+     889.0
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     13.4,
+     1159.3,
+     597.4,
+     1173.0
+    ],
+    "text": "retail spends and cash advance (if any)} , Interest charges, Balance Transfer Outstanding, Purchase"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     13.4,
+     1189.0,
+     598.0,
+     1203.0
+    ],
+    "text": "Charges.^For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     254.5,
+     1287.4,
+     353.7,
+     1301.4
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     1319.5,
+     594.0,
+     1333.7
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     1382.5,
+     254.3,
+     1396.6
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     1951.4,
+     594.1,
+     1965.6
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     819.2,
+     559.7,
+     832.6
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     834.1,
+     531.4,
+     847.6
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     1032.7,
+     481.2,
+     1049.5
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     1161.2,
+     596.6,
+     1175.1
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   }
+  ],
+  "n_reward_lines": 29,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": true,
+   "Redeemed": true,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": false,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Reward Points",
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 12,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "1390952698",
+  "filename": "decrypt_1390952698_19db4a7278681243_8599485416101000_21042026.pdf",
+  "n_pages": 7,
+  "collapsed_chars": 28456,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX38",
+    "bbox": [
+     317.7,
+     74.7,
+     397.1,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX38"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 1,
+    "bbox": [
+     316.4,
+     759.9,
+     558.0,
+     771.1
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     759.9,
+     558.0,
+     771.1
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     759.9,
+     558.0,
+     771.1
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 1,
+    "bbox": [
+     316.4,
+     759.9,
+     558.0,
+     771.1
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 1,
+    "bbox": [
+     316.4,
+     759.9,
+     558.0,
+     771.1
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 5,
+    "bbox": [
+     249.6,
+     703.3,
+     584.8,
+     716.9
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 5,
+    "bbox": [
+     249.6,
+     717.4,
+     332.8,
+     731.1
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 5,
+    "bbox": [
+     249.6,
+     717.4,
+     332.8,
+     731.1
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     755.2,
+     194.7,
+     769.1
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     769.7,
+     596.6,
+     783.2
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     847.9,
+     210.4,
+     862.0
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     847.9,
+     210.4,
+     862.0
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     862.6,
+     584.0,
+     876.1
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     862.6,
+     584.0,
+     876.1
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 5,
+   "MASTER CARD": 5,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 19
+   },
+   {
+    "page": 0,
+    "bbox": [
+     16.5,
+     678.5,
+     425.5,
+     855.6
+    ],
+    "w": 409.0,
+    "h": 177.1,
+    "xref": 23
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 21
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 20
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 22
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.5,
+     611.5,
+     35.9
+    ],
+    "w": 611.5,
+    "h": 35.4,
+    "xref": 32
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     57.1,
+     572.3,
+     97.3
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 31
+   },
+   {
+    "page": 1,
+    "bbox": [
+     314.8,
+     429.4,
+     368.2,
+     466.4
+    ],
+    "w": 53.4,
+    "h": 37.0,
+    "xref": 34
+   },
+   {
+    "page": 1,
+    "bbox": [
+     48.7,
+     833.1,
+     124.8,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 33
+   },
+   {
+    "page": 1,
+    "bbox": [
+     139.7,
+     833.1,
+     215.9,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 36
+   },
+   {
+    "page": 1,
+    "bbox": [
+     45.5,
+     1341.5,
+     97.3,
+     1378.5
+    ],
+    "w": 51.8,
+    "h": 37.0,
+    "xref": 35
+   },
+   {
+    "page": 1,
+    "bbox": [
+     226.9,
+     833.1,
+     301.4,
+     856.7
+    ],
+    "w": 74.6,
+    "h": 23.6,
+    "xref": 30
+   }
+  ],
+  "n_page12_images": 12,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [],
+  "expiry_hits_method2": [],
+  "expiry_hits_with_number": [],
+  "expiry_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     30.3,
+     304.0,
+     83.2,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     20.4,
+     968.1,
+     505.9,
+     975.6
+    ],
+    "text": "Due and the Total Outstanding is the balance on the Flexipay/Encash/Installments as applicable.** To keep your credit card in good standing,you have the option of paying atleast the minimum"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.8,
+     864.5,
+     442.5,
+     872.0
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     188.1,
+     363.9,
+     277.8,
+     376.4
+    ],
+    "text": "REWARD SUMMARY"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     328.3,
+     387.2,
+     383.9,
+     397.1
+    ],
+    "text": "Earned Till Date"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     514.9,
+     299.2,
+     526.1
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     316.4,
+     689.9,
+     558.1,
+     701.1
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     379.9,
+     440.3,
+     438.7,
+     450.3
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     369.0,
+     489.1,
+     454.2,
+     499.0
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     383.9,
+     500.9,
+     443.5,
+     510.9
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     1011.8,
+     121.6,
+     1023.0
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 1,
+    "bbox": [
+     214.9,
+     60.3,
+     401.9,
+     74.0
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     37.5,
+     97.9,
+     74.1,
+     107.9
+    ],
+    "text": "Cash Back"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     387.4,
+     136.1,
+     400.8
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     249.6,
+     35.2,
+     536.9,
+     48.8
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     249.6,
+     141.4,
+     419.2,
+     155.0
+    ],
+    "text": "remaining balance outstanding."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     15.7,
+     877.9,
+     159.4,
+     891.7
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     256.4,
+     1641.6,
+     351.8,
+     1655.0
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     1670.1,
+     595.6,
+     1684.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     1730.0,
+     255.9,
+     1744.1
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     2284.7,
+     595.7,
+     2298.9
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     15.7,
+     1522.3,
+     599.5,
+     1536.3
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1356.9,
+     561.3,
+     1370.3
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1371.0,
+     533.0,
+     1384.5
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1571.1,
+     482.8,
+     1587.9
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1702.0,
+     598.2,
+     1715.9
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1860.4,
+     588.0,
+     1874.0
+    ],
+    "text": "against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges, Balance"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     22.8,
+     2183.1,
+     591.1,
+     2196.7
+    ],
+    "text": "If one card has a credit balance (excess payment), it will not be set off against the outstanding balance on"
+   }
+  ],
+  "n_reward_lines": 28,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": true,
+   "Redeemed": false,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": false,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Reward Points",
+   "openingPoints": 53724,
+   "pointsEarnedThisCycle": 0,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": 53724,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "1511624796",
+  "filename": "decrypt_1511624796_19731f7d1d1e6105_8794369479959175_01062025.pdf",
+  "n_pages": 7,
+  "collapsed_chars": 27766,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd",
+   "Times-Roman"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX77",
+    "bbox": [
+     316.7,
+     74.6,
+     397.6,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX77"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.4,
+     562.8,
+     774.8
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.4,
+     562.8,
+     774.8
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.4,
+     562.8,
+     774.8
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.4,
+     562.8,
+     774.8
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.4,
+     562.8,
+     774.8
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 5,
+    "bbox": [
+     248.1,
+     760.4,
+     583.3,
+     773.9
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 5,
+    "bbox": [
+     248.1,
+     775.2,
+     331.3,
+     788.9
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 5,
+    "bbox": [
+     248.1,
+     775.2,
+     331.3,
+     788.9
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     779.1,
+     193.1,
+     793.0
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     794.4,
+     595.0,
+     807.9
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     877.3,
+     208.8,
+     891.4
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     877.3,
+     208.8,
+     891.4
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     892.7,
+     582.5,
+     906.2
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     892.7,
+     582.5,
+     906.2
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1217.0,
+     547.9,
+     1230.5
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1217.0,
+     547.9,
+     1230.5
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1217.0,
+     547.9,
+     1230.5
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 5,
+   "MASTER CARD": 5,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 20
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 22
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 21
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 23
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.7,
+     611.5,
+     36.1
+    ],
+    "w": 611.5,
+    "h": 35.4,
+    "xref": 32
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     57.4,
+     572.3,
+     97.5
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 31
+   },
+   {
+    "page": 1,
+    "bbox": [
+     314.8,
+     429.6,
+     368.2,
+     466.6
+    ],
+    "w": 53.4,
+    "h": 37.0,
+    "xref": 34
+   },
+   {
+    "page": 1,
+    "bbox": [
+     48.7,
+     833.4,
+     124.8,
+     858.5
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 33
+   },
+   {
+    "page": 1,
+    "bbox": [
+     139.7,
+     833.4,
+     215.9,
+     858.5
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 36
+   },
+   {
+    "page": 1,
+    "bbox": [
+     45.5,
+     1478.7,
+     97.3,
+     1515.7
+    ],
+    "w": 51.8,
+    "h": 37.0,
+    "xref": 35
+   },
+   {
+    "page": 1,
+    "bbox": [
+     226.9,
+     833.4,
+     301.4,
+     857.0
+    ],
+    "w": 74.6,
+    "h": 23.6,
+    "xref": 37
+   }
+  ],
+  "n_page12_images": 11,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [],
+  "expiry_hits_method2": [],
+  "expiry_hits_with_number": [],
+  "expiry_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     29.8,
+     303.8,
+     83.8,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.0,
+     971.3,
+     216.2,
+     978.5
+    ],
+    "text": "Outstanding is the balance on the Flexipay/Encash/Installments as applicable."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     101.3,
+     363.7,
+     335.0,
+     376.4
+    ],
+    "text": "CARD CASHBACK SUMMARY FOR THIS STATEMENT"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     21.2,
+     865.7,
+     412.1,
+     872.7
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     70.7,
+     459.4,
+     160.6,
+     469.6
+    ],
+    "text": "CARD CASHBACK CREDIT"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     23.1,
+     380.5,
+     70.2,
+     391.9
+    ],
+    "text": "CASHBACK"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     84.0,
+     389.1,
+     417.9,
+     400.6
+    ],
+    "text": "Card Cashback will be posted to your SBI Card Account within two working days after"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     516.7,
+     304.2,
+     528.2
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     316.4,
+     692.1,
+     563.0,
+     703.6
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     379.9,
+     440.4,
+     439.8,
+     450.5
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     369.0,
+     489.2,
+     456.0,
+     499.3
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     383.9,
+     501.0,
+     444.7,
+     511.1
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     1012.2,
+     123.0,
+     1023.6
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 1,
+    "bbox": [
+     213.1,
+     60.3,
+     403.8,
+     74.3
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.5,
+     98.0,
+     92.2,
+     108.2
+    ],
+    "text": "Offer Cashback"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.5,
+     120.8,
+     90.6,
+     131.0
+    ],
+    "text": "Card Cashback"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     386.7,
+     138.5,
+     400.4
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     248.1,
+     44.2,
+     535.4,
+     57.8
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     14.1,
+     967.9,
+     157.8,
+     981.8
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     254.5,
+     1616.3,
+     353.7,
+     1630.3
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     1653.1,
+     594.0,
+     1667.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     1716.1,
+     254.3,
+     1730.2
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     2270.9,
+     594.1,
+     2285.1
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     14.1,
+     1495.9,
+     598.0,
+     1509.9
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1360.3,
+     559.7,
+     1373.7
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1375.2,
+     531.4,
+     1388.7
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1573.0,
+     481.2,
+     1589.7
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1704.6,
+     596.6,
+     1718.5
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   }
+  ],
+  "n_reward_lines": 28,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": false,
+   "Redeemed": false,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": false,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Cashback",
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 476,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "1707857175",
+  "filename": "decrypt_1707857175_19e35d9e7af1a557_3632713356112023_16052026.pdf",
+  "n_pages": 8,
+  "collapsed_chars": 31064,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd",
+   "Times-Roman"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX13",
+    "bbox": [
+     317.7,
+     74.7,
+     397.1,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX13"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 2,
+    "bbox": [
+     316.4,
+     759.9,
+     558.0,
+     771.1
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 2,
+    "bbox": [
+     316.4,
+     759.9,
+     558.0,
+     771.1
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 2,
+    "bbox": [
+     316.4,
+     759.9,
+     558.0,
+     771.1
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 2,
+    "bbox": [
+     316.4,
+     759.9,
+     558.0,
+     771.1
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 2,
+    "bbox": [
+     316.4,
+     759.9,
+     558.0,
+     771.1
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     249.6,
+     727.7,
+     584.8,
+     741.3
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     249.6,
+     741.8,
+     332.8,
+     755.5
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     249.6,
+     741.8,
+     332.8,
+     755.5
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 7,
+    "bbox": [
+     69.1,
+     755.2,
+     194.7,
+     769.1
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 7,
+    "bbox": [
+     69.1,
+     769.7,
+     596.6,
+     783.2
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 7,
+    "bbox": [
+     69.1,
+     847.9,
+     210.4,
+     862.0
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 7,
+    "bbox": [
+     69.1,
+     847.9,
+     210.4,
+     862.0
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 7,
+    "bbox": [
+     69.1,
+     862.6,
+     584.0,
+     876.1
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 7,
+    "bbox": [
+     69.1,
+     862.6,
+     584.0,
+     876.1
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 7,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 7,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 7,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 5,
+   "MASTER CARD": 5,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 20
+   },
+   {
+    "page": 1,
+    "bbox": [
+     445.9,
+     53.6,
+     599.0,
+     965.7
+    ],
+    "w": 153.1,
+    "h": 912.1,
+    "xref": 26
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 22
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 21
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 23
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.1,
+     611.5,
+     34.7
+    ],
+    "w": 611.5,
+    "h": 34.6,
+    "xref": 25
+   },
+   {
+    "page": 1,
+    "bbox": [
+     22.8,
+     96.9,
+     431.7,
+     124.4
+    ],
+    "w": 409.0,
+    "h": 27.6,
+    "xref": 27
+   }
+  ],
+  "n_page12_images": 7,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [
+   {
+    "token": "FORFEIT",
+    "page": 0,
+    "collapsed_context": "IENT)PLEASENOTENEUCOINSEARNEDONTRANSACTIONSTHATARECONVERTEDTOEMIWILLBEFORFEITED.W.E.F.1STMAY2026,LATEPAYMENTCHARGES(LPC)WILLBEREVISEDTORS.100FOROUTSTANDINGAMOUN"
+   }
+  ],
+  "expiry_hits_method2": [],
+  "expiry_hits_with_number": [
+   {
+    "token": "FORFEIT",
+    "page": 0,
+    "collapsed_context": "IENT)PLEASENOTENEUCOINSEARNEDONTRANSACTIONSTHATARECONVERTEDTOEMIWILLBEFORFEITED.W.E.F.1STMAY2026,LATEPAYMENTCHARGES(LPC)WILLBEREVISEDTORS.100FOROUTSTANDINGAMOUN"
+   }
+  ],
+  "expiry_verdict": "NEEDS_MANUAL_READ",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     30.3,
+     304.0,
+     83.2,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     20.4,
+     968.1,
+     505.9,
+     975.6
+    ],
+    "text": "Due and the Total Outstanding is the balance on the Flexipay/Encash/Installments as applicable.** To keep your credit card in good standing,you have the option of paying atleast the minimum"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     26.7,
+     943.9,
+     252.0,
+     951.5
+    ],
+    "text": "Please note NeuCoins earned on transactions that are converted to EMI will be forfeited."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.8,
+     864.5,
+     446.7,
+     872.0
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     37.5,
+     387.2,
+     71.5,
+     397.1
+    ],
+    "text": "NeuCoins"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     104.4,
+     393.0,
+     390.5,
+     401.7
+    ],
+    "text": "\u2022NeuCoins earned will be automatically credited to your NeuPass account within 7 working days."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     104.4,
+     401.0,
+     379.8,
+     409.7
+    ],
+    "text": "\u2022The redemption of NeuCoins will be governed by Terms & Conditions of SBICPSL and TDPL."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     104.4,
+     409.0,
+     277.8,
+     417.7
+    ],
+    "text": "\u2022You can view your NeuCoins in the Tata Neu Mobile App."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     189.3,
+     364.7,
+     276.6,
+     377.2
+    ],
+    "text": "NeuCoins Summary"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     51.0,
+     514.9,
+     299.2,
+     526.1
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     316.4,
+     689.9,
+     558.1,
+     701.1
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     379.9,
+     440.3,
+     438.7,
+     450.3
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     369.0,
+     489.1,
+     454.2,
+     499.0
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     383.9,
+     500.9,
+     443.5,
+     510.9
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     51.0,
+     1011.8,
+     121.6,
+     1023.0
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 2,
+    "bbox": [
+     214.9,
+     60.3,
+     401.9,
+     74.0
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     38.6,
+     113.7,
+     72.6,
+     123.6
+    ],
+    "text": "NeuCoins"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     387.4,
+     136.1,
+     400.8
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     249.6,
+     38.4,
+     536.9,
+     51.9
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     249.6,
+     134.3,
+     419.2,
+     147.9
+    ],
+    "text": "remaining balance outstanding."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     15.7,
+     908.6,
+     159.4,
+     922.4
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     256.4,
+     1641.6,
+     351.8,
+     1655.0
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1670.1,
+     595.6,
+     1684.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1730.0,
+     255.9,
+     1744.1
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     2284.7,
+     595.7,
+     2298.9
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     15.7,
+     1522.3,
+     599.5,
+     1536.3
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 7,
+    "bbox": [
+     19.6,
+     1356.9,
+     561.3,
+     1370.3
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 7,
+    "bbox": [
+     19.6,
+     1371.0,
+     533.0,
+     1384.5
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 7,
+    "bbox": [
+     19.6,
+     1571.1,
+     482.8,
+     1587.9
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 7,
+    "bbox": [
+     19.6,
+     1702.0,
+     598.2,
+     1715.9
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   },
+   {
+    "page": 7,
+    "bbox": [
+     19.6,
+     1860.4,
+     588.0,
+     1874.0
+    ],
+    "text": "against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges, Balance"
+   },
+   {
+    "page": 7,
+    "bbox": [
+     22.8,
+     2183.1,
+     591.1,
+     2196.7
+    ],
+    "text": "If one card has a credit balance (excess payment), it will not be set off against the outstanding balance on"
+   }
+  ],
+  "n_reward_lines": 32,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": true,
+   "Redeemed": false,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": true,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": true,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "NeuCoins",
+   "openingPoints": null,
+   "pointsEarnedThisCycle": null,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": 1072,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "369606524",
+  "filename": "decrypt_369606524_19efa7d79d05f33f_3459817525504000_23062026.pdf",
+  "n_pages": 7,
+  "collapsed_chars": 29120,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX67",
+    "bbox": [
+     316.9,
+     74.6,
+     397.9,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX67"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 5,
+    "bbox": [
+     249.6,
+     727.7,
+     584.8,
+     741.3
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 5,
+    "bbox": [
+     249.6,
+     741.8,
+     332.8,
+     755.5
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 5,
+    "bbox": [
+     249.6,
+     741.8,
+     332.8,
+     755.5
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     755.2,
+     194.7,
+     769.1
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     769.7,
+     596.6,
+     783.2
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     847.9,
+     210.4,
+     862.0
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     847.9,
+     210.4,
+     862.0
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     862.6,
+     584.0,
+     876.1
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     862.6,
+     584.0,
+     876.1
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 5,
+   "MASTER CARD": 5,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 24
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 26
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 25
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 27
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.5,
+     611.5,
+     35.9
+    ],
+    "w": 611.5,
+    "h": 35.4,
+    "xref": 35
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     57.1,
+     572.3,
+     97.3
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 34
+   },
+   {
+    "page": 1,
+    "bbox": [
+     314.8,
+     429.4,
+     368.2,
+     466.4
+    ],
+    "w": 53.4,
+    "h": 37.0,
+    "xref": 37
+   },
+   {
+    "page": 1,
+    "bbox": [
+     48.7,
+     833.1,
+     124.8,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 36
+   },
+   {
+    "page": 1,
+    "bbox": [
+     139.7,
+     833.1,
+     215.9,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 39
+   },
+   {
+    "page": 1,
+    "bbox": [
+     45.5,
+     1341.5,
+     97.3,
+     1378.5
+    ],
+    "w": 51.8,
+    "h": 37.0,
+    "xref": 38
+   },
+   {
+    "page": 1,
+    "bbox": [
+     226.9,
+     833.1,
+     301.4,
+     856.7
+    ],
+    "w": 74.6,
+    "h": 23.6,
+    "xref": 40
+   }
+  ],
+  "n_page12_images": 11,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [],
+  "expiry_hits_method2": [],
+  "expiry_hits_with_number": [],
+  "expiry_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     29.8,
+     303.8,
+     83.8,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     20.4,
+     968.1,
+     493.7,
+     975.4
+    ],
+    "text": "Due and the Total Outstanding is the balance on the Flexipay/Encash/Installments as applicable.** To keep your credit card in good standing,you have the option of paying atleast the minimum"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.8,
+     864.7,
+     432.0,
+     872.0
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     70.7,
+     459.4,
+     160.6,
+     469.6
+    ],
+    "text": "CARD CASHBACK CREDIT"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     104.4,
+     389.1,
+     417.5,
+     400.6
+    ],
+    "text": "Cashback will be posted to your SBI Card Account within two working days after"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     27.2,
+     383.1,
+     69.1,
+     393.2
+    ],
+    "text": "CASHBACK"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     101.3,
+     363.7,
+     306.1,
+     376.4
+    ],
+    "text": "CASHBACK SUMMARY FOR THIS STATEMENT"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     516.5,
+     304.2,
+     527.9
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     316.4,
+     691.9,
+     563.0,
+     703.3
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     379.9,
+     440.1,
+     439.8,
+     450.3
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     369.0,
+     488.9,
+     456.0,
+     499.1
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     383.9,
+     500.7,
+     444.7,
+     510.9
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     1011.9,
+     123.0,
+     1023.4
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 1,
+    "bbox": [
+     213.1,
+     60.1,
+     403.8,
+     74.1
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.5,
+     97.8,
+     92.2,
+     107.9
+    ],
+    "text": "Offer Cashback"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.5,
+     120.6,
+     90.6,
+     130.8
+    ],
+    "text": "Card Cashback"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     387.2,
+     138.5,
+     400.9
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     249.6,
+     38.4,
+     536.9,
+     51.9
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     249.6,
+     134.3,
+     419.2,
+     147.9
+    ],
+    "text": "remaining balance outstanding."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     15.7,
+     908.6,
+     159.4,
+     922.4
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     254.5,
+     1641.2,
+     353.7,
+     1655.1
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     1670.1,
+     595.6,
+     1684.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     1730.0,
+     255.9,
+     1744.1
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     2284.7,
+     595.7,
+     2298.9
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     15.7,
+     1522.3,
+     599.5,
+     1536.3
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1356.9,
+     561.3,
+     1370.3
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1371.0,
+     533.0,
+     1384.5
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1571.1,
+     482.8,
+     1587.9
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1702.0,
+     598.2,
+     1715.9
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1860.4,
+     588.0,
+     1874.0
+    ],
+    "text": "against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges, Balance"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     22.8,
+     2183.1,
+     591.1,
+     2196.7
+    ],
+    "text": "If one card has a credit balance (excess payment), it will not be set off against the outstanding balance on"
+   }
+  ],
+  "n_reward_lines": 31,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": false,
+   "Redeemed": false,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": false,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Cashback",
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 375.25,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "515948911",
+  "filename": "decrypt_515948911_19c2a5375fe6c8af_8799293479959084_03022026.pdf",
+  "n_pages": 8,
+  "collapsed_chars": 30008,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX56",
+    "bbox": [
+     316.7,
+     74.6,
+     397.6,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX56"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 2,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 2,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 2,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 2,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 2,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     248.1,
+     748.2,
+     583.3,
+     761.8
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     248.1,
+     763.1,
+     331.3,
+     776.8
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     248.1,
+     763.1,
+     331.3,
+     776.8
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 7,
+    "bbox": [
+     67.5,
+     778.2,
+     193.1,
+     792.1
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 7,
+    "bbox": [
+     67.5,
+     793.5,
+     595.0,
+     807.0
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 7,
+    "bbox": [
+     67.5,
+     876.4,
+     208.8,
+     890.5
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 7,
+    "bbox": [
+     67.5,
+     876.4,
+     208.8,
+     890.5
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 7,
+    "bbox": [
+     67.5,
+     891.8,
+     582.5,
+     905.3
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 7,
+    "bbox": [
+     67.5,
+     891.8,
+     582.5,
+     905.3
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 7,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 7,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 7,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 5,
+   "MASTER CARD": 5,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 21
+   },
+   {
+    "page": 1,
+    "bbox": [
+     445.9,
+     53.6,
+     599.0,
+     965.7
+    ],
+    "w": 153.1,
+    "h": 912.1,
+    "xref": 39
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 23
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 22
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 24
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.1,
+     611.5,
+     34.7
+    ],
+    "w": 611.5,
+    "h": 34.6,
+    "xref": 38
+   },
+   {
+    "page": 1,
+    "bbox": [
+     22.8,
+     96.9,
+     431.7,
+     124.4
+    ],
+    "w": 409.0,
+    "h": 27.6,
+    "xref": 40
+   }
+  ],
+  "n_page12_images": 7,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [],
+  "expiry_hits_method2": [],
+  "expiry_hits_with_number": [],
+  "expiry_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     29.8,
+     303.8,
+     83.8,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.0,
+     969.7,
+     214.6,
+     977.0
+    ],
+    "text": "Outstanding is the balance on the Flexipay/Encash/Installments as applicable."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     101.3,
+     363.7,
+     335.0,
+     376.4
+    ],
+    "text": "CARD CASHBACK SUMMARY FOR THIS STATEMENT"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     26.7,
+     891.8,
+     542.1,
+     899.1
+    ],
+    "text": "+ 2% of remaining balance outstanding.Payments received against the Cardholder's outstanding will be adjusted against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges,"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     26.7,
+     897.6,
+     185.0,
+     904.9
+    ],
+    "text": "Balance transfer, Retail Spends and Cash Advance in that order."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     21.2,
+     865.7,
+     412.1,
+     872.7
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     70.7,
+     459.4,
+     160.6,
+     469.6
+    ],
+    "text": "CARD CASHBACK CREDIT"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     23.1,
+     380.5,
+     70.2,
+     391.9
+    ],
+    "text": "CASHBACK"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     84.0,
+     389.1,
+     417.9,
+     400.6
+    ],
+    "text": "Card Cashback will be posted to your SBI Card Account within two working days after"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     51.0,
+     516.5,
+     304.2,
+     527.9
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     316.4,
+     691.9,
+     563.0,
+     703.3
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     379.9,
+     440.1,
+     439.8,
+     450.3
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     369.0,
+     488.9,
+     456.0,
+     499.1
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     383.9,
+     500.7,
+     444.7,
+     510.9
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     51.0,
+     1011.9,
+     123.0,
+     1023.4
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 2,
+    "bbox": [
+     213.1,
+     60.1,
+     403.8,
+     74.1
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     36.5,
+     97.8,
+     92.2,
+     107.9
+    ],
+    "text": "Offer Cashback"
+   },
+   {
+    "page": 2,
+    "bbox": [
+     36.5,
+     120.6,
+     90.6,
+     130.8
+    ],
+    "text": "Card Cashback"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     387.2,
+     138.5,
+     400.9
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     248.1,
+     42.3,
+     535.4,
+     55.8
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     248.1,
+     143.8,
+     417.6,
+     157.4
+    ],
+    "text": "remaining balance outstanding."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     14.1,
+     937.7,
+     157.8,
+     951.5
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     254.5,
+     1641.2,
+     353.7,
+     1655.1
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1670.1,
+     594.0,
+     1684.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1733.1,
+     254.3,
+     1747.2
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     2305.2,
+     594.1,
+     2319.4
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     14.1,
+     1522.3,
+     598.0,
+     1536.3
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 7,
+    "bbox": [
+     18.1,
+     1359.4,
+     559.7,
+     1372.8
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 7,
+    "bbox": [
+     18.1,
+     1374.3,
+     531.4,
+     1387.8
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 7,
+    "bbox": [
+     18.1,
+     1572.1,
+     481.2,
+     1588.8
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 7,
+    "bbox": [
+     18.1,
+     1703.7,
+     596.6,
+     1717.6
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   },
+   {
+    "page": 7,
+    "bbox": [
+     18.1,
+     1861.3,
+     588.0,
+     1875.0
+    ],
+    "text": "against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges, Balance"
+   }
+  ],
+  "n_reward_lines": 32,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": false,
+   "Redeemed": false,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": false,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Cashback",
+   "openingPoints": null,
+   "pointsEarnedThisCycle": -1467,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "1118980175",
+  "filename": "decrypt_encrypt_1118980175_19c7ca2639d549e1_3440188417943010_19022026.pdf",
+  "n_pages": 7,
+  "collapsed_chars": 28006,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX76",
+    "bbox": [
+     316.7,
+     74.6,
+     397.6,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX76"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 5,
+    "bbox": [
+     248.1,
+     748.2,
+     583.3,
+     761.8
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 5,
+    "bbox": [
+     248.1,
+     763.1,
+     331.3,
+     776.8
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 5,
+    "bbox": [
+     248.1,
+     763.1,
+     331.3,
+     776.8
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     778.2,
+     193.1,
+     792.1
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     793.5,
+     595.0,
+     807.0
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     876.4,
+     208.8,
+     890.5
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     876.4,
+     208.8,
+     890.5
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     891.8,
+     582.5,
+     905.3
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     891.8,
+     582.5,
+     905.3
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 5,
+   "MASTER CARD": 5,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 33
+   },
+   {
+    "page": 0,
+    "bbox": [
+     16.5,
+     678.5,
+     425.5,
+     855.6
+    ],
+    "w": 409.0,
+    "h": 177.1,
+    "xref": 37
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 35
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 34
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 36
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.5,
+     611.5,
+     35.9
+    ],
+    "w": 611.5,
+    "h": 35.4,
+    "xref": 46
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     57.1,
+     572.3,
+     97.3
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 45
+   },
+   {
+    "page": 1,
+    "bbox": [
+     314.8,
+     429.4,
+     368.2,
+     466.4
+    ],
+    "w": 53.4,
+    "h": 37.0,
+    "xref": 48
+   },
+   {
+    "page": 1,
+    "bbox": [
+     48.7,
+     833.1,
+     124.8,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 47
+   },
+   {
+    "page": 1,
+    "bbox": [
+     139.7,
+     833.1,
+     215.9,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 50
+   },
+   {
+    "page": 1,
+    "bbox": [
+     45.5,
+     1341.5,
+     97.3,
+     1378.5
+    ],
+    "w": 51.8,
+    "h": 37.0,
+    "xref": 49
+   },
+   {
+    "page": 1,
+    "bbox": [
+     226.9,
+     833.1,
+     301.4,
+     856.7
+    ],
+    "w": 74.6,
+    "h": 23.6,
+    "xref": 44
+   }
+  ],
+  "n_page12_images": 12,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [],
+  "expiry_hits_method2": [],
+  "expiry_hits_with_number": [],
+  "expiry_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     29.8,
+     303.8,
+     83.8,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.0,
+     969.7,
+     214.6,
+     977.0
+    ],
+    "text": "Outstanding is the balance on the Flexipay/Encash/Installments as applicable."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     26.7,
+     891.8,
+     542.1,
+     899.1
+    ],
+    "text": "+ 2% of remaining balance outstanding.Payments received against the Cardholder's outstanding will be adjusted against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges,"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     26.7,
+     897.6,
+     185.0,
+     904.9
+    ],
+    "text": "Balance transfer, Retail Spends and Cash Advance in that order."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     21.2,
+     865.7,
+     412.1,
+     872.7
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     70.7,
+     459.4,
+     160.6,
+     469.6
+    ],
+    "text": "CARD CASHBACK CREDIT"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     104.4,
+     389.1,
+     417.5,
+     400.6
+    ],
+    "text": "Cashback will be posted to your SBI Card Account within two working days after"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     27.2,
+     383.1,
+     69.1,
+     393.2
+    ],
+    "text": "CASHBACK"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     101.3,
+     363.7,
+     306.1,
+     376.4
+    ],
+    "text": "CASHBACK SUMMARY FOR THIS STATEMENT"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     516.5,
+     304.2,
+     527.9
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     316.4,
+     691.9,
+     563.0,
+     703.3
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     379.9,
+     440.1,
+     439.8,
+     450.3
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     369.0,
+     488.9,
+     456.0,
+     499.1
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     383.9,
+     500.7,
+     444.7,
+     510.9
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     1011.9,
+     123.0,
+     1023.4
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 1,
+    "bbox": [
+     213.1,
+     60.1,
+     403.8,
+     74.1
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.5,
+     97.8,
+     92.2,
+     107.9
+    ],
+    "text": "Offer Cashback"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.5,
+     120.6,
+     90.6,
+     130.8
+    ],
+    "text": "Card Cashback"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     387.2,
+     138.5,
+     400.9
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     248.1,
+     42.3,
+     535.4,
+     55.8
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     248.1,
+     143.8,
+     417.6,
+     157.4
+    ],
+    "text": "remaining balance outstanding."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     14.1,
+     937.7,
+     157.8,
+     951.5
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     254.5,
+     1641.2,
+     353.7,
+     1655.1
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     1670.1,
+     594.0,
+     1684.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     1733.1,
+     254.3,
+     1747.2
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     2305.2,
+     594.1,
+     2319.4
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     14.1,
+     1522.3,
+     598.0,
+     1536.3
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1359.4,
+     559.7,
+     1372.8
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1374.3,
+     531.4,
+     1387.8
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1572.1,
+     481.2,
+     1588.8
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1703.7,
+     596.6,
+     1717.6
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1861.3,
+     588.0,
+     1875.0
+    ],
+    "text": "against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges, Balance"
+   }
+  ],
+  "n_reward_lines": 32,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": false,
+   "Redeemed": false,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": false,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Cashback",
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 1525.25,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "221159806",
+  "filename": "decrypt_encrypt_221159806_19aea0a8cd4684c4_8926898415575304_03122025.pdf",
+  "n_pages": 7,
+  "collapsed_chars": 28080,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX27",
+    "bbox": [
+     316.7,
+     74.6,
+     397.6,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX27"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 5,
+    "bbox": [
+     248.1,
+     745.1,
+     583.3,
+     758.6
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 5,
+    "bbox": [
+     248.1,
+     759.9,
+     331.3,
+     773.6
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 5,
+    "bbox": [
+     248.1,
+     759.9,
+     331.3,
+     773.6
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     778.2,
+     193.1,
+     792.1
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     793.5,
+     595.0,
+     807.0
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     876.4,
+     208.8,
+     890.5
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     876.4,
+     208.8,
+     890.5
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     891.8,
+     582.5,
+     905.3
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     891.8,
+     582.5,
+     905.3
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 5,
+   "MASTER CARD": 5,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 22
+   },
+   {
+    "page": 0,
+    "bbox": [
+     16.5,
+     678.5,
+     425.5,
+     855.6
+    ],
+    "w": 409.0,
+    "h": 177.1,
+    "xref": 26
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 24
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 23
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 25
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.5,
+     611.5,
+     35.9
+    ],
+    "w": 611.5,
+    "h": 35.4,
+    "xref": 35
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     57.1,
+     572.3,
+     97.3
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 34
+   },
+   {
+    "page": 1,
+    "bbox": [
+     314.8,
+     429.4,
+     368.2,
+     466.4
+    ],
+    "w": 53.4,
+    "h": 37.0,
+    "xref": 37
+   },
+   {
+    "page": 1,
+    "bbox": [
+     48.7,
+     833.1,
+     124.8,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 36
+   },
+   {
+    "page": 1,
+    "bbox": [
+     139.7,
+     833.1,
+     215.9,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 39
+   },
+   {
+    "page": 1,
+    "bbox": [
+     45.5,
+     1341.5,
+     97.3,
+     1378.5
+    ],
+    "w": 51.8,
+    "h": 37.0,
+    "xref": 38
+   },
+   {
+    "page": 1,
+    "bbox": [
+     226.9,
+     833.1,
+     301.4,
+     856.7
+    ],
+    "w": 74.6,
+    "h": 23.6,
+    "xref": 33
+   }
+  ],
+  "n_page12_images": 12,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [
+   {
+    "token": "EXPIR",
+    "page": 0,
+    "collapsed_context": ",499.00DIGSTDB@18.00%269.82D180680018068PREVIOUSBALANCEEARNEDREDEEMED/EXPIRED/FORFEITEDCLOSINGBALANCEPOINTSEXPIRYDETAILSNONESHOP&SMILESUMMARY"
+   },
+   {
+    "token": "EXPIR",
+    "page": 0,
+    "collapsed_context": "068PREVIOUSBALANCEEARNEDREDEEMED/EXPIRED/FORFEITEDCLOSINGBALANCEPOINTSEXPIRYDETAILSNONESHOP&SMILESUMMARY"
+   },
+   {
+    "token": "FORFEIT",
+    "page": 0,
+    "collapsed_context": "IGSTDB@18.00%269.82D180680018068PREVIOUSBALANCEEARNEDREDEEMED/EXPIRED/FORFEITEDCLOSINGBALANCEPOINTSEXPIRYDETAILSNONESHOP&SMILESUMMARY"
+   }
+  ],
+  "expiry_hits_method2": [
+   {
+    "page": 0,
+    "context": "00 D IGST DB @ 18.00% 269.82 D 18068 0 0 18068 Previous Balance Earned Redeemed/Expired /Forfeited Closing Balance Points Expiry Details NONE SHOP & SMILE SUMMARY "
+   },
+   {
+    "page": 0,
+    "context": "8068 Previous Balance Earned Redeemed/Expired /Forfeited Closing Balance Points Expiry Details NONE SHOP & SMILE SUMMARY "
+   }
+  ],
+  "expiry_hits_with_number": [
+   {
+    "token": "EXPIR",
+    "page": 0,
+    "collapsed_context": ",499.00DIGSTDB@18.00%269.82D180680018068PREVIOUSBALANCEEARNEDREDEEMED/EXPIRED/FORFEITEDCLOSINGBALANCEPOINTSEXPIRYDETAILSNONESHOP&SMILESUMMARY"
+   },
+   {
+    "token": "EXPIR",
+    "page": 0,
+    "collapsed_context": "068PREVIOUSBALANCEEARNEDREDEEMED/EXPIRED/FORFEITEDCLOSINGBALANCEPOINTSEXPIRYDETAILSNONESHOP&SMILESUMMARY"
+   },
+   {
+    "token": "FORFEIT",
+    "page": 0,
+    "collapsed_context": "IGSTDB@18.00%269.82D180680018068PREVIOUSBALANCEEARNEDREDEEMED/EXPIRED/FORFEITEDCLOSINGBALANCEPOINTSEXPIRYDETAILSNONESHOP&SMILESUMMARY"
+   }
+  ],
+  "expiry_verdict": "NEEDS_MANUAL_READ",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     29.8,
+     303.8,
+     83.8,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.0,
+     971.3,
+     216.2,
+     978.5
+    ],
+    "text": "Outstanding is the balance on the Flexipay/Encash/Installments as applicable."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     26.7,
+     891.8,
+     542.1,
+     899.1
+    ],
+    "text": "+ 2% of remaining balance outstanding.Payments received against the Cardholder's outstanding will be adjusted against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges,"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     26.7,
+     897.6,
+     185.0,
+     904.9
+    ],
+    "text": "Balance transfer, Retail Spends and Cash Advance in that order."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     21.2,
+     865.7,
+     412.1,
+     872.7
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     27.6,
+     391.7,
+     71.8,
+     399.0
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     107.9,
+     391.7,
+     125.7,
+     399.0
+    ],
+    "text": "Earned"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     160.3,
+     387.0,
+     209.5,
+     394.3
+    ],
+    "text": "Redeemed/Expired"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     171.7,
+     392.8,
+     198.0,
+     400.1
+    ],
+    "text": "/Forfeited"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     229.6,
+     391.7,
+     270.5,
+     399.0
+    ],
+    "text": "Closing Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     326.4,
+     391.7,
+     379.3,
+     399.0
+    ],
+    "text": "Points Expiry Details"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     516.5,
+     304.2,
+     527.9
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     316.4,
+     691.9,
+     563.0,
+     703.3
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     379.9,
+     440.1,
+     439.8,
+     450.3
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     369.0,
+     488.9,
+     456.0,
+     499.1
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     383.9,
+     500.7,
+     444.7,
+     510.9
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     1011.9,
+     123.0,
+     1023.4
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 1,
+    "bbox": [
+     213.1,
+     60.1,
+     403.8,
+     74.1
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     37.2,
+     97.8,
+     74.5,
+     107.9
+    ],
+    "text": "Cash Back"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     37.5,
+     120.6,
+     89.6,
+     130.8
+    ],
+    "text": "Reward Points"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     387.2,
+     138.5,
+     400.9
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     248.1,
+     42.3,
+     535.4,
+     55.8
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     248.1,
+     147.7,
+     417.6,
+     161.3
+    ],
+    "text": "remaining balance outstanding."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     14.1,
+     937.7,
+     157.8,
+     951.5
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     254.5,
+     1641.2,
+     353.7,
+     1655.1
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     1670.1,
+     594.0,
+     1684.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     1733.1,
+     254.3,
+     1747.2
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     2305.2,
+     594.1,
+     2319.4
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     14.1,
+     1522.3,
+     598.0,
+     1536.3
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1359.4,
+     559.7,
+     1372.8
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1374.3,
+     531.4,
+     1387.8
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1572.1,
+     481.2,
+     1588.8
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1703.7,
+     596.6,
+     1717.6
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1861.3,
+     588.0,
+     1875.0
+    ],
+    "text": "against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges, Balance"
+   }
+  ],
+  "n_reward_lines": 34,
+  "has_current_cycle_strip": true,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": true,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": true,
+   "Redeemed": true,
+   "Redeemed/Expired/Forfeited": true,
+   "Forfeited": true,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Reward Points",
+   "openingPoints": 18068,
+   "pointsEarnedThisCycle": 0,
+   "pointsRedeemedThisCycle": 0,
+   "closingPoints": 18068,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "393366914",
+  "filename": "decrypt_encrypt_393366914_19bf0282975f07a1_0991974409638013_23012026.pdf",
+  "n_pages": 7,
+  "collapsed_chars": 28134,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX69",
+    "bbox": [
+     316.7,
+     74.6,
+     397.6,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX69"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 5,
+    "bbox": [
+     248.1,
+     745.1,
+     583.3,
+     758.6
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 5,
+    "bbox": [
+     248.1,
+     759.9,
+     331.3,
+     773.6
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 5,
+    "bbox": [
+     248.1,
+     759.9,
+     331.3,
+     773.6
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     778.2,
+     193.1,
+     792.1
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     793.5,
+     595.0,
+     807.0
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     876.4,
+     208.8,
+     890.5
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     876.4,
+     208.8,
+     890.5
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     891.8,
+     582.5,
+     905.3
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     891.8,
+     582.5,
+     905.3
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     67.5,
+     1216.1,
+     547.9,
+     1229.6
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 5,
+   "MASTER CARD": 5,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 21
+   },
+   {
+    "page": 0,
+    "bbox": [
+     16.5,
+     678.5,
+     425.5,
+     855.6
+    ],
+    "w": 409.0,
+    "h": 177.1,
+    "xref": 25
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 23
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 22
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 24
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.5,
+     611.5,
+     35.9
+    ],
+    "w": 611.5,
+    "h": 35.4,
+    "xref": 34
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     57.1,
+     572.3,
+     97.3
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 33
+   },
+   {
+    "page": 1,
+    "bbox": [
+     314.8,
+     429.4,
+     368.2,
+     466.4
+    ],
+    "w": 53.4,
+    "h": 37.0,
+    "xref": 36
+   },
+   {
+    "page": 1,
+    "bbox": [
+     48.7,
+     833.1,
+     124.8,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 35
+   },
+   {
+    "page": 1,
+    "bbox": [
+     139.7,
+     833.1,
+     215.9,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 38
+   },
+   {
+    "page": 1,
+    "bbox": [
+     45.5,
+     1341.5,
+     97.3,
+     1378.5
+    ],
+    "w": 51.8,
+    "h": 37.0,
+    "xref": 37
+   },
+   {
+    "page": 1,
+    "bbox": [
+     226.9,
+     833.1,
+     301.4,
+     856.7
+    ],
+    "w": 74.6,
+    "h": 23.6,
+    "xref": 32
+   }
+  ],
+  "n_page12_images": 12,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [],
+  "expiry_hits_method2": [],
+  "expiry_hits_with_number": [],
+  "expiry_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     29.8,
+     303.8,
+     83.8,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.0,
+     971.3,
+     216.2,
+     978.5
+    ],
+    "text": "Outstanding is the balance on the Flexipay/Encash/Installments as applicable."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     26.7,
+     891.8,
+     542.1,
+     899.1
+    ],
+    "text": "+ 2% of remaining balance outstanding.Payments received against the Cardholder's outstanding will be adjusted against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges,"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     26.7,
+     897.6,
+     185.0,
+     904.9
+    ],
+    "text": "Balance transfer, Retail Spends and Cash Advance in that order."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     21.2,
+     865.7,
+     412.1,
+     872.7
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     27.5,
+     933.5,
+     251.5,
+     940.8
+    ],
+    "text": "equally-rewarding SimplyCLICK / SimplySAVE SBI Credit Card, at no extra cost. T&C apply."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     28.5,
+     387.0,
+     80.5,
+     397.2
+    ],
+    "text": "Reward Points"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     104.4,
+     393.0,
+     354.3,
+     401.9
+    ],
+    "text": "\u2022 Reward Points earned will be automatically credited to your OLA Money account."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     104.4,
+     401.2,
+     419.1,
+     410.1
+    ],
+    "text": "\u2022The redemption of Reward Points will be governed by Terms & Conditions of SBICPSL and OLA Money."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     187.2,
+     364.5,
+     278.7,
+     377.2
+    ],
+    "text": "REWARD SUMMARY"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     516.5,
+     304.2,
+     527.9
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     316.4,
+     691.9,
+     563.0,
+     703.3
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     379.9,
+     440.1,
+     439.8,
+     450.3
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     369.0,
+     488.9,
+     456.0,
+     499.1
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     383.9,
+     500.7,
+     444.7,
+     510.9
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     1011.9,
+     123.0,
+     1023.4
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 1,
+    "bbox": [
+     213.1,
+     60.1,
+     403.8,
+     74.1
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     37.2,
+     97.8,
+     74.5,
+     107.9
+    ],
+    "text": "Cash Back"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     37.5,
+     120.6,
+     89.6,
+     130.8
+    ],
+    "text": "Reward Points"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     387.2,
+     138.5,
+     400.9
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     248.1,
+     42.3,
+     535.4,
+     55.8
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     248.1,
+     147.7,
+     417.6,
+     161.3
+    ],
+    "text": "remaining balance outstanding."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     14.1,
+     937.7,
+     157.8,
+     951.5
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     254.5,
+     1641.2,
+     353.7,
+     1655.1
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     1670.1,
+     594.0,
+     1684.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     1733.1,
+     254.3,
+     1747.2
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 5,
+    "bbox": [
+     18.1,
+     2305.2,
+     594.1,
+     2319.4
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     14.1,
+     1522.3,
+     598.0,
+     1536.3
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1359.4,
+     559.7,
+     1372.8
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1374.3,
+     531.4,
+     1387.8
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1572.1,
+     481.2,
+     1588.8
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1703.7,
+     596.6,
+     1717.6
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     18.1,
+     1861.3,
+     588.0,
+     1875.0
+    ],
+    "text": "against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges, Balance"
+   }
+  ],
+  "n_reward_lines": 33,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": true,
+   "Redeemed": false,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": false,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Reward Points",
+   "openingPoints": null,
+   "pointsEarnedThisCycle": null,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": 0,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ },
+ {
+  "sid": "905768587",
+  "filename": "decrypt_encrypt_905768587_19e92b8dbf4fc8a0_8799397479959188_03062026.pdf",
+  "n_pages": 7,
+  "collapsed_chars": 28899,
+  "fonts": [
+   "Arial",
+   "Arial-Bold",
+   "CourierNew",
+   "RonBsRg9",
+   "SariOfLt",
+   "SariOfMd"
+  ],
+  "itfrupee_present": false,
+  "card_number_hits": [
+   {
+    "page": 0,
+    "text": "XXXX XXXX XXXX XX57",
+    "bbox": [
+     316.9,
+     74.6,
+     397.9,
+     84.7
+    ],
+    "line": "XXXX XXXX XXXX XX57"
+   }
+  ],
+  "network_hits": [
+   {
+    "token": "VISA",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "RUPAY",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "AMEX",
+    "page": 1,
+    "bbox": [
+     316.4,
+     763.2,
+     562.8,
+     774.6
+    ],
+    "line": "(VISA, MasterCard, Rupay, Amex) Guidelines. You will receive",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "GUIDELINE"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 5,
+    "bbox": [
+     249.6,
+     727.7,
+     584.8,
+     741.3
+    ],
+    "line": "Actual cost (subject to a minimum of $175 for VISA and $ 148",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 5,
+    "bbox": [
+     249.6,
+     741.8,
+     332.8,
+     755.5
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 5,
+    "bbox": [
+     249.6,
+     741.8,
+     332.8,
+     755.5
+    ],
+    "line": "for Mastercard)",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     755.2,
+     194.7,
+     769.1
+    ],
+    "line": "VISA Credit Card Pay",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     769.7,
+     596.6,
+     783.2
+    ],
+    "line": "Use VISA Credit Card Pay to pay your SBI Credit Card bill. Your payment will be credited instantly.",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "PAY "
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     847.9,
+     210.4,
+     862.0
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     847.9,
+     210.4,
+     862.0
+    ],
+    "line": "Mastercard MoneySend",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     862.6,
+     584.0,
+     876.1
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     862.6,
+     584.0,
+     876.1
+    ],
+    "line": "Download any authorized third-party payment app / use a platform that supports the Mastercard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [],
+    "near_card_number": []
+   },
+   {
+    "token": "VISA",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTERCARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   },
+   {
+    "token": "MASTER CARD",
+    "page": 6,
+    "bbox": [
+     69.1,
+     1236.5,
+     547.1,
+     1249.9
+    ],
+    "line": "made by customer through any instant channel (NEFT, Visa Money Transfer, MasterCard",
+    "verdict": "BOILERPLATE",
+    "boilerplate_cues": [
+     "NEFT"
+    ],
+    "near_card_number": []
+   }
+  ],
+  "network_hit_counts": {
+   "VISA": 5,
+   "MASTERCARD": 5,
+   "MASTER CARD": 5,
+   "RUPAY": 1,
+   "AMEX": 1
+  },
+  "network_verdict": "NOT_PRINTED_NULL_CORRECT",
+  "network_value": null,
+  "page12_images": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2,
+    "xref": 22
+   },
+   {
+    "page": 0,
+    "bbox": [
+     16.5,
+     678.5,
+     425.5,
+     855.6
+    ],
+    "w": 409.0,
+    "h": 177.1,
+    "xref": 26
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     235.4,
+     589.5,
+     556.5
+    ],
+    "w": 153.1,
+    "h": 321.1,
+    "xref": 24
+   },
+   {
+    "page": 0,
+    "bbox": [
+     436.5,
+     558.9,
+     589.5,
+     857.1
+    ],
+    "w": 153.1,
+    "h": 298.3,
+    "xref": 23
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6,
+    "xref": 25
+   },
+   {
+    "page": 1,
+    "bbox": [
+     0.0,
+     0.5,
+     611.5,
+     35.9
+    ],
+    "w": 611.5,
+    "h": 35.4,
+    "xref": 35
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     57.1,
+     572.3,
+     97.3
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 34
+   },
+   {
+    "page": 1,
+    "bbox": [
+     34.5,
+     179.9,
+     572.3,
+     220.1
+    ],
+    "w": 537.7,
+    "h": 40.1,
+    "xref": 34
+   },
+   {
+    "page": 1,
+    "bbox": [
+     314.8,
+     429.4,
+     368.2,
+     466.4
+    ],
+    "w": 53.4,
+    "h": 37.0,
+    "xref": 37
+   },
+   {
+    "page": 1,
+    "bbox": [
+     48.7,
+     833.1,
+     124.8,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 36
+   },
+   {
+    "page": 1,
+    "bbox": [
+     139.7,
+     833.1,
+     215.9,
+     858.3
+    ],
+    "w": 76.1,
+    "h": 25.2,
+    "xref": 39
+   },
+   {
+    "page": 1,
+    "bbox": [
+     45.5,
+     1341.5,
+     97.3,
+     1378.5
+    ],
+    "w": 51.8,
+    "h": 37.0,
+    "xref": 38
+   }
+  ],
+  "n_page12_images": 13,
+  "images_near_card_number": [
+   {
+    "page": 0,
+    "bbox": [
+     0.0,
+     0.1,
+     610.7,
+     1008.2
+    ],
+    "w": 610.7,
+    "h": 1008.2
+   },
+   {
+    "page": 0,
+    "bbox": [
+     435.7,
+     49.7,
+     588.7,
+     232.3
+    ],
+    "w": 153.1,
+    "h": 182.6
+   }
+  ],
+  "expiry_hits": [
+   {
+    "token": "EXPIR",
+    "page": 1,
+    "collapsed_context": "UEADDEDSERVICESPRODUCT(BOOKINGMONTH)CURRENTEMI(PRINCIPAL+INTEREST)LOANEXPIRYDATEIMPORTANTTERMS&CONDITIONSCHARGES&CARDHOLDERAGREEMENTPRIVACYPOLICYREACHUSPAYMENTO"
+   }
+  ],
+  "expiry_hits_method2": [
+   {
+    "page": 1,
+    "context": "E ADDED SERVICES Product (Booking Month) Current EMI(Principal + Interest) Loan Expiry Date Important Terms & Conditions Charges & Cardholder Agreement Privacy Policy Reach Us Payment Option"
+   }
+  ],
+  "expiry_hits_with_number": [],
+  "expiry_verdict": "WORD_PRESENT_BUT_NO_POINTS_FIGURE",
+  "reward_lines": [
+   {
+    "page": 0,
+    "bbox": [
+     29.8,
+     303.8,
+     83.8,
+     312.7
+    ],
+    "text": "Previous Balance"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     20.4,
+     968.1,
+     493.7,
+     975.4
+    ],
+    "text": "Due and the Total Outstanding is the balance on the Flexipay/Encash/Installments as applicable.** To keep your credit card in good standing,you have the option of paying atleast the minimum"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     101.3,
+     363.7,
+     335.0,
+     376.4
+    ],
+    "text": "CARD CASHBACK SUMMARY FOR THIS STATEMENT"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     22.8,
+     864.7,
+     432.0,
+     872.0
+    ],
+    "text": "C=Credit  ;   D=Debit; EN=Encash; FP=Flexipay; EMD=Easy Money Draft; BT=Balance Transfer; M=Monthly Installments; TAD=Total Amount Due; T=Temporary Credit."
+   },
+   {
+    "page": 0,
+    "bbox": [
+     70.7,
+     459.4,
+     160.6,
+     469.6
+    ],
+    "text": "CARD CASHBACK CREDIT"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     23.1,
+     380.5,
+     70.2,
+     391.9
+    ],
+    "text": "CASHBACK"
+   },
+   {
+    "page": 0,
+    "bbox": [
+     84.0,
+     389.1,
+     417.9,
+     400.6
+    ],
+    "text": "Card Cashback will be posted to your SBI Card Account within two working days after"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     516.5,
+     304.2,
+     527.9
+    ],
+    "text": "Account, this balance will attract all applicable charges (including"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     316.4,
+     691.9,
+     563.0,
+     703.3
+    ],
+    "text": "regularized and replaced by a permanent credit. Reward Points"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     379.9,
+     440.1,
+     439.8,
+     450.3
+    ],
+    "text": "Balance Enquiry:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     369.0,
+     488.9,
+     456.0,
+     499.1
+    ],
+    "text": "Reward Point Summary:"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     383.9,
+     500.7,
+     444.7,
+     510.9
+    ],
+    "text": "REWARD XXXX"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     51.0,
+     1011.9,
+     123.0,
+     1023.4
+    ],
+    "text": "opening/updation."
+   },
+   {
+    "page": 1,
+    "bbox": [
+     213.1,
+     60.1,
+     403.8,
+     74.1
+    ],
+    "text": "SAVINGS AND BENEFITS SECTION"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.5,
+     97.8,
+     92.2,
+     107.9
+    ],
+    "text": "Offer Cashback"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     36.5,
+     120.6,
+     90.6,
+     130.8
+    ],
+    "text": "Card Cashback"
+   },
+   {
+    "page": 1,
+    "bbox": [
+     262.4,
+     204.8,
+     322.9,
+     215.0
+    ],
+    "text": "Loan Expiry Date"
+   },
+   {
+    "page": 4,
+    "bbox": [
+     18.1,
+     387.2,
+     138.5,
+     400.9
+    ],
+    "text": "CASHBACK SBI Card"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     249.6,
+     38.4,
+     536.9,
+     51.9
+    ],
+    "text": "if previous month\u2019s outstanding balance is paid in full)"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     249.6,
+     134.3,
+     419.2,
+     147.9
+    ],
+    "text": "remaining balance outstanding."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     15.7,
+     908.6,
+     159.4,
+     922.4
+    ],
+    "text": "Rewards Redemption Fee"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     254.5,
+     1641.2,
+     353.7,
+     1655.1
+    ],
+    "text": "Important Points"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     1670.1,
+     595.6,
+     1684.3
+    ],
+    "text": "accrual on the balance outstanding amount including any new purchases and cash advances."
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     1730.0,
+     255.9,
+     1744.1
+    ],
+    "text": "payment on your outstanding balance.\""
+   },
+   {
+    "page": 5,
+    "bbox": [
+     19.6,
+     2284.7,
+     595.7,
+     2298.9
+    ],
+    "text": "No new statement will be sent, in case of credit balance and no new transaction on the account within 30"
+   },
+   {
+    "page": 5,
+    "bbox": [
+     15.7,
+     1522.3,
+     599.5,
+     1536.3
+    ],
+    "text": "For Reward Point redemption, your SBI Card must not be overdue, suspended, blocked,cancelled or"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1356.9,
+     561.3,
+     1370.3
+    ],
+    "text": "outstanding balance is paid in full. Making only the minimum payment every month would result in the"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1371.0,
+     533.0,
+     1384.5
+    ],
+    "text": "repayment stretching over years with consequent interest payment on your outstanding balance."
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1571.1,
+     482.8,
+     1587.9
+    ],
+    "text": "(Balance `1,000 outstanding from last month\u2019s billing period + `1,000 fresh purchase)"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1702.0,
+     598.2,
+     1715.9
+    ],
+    "text": "Fee, Cheque Pickup Fee, Statement Retrieval Fee, Overlimit Fee,Reward Redemption Fee. Surcharges"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     19.6,
+     1860.4,
+     588.0,
+     1874.0
+    ],
+    "text": "against 100% of GST, 100% of EMI amount, 100% of Fees/Charges, 100% of Finance charges, Balance"
+   },
+   {
+    "page": 6,
+    "bbox": [
+     22.8,
+     2183.1,
+     591.1,
+     2196.7
+    ],
+    "text": "If one card has a credit balance (excess payment), it will not be set off against the outstanding balance on"
+   }
+  ],
+  "n_reward_lines": 32,
+  "has_current_cycle_strip": false,
+  "has_savings_benefits": true,
+  "label_probe": {
+   "Closing Balance": false,
+   "Closing Points": false,
+   "Reward Points Balance": false,
+   "Previous Balance": true,
+   "Earned": false,
+   "Redeemed": false,
+   "Redeemed/Expired/Forfeited": false,
+   "Forfeited": false,
+   "Total Reward Points": false,
+   "Reward Points": true,
+   "NeuCoins": false,
+   "Cashback": true,
+   "Total Cashback": false,
+   "Net Reward Points": false,
+   "Points Balance": false,
+   "Reward Point Balance": false,
+   "Cash Back": true,
+   "For this statement": true,
+   "From the card issue date": true,
+   "For this year": true,
+   "Total Savings": false
+  },
+  "prior_output": {
+   "network": [
+    null
+   ],
+   "programType": "Cashback",
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 453,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  }
+ }
+]

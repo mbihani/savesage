@@ -1,0 +1,14 @@
+12:07:10 START arm=C prompt=GEMINI_GENERIC_PROMPT.txt n=12 conc=2 prompt_sha=7886583cba60 schema=GEMINI_SCHEMA(26 leaves)
+12:07:21 OK                     1120623464   txn=1 fr=stop pt=16487 ct=724 tt=17211 rl=0 ms=11215
+12:07:21 OK                     1036185244   txn=7 fr=stop pt=16763 ct=952 tt=17715 rl=0 ms=11272
+12:07:34 OK                     1152718739   txn=4 fr=stop pt=12324 ct=819 tt=13143 rl=0 ms=10909
+12:07:37 OK                     1390952698   txn=4 fr=stop pt=16709 ct=1087 tt=17796 rl=0 ms=12941
+12:07:50 OK                     1511624796   txn=15 fr=stop pt=16665 ct=1428 tt=18093 rl=0 ms=13899
+12:08:02 OK                     1707857175   txn=71 fr=stop pt=18857 ct=3858 tt=22715 rl=0 ms=22351
+12:08:11 OK                     369606524    txn=16 fr=stop pt=17000 ct=1531 tt=18531 rl=0 ms=18721
+12:08:23 OK                     1118980175   txn=7 fr=stop pt=16708 ct=916 tt=17624 rl=0 ms=11041
+12:08:30 OK                     515948911    txn=56 fr=stop pt=18475 ct=3906 tt=22381 rl=0 ms=26579
+12:08:35 OK                     221159806    txn=2 fr=stop pt=16696 ct=540 tt=17236 rl=0 ms=8810
+12:08:43 OK                     393366914    txn=2 fr=stop pt=16666 ct=580 tt=17246 rl=0 ms=11471
+12:08:51 OK                     905768587    txn=8 fr=stop pt=16924 ct=1035 tt=17959 rl=0 ms=12730
+12:08:53 DONE arm=C ok=12/12 calls_that_saw_429=0
