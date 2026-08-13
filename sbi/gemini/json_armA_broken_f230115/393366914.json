@@ -1,0 +1,97 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-13T12:13:38",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 9548,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 2,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "Ola Money SBI Card",
+     "isPrimaryCard": true,
+     "lastFourDigit": "XX69",
+     "network": null,
+     "productFamily": "OLA Money"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": 0,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 0,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 136999.9,
+   "totalAmountDue": 0,
+   "totalCreditLimit": 137000,
+   "totalMinimumAmountDue": 0
+  },
+  "statementMeta": {
+   "dueDate": "NO PAYMENT REQUIRED",
+   "issuerName": "SBI Card",
+   "statementDate": "23/01/2026"
+  },
+  "transactions": [
+   {
+    "amount": 5,
+    "currency": "INR",
+    "date": "02/01/2026",
+    "description": "PAYMENT RECEIVED 000PP016002BB4FD0TIJ265",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 10681,
+    "currency": "INR",
+    "date": "02/01/2026",
+    "description": "PAYMENT RECEIVED 000PP016002BB6FZ0TLZ150",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_encrypt_393366914_19bf0282975f07a1_0991974409638013_23012026.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/SBI_PROMPT.txt",
+ "prompt_sha256": "6526f158e92b6223b6d5e9615e41a1c57dcfaa3972b8b7cce1ce3437661ddcc7",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Ola Money SBI Card\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX69\",\"network\":null,\"productFamily\":\"OLA Money\"}}],\"rewards\":{\"closingPoints\":0,\"openingPoints\":null,\"pointsEarnedThisCycle\":0,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":136999.9,\"totalAmountDue\":0,\"totalCreditLimit\":137000,\"totalMinimumAmountDue\":0},\"statementMeta\":{\"dueDate\":\"NO PAYMENT REQUIRED\",\"issuerName\":\"SBI Card\",\"statementDate\":\"23/01/2026\"},\"transactions\":[{\"amount\":5,\"currency\":\"INR\",\"date\":\"02/01/2026\",\"description\":\"PAYMENT RECEIVED 000PP016002BB4FD0TIJ265\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":10681,\"currency\":\"INR\",\"date\":\"02/01/2026\",\"description\":\"PAYMENT RECEIVED 000PP016002BB6FZ0TLZ150\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "393366914",
+ "started_at": "2026-08-13T12:13:29",
+ "usage_raw": {
+  "completion_tokens": 547,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 259,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 20071,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 20618
+ }
+}

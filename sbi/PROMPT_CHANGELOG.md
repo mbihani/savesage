@@ -1,5 +1,32 @@
 # SBI prompt changelog — every change tied to a measured defect
 
+## 2026-08-13 — correct rewards flows mis-slotted as `closingPoints`
+
+Re-adjudication of the 12-statement Gemini sample found that the shipped prompt treated
+current-statement accruals as closing balances. Only **221159806** prints a genuine
+balance strip: page 1 `SHOP & SMILE SUMMARY` at `(x=175.0,y=362.2)`, with `Previous
+Balance` `(27.6,391.7)=18068` `(36.8,405.1)`, `Earned` `(107.9,391.7)=0`
+`(112.6,405.1)`, `Redeemed/Expired/Forfeited` `(160.3,387.0)=0` `(179.3,405.1)`, and
+`Closing Balance` `(229.6,391.7)=18068` `(238.5,405.1)`. The other 11 page-1 rewards
+blocks print flows, so their PDF-correct `closingPoints` is null.
+
+The prompt now binds the later `SAVINGS AND BENEFITS SECTION` geometrically: row labels
+at `x≈37`, column headers at `y≈83`, and only the `x≈250` cell under `For this statement`
+is current-cycle. It expressly rejects `x≈369` (`For this year`) and `x≈497` (`From the
+card issue date`). This prevents **1152718739** `Reward Points` `(x=37.4,y=121.7)` from
+mis-binding `12 | 720 | 1879` `(x=244.7/370.4/497.6,y=121.7)`, and **221159806** from
+misusing lifetime `18068` `(x=495.3,y=121.4)` as cycle-earned. For product variation,
+**905768587** uses `Offer Cashback / Petrol Surcharge Waiver / Card Cashback` at
+`x≈37,y=97.8/108.8/120.6`; only `Card Cashback=453` `(x=251.2,y=120.6)` maps to the
+Cashback program accrual. `Petrol Surcharge Waiver` maps nowhere in rewards.
+
+Special case **1390952698**: page 1 `REWARD SUMMARY` `(188.1,363.9)` prints `Current
+Stmt Period=0` `(80.1,403.7)`, `Till Last Cycle=53724` `(211.9,403.7)`, and `Earned Till
+Date=12380` `(356.4,403.7)`. None is labelled closing balance; therefore
+`closingPoints=null`, `pointsEarnedThisCycle=0`, and `openingPoints=53724`.
+
+No network or redemption rule, schema field, or runner behavior was changed.
+
 ## Baseline used
 
 | | |

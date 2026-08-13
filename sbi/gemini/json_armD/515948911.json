@@ -1,0 +1,583 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-13T12:34:38",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 23231,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 56,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "CASHBACK SBI CARD",
+     "isPrimaryCard": true,
+     "lastFourDigit": "XX56",
+     "network": null,
+     "productFamily": "CASHBACK"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": -1467,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Cashback"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 260837.84,
+   "totalAmountDue": 21162,
+   "totalCreditLimit": 282000,
+   "totalMinimumAmountDue": 423
+  },
+  "statementMeta": {
+   "dueDate": "23/02/2026",
+   "issuerName": "SBI Card",
+   "statementDate": "03/02/2026"
+  },
+  "transactions": [
+   {
+    "amount": 4191,
+    "currency": "INR",
+    "date": "03/01/2026",
+    "description": "CARD CASHBACK CREDIT",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "CASHBACK"
+   },
+   {
+    "amount": 61532.13,
+    "currency": "INR",
+    "date": "20/01/2026",
+    "description": "PAYMENT RECEIVED 000BD016020BAKAAAFOMS6O",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 122,
+    "currency": "INR",
+    "date": "03/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 29899,
+    "currency": "INR",
+    "date": "03/01/2026",
+    "description": "AMAZON PAY INDIA PRIVA WWW.AMAZON.IN IN",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 139,
+    "currency": "INR",
+    "date": "04/01/2026",
+    "description": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 165.33,
+    "currency": "INR",
+    "date": "04/01/2026",
+    "description": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 384,
+    "currency": "INR",
+    "date": "05/01/2026",
+    "description": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 38.71,
+    "currency": "INR",
+    "date": "05/01/2026",
+    "description": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 27.59,
+    "currency": "INR",
+    "date": "05/01/2026",
+    "description": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 332,
+    "currency": "INR",
+    "date": "05/01/2026",
+    "description": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 66.69,
+    "currency": "INR",
+    "date": "05/01/2026",
+    "description": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 53,
+    "currency": "INR",
+    "date": "06/01/2026",
+    "description": "Blinkit BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 61.7,
+    "currency": "INR",
+    "date": "06/01/2026",
+    "description": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 269,
+    "currency": "INR",
+    "date": "06/01/2026",
+    "description": "BLINKIT GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 283,
+    "currency": "INR",
+    "date": "06/01/2026",
+    "description": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 56.11,
+    "currency": "INR",
+    "date": "06/01/2026",
+    "description": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 385,
+    "currency": "INR",
+    "date": "06/01/2026",
+    "description": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 50,
+    "currency": "INR",
+    "date": "08/01/2026",
+    "description": "DISTRICT DINING CYBS GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1899,
+    "currency": "INR",
+    "date": "08/01/2026",
+    "description": "AMAZONIN GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 61.83,
+    "currency": "INR",
+    "date": "09/01/2026",
+    "description": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 589,
+    "currency": "INR",
+    "date": "11/01/2026",
+    "description": "DISTRICT DINING CYBS GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 177.8,
+    "currency": "INR",
+    "date": "11/01/2026",
+    "description": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 276,
+    "currency": "INR",
+    "date": "13/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 29400,
+    "currency": "INR",
+    "date": "13/01/2026",
+    "description": "WWW DYSON IN GURGAON IN",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 198,
+    "currency": "INR",
+    "date": "15/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 190,
+    "currency": "INR",
+    "date": "16/01/2026",
+    "description": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 150,
+    "currency": "INR",
+    "date": "16/01/2026",
+    "description": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 38.68,
+    "currency": "INR",
+    "date": "16/01/2026",
+    "description": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 140,
+    "currency": "INR",
+    "date": "17/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 38.01,
+    "currency": "INR",
+    "date": "17/01/2026",
+    "description": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 237,
+    "currency": "INR",
+    "date": "19/01/2026",
+    "description": "Zepto Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 297,
+    "currency": "INR",
+    "date": "20/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 228,
+    "currency": "INR",
+    "date": "22/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1760,
+    "currency": "INR",
+    "date": "22/01/2026",
+    "description": "BLINKIT GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 3900,
+    "currency": "INR",
+    "date": "22/01/2026",
+    "description": "BLINKIT GURGAON IN (Pay in EMIs)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 2990,
+    "currency": "INR",
+    "date": "22/01/2026",
+    "description": "Razorpay Payments GURGAON IN",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 847,
+    "currency": "INR",
+    "date": "25/01/2026",
+    "description": "RAZ*REBEL MARKETPLACE HTTPS://APPS. IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 944.37,
+    "currency": "INR",
+    "date": "26/01/2026",
+    "description": "VOUCHAGRAM INDIA PVT L WWW.GYFTR.COM IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 706,
+    "currency": "INR",
+    "date": "26/01/2026",
+    "description": "BLINKIT GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 2313,
+    "currency": "INR",
+    "date": "26/01/2026",
+    "description": "BLINK COMMERCE PVT LTD BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 2313,
+    "currency": "INR",
+    "date": "26/01/2026",
+    "description": "BLINK COMMERCE PVT LTD BANGALORE IN",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 2454,
+    "currency": "INR",
+    "date": "27/01/2026",
+    "description": "AMAZONIN GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 6499.88,
+    "currency": "INR",
+    "date": "27/01/2026",
+    "description": "DEFMACRO SOFTWARE PRIV BANGALORE IN (Pay in EMIs)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 107,
+    "currency": "INR",
+    "date": "27/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 699,
+    "currency": "INR",
+    "date": "28/01/2026",
+    "description": "AMAZON MUMBAI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 136,
+    "currency": "INR",
+    "date": "28/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 119,
+    "currency": "INR",
+    "date": "29/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 228,
+    "currency": "INR",
+    "date": "29/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 116,
+    "currency": "INR",
+    "date": "30/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 146,
+    "currency": "INR",
+    "date": "31/01/2026",
+    "description": "RAZ*JOCKEY HTTPS://WWW.J IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1720,
+    "currency": "INR",
+    "date": "31/01/2026",
+    "description": "VOUCHAGRAM INDIA PVT L WWW.GYFTR.COM IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 966.6,
+    "currency": "INR",
+    "date": "31/01/2026",
+    "description": "ORBGEN TECHNOLOGIES GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 205,
+    "currency": "INR",
+    "date": "31/01/2026",
+    "description": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 3718,
+    "currency": "INR",
+    "date": "01/02/2026",
+    "description": "AMAZONIN GURGAON IN (Pay in EMIs)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 228.98,
+    "currency": "INR",
+    "date": "02/02/2026",
+    "description": "ZEPTO MARKETPLACE PRIV BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1328,
+    "currency": "INR",
+    "date": "02/02/2026",
+    "description": "BLINKIT GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_515948911_19c2a5375fe6c8af_8799293479959084_03022026.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/SBI_PROMPT.txt",
+ "prompt_sha256": "756213dac6e42e8458a7f0dcfab66665db2b8761bb3c9f7c3527b7bb344ea37c",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"CASHBACK SBI CARD\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX56\",\"network\":null,\"productFamily\":\"CASHBACK\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":-1467,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":260837.84,\"totalAmountDue\":21162,\"totalCreditLimit\":282000,\"totalMinimumAmountDue\":423},\"statementMeta\":{\"dueDate\":\"23/02/2026\",\"issuerName\":\"SBI Card\",\"statementDate\":\"03/02/2026\"},\"transactions\":[{\"amount\":4191,\"currency\":\"INR\",\"date\":\"03/01/2026\",\"description\":\"CARD CASHBACK CREDIT\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":61532.13,\"currency\":\"INR\",\"date\":\"20/01/2026\",\"description\":\"PAYMENT RECEIVED 000BD016020BAKAAAFOMS6O\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":122,\"currency\":\"INR\",\"date\":\"03/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":29899,\"currency\":\"INR\",\"date\":\"03/01/2026\",\"description\":\"AMAZON PAY INDIA PRIVA WWW.AMAZON.IN IN\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":139,\"currency\":\"INR\",\"date\":\"04/01/2026\",\"description\":\"UBER INDIA SYSTE PVT L NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":165.33,\"currency\":\"INR\",\"date\":\"04/01/2026\",\"description\":\"UBER INDIA SYSTE PVT L NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":384,\"currency\":\"INR\",\"date\":\"05/01/2026\",\"description\":\"UBER INDIA SYSTE PVT L NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":38.71,\"currency\":\"INR\",\"date\":\"05/01/2026\",\"description\":\"UBER INDIA SYSTEMS PRI NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":27.59,\"currency\":\"INR\",\"date\":\"05/01/2026\",\"description\":\"UBER INDIA SYSTEMS PRI NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":332,\"currency\":\"INR\",\"date\":\"05/01/2026\",\"description\":\"UBER INDIA SYSTE PVT L NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":66.69,\"currency\":\"INR\",\"date\":\"05/01/2026\",\"description\":\"UBER INDIA SYSTEMS PRI NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":53,\"currency\":\"INR\",\"date\":\"06/01/2026\",\"description\":\"Blinkit BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":61.7,\"currency\":\"INR\",\"date\":\"06/01/2026\",\"description\":\"UBER INDIA SYSTEMS PRI NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":269,\"currency\":\"INR\",\"date\":\"06/01/2026\",\"description\":\"BLINKIT GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":283,\"currency\":\"INR\",\"date\":\"06/01/2026\",\"description\":\"UBER INDIA SYSTE PVT L NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":56.11,\"currency\":\"INR\",\"date\":\"06/01/2026\",\"description\":\"UBER INDIA SYSTEMS PRI NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":385,\"currency\":\"INR\",\"date\":\"06/01/2026\",\"description\":\"UBER INDIA SYSTE PVT L NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":50,\"currency\":\"INR\",\"date\":\"08/01/2026\",\"description\":\"DISTRICT DINING CYBS GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1899,\"currency\":\"INR\",\"date\":\"08/01/2026\",\"description\":\"AMAZONIN GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":61.83,\"currency\":\"INR\",\"date\":\"09/01/2026\",\"description\":\"UBER INDIA SYSTE PVT L NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":589,\"currency\":\"INR\",\"date\":\"11/01/2026\",\"description\":\"DISTRICT DINING CYBS GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":177.8,\"currency\":\"INR\",\"date\":\"11/01/2026\",\"description\":\"UBER INDIA SYSTE PVT L NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":276,\"currency\":\"INR\",\"date\":\"13/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":29400,\"currency\":\"INR\",\"date\":\"13/01/2026\",\"description\":\"WWW DYSON IN GURGAON IN\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":198,\"currency\":\"INR\",\"date\":\"15/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":190,\"currency\":\"INR\",\"date\":\"16/01/2026\",\"description\":\"UBER INDIA SYSTE PVT L NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":150,\"currency\":\"INR\",\"date\":\"16/01/2026\",\"description\":\"UBER INDIA SYSTE PVT L NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":38.68,\"currency\":\"INR\",\"date\":\"16/01/2026\",\"description\":\"UBER INDIA SYSTEMS PRI NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":140,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":38.01,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"UBER INDIA SYSTEMS PRI NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":237,\"currency\":\"INR\",\"date\":\"19/01/2026\",\"description\":\"Zepto Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":297,\"currency\":\"INR\",\"date\":\"20/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":228,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1760,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"BLINKIT GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":3900,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"BLINKIT GURGAON IN (Pay in EMIs)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":2990,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"Razorpay Payments GURGAON IN\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":847,\"currency\":\"INR\",\"date\":\"25/01/2026\",\"description\":\"RAZ*REBEL MARKETPLACE HTTPS://APPS. IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":944.37,\"currency\":\"INR\",\"date\":\"26/01/2026\",\"description\":\"VOUCHAGRAM INDIA PVT L WWW.GYFTR.COM IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":706,\"currency\":\"INR\",\"date\":\"26/01/2026\",\"description\":\"BLINKIT GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":2313,\"currency\":\"INR\",\"date\":\"26/01/2026\",\"description\":\"BLINK COMMERCE PVT LTD BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":2313,\"currency\":\"INR\",\"date\":\"26/01/2026\",\"description\":\"BLINK COMMERCE PVT LTD BANGALORE IN\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":2454,\"currency\":\"INR\",\"date\":\"27/01/2026\",\"description\":\"AMAZONIN GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":6499.88,\"currency\":\"INR\",\"date\":\"27/01/2026\",\"description\":\"DEFMACRO SOFTWARE PRIV BANGALORE IN (Pay in EMIs)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":107,\"currency\":\"INR\",\"date\":\"27/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":699,\"currency\":\"INR\",\"date\":\"28/01/2026\",\"description\":\"AMAZON MUMBAI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":136,\"currency\":\"INR\",\"date\":\"28/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":119,\"currency\":\"INR\",\"date\":\"29/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":228,\"currency\":\"INR\",\"date\":\"29/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":116,\"currency\":\"INR\",\"date\":\"30/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":146,\"currency\":\"INR\",\"date\":\"31/01/2026\",\"description\":\"RAZ*JOCKEY HTTPS://WWW.J IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1720,\"currency\":\"INR\",\"date\":\"31/01/2026\",\"description\":\"VOUCHAGRAM INDIA PVT L WWW.GYFTR.COM IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":966.6,\"currency\":\"INR\",\"date\":\"31/01/2026\",\"description\":\"ORBGEN TECHNOLOGIES GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":205,\"currency\":\"INR\",\"date\":\"31/01/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":3718,\"currency\":\"INR\",\"date\":\"01/02/2026\",\"description\":\"AMAZONIN GURGAON IN (Pay in EMIs)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":228.98,\"currency\":\"INR\",\"date\":\"02/02/2026\",\"description\":\"ZEPTO MARKETPLACE PRIV BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1328,\"currency\":\"INR\",\"date\":\"02/02/2026\",\"description\":\"BLINKIT GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "515948911",
+ "started_at": "2026-08-13T12:34:15",
+ "usage_raw": {
+  "completion_tokens": 3635,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 592,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 22199,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 25834
+ }
+}

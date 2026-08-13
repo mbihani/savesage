@@ -164,31 +164,49 @@ REWARDS_RULES (AUTHORITATIVE):
       "Reward Point Summary", "REWARD SUMMARY" or "NeuCoins Summary", and exactly ONE
       figure is printed, under a label such as "CASHBACK Amount ( ` )", "Points Earned",
       "Reward Points" or "NeuCoins". That single figure is what this card earned during
-      THIS statement period. It populates BOTH:
+      THIS statement period. It populates exactly ONE field:
          pointsEarnedThisCycle = that figure
-         closingPoints         = that figure
-      and openingPoints and pointsRedeemedThisCycle stay null, because this shape prints
-      neither an opening balance nor a redeemed cell. The figure may legitimately be
+      closingPoints, openingPoints and pointsRedeemedThisCycle stay null, because this
+      shape prints no balance or redeemed cell. NEVER copy the same single printed figure
+      into both closingPoints and pointsEarnedThisCycle. The figure may legitimately be
       negative or zero; copy it at its printed sign and magnitude.
 
     SHAPE 3 - THREE-COLUMN EARNED TABLE, headed "REWARD SUMMARY" with the columns
       "Current Stmt Period | Till Last Cycle | Earned Till Date". Then:
          pointsEarnedThisCycle = Current Stmt Period
-         closingPoints         = Current Stmt Period
          openingPoints         = Till Last Cycle
-      "Earned Till Date" is a LIFETIME total and MUST NEVER populate any field.
+         closingPoints         = null
+      "Earned Till Date" is a cumulative total, not a closing-balance cell, and MUST
+      NEVER populate any field.
 
 - The "SAVINGS AND BENEFITS SECTION" is a DIFFERENT, later table whose three columns are
-  "For this statement | For this year | From the card issue date". The "For this year"
-  and "From the card issue date" columns are YEAR-TO-DATE and LIFETIME totals and MUST
-  NEVER populate any rewards field. Prefer the page-1 rewards block; use this section
-  only to corroborate the "For this statement" column.
+  "For this statement | For this year | From the card issue date". Bind this table by
+  PRINTED GEOMETRY, never PDF text-extraction order: the row label at x≈37 selects the
+  semantic row, and the header at y≈83 selects the value column. The current-statement
+  values are at x≈250; x≈369 is "For this year" and x≈497 is "From the card issue date".
+  The extractor may return the headers after the values, so "the number following the
+  label" is not a valid binding rule.
+    - Only x≈250 under "For this statement" can corroborate a current-cycle accrual.
+      Values under "For this year" and especially "From the card issue date" are YTD and
+      LIFETIME totals and MUST NEVER populate any current-cycle field or closingPoints.
+    - For a Reward Points program, row label "Reward Points" at x≈37 maps its x≈250 cell
+      to pointsEarnedThisCycle. For a NeuCoins program, row label "NeuCoins" maps its
+      x≈250 cell to pointsEarnedThisCycle. For a Cashback program, row label "Card
+      Cashback" maps its x≈250 cell to pointsEarnedThisCycle.
+    - "Cash Back" and "Offer Cashback" are savings/offer rows, not the selected program
+      accrual when a distinct "Card Cashback" row exists. Do not substitute either for
+      that Card Cashback row.
+    - "Petrol Surcharge Waiver" is a fee waiver. It maps to no rewards field: not points,
+      not cashback, not earned, redeemed, opening, or closing.
+  Prefer the page-1 rewards block; use this later table only to corroborate the matching
+  x≈250 current-statement row.
 - closingPoints is NEVER COMPUTED. Do not add openingPoints to pointsEarnedThisCycle, do
   not subtract redemptions, and do not carry a lifetime or year-to-date total into it. If
-  a closing balance is not printed and the block prints no current-statement figure
-  either, closingPoints is null.
-- Set closingPoints = null only when the statement shows neither a printed rewards
-  balance nor a current-statement earned figure anywhere.
+  no cell explicitly labelled as a closing balance or equivalent stock/balance is
+  printed, closingPoints is null even when a current-statement earned figure is printed.
+  Do not derive a closing stock from any flow, cumulative accrual, opening balance, or
+  arithmetic. A single printed figure belongs in exactly one rewards field, never both
+  closingPoints and pointsEarnedThisCycle.
 - RewardPoints can be negative.
 - POINT EXPIRY. SBI prints expiry information in exactly one place: a "Points Expiry
   Details" cell at the right-hand end of the SHAPE 1 four-cell strip.
@@ -201,11 +219,9 @@ REWARDS_RULES (AUTHORITATIVE):
     - When no expiry cell is printed at all -- which is the case for every SHAPE 2 and
       SHAPE 3 layout -- both expiry fields are null. Do not infer an expiry from a points
       balance, from the programme name, or from the statement date.
-- For SBI cards, when no closing-points or cashback BALANCE is printed anywhere, closing
-  points must not be taken from total cashback earned or total reward points earned from
-  the card issue date: it should be how much cashback or how many points were earned on
-  the CURRENT statement, i.e. the single current-statement figure identified in SHAPE 2
-  or the "Current Stmt Period" column in SHAPE 3.
+- For SBI cards, when no closing-points or cashback BALANCE is printed anywhere,
+  closingPoints is null. The current-statement figure identified in SHAPE 2 or the
+  "Current Stmt Period" column in SHAPE 3 belongs only in pointsEarnedThisCycle.
 - If both points and cashback are present in the statement, select points.
 - Ensure the lastFourDigit field strictly corresponds to the card associated with the
   selected points; do not aggregate points of all cards if there are multiple cards.
