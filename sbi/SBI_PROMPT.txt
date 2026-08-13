@@ -54,6 +54,15 @@ TRANSACTION RULES:
   EXCLUDE only things that are not transaction rows: the ACCOUNT SUMMARY figures, the
   "Previous Balance / Payments / Purchases" arithmetic strip, the reward-point summary
   strip, and marketing or terms-and-conditions text.
+- ONE OUTPUT ROW PER PRINTED ROW, INCLUDING REPEATS. These statements print long runs
+  of small UPI payments in which the same payee recurs for the same amount on the same
+  date many times over. Two or more CONSECUTIVE rows that are identical in date, amount
+  and description are SEPARATE genuine payments, not one row printed twice: emit every
+  one of them and never merge or de-duplicate them. This holds when the repeat spans a
+  PAGE BREAK, i.e. the last row of one page and the first row of the next are identical
+  — that is two printed rows and both MUST be emitted. Keep each amount bound to the
+  description printed on ITS OWN line; never carry an amount up or down from a
+  neighbouring row. Count the printed transaction rows and emit exactly that many.
 - rewardPointsOnThisTransaction:
   - MUST NOT be used outside the transaction object.
   - Do NOT convert an explicit 0 to null, and do NOT convert a missing/unstated value to 0.

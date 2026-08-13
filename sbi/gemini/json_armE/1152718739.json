@@ -1,0 +1,115 @@
+{
+ "arm": "E",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-13T13:02:51",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 10258,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 4,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "IRCTC SBI Platinum Card",
+     "isPrimaryCard": true,
+     "lastFourDigit": "XX41",
+     "network": null,
+     "productFamily": "IRCTC Platinum"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 12,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 141377.33,
+   "totalAmountDue": 1623,
+   "totalCreditLimit": 143000,
+   "totalMinimumAmountDue": 200
+  },
+  "statementMeta": {
+   "dueDate": "02/11/2022",
+   "issuerName": "SBI Card",
+   "statementDate": "13/10/2022"
+  },
+  "transactions": [
+   {
+    "amount": 926,
+    "currency": "INR",
+    "date": "03/10/2022",
+    "description": "PAYMENT RECEIVED 000HGA6P0BF710055168417",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 578.99,
+    "currency": "INR",
+    "date": "16/09/2022",
+    "description": "UBER 356",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 543.08,
+    "currency": "INR",
+    "date": "24/09/2022",
+    "description": "IRCTC Train Ticketing 356",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 500.71,
+    "currency": "INR",
+    "date": "26/09/2022",
+    "description": "IRCTC Train Ticketing 356",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_1152718739_183d7c4fefb995a8_9400219652898353_13102022.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/SBI_PROMPT.txt",
+ "prompt_sha256": "f7ff966bd7f23082dece02f9fccb92ee2d3c8a8c7a5193d1e4288921b5472b94",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"IRCTC SBI Platinum Card\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX41\",\"network\":null,\"productFamily\":\"IRCTC Platinum\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":12,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":141377.33,\"totalAmountDue\":1623,\"totalCreditLimit\":143000,\"totalMinimumAmountDue\":200},\"statementMeta\":{\"dueDate\":\"02/11/2022\",\"issuerName\":\"SBI Card\",\"statementDate\":\"13/10/2022\"},\"transactions\":[{\"amount\":926,\"currency\":\"INR\",\"date\":\"03/10/2022\",\"description\":\"PAYMENT RECEIVED 000HGA6P0BF710055168417\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":578.99,\"currency\":\"INR\",\"date\":\"16/09/2022\",\"description\":\"UBER 356\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":543.08,\"currency\":\"INR\",\"date\":\"24/09/2022\",\"description\":\"IRCTC Train Ticketing 356\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":500.71,\"currency\":\"INR\",\"date\":\"26/09/2022\",\"description\":\"IRCTC Train Ticketing 356\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "1152718739",
+ "started_at": "2026-08-13T13:02:40",
+ "usage_raw": {
+  "completion_tokens": 560,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 177,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 16228,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 16788
+ }
+}

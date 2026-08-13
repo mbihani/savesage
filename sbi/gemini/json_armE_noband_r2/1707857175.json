@@ -1,0 +1,718 @@
+{
+ "arm": "E_noband_r2",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-13T12:54:48",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 23048,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 71,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "Tata Neu Infinity SBI Card",
+     "isPrimaryCard": true,
+     "lastFourDigit": "XX13",
+     "network": null,
+     "productFamily": "Tata Neu Infinity"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 1072,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "NeuCoins"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 138588.15,
+   "totalAmountDue": 53412,
+   "totalCreditLimit": 192000,
+   "totalMinimumAmountDue": 1068
+  },
+  "statementMeta": {
+   "dueDate": "05/06/2026",
+   "issuerName": "SBI Card",
+   "statementDate": "16/05/2026"
+  },
+  "transactions": [
+   {
+    "amount": 128100,
+    "currency": "INR",
+    "date": "01/05/2026",
+    "description": "PAYMENT RECEIVED 000BD016121BALAAAJGB4VZ",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 5.36,
+    "currency": "INR",
+    "date": "03/05/2026",
+    "description": "FUEL SURCHARGE WAIVER EXCL TAX",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "16/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 105,
+    "currency": "INR",
+    "date": "16/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "16/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 265,
+    "currency": "INR",
+    "date": "16/04/2026",
+    "description": "UPI-A M R TEMPTATIONS",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "17/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 70,
+    "currency": "INR",
+    "date": "17/04/2026",
+    "description": "UPI-Food Junction Wanow",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "17/04/2026",
+    "description": "UPI-SHREE GANESH COPIER",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 205,
+    "currency": "INR",
+    "date": "18/04/2026",
+    "description": "UPI-HOTEL RIVER PLACE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 1250,
+    "currency": "INR",
+    "date": "18/04/2026",
+    "description": "UPI-TAPASWI BABAN SURVE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 50,
+    "currency": "INR",
+    "date": "18/04/2026",
+    "description": "UPI-Gola Sarbat",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 105,
+    "currency": "INR",
+    "date": "19/04/2026",
+    "description": "UPI-Golden Swan Beach Rt",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 3040.86,
+    "currency": "INR",
+    "date": "19/04/2026",
+    "description": "UPI-Airtel",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 165,
+    "currency": "INR",
+    "date": "19/04/2026",
+    "description": "UPI-HOTEL RIVER PLACE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "20/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 40,
+    "currency": "INR",
+    "date": "20/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "21/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 40,
+    "currency": "INR",
+    "date": "22/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "22/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "23/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 1444,
+    "currency": "INR",
+    "date": "23/04/2026",
+    "description": "UPI-HOTEL GREEN COURT",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 40,
+    "currency": "INR",
+    "date": "24/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 8810.5,
+    "currency": "INR",
+    "date": "24/04/2026",
+    "description": "TATA PAYMENTS LIMITED IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 25,
+    "currency": "INR",
+    "date": "25/04/2026",
+    "description": "UPI-RAMCHANDRA SHIVSHANTIWARI",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 30,
+    "currency": "INR",
+    "date": "25/04/2026",
+    "description": "UPI-RAHUL",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 100,
+    "currency": "INR",
+    "date": "26/04/2026",
+    "description": "UPI-Parvaaz Hair Dressialon",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "27/04/2026",
+    "description": "UPI-SHASHANK VISHNUPANTNSE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 90,
+    "currency": "INR",
+    "date": "27/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 40,
+    "currency": "INR",
+    "date": "28/04/2026",
+    "description": "UPI-SHASHANK VISHNUPANTNSE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "28/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "28/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 1750,
+    "currency": "INR",
+    "date": "28/04/2026",
+    "description": "UPI-SHAUKEEN ENTERPRISE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "29/04/2026",
+    "description": "UPI-SHASHANK VISHNUPANTNSE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "29/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 50,
+    "currency": "INR",
+    "date": "30/04/2026",
+    "description": "UPI-SHASHANK VISHNUPANTNSE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 110,
+    "currency": "INR",
+    "date": "30/04/2026",
+    "description": "UPI-SUBBAMMA VENKATSWAMMAVARAPU",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 35,
+    "currency": "INR",
+    "date": "30/04/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 803,
+    "currency": "INR",
+    "date": "01/05/2026",
+    "description": "UPI-KRUSHNA PURE VEG",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 500,
+    "currency": "INR",
+    "date": "01/05/2026",
+    "description": "UPI-RAVI ANIL RAUT",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 27,
+    "currency": "INR",
+    "date": "02/05/2026",
+    "description": "UPI-MUSTHAFA K",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20485.27,
+    "currency": "INR",
+    "date": "02/05/2026",
+    "description": "HUTCHINGS HIGH SCHOOL IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 543.04,
+    "currency": "INR",
+    "date": "03/05/2026",
+    "description": "UPI-KEDARI SERVICE STAT",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 100,
+    "currency": "INR",
+    "date": "03/05/2026",
+    "description": "UPI-Parvaaz Hair Dressialon",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "03/05/2026",
+    "description": "UPI-GULAB KALAPPA SURWA",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "03/05/2026",
+    "description": "UPI-PUNES MASALEDAR BIR HOUSE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 1065,
+    "currency": "INR",
+    "date": "03/05/2026",
+    "description": "ADAPA PRASAD IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "04/05/2026",
+    "description": "UPI-SHASHANK VISHNUPANTNSE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 30,
+    "currency": "INR",
+    "date": "04/05/2026",
+    "description": "UPI-SUBBAMMA VENKATSWAMMAVARAPU",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "04/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "04/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 45,
+    "currency": "INR",
+    "date": "05/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "05/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "05/05/2026",
+    "description": "UPI-CHOICE MARKET",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 55,
+    "currency": "INR",
+    "date": "06/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 45,
+    "currency": "INR",
+    "date": "07/05/2026",
+    "description": "UPI-SHASHANK VISHNUPANTNSE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "07/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "07/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "08/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 60,
+    "currency": "INR",
+    "date": "09/05/2026",
+    "description": "UPI-AMULYA KUMAR",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 300,
+    "currency": "INR",
+    "date": "09/05/2026",
+    "description": "UPI-Mr DEVDAS KISAN LAN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 50,
+    "currency": "INR",
+    "date": "09/05/2026",
+    "description": "UPI-Mr DEVDAS KISAN LAN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 200,
+    "currency": "INR",
+    "date": "09/05/2026",
+    "description": "UPI-Mr DEVDAS KISAN LAN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 8549,
+    "currency": "INR",
+    "date": "10/05/2026",
+    "description": "BRIGHT NUTRICARE PRIVA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 70,
+    "currency": "INR",
+    "date": "11/05/2026",
+    "description": "UPI-SHASHANK VISHNUPANTNSE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 65,
+    "currency": "INR",
+    "date": "11/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "11/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "12/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 45,
+    "currency": "INR",
+    "date": "13/05/2026",
+    "description": "UPI-SHASHANK VISHNUPANTNSE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "13/05/2026",
+    "description": "UPI-REDEFINED PRIVATE L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 2000,
+    "currency": "INR",
+    "date": "14/05/2026",
+    "description": "UPI-Karunakar Sanjeeva ty",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "UPI"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_1707857175_19e35d9e7af1a557_3632713356112023_16052026.pdf",
+ "prompt_path": "<ablation:noband>",
+ "prompt_sha256": "34737d219278b052e30291bb735c346e757b3e7aa1803f5f713e107efbe47015",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Tata Neu Infinity SBI Card\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX13\",\"network\":null,\"productFamily\":\"Tata Neu Infinity\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":1072,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"NeuCoins\"},\"statementLevelSummary\":{\"availableCreditLimit\":138588.15,\"totalAmountDue\":53412,\"totalCreditLimit\":192000,\"totalMinimumAmountDue\":1068},\"statementMeta\":{\"dueDate\":\"05/06/2026\",\"issuerName\":\"SBI Card\",\"statementDate\":\"16/05/2026\"},\"transactions\":[{\"amount\":128100,\"currency\":\"INR\",\"date\":\"01/05/2026\",\"description\":\"PAYMENT RECEIVED 000BD016121BALAAAJGB4VZ\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":5.36,\"currency\":\"INR\",\"date\":\"03/05/2026\",\"description\":\"FUEL SURCHARGE WAIVER EXCL TAX\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"FEE\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"16/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":105,\"currency\":\"INR\",\"date\":\"16/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"16/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":265,\"currency\":\"INR\",\"date\":\"16/04/2026\",\"description\":\"UPI-A M R TEMPTATIONS\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"17/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":70,\"currency\":\"INR\",\"date\":\"17/04/2026\",\"description\":\"UPI-Food Junction Wanow\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"17/04/2026\",\"description\":\"UPI-SHREE GANESH COPIER\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":205,\"currency\":\"INR\",\"date\":\"18/04/2026\",\"description\":\"UPI-HOTEL RIVER PLACE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":1250,\"currency\":\"INR\",\"date\":\"18/04/2026\",\"description\":\"UPI-TAPASWI BABAN SURVE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":50,\"currency\":\"INR\",\"date\":\"18/04/2026\",\"description\":\"UPI-Gola Sarbat\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":105,\"currency\":\"INR\",\"date\":\"19/04/2026\",\"description\":\"UPI-Golden Swan Beach Rt\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":3040.86,\"currency\":\"INR\",\"date\":\"19/04/2026\",\"description\":\"UPI-Airtel\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":165,\"currency\":\"INR\",\"date\":\"19/04/2026\",\"description\":\"UPI-HOTEL RIVER PLACE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"20/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":40,\"currency\":\"INR\",\"date\":\"20/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"21/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":40,\"currency\":\"INR\",\"date\":\"22/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"22/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"23/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":1444,\"currency\":\"INR\",\"date\":\"23/04/2026\",\"description\":\"UPI-HOTEL GREEN COURT\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":40,\"currency\":\"INR\",\"date\":\"24/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":8810.5,\"currency\":\"INR\",\"date\":\"24/04/2026\",\"description\":\"TATA PAYMENTS LIMITED IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":25,\"currency\":\"INR\",\"date\":\"25/04/2026\",\"description\":\"UPI-RAMCHANDRA SHIVSHANTIWARI\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":30,\"currency\":\"INR\",\"date\":\"25/04/2026\",\"description\":\"UPI-RAHUL\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":100,\"currency\":\"INR\",\"date\":\"26/04/2026\",\"description\":\"UPI-Parvaaz Hair Dressialon\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"27/04/2026\",\"description\":\"UPI-SHASHANK VISHNUPANTNSE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":90,\"currency\":\"INR\",\"date\":\"27/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":40,\"currency\":\"INR\",\"date\":\"28/04/2026\",\"description\":\"UPI-SHASHANK VISHNUPANTNSE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"28/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"28/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":1750,\"currency\":\"INR\",\"date\":\"28/04/2026\",\"description\":\"UPI-SHAUKEEN ENTERPRISE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"29/04/2026\",\"description\":\"UPI-SHASHANK VISHNUPANTNSE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"29/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":50,\"currency\":\"INR\",\"date\":\"30/04/2026\",\"description\":\"UPI-SHASHANK VISHNUPANTNSE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":110,\"currency\":\"INR\",\"date\":\"30/04/2026\",\"description\":\"UPI-SUBBAMMA VENKATSWAMMAVARAPU\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":35,\"currency\":\"INR\",\"date\":\"30/04/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":803,\"currency\":\"INR\",\"date\":\"01/05/2026\",\"description\":\"UPI-KRUSHNA PURE VEG\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":500,\"currency\":\"INR\",\"date\":\"01/05/2026\",\"description\":\"UPI-RAVI ANIL RAUT\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":27,\"currency\":\"INR\",\"date\":\"02/05/2026\",\"description\":\"UPI-MUSTHAFA K\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20485.27,\"currency\":\"INR\",\"date\":\"02/05/2026\",\"description\":\"HUTCHINGS HIGH SCHOOL IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":543.04,\"currency\":\"INR\",\"date\":\"03/05/2026\",\"description\":\"UPI-KEDARI SERVICE STAT\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":100,\"currency\":\"INR\",\"date\":\"03/05/2026\",\"description\":\"UPI-Parvaaz Hair Dressialon\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"03/05/2026\",\"description\":\"UPI-GULAB KALAPPA SURWA\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"03/05/2026\",\"description\":\"UPI-PUNES MASALEDAR BIR HOUSE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":1065,\"currency\":\"INR\",\"date\":\"03/05/2026\",\"description\":\"ADAPA PRASAD IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"04/05/2026\",\"description\":\"UPI-SHASHANK VISHNUPANTNSE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":30,\"currency\":\"INR\",\"date\":\"04/05/2026\",\"description\":\"UPI-SUBBAMMA VENKATSWAMMAVARAPU\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"04/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"04/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":45,\"currency\":\"INR\",\"date\":\"05/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"05/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"05/05/2026\",\"description\":\"UPI-CHOICE MARKET\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":55,\"currency\":\"INR\",\"date\":\"06/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":45,\"currency\":\"INR\",\"date\":\"07/05/2026\",\"description\":\"UPI-SHASHANK VISHNUPANTNSE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"07/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"07/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"08/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":60,\"currency\":\"INR\",\"date\":\"09/05/2026\",\"description\":\"UPI-AMULYA KUMAR\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":300,\"currency\":\"INR\",\"date\":\"09/05/2026\",\"description\":\"UPI-Mr DEVDAS KISAN LAN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":50,\"currency\":\"INR\",\"date\":\"09/05/2026\",\"description\":\"UPI-Mr DEVDAS KISAN LAN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":200,\"currency\":\"INR\",\"date\":\"09/05/2026\",\"description\":\"UPI-Mr DEVDAS KISAN LAN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":8549,\"currency\":\"INR\",\"date\":\"10/05/2026\",\"description\":\"BRIGHT NUTRICARE PRIVA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":70,\"currency\":\"INR\",\"date\":\"11/05/2026\",\"description\":\"UPI-SHASHANK VISHNUPANTNSE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":65,\"currency\":\"INR\",\"date\":\"11/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"11/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"12/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":45,\"currency\":\"INR\",\"date\":\"13/05/2026\",\"description\":\"UPI-SHASHANK VISHNUPANTNSE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"13/05/2026\",\"description\":\"UPI-REDEFINED PRIVATE L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"},{\"amount\":2000,\"currency\":\"INR\",\"date\":\"14/05/2026\",\"description\":\"UPI-Karunakar Sanjeeva ty\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"UPI\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "1707857175",
+ "started_at": "2026-08-13T12:54:25",
+ "usage_raw": {
+  "completion_tokens": 4094,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 439,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 22450,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 26544
+ }
+}

@@ -1,0 +1,48 @@
+12:53:32       base rep1 n=71 fr=stop outcome=OK pt=22581 ct=3904 
+12:53:32       base rep2 n=70 fr=stop outcome=OK pt=22581 ct=3979 
+12:53:53     nodate rep1 n=71 fr=stop outcome=OK pt=22428 ct=3870 
+12:53:55       base rep3 n=70 fr=stop outcome=OK pt=22581 ct=3872 
+12:54:17     nodate rep2 n=70 fr=stop outcome=OK pt=22428 ct=3980 
+12:54:25     nodate rep3 n=71 fr=stop outcome=OK pt=22428 ct=4880 
+12:54:39     noband rep1 n=70 fr=stop outcome=OK pt=22450 ct=3947 
+12:54:48     noband rep2 n=71 fr=stop outcome=OK pt=22450 ct=4094 
+12:55:06     noband rep3 n=71 fr=stop outcome=OK pt=22450 ct=4548 
+12:55:13  norewards rep1 n=70 fr=stop outcome=OK pt=20864 ct=4108 
+12:55:31  norewards rep2 n=71 fr=stop outcome=OK pt=20864 ct=3951 
+12:55:37  norewards rep3 n=70 fr=stop outcome=OK pt=20864 ct=3887 
+12:55:56        fix rep1 n=71 fr=stop outcome=OK pt=22761 ct=4263 
+12:56:01        fix rep2 n=71 fr=stop outcome=OK pt=22761 ct=3980 
+12:56:26        fix rep3 n=71 fr=stop outcome=OK pt=22761 ct=4509 
+12:56:26 wrote /Users/mayanck.bihani/Savesage/bank_eval/sbi/gemini/ablate_rowcount.json
+12:56:26 SUMMARY       base n=[71, 70, 70]
+12:56:26 SUMMARY     nodate n=[71, 70, 71]
+12:56:26 SUMMARY     noband n=[70, 71, 71]
+12:56:26 SUMMARY  norewards n=[70, 71, 70]
+12:56:26 SUMMARY        fix n=[71, 71, 71]
+12:56:50       base rep1 n=71 fr=stop outcome=OK pt=22581 ct=3904 CACHED
+12:56:50       base rep2 n=70 fr=stop outcome=OK pt=22581 ct=3979 CACHED
+12:56:50       base rep3 n=70 fr=stop outcome=OK pt=22581 ct=3872 CACHED
+12:57:13       base rep4 n=71 fr=stop outcome=OK pt=22581 ct=3942 
+12:57:16       base rep5 n=71 fr=stop outcome=OK pt=22581 ct=4150 
+12:57:36       base rep6 n=71 fr=stop outcome=OK pt=22581 ct=4167 
+12:57:39       base rep7 n=69 fr=stop outcome=OK pt=22581 ct=3705 
+12:58:00       base rep8 n=71 fr=stop outcome=OK pt=22581 ct=4007 
+12:58:04       base rep9 n=71 fr=stop outcome=OK pt=22581 ct=4168 
+12:58:27       base rep10 n=70 fr=stop outcome=OK pt=22581 ct=4241 
+12:58:31       base rep11 n=71 fr=stop outcome=OK pt=22581 ct=4148 
+12:58:31        fix rep1 n=71 fr=stop outcome=OK pt=22761 ct=4263 CACHED
+12:58:31        fix rep2 n=71 fr=stop outcome=OK pt=22761 ct=3980 CACHED
+12:58:31        fix rep3 n=71 fr=stop outcome=OK pt=22761 ct=4509 CACHED
+12:58:51       base rep12 n=71 fr=stop outcome=OK pt=22581 ct=4156 
+12:58:57        fix rep4 n=71 fr=stop outcome=OK pt=22761 ct=4251 
+12:59:20        fix rep5 n=71 fr=stop outcome=OK pt=22761 ct=4201 
+12:59:22        fix rep6 n=71 fr=stop outcome=OK pt=22761 ct=4088 
+12:59:42        fix rep7 n=71 fr=stop outcome=OK pt=22761 ct=4184 
+12:59:49        fix rep8 n=71 fr=stop outcome=OK pt=22761 ct=4145 
+13:00:06        fix rep9 n=71 fr=stop outcome=OK pt=22761 ct=3900 
+13:00:20        fix rep10 n=71 fr=stop outcome=OK pt=22761 ct=4666 
+13:00:35        fix rep11 n=71 fr=stop outcome=OK pt=22761 ct=4283 
+13:00:45        fix rep12 n=71 fr=stop outcome=OK pt=22761 ct=4168 
+13:00:45 wrote /Users/mayanck.bihani/Savesage/bank_eval/sbi/gemini/ablate_rowcount.json
+13:00:45 SUMMARY       base n=[71, 70, 70, 71, 71, 71, 69, 71, 71, 70, 71, 71]
+13:00:45 SUMMARY        fix n=[71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71]

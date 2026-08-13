@@ -1,0 +1,2294 @@
+{
+ "1036185244": {
+  "n_rows": 7,
+  "per_page": {
+   "1": 7,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0
+  },
+  "rows": [
+   {
+    "date": "03/07/2026",
+    "date_printed": "03 Jul 26",
+    "date_inherited": false,
+    "desc": "CARD CASHBACK CREDIT",
+    "amount": 390.0,
+    "marker": "C",
+    "y": 464.5,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "22/07/2026",
+    "date_printed": "22 Jul 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000KM016203BALAAAAWALM7",
+    "amount": 8076.0,
+    "marker": "C",
+    "y": 476.31,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "05/07/2026",
+    "date_printed": "05 Jul 26",
+    "date_inherited": false,
+    "desc": "RAZ*Swiggy Bangalore KA IN",
+    "amount": 477.0,
+    "marker": "D",
+    "y": 499.92,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "05/07/2026",
+    "date_printed": "05 Jul 26",
+    "date_inherited": false,
+    "desc": "BLINKIT GURGAON IN",
+    "amount": 181.0,
+    "marker": "D",
+    "y": 511.72,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "05/07/2026",
+    "date_printed": "05 Jul 26",
+    "date_inherited": false,
+    "desc": "Myntra Bangalore IN",
+    "amount": 1489.0,
+    "marker": "D",
+    "y": 523.53,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "06/07/2026",
+    "date_printed": "06 Jul 26",
+    "date_inherited": false,
+    "desc": "ICAI EXAM NEW DELHI IN",
+    "amount": 1800.0,
+    "marker": "D",
+    "y": 535.33,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "07/07/2026",
+    "date_printed": "07 Jul 26",
+    "date_inherited": false,
+    "desc": "RELIANCE RETAIL LIMITE NOIDA IN",
+    "amount": 349.0,
+    "marker": "D",
+    "y": 547.14,
+    "x_marker": 414.66,
+    "page": 1
+   }
+  ]
+ },
+ "1118980175": {
+  "n_rows": 7,
+  "per_page": {
+   "1": 7,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0
+  },
+  "rows": [
+   {
+    "date": "19/01/2026",
+    "date_printed": "19 Jan 26",
+    "date_inherited": false,
+    "desc": "CARD CASHBACK CREDIT",
+    "amount": 1544.5,
+    "marker": "C",
+    "y": 464.5,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "04/02/2026",
+    "date_printed": "04 Feb 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000DP0160351314507LHznU",
+    "amount": 28548.0,
+    "marker": "C",
+    "y": 476.31,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "06/02/2026",
+    "date_printed": "06 Feb 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000DP0160371907445iL8s8",
+    "amount": 75000.0,
+    "marker": "C",
+    "y": 488.11,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "08/02/2026",
+    "date_printed": "08 Feb 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000DP0160391158007hAkb8",
+    "amount": 47447.0,
+    "marker": "C",
+    "y": 499.92,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "04/02/2026",
+    "date_printed": "04 Feb 26",
+    "date_inherited": false,
+    "desc": "SHIV SHAKTI FLOUR MIL SURAT IN (Pay in EMIs)",
+    "amount": 20000.0,
+    "marker": "D",
+    "y": 523.53,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "06/02/2026",
+    "date_printed": "06 Feb 26",
+    "date_inherited": false,
+    "desc": "SHIV SHAKTI FLOUR MIL SURAT IN (Pay in EMIs)",
+    "amount": 75000.0,
+    "marker": "D",
+    "y": 535.33,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "08/02/2026",
+    "date_printed": "08 Feb 26",
+    "date_inherited": false,
+    "desc": "SHIV SHAKTI FLOUR MIL SURAT IN (Pay in EMIs)",
+    "amount": 57545.0,
+    "marker": "D",
+    "y": 547.14,
+    "x_marker": 414.66,
+    "page": 1
+   }
+  ]
+ },
+ "1120623464": {
+  "n_rows": 1,
+  "per_page": {
+   "1": 1,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0
+  },
+  "rows": [
+   {
+    "date": "04/03/2026",
+    "date_printed": "04 Mar 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000DP016063184952z1QEsy",
+    "amount": 34.0,
+    "marker": "C",
+    "y": 464.5,
+    "x_marker": 414.82,
+    "page": 1
+   }
+  ]
+ },
+ "1152718739": {
+  "n_rows": 4,
+  "per_page": {
+   "1": 4,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0
+  },
+  "rows": [
+   {
+    "date": "03/10/2022",
+    "date_printed": "03 Oct 22",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000HGA6P0BF710055168417",
+    "amount": 926.0,
+    "marker": "C",
+    "y": 464.5,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "16/09/2022",
+    "date_printed": "16 Sep 22",
+    "date_inherited": false,
+    "desc": "UBER 356",
+    "amount": 578.99,
+    "marker": "D",
+    "y": 488.11,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "24/09/2022",
+    "date_printed": "24 Sep 22",
+    "date_inherited": false,
+    "desc": "IRCTC Train Ticketing 356",
+    "amount": 543.08,
+    "marker": "D",
+    "y": 499.92,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "26/09/2022",
+    "date_printed": "26 Sep 22",
+    "date_inherited": false,
+    "desc": "IRCTC Train Ticketing 356",
+    "amount": 500.71,
+    "marker": "D",
+    "y": 511.72,
+    "x_marker": 414.66,
+    "page": 1
+   }
+  ]
+ },
+ "1390952698": {
+  "n_rows": 4,
+  "per_page": {
+   "1": 4,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0
+  },
+  "rows": [
+   {
+    "date": "30/03/2026",
+    "date_printed": "30 Mar 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000DP016089234128nnr7Cq",
+    "amount": 2572.0,
+    "marker": "C",
+    "y": 464.56,
+    "x_marker": 414.88,
+    "page": 1
+   },
+   {
+    "date": "05/04/2026",
+    "date_printed": "05 Apr 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000AS016095130906iNxzwQ",
+    "amount": 26007.0,
+    "marker": "C",
+    "y": 476.37,
+    "x_marker": 414.88,
+    "page": 1
+   },
+   {
+    "date": "06/04/2026",
+    "date_printed": "06 Apr 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000BD016096BAKAAAIHL7CJ",
+    "amount": 50000.04,
+    "marker": "C",
+    "y": 488.17,
+    "x_marker": 414.88,
+    "page": 1
+   },
+   {
+    "date": "07/04/2026",
+    "date_printed": "07 Apr 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000BD016097BAKAAAIJ2812",
+    "amount": 49999.0,
+    "marker": "C",
+    "y": 499.98,
+    "x_marker": 414.88,
+    "page": 1
+   }
+  ]
+ },
+ "1511624796": {
+  "n_rows": 15,
+  "per_page": {
+   "1": 15,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0
+  },
+  "rows": [
+   {
+    "date": "01/05/2025",
+    "date_printed": "01 May 25",
+    "date_inherited": false,
+    "desc": "CARD CASHBACK CREDIT",
+    "amount": 782.0,
+    "marker": "C",
+    "y": 464.5,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "20/05/2025",
+    "date_printed": "20 May 25",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000DP015140151308lBJ0Yy",
+    "amount": 20266.0,
+    "marker": "C",
+    "y": 476.31,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "07/05/2025",
+    "date_printed": "07 May 25",
+    "date_inherited": false,
+    "desc": "RAZ*Hubble Bengaluru KA IN",
+    "amount": 255.36,
+    "marker": "D",
+    "y": 499.92,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "09/05/2025",
+    "date_printed": "09 May 25",
+    "date_inherited": false,
+    "desc": "ZEPTO MUMBAI IN",
+    "amount": 1483.0,
+    "marker": "D",
+    "y": 511.72,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "11/05/2025",
+    "date_printed": "11 May 25",
+    "date_inherited": false,
+    "desc": "DISTRICT DINING NEW DELHI IN",
+    "amount": 50.0,
+    "marker": "D",
+    "y": 523.53,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "11/05/2025",
+    "date_printed": "11 May 25",
+    "date_inherited": false,
+    "desc": "DISTRICT DINING RZP GURUGRAM IN",
+    "amount": 724.75,
+    "marker": "D",
+    "y": 535.33,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "12/05/2025",
+    "date_printed": "12 May 25",
+    "date_inherited": false,
+    "desc": "RAZ*OLA STORES TECHNOL Bengaluru KA IN",
+    "amount": 220.2,
+    "marker": "D",
+    "y": 547.14,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "13/05/2025",
+    "date_printed": "13 May 25",
+    "date_inherited": false,
+    "desc": "Blinkit BANGALORE IN",
+    "amount": 1081.0,
+    "marker": "D",
+    "y": 558.94,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "19/05/2025",
+    "date_printed": "19 May 25",
+    "date_inherited": false,
+    "desc": "RAZ*OLA STORES TECHNOL Bengaluru KA IN",
+    "amount": 674.47,
+    "marker": "D",
+    "y": 570.75,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "19/05/2025",
+    "date_printed": "19 May 25",
+    "date_inherited": false,
+    "desc": "Meesho Bangalore IN",
+    "amount": 1378.0,
+    "marker": "D",
+    "y": 582.55,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "19/05/2025",
+    "date_printed": "19 May 25",
+    "date_inherited": false,
+    "desc": "AMAZON PAY INDIA PRIVA WWW.AMAZON.IN IN",
+    "amount": 1989.0,
+    "marker": "D",
+    "y": 594.36,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "20/05/2025",
+    "date_printed": "20 May 25",
+    "date_inherited": false,
+    "desc": "FASHNEAR TECHNOLOGIES Bangalore IN",
+    "amount": 590.0,
+    "marker": "D",
+    "y": 606.16,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "22/05/2025",
+    "date_printed": "22 May 25",
+    "date_inherited": false,
+    "desc": "RAZ*PLANT ORBIT Nainital UT IN",
+    "amount": 1759.7,
+    "marker": "D",
+    "y": 617.97,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "28/05/2025",
+    "date_printed": "28 May 25",
+    "date_inherited": false,
+    "desc": "Meesho Bangalore IN",
+    "amount": 278.0,
+    "marker": "C",
+    "y": 629.77,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "30/05/2025",
+    "date_printed": "30 May 25",
+    "date_inherited": false,
+    "desc": "FASHNEAR TECHNOLOGIES Bangalore IN",
+    "amount": 301.0,
+    "marker": "C",
+    "y": 641.58,
+    "x_marker": 414.82,
+    "page": 1
+   }
+  ]
+ },
+ "1707857175": {
+  "n_rows": 71,
+  "per_page": {
+   "1": 31,
+   "2": 40,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0,
+   "8": 0
+  },
+  "rows": [
+   {
+    "date": "01/05/2026",
+    "date_printed": "01 May 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000BD016121BALAAAJGB4VZ",
+    "amount": 128100.0,
+    "marker": "C",
+    "y": 464.56,
+    "x_marker": 414.88,
+    "page": 1
+   },
+   {
+    "date": "03/05/2026",
+    "date_printed": "03 May 26",
+    "date_inherited": false,
+    "desc": "FUEL SURCHARGE WAIVER EXCL TAX",
+    "amount": 5.36,
+    "marker": "C",
+    "y": 476.37,
+    "x_marker": 414.88,
+    "page": 1
+   },
+   {
+    "date": "16/04/2026",
+    "date_printed": "16 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 499.98,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "16/04/2026",
+    "date_printed": "16 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 105.0,
+    "marker": "D",
+    "y": 511.78,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "16/04/2026",
+    "date_printed": "16 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 523.59,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "16/04/2026",
+    "date_printed": "16 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-A M R TEMPTATIONS",
+    "amount": 265.0,
+    "marker": "D",
+    "y": 535.39,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "17/04/2026",
+    "date_printed": "17 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 547.2,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "17/04/2026",
+    "date_printed": "17 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-Food Junction Wanow",
+    "amount": 70.0,
+    "marker": "D",
+    "y": 559.0,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "17/04/2026",
+    "date_printed": "17 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-SHREE GANESH COPIER",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 570.81,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "18/04/2026",
+    "date_printed": "18 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-HOTEL RIVER PLACE",
+    "amount": 205.0,
+    "marker": "D",
+    "y": 582.61,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "18/04/2026",
+    "date_printed": "18 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-TAPASWI BABAN SURVE",
+    "amount": 1250.0,
+    "marker": "D",
+    "y": 594.42,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "18/04/2026",
+    "date_printed": "18 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-Gola Sarbat",
+    "amount": 50.0,
+    "marker": "D",
+    "y": 606.22,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "19/04/2026",
+    "date_printed": "19 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-Golden Swan Beach Rt",
+    "amount": 105.0,
+    "marker": "D",
+    "y": 618.03,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "19/04/2026",
+    "date_printed": "19 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-Airtel",
+    "amount": 3040.86,
+    "marker": "D",
+    "y": 629.83,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "19/04/2026",
+    "date_printed": "19 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-HOTEL RIVER PLACE",
+    "amount": 165.0,
+    "marker": "D",
+    "y": 641.64,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "20/04/2026",
+    "date_printed": "20 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 653.44,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "20/04/2026",
+    "date_printed": "20 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 40.0,
+    "marker": "D",
+    "y": 665.25,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "21/04/2026",
+    "date_printed": "21 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 677.05,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "22/04/2026",
+    "date_printed": "22 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 40.0,
+    "marker": "D",
+    "y": 688.86,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "22/04/2026",
+    "date_printed": "22 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 700.66,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "23/04/2026",
+    "date_printed": "23 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 712.47,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "23/04/2026",
+    "date_printed": "23 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-HOTEL GREEN COURT",
+    "amount": 1444.0,
+    "marker": "D",
+    "y": 724.27,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "24/04/2026",
+    "date_printed": "24 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 40.0,
+    "marker": "D",
+    "y": 736.08,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "24/04/2026",
+    "date_printed": "24 Apr 26",
+    "date_inherited": false,
+    "desc": "TATA PAYMENTS LIMITED IN",
+    "amount": 8810.5,
+    "marker": "D",
+    "y": 747.88,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "25/04/2026",
+    "date_printed": "25 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-RAMCHANDRA SHIVSHANTIWARI",
+    "amount": 25.0,
+    "marker": "D",
+    "y": 759.69,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "25/04/2026",
+    "date_printed": "25 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-RAHUL",
+    "amount": 30.0,
+    "marker": "D",
+    "y": 771.49,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "26/04/2026",
+    "date_printed": "26 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-Parvaaz Hair Dressialon",
+    "amount": 100.0,
+    "marker": "D",
+    "y": 783.3,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "27/04/2026",
+    "date_printed": "27 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-SHASHANK VISHNUPANTNSE",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 795.1,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "27/04/2026",
+    "date_printed": "27 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 90.0,
+    "marker": "D",
+    "y": 806.91,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "28/04/2026",
+    "date_printed": "28 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-SHASHANK VISHNUPANTNSE",
+    "amount": 40.0,
+    "marker": "D",
+    "y": 818.71,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "28/04/2026",
+    "date_printed": "28 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 830.52,
+    "x_marker": 414.71,
+    "page": 1
+   },
+   {
+    "date": "28/04/2026",
+    "date_printed": "28 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 130.09,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "28/04/2026",
+    "date_printed": "28 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-SHAUKEEN ENTERPRISE",
+    "amount": 1750.0,
+    "marker": "D",
+    "y": 141.89,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "29/04/2026",
+    "date_printed": "29 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-SHASHANK VISHNUPANTNSE",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 153.7,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "29/04/2026",
+    "date_printed": "29 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 165.5,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "30/04/2026",
+    "date_printed": "30 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-SHASHANK VISHNUPANTNSE",
+    "amount": 50.0,
+    "marker": "D",
+    "y": 177.31,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "30/04/2026",
+    "date_printed": "30 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-SUBBAMMA VENKATSWAMMAVARAPU",
+    "amount": 110.0,
+    "marker": "D",
+    "y": 189.11,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "30/04/2026",
+    "date_printed": "30 Apr 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 35.0,
+    "marker": "D",
+    "y": 200.92,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "01/05/2026",
+    "date_printed": "01 May 26",
+    "date_inherited": false,
+    "desc": "UPI-KRUSHNA PURE VEG",
+    "amount": 803.0,
+    "marker": "D",
+    "y": 212.72,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "01/05/2026",
+    "date_printed": "01 May 26",
+    "date_inherited": false,
+    "desc": "UPI-RAVI ANIL RAUT",
+    "amount": 500.0,
+    "marker": "D",
+    "y": 224.53,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "02/05/2026",
+    "date_printed": "02 May 26",
+    "date_inherited": false,
+    "desc": "UPI-MUSTHAFA K",
+    "amount": 27.0,
+    "marker": "D",
+    "y": 236.33,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "02/05/2026",
+    "date_printed": "02 May 26",
+    "date_inherited": false,
+    "desc": "HUTCHINGS HIGH SCHOOL IN",
+    "amount": 20485.27,
+    "marker": "D",
+    "y": 248.14,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "03/05/2026",
+    "date_printed": "03 May 26",
+    "date_inherited": false,
+    "desc": "UPI-KEDARI SERVICE STAT",
+    "amount": 543.04,
+    "marker": "D",
+    "y": 259.94,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "03/05/2026",
+    "date_printed": "03 May 26",
+    "date_inherited": false,
+    "desc": "UPI-Parvaaz Hair Dressialon",
+    "amount": 100.0,
+    "marker": "D",
+    "y": 271.75,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "03/05/2026",
+    "date_printed": "03 May 26",
+    "date_inherited": false,
+    "desc": "UPI-GULAB KALAPPA SURWA",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 283.55,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "03/05/2026",
+    "date_printed": "03 May 26",
+    "date_inherited": false,
+    "desc": "UPI-PUNES MASALEDAR BIR HOUSE",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 295.36,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "03/05/2026",
+    "date_printed": "03 May 26",
+    "date_inherited": false,
+    "desc": "ADAPA PRASAD IN",
+    "amount": 1065.0,
+    "marker": "D",
+    "y": 307.16,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "04/05/2026",
+    "date_printed": "04 May 26",
+    "date_inherited": false,
+    "desc": "UPI-SHASHANK VISHNUPANTNSE",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 318.97,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "04/05/2026",
+    "date_printed": "04 May 26",
+    "date_inherited": false,
+    "desc": "UPI-SUBBAMMA VENKATSWAMMAVARAPU",
+    "amount": 30.0,
+    "marker": "D",
+    "y": 330.77,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "04/05/2026",
+    "date_printed": "04 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 342.58,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "04/05/2026",
+    "date_printed": "04 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 354.38,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "05/05/2026",
+    "date_printed": "05 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 45.0,
+    "marker": "D",
+    "y": 366.19,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "05/05/2026",
+    "date_printed": "05 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 377.99,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "05/05/2026",
+    "date_printed": "05 May 26",
+    "date_inherited": false,
+    "desc": "UPI-CHOICE MARKET",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 389.8,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "06/05/2026",
+    "date_printed": "06 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 55.0,
+    "marker": "D",
+    "y": 401.6,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "07/05/2026",
+    "date_printed": "07 May 26",
+    "date_inherited": false,
+    "desc": "UPI-SHASHANK VISHNUPANTNSE",
+    "amount": 45.0,
+    "marker": "D",
+    "y": 413.41,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "07/05/2026",
+    "date_printed": "07 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 425.21,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "07/05/2026",
+    "date_printed": "07 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 437.02,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "08/05/2026",
+    "date_printed": "08 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 448.82,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "09/05/2026",
+    "date_printed": "09 May 26",
+    "date_inherited": false,
+    "desc": "UPI-AMULYA KUMAR",
+    "amount": 60.0,
+    "marker": "D",
+    "y": 460.63,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "09/05/2026",
+    "date_printed": "09 May 26",
+    "date_inherited": false,
+    "desc": "UPI-Mr DEVDAS KISAN LAN",
+    "amount": 300.0,
+    "marker": "D",
+    "y": 472.43,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "09/05/2026",
+    "date_printed": "09 May 26",
+    "date_inherited": false,
+    "desc": "UPI-Mr DEVDAS KISAN LAN",
+    "amount": 50.0,
+    "marker": "D",
+    "y": 484.24,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "09/05/2026",
+    "date_printed": "09 May 26",
+    "date_inherited": false,
+    "desc": "UPI-Mr DEVDAS KISAN LAN",
+    "amount": 200.0,
+    "marker": "D",
+    "y": 496.04,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "10/05/2026",
+    "date_printed": "10 May 26",
+    "date_inherited": false,
+    "desc": "BRIGHT NUTRICARE PRIVA IN",
+    "amount": 8549.0,
+    "marker": "D",
+    "y": 507.85,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "11/05/2026",
+    "date_printed": "11 May 26",
+    "date_inherited": false,
+    "desc": "UPI-SHASHANK VISHNUPANTNSE",
+    "amount": 70.0,
+    "marker": "D",
+    "y": 519.65,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "11/05/2026",
+    "date_printed": "11 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 65.0,
+    "marker": "D",
+    "y": 531.46,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "11/05/2026",
+    "date_printed": "11 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 543.26,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "12/05/2026",
+    "date_printed": "12 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 555.07,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "13/05/2026",
+    "date_printed": "13 May 26",
+    "date_inherited": false,
+    "desc": "UPI-SHASHANK VISHNUPANTNSE",
+    "amount": 45.0,
+    "marker": "D",
+    "y": 566.87,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "13/05/2026",
+    "date_printed": "13 May 26",
+    "date_inherited": false,
+    "desc": "UPI-REDEFINED PRIVATE L",
+    "amount": 20.0,
+    "marker": "D",
+    "y": 578.68,
+    "x_marker": 422.35,
+    "page": 2
+   },
+   {
+    "date": "14/05/2026",
+    "date_printed": "14 May 26",
+    "date_inherited": false,
+    "desc": "UPI-Karunakar Sanjeeva ty",
+    "amount": 2000.0,
+    "marker": "D",
+    "y": 590.48,
+    "x_marker": 422.35,
+    "page": 2
+   }
+  ]
+ },
+ "221159806": {
+  "n_rows": 2,
+  "per_page": {
+   "1": 2,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0
+  },
+  "rows": [
+   {
+    "date": "03/12/2025",
+    "date_printed": "03 Dec 25",
+    "date_inherited": false,
+    "desc": "ANNUAL FEE CHARGED (EXCL TAX 269.82)",
+    "amount": 1499.0,
+    "marker": "D",
+    "y": 464.5,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "03/12/2025",
+    "date_printed": null,
+    "date_inherited": true,
+    "desc": "IGST DB @ 18.00%",
+    "amount": 269.82,
+    "marker": "D",
+    "y": 476.31,
+    "x_marker": 414.66,
+    "page": 1
+   }
+  ]
+ },
+ "369606524": {
+  "n_rows": 16,
+  "per_page": {
+   "1": 16,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0
+  },
+  "rows": [
+   {
+    "date": "23/05/2026",
+    "date_printed": "23 May 26",
+    "date_inherited": false,
+    "desc": "CARD CASHBACK CREDIT",
+    "amount": 424.0,
+    "marker": "C",
+    "y": 464.5,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "02/06/2026",
+    "date_printed": "02 Jun 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000DP016153124806obOfja",
+    "amount": 5564.0,
+    "marker": "C",
+    "y": 476.31,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "25/05/2026",
+    "date_printed": "25 May 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 1714.27,
+    "marker": "C",
+    "y": 499.92,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "27/05/2026",
+    "date_printed": "27 May 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND (Pay in EMIs)",
+    "amount": 9521.0,
+    "marker": "D",
+    "y": 511.72,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "28/05/2026",
+    "date_printed": "28 May 26",
+    "date_inherited": false,
+    "desc": "Cashfree*FLIPKART INTE Bengaluru IND",
+    "amount": 1336.0,
+    "marker": "D",
+    "y": 523.53,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "02/06/2026",
+    "date_printed": "02 Jun 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 368.56,
+    "marker": "C",
+    "y": 535.33,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "02/06/2026",
+    "date_printed": "02 Jun 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 424.14,
+    "marker": "C",
+    "y": 547.14,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "03/06/2026",
+    "date_printed": "03 Jun 26",
+    "date_inherited": false,
+    "desc": "FLIPKART BENGALURU KAR (Pay in EMIs)",
+    "amount": 4252.0,
+    "marker": "D",
+    "y": 558.94,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "03/06/2026",
+    "date_printed": "03 Jun 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 196.96,
+    "marker": "C",
+    "y": 570.75,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "03/06/2026",
+    "date_printed": "03 Jun 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 2340.04,
+    "marker": "C",
+    "y": 582.55,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "03/06/2026",
+    "date_printed": "03 Jun 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 716.64,
+    "marker": "C",
+    "y": 594.36,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "03/06/2026",
+    "date_printed": "03 Jun 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 311.02,
+    "marker": "C",
+    "y": 606.16,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "05/06/2026",
+    "date_printed": "05 Jun 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 868.74,
+    "marker": "C",
+    "y": 617.97,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "05/06/2026",
+    "date_printed": "05 Jun 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 174.52,
+    "marker": "C",
+    "y": 629.77,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "06/06/2026",
+    "date_printed": "06 Jun 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 591.83,
+    "marker": "C",
+    "y": 641.58,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "16/06/2026",
+    "date_printed": "16 Jun 26",
+    "date_inherited": false,
+    "desc": "MYNTRA DESIGNS PRIVATE Bangalore IND",
+    "amount": 545.03,
+    "marker": "C",
+    "y": 653.38,
+    "x_marker": 414.82,
+    "page": 1
+   }
+  ]
+ },
+ "393366914": {
+  "n_rows": 2,
+  "per_page": {
+   "1": 2,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0
+  },
+  "rows": [
+   {
+    "date": "02/01/2026",
+    "date_printed": "02 Jan 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000PP016002BB4FD0TIJ265",
+    "amount": 5.0,
+    "marker": "C",
+    "y": 464.5,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "02/01/2026",
+    "date_printed": "02 Jan 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000PP016002BB6FZ0TLZ150",
+    "amount": 10681.0,
+    "marker": "C",
+    "y": 476.31,
+    "x_marker": 414.82,
+    "page": 1
+   }
+  ]
+ },
+ "515948911": {
+  "n_rows": 56,
+  "per_page": {
+   "1": 31,
+   "2": 25,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0,
+   "8": 0
+  },
+  "rows": [
+   {
+    "date": "03/01/2026",
+    "date_printed": "03 Jan 26",
+    "date_inherited": false,
+    "desc": "CARD CASHBACK CREDIT",
+    "amount": 4191.0,
+    "marker": "C",
+    "y": 464.5,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "20/01/2026",
+    "date_printed": "20 Jan 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000BD016020BAKAAAFOMS6O",
+    "amount": 61532.13,
+    "marker": "C",
+    "y": 476.31,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "03/01/2026",
+    "date_printed": "03 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 122.0,
+    "marker": "D",
+    "y": 499.92,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "03/01/2026",
+    "date_printed": "03 Jan 26",
+    "date_inherited": false,
+    "desc": "AMAZON PAY INDIA PRIVA WWW.AMAZON.IN IN",
+    "amount": 29899.0,
+    "marker": "C",
+    "y": 511.72,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "04/01/2026",
+    "date_printed": "04 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "amount": 139.0,
+    "marker": "D",
+    "y": 523.53,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "04/01/2026",
+    "date_printed": "04 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "amount": 165.33,
+    "marker": "D",
+    "y": 535.33,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "05/01/2026",
+    "date_printed": "05 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "amount": 384.0,
+    "marker": "D",
+    "y": 547.14,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "05/01/2026",
+    "date_printed": "05 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "amount": 38.71,
+    "marker": "D",
+    "y": 558.94,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "05/01/2026",
+    "date_printed": "05 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "amount": 27.59,
+    "marker": "D",
+    "y": 570.75,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "05/01/2026",
+    "date_printed": "05 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "amount": 332.0,
+    "marker": "D",
+    "y": 582.55,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "05/01/2026",
+    "date_printed": "05 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "amount": 66.69,
+    "marker": "D",
+    "y": 594.36,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "06/01/2026",
+    "date_printed": "06 Jan 26",
+    "date_inherited": false,
+    "desc": "Blinkit BANGALORE IN",
+    "amount": 53.0,
+    "marker": "D",
+    "y": 606.16,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "06/01/2026",
+    "date_printed": "06 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "amount": 61.7,
+    "marker": "D",
+    "y": 617.97,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "06/01/2026",
+    "date_printed": "06 Jan 26",
+    "date_inherited": false,
+    "desc": "BLINKIT GURGAON IN",
+    "amount": 269.0,
+    "marker": "D",
+    "y": 629.77,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "06/01/2026",
+    "date_printed": "06 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "amount": 283.0,
+    "marker": "D",
+    "y": 641.58,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "06/01/2026",
+    "date_printed": "06 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "amount": 56.11,
+    "marker": "D",
+    "y": 653.38,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "06/01/2026",
+    "date_printed": "06 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "amount": 385.0,
+    "marker": "D",
+    "y": 665.19,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "08/01/2026",
+    "date_printed": "08 Jan 26",
+    "date_inherited": false,
+    "desc": "DISTRICT DINING CYBS GURGAON IN",
+    "amount": 50.0,
+    "marker": "D",
+    "y": 676.99,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "08/01/2026",
+    "date_printed": "08 Jan 26",
+    "date_inherited": false,
+    "desc": "AMAZONIN GURGAON IN",
+    "amount": 1899.0,
+    "marker": "D",
+    "y": 688.8,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "09/01/2026",
+    "date_printed": "09 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "amount": 61.83,
+    "marker": "D",
+    "y": 700.6,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "11/01/2026",
+    "date_printed": "11 Jan 26",
+    "date_inherited": false,
+    "desc": "DISTRICT DINING CYBS GURGAON IN",
+    "amount": 589.0,
+    "marker": "D",
+    "y": 712.41,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "11/01/2026",
+    "date_printed": "11 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "amount": 177.8,
+    "marker": "D",
+    "y": 724.21,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "13/01/2026",
+    "date_printed": "13 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 276.0,
+    "marker": "D",
+    "y": 736.02,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "13/01/2026",
+    "date_printed": "13 Jan 26",
+    "date_inherited": false,
+    "desc": "WWW DYSON IN GURGAON IN",
+    "amount": 29400.0,
+    "marker": "C",
+    "y": 747.82,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "15/01/2026",
+    "date_printed": "15 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 198.0,
+    "marker": "D",
+    "y": 759.63,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "16/01/2026",
+    "date_printed": "16 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "amount": 190.0,
+    "marker": "D",
+    "y": 771.43,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "16/01/2026",
+    "date_printed": "16 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTE PVT L NOIDA IN",
+    "amount": 150.0,
+    "marker": "D",
+    "y": 783.24,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "16/01/2026",
+    "date_printed": "16 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "amount": 38.68,
+    "marker": "D",
+    "y": 795.04,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "17/01/2026",
+    "date_printed": "17 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 140.0,
+    "marker": "D",
+    "y": 806.85,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "17/01/2026",
+    "date_printed": "17 Jan 26",
+    "date_inherited": false,
+    "desc": "UBER INDIA SYSTEMS PRI NOIDA IN",
+    "amount": 38.01,
+    "marker": "D",
+    "y": 818.65,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "19/01/2026",
+    "date_printed": "19 Jan 26",
+    "date_inherited": false,
+    "desc": "Zepto Bangalore IN",
+    "amount": 237.0,
+    "marker": "D",
+    "y": 830.46,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "20/01/2026",
+    "date_printed": "20 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV BANGALORE IN",
+    "amount": 297.0,
+    "marker": "D",
+    "y": 130.03,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "22/01/2026",
+    "date_printed": "22 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 228.0,
+    "marker": "D",
+    "y": 141.83,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "22/01/2026",
+    "date_printed": "22 Jan 26",
+    "date_inherited": false,
+    "desc": "BLINKIT GURGAON IN",
+    "amount": 1760.0,
+    "marker": "D",
+    "y": 153.64,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "22/01/2026",
+    "date_printed": "22 Jan 26",
+    "date_inherited": false,
+    "desc": "BLINKIT GURGAON IN (Pay in EMIs)",
+    "amount": 3900.0,
+    "marker": "D",
+    "y": 165.44,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "22/01/2026",
+    "date_printed": "22 Jan 26",
+    "date_inherited": false,
+    "desc": "Razorpay Payments GURGAON IN",
+    "amount": 2990.0,
+    "marker": "C",
+    "y": 177.25,
+    "x_marker": 422.46,
+    "page": 2
+   },
+   {
+    "date": "25/01/2026",
+    "date_printed": "25 Jan 26",
+    "date_inherited": false,
+    "desc": "RAZ*REBEL MARKETPLACE HTTPS://APPS. IN",
+    "amount": 847.0,
+    "marker": "D",
+    "y": 189.05,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "26/01/2026",
+    "date_printed": "26 Jan 26",
+    "date_inherited": false,
+    "desc": "VOUCHAGRAM INDIA PVT L WWW.GYFTR.COM IN",
+    "amount": 944.37,
+    "marker": "D",
+    "y": 200.86,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "26/01/2026",
+    "date_printed": "26 Jan 26",
+    "date_inherited": false,
+    "desc": "BLINKIT GURGAON IN",
+    "amount": 706.0,
+    "marker": "D",
+    "y": 212.66,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "26/01/2026",
+    "date_printed": "26 Jan 26",
+    "date_inherited": false,
+    "desc": "BLINK COMMERCE PVT LTD BANGALORE IN",
+    "amount": 2313.0,
+    "marker": "D",
+    "y": 224.47,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "26/01/2026",
+    "date_printed": "26 Jan 26",
+    "date_inherited": false,
+    "desc": "BLINK COMMERCE PVT LTD BANGALORE IN",
+    "amount": 2313.0,
+    "marker": "C",
+    "y": 236.27,
+    "x_marker": 422.46,
+    "page": 2
+   },
+   {
+    "date": "27/01/2026",
+    "date_printed": "27 Jan 26",
+    "date_inherited": false,
+    "desc": "AMAZONIN GURGAON IN",
+    "amount": 2454.0,
+    "marker": "D",
+    "y": 248.08,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "27/01/2026",
+    "date_printed": "27 Jan 26",
+    "date_inherited": false,
+    "desc": "DEFMACRO SOFTWARE PRIV BANGALORE IN (Pay in EMIs)",
+    "amount": 6499.88,
+    "marker": "D",
+    "y": 259.88,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "27/01/2026",
+    "date_printed": "27 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 107.0,
+    "marker": "D",
+    "y": 271.69,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "28/01/2026",
+    "date_printed": "28 Jan 26",
+    "date_inherited": false,
+    "desc": "AMAZON MUMBAI IN",
+    "amount": 699.0,
+    "marker": "D",
+    "y": 283.49,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "28/01/2026",
+    "date_printed": "28 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 136.0,
+    "marker": "D",
+    "y": 295.3,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "29/01/2026",
+    "date_printed": "29 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 119.0,
+    "marker": "D",
+    "y": 307.1,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "29/01/2026",
+    "date_printed": "29 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 228.0,
+    "marker": "D",
+    "y": 318.91,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "30/01/2026",
+    "date_printed": "30 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 116.0,
+    "marker": "D",
+    "y": 330.71,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "31/01/2026",
+    "date_printed": "31 Jan 26",
+    "date_inherited": false,
+    "desc": "RAZ*JOCKEY HTTPS://WWW.J IN",
+    "amount": 146.0,
+    "marker": "D",
+    "y": 342.52,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "31/01/2026",
+    "date_printed": "31 Jan 26",
+    "date_inherited": false,
+    "desc": "VOUCHAGRAM INDIA PVT L WWW.GYFTR.COM IN",
+    "amount": 1720.0,
+    "marker": "D",
+    "y": 354.32,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "31/01/2026",
+    "date_printed": "31 Jan 26",
+    "date_inherited": false,
+    "desc": "ORBGEN TECHNOLOGIES GURGAON IN",
+    "amount": 966.6,
+    "marker": "D",
+    "y": 366.13,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "31/01/2026",
+    "date_printed": "31 Jan 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV Bangalore IN",
+    "amount": 205.0,
+    "marker": "D",
+    "y": 377.93,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "01/02/2026",
+    "date_printed": "01 Feb 26",
+    "date_inherited": false,
+    "desc": "AMAZONIN GURGAON IN (Pay in EMIs)",
+    "amount": 3718.0,
+    "marker": "D",
+    "y": 389.74,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "02/02/2026",
+    "date_printed": "02 Feb 26",
+    "date_inherited": false,
+    "desc": "ZEPTO MARKETPLACE PRIV BANGALORE IN",
+    "amount": 228.98,
+    "marker": "D",
+    "y": 401.54,
+    "x_marker": 422.3,
+    "page": 2
+   },
+   {
+    "date": "02/02/2026",
+    "date_printed": "02 Feb 26",
+    "date_inherited": false,
+    "desc": "BLINKIT GURGAON IN",
+    "amount": 1328.0,
+    "marker": "D",
+    "y": 413.35,
+    "x_marker": 422.3,
+    "page": 2
+   }
+  ]
+ },
+ "905768587": {
+  "n_rows": 8,
+  "per_page": {
+   "1": 8,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0
+  },
+  "rows": [
+   {
+    "date": "03/05/2026",
+    "date_printed": "03 May 26",
+    "date_inherited": false,
+    "desc": "CARD CASHBACK CREDIT",
+    "amount": 260.0,
+    "marker": "C",
+    "y": 464.5,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "05/05/2026",
+    "date_printed": "05 May 26",
+    "date_inherited": false,
+    "desc": "PAYMENT RECEIVED 000BD016125BALAAAJK2ZQ9",
+    "amount": 42987.65,
+    "marker": "C",
+    "y": 476.31,
+    "x_marker": 414.82,
+    "page": 1
+   },
+   {
+    "date": "03/06/2026",
+    "date_printed": "03 Jun 26",
+    "date_inherited": false,
+    "desc": "FP EMI 03/06(EXCL TAX 16.29)",
+    "amount": 1702.29,
+    "marker": "M",
+    "y": 488.11,
+    "x_marker": 413.91,
+    "page": 1
+   },
+   {
+    "date": "03/06/2026",
+    "date_printed": "03 Jun 26",
+    "date_inherited": false,
+    "desc": "INTEREST ON EMI",
+    "amount": 90.5,
+    "marker": "D",
+    "y": 499.92,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "03/06/2026",
+    "date_printed": "03 Jun 26",
+    "date_inherited": false,
+    "desc": "FP EMI 02/03(EXCL TAX 174.45)",
+    "amount": 34933.57,
+    "marker": "M",
+    "y": 511.72,
+    "x_marker": 413.91,
+    "page": 1
+   },
+   {
+    "date": "03/06/2026",
+    "date_printed": "03 Jun 26",
+    "date_inherited": false,
+    "desc": "INTEREST ON EMI",
+    "amount": 969.14,
+    "marker": "D",
+    "y": 523.53,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "03/06/2026",
+    "date_printed": null,
+    "date_inherited": true,
+    "desc": "IGST DB @ 18.00%",
+    "amount": 190.74,
+    "marker": "D",
+    "y": 535.33,
+    "x_marker": 414.66,
+    "page": 1
+   },
+   {
+    "date": "17/05/2026",
+    "date_printed": "17 May 26",
+    "date_inherited": false,
+    "desc": "INDIGO AIRLINE GURGAON IN (Pay in EMIs)",
+    "amount": 9071.0,
+    "marker": "D",
+    "y": 558.94,
+    "x_marker": 414.66,
+    "page": 1
+   }
+  ]
+ }
+}

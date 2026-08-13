@@ -1,5 +1,85 @@
 # SBI prompt changelog — every change tied to a measured defect
 
+## 2026-08-13 — row completeness on long tables: statement 1707857175, the 28 Apr cluster
+
+**Defect.** Statement **1707857175** prints **71** transaction rows. The refined prompt
+emitted 70 (sometimes 69). All 11 other sample statements were unaffected, so this is a
+long-table defect, not a general one.
+
+The row count was established from the PDF itself, not from any model output
+(`gemini/pdf_rowtruth.py`, span geometry: a row is a line whose rightmost span is a lone
+`C`/`D`/`T`/`M` inside the page's own learned marker band, carrying an Indian-grouped
+amount). That probe independently reproduces the arms' counts on **11 of 12** statements,
+which is what licenses trusting it on the twelfth. It says 71; the client's generic prompt
+(arm C) was right and our arms were dropping a genuine printed row.
+
+**The 28 Apr 2026 cluster, with printed y-positions.** Four rows carry that date, and the
+decisive fact is that an *exact duplicate pair straddles the page break*:
+
+| idx | page | y | date | amount | mk | description |
+|-----|------|---------|------------|---------|---|-------------------------------|
+| 29 | 1 | 818.71 | 28/04/2026 | 40.00 | D | `UPI-SHASHANK VISHNUPANTNSE` |
+| 30 | 1 | 830.52 | 28/04/2026 | 20.00 | D | `UPI-REDEFINED PRIVATE L` |
+| 31 | 2 | 130.09 | 28/04/2026 | 20.00 | D | `UPI-REDEFINED PRIVATE L` |
+| 32 | 2 | 141.89 | 28/04/2026 | 1750.00 | D | `UPI-SHAUKEEN ENTERPRISE` |
+
+idx30 is the **last** row of page 1 and idx31 is the **first** row of page 2, byte-identical
+to it. `UPI-REDEFINED PRIVATE L` at exactly 20.00 recurs dozens of times in this one
+statement, so the corpus is saturated with this shape.
+
+**The failure was not a clean drop.** Diffing against the PDF (not against arm C) with
+normalised dates and `Counter` multiplicity shows the pre-fix prompt failing three
+different ways across repeats, all localised to idx29–31:
+
+* drop one of the identical 20.00 rows (→ 70);
+* drop the 40.00 *and* one 20.00 (→ 69);
+* emit a **row that the PDF never prints** — `28/04/2026  20.00  UPI-SHASHANK
+  VISHNUPANTNSE`, i.e. the description of idx29 bound to the amount of idx30/31 — while
+  dropping the real 40.00. This one **still counts 71**.
+
+That last mode matters: **row count hides the defect.** The pre-fix prompt hit n=71 on
+8 of 12 samples but was row-*exact* on only **4 of 12**. The mechanism is row-boundary
+misalignment in a dense same-date cluster at a page break, not de-duplication alone.
+
+**Isolation experiment** (`gemini/ablate_rowcount.py`, 24 calls on this one statement,
+3–12 repeats per variant, each variant differing from the current prompt by exactly one
+excision or addition). Competing hypotheses were tested and **both are ruled out**:
+
+| variant | Δ prompt | n per repeat | row-exact |
+|---------|----------|--------------|-----------|
+| base (current prompt) | — | 71,70,70,71,71,71,69,71,71,70,71,71 | **4/12** |
+| `nodate` (minus statement-period / date sanity-check rules) | −731 ch | 71,70,71 | no better |
+| `noband` (minus leading-band + `TRANSACTIONS FOR` rules) | −536 ch | 70,71,71 | no better |
+| `norewards` (minus the whole REWARDS_RULES block) | **−7433 ch (−36%)** | 70,71,70 | no better |
+| `fix` (base + the new rule) | +770 ch | 71×12 | **11/12** |
+
+* **Hypothesis (b), a specific rule suppressing the row: NOT SUPPORTED.** No single rule
+  excision restores the row. (Consistent with arm C carrying its own, stricter, date-bound
+  rule — "must not exceed the Statement Date" — while still emitting all 71.)
+* **Hypothesis (a), prompt length / attention dilution: NOT SUPPORTED.** Deleting 36% of
+  the prompt — a block that cannot legitimately affect whether a transaction row is
+  emitted — left the defect exactly where it was. **No prompt shortening was performed**,
+  so none of the measured rewards wins were put at risk.
+* **Hypothesis (c), output truncation: RULED OUT WITH DATA.** `finish_reason == "stop"`
+  and `prompt_tokens + completion_tokens == total_tokens` on every sample;
+  completion was ~3.7–4.9k tokens against `max_tokens` 96000.
+
+Row-exactness, pre-fix 4/12 vs post-fix 11/12: **Fisher exact one-sided p = 0.0047**
+(p = 0.0006 pooling the 4 earlier pre-fix samples). On row count alone, 8/12 vs 12/12
+gives p = 0.047 — a reminder that the weaker metric understates the change.
+
+**The change.** One positive, SBI-scoped bullet added to `TRANSACTION RULES`, immediately
+after the existing `COMPLETENESS IS MANDATORY` bullet: consecutive rows identical in date,
+amount and description are separate genuine payments and must each be emitted; this holds
+across a page break; each amount stays bound to the description printed on its own line;
+the emitted count must equal the printed count. Nothing was removed, no schema field
+changed (26 leaves, `gemini/assert_schema.py` passes), and no HDFC/ICICI wording,
+glyph rule or mask rule was imported.
+
+**Honesty bounds.** Measured on **12 statements only**; not extrapolated to the ~300-statement
+SBI corpus. `fix` was row-exact 11/12, not 12/12 — one repeat still produced the hybrid
+row, so this reduces the defect rate, it does not prove elimination.
+
 ## 2026-08-13 — correct rewards flows mis-slotted as `closingPoints`
 
 Re-adjudication of the 12-statement Gemini sample found that the shipped prompt treated

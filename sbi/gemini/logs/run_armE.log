@@ -1,0 +1,21 @@
+13:02:32 START armE prompt_sha=f7ff966bd7f2 n_jobs=15 conc=2
+13:02:40 E          1120623464   n=1 fr=stop outcome=OK fc=None rl=0 ct=382 
+13:02:44 E          1036185244   n=7 fr=stop outcome=OK fc=None rl=0 ct=815 
+13:02:51 E          1152718739   n=4 fr=stop outcome=OK fc=None rl=0 ct=560 
+13:02:53 E          1390952698   n=4 fr=stop outcome=OK fc=None rl=0 ct=580 
+13:03:05 E          1511624796   n=15 fr=stop outcome=OK fc=None rl=0 ct=1468 
+13:03:18 E          369606524    n=16 fr=stop outcome=OK fc=None rl=0 ct=1390 
+13:03:21 E          1707857175   n=71 fr=stop outcome=OK fc=None rl=0 ct=4320 
+13:08:42 E          515948911    n=None fr=None outcome=NETWORK_ERROR fc=infrastructure rl=0 ct=None 
+13:08:44 E          1118980175   n=None fr=None outcome=NETWORK_ERROR fc=infrastructure rl=0 ct=None 
+13:14:06 E          221159806    n=None fr=None outcome=NETWORK_ERROR fc=infrastructure rl=0 ct=None 
+13:14:08 E          393366914    n=None fr=None outcome=NETWORK_ERROR fc=infrastructure rl=0 ct=None 
+13:19:30 E          905768587    n=None fr=None outcome=NETWORK_ERROR fc=infrastructure rl=0 ct=None 
+13:19:32 E_rep1     1707857175   n=None fr=None outcome=NETWORK_ERROR fc=infrastructure rl=0 ct=None 
+13:22:49 EXC E_rep2 1707857175 RuntimeError: databricks auth token failed rc=1: Error: A new access token could not be retrieved because the refresh token is invalid. To reauthenticate, run the following command:
+  $ databricks auth login --profile fevm-stable
+
+13:22:51 EXC E_rep3 1707857175 RuntimeError: databricks auth token failed rc=1: Error: A new access token could not be retrieved because the refresh token is invalid. To reauthenticate, run the following command:
+  $ databricks auth login --profile fevm-stable
+
+13:22:51 DONE armE ok=7/15 calls_that_saw_429=0
