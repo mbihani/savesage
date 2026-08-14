@@ -73,16 +73,16 @@ RESPONSE_FORMAT = {
 }
 
 
-def corpus():
-    """-> [(sid, filename, path)] for the 12 evaluation PDFs, deterministic order."""
+def corpus(pdf_dir=PDF_DIR):
+    """Return `(sid, filename, path)` for a PDF corpus in deterministic order."""
     out = []
-    for f in sorted(os.listdir(PDF_DIR)):
+    for f in sorted(os.listdir(pdf_dir)):
         if not f.lower().endswith(".pdf"):
             continue
         m = re.match(r"^decrypt_(?:encrypt_)?(\d+)_", f)
         if not m:
             raise RuntimeError(f"PDF off-convention: {f}")
-        out.append((m.group(1), f, os.path.join(PDF_DIR, f)))
+        out.append((m.group(1), f, os.path.join(pdf_dir, f)))
     ids = [t[0] for t in out]
     if len(set(ids)) != len(ids):
         raise RuntimeError("duplicate statement ids in the corpus")
@@ -118,14 +118,14 @@ def build_payload(pdf_b64, prompt):
     }
 
 
-def outdir_for(arm):
-    d = os.path.join(HERE, f"json_arm{arm}")
+def outdir_for(arm, output_dir=None):
+    d = output_dir or os.path.join(HERE, f"json_arm{arm}")
     os.makedirs(d, exist_ok=True)
     return d
 
 
-def run_one(arm, sid, filename, path, prompt, prompt_sha, force=False):
-    dest = os.path.join(outdir_for(arm), f"{sid}.json")
+def run_one(arm, sid, filename, path, prompt, prompt_sha, force=False, output_dir=None):
+    dest = os.path.join(outdir_for(arm, output_dir), f"{sid}.json")
     if os.path.exists(dest) and not force:
         try:
             prev = json.loads(open(dest).read())
@@ -184,6 +184,8 @@ def main():
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--only", default="")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--pdf-dir", default=PDF_DIR)
+    ap.add_argument("--output-dir", default=None)
     a = ap.parse_args()
     if a.concurrency > 2:
         raise SystemExit("concurrency > 2 is banned: the workspace limit is output "
@@ -191,7 +193,7 @@ def main():
 
     prompt = load_prompt(a.arm)
     psha = hashlib.sha256(prompt.encode()).hexdigest()
-    items = corpus()
+    items = corpus(a.pdf_dir)
     if a.only:
         items = [t for t in items if a.only in t[0] or a.only in t[1]]
     if a.limit:
@@ -212,7 +214,8 @@ def main():
     def work(t):
         sid, fn, path = t
         try:
-            rec, cached = run_one(a.arm, sid, fn, path, prompt, psha, force=a.force)
+            rec, cached = run_one(a.arm, sid, fn, path, prompt, psha, force=a.force,
+                                  output_dir=a.output_dir)
         except Exception as e:
             emit(f"EXC  {sid:12s} {type(e).__name__}: {e}")
             return None

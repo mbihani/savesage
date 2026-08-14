@@ -67,10 +67,10 @@ def main():
             emit(f"EXC {arm} {sid} {type(e).__name__}: {e}")
             return None
         u = rec.get("usage_raw") or {}
-        emit(f"{arm:<10} {sid:<12} n={rec.get('n_transactions')} "
+        emit((f"{arm:<10} {sid:<12} n={rec.get('n_transactions')} "
              f"fr={rec.get('finish_reason')} outcome={rec.get('outcome')} "
              f"fc={rec.get('failure_class')} rl={(rec.get('meta') or {}).get('rate_limited')} "
-             f"ct={u.get('completion_tokens')} {'CACHED' if cached else ''}")
+             f"ct={u.get('completion_tokens')} {'CACHED' if cached else ''}").rstrip())
         return rec
 
     with ThreadPoolExecutor(max_workers=min(a.concurrency, 2)) as ex:

@@ -1,0 +1,142 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-14T13:37:13",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 14802,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 7,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "CASHBACK SBI CARD",
+     "isPrimaryCard": true,
+     "lastFourDigit": "XX47",
+     "network": null,
+     "productFamily": "CASHBACK"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": 50,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 50,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Cashback"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 197999.98,
+   "totalAmountDue": 1000,
+   "totalCreditLimit": 199000,
+   "totalMinimumAmountDue": 200
+  },
+  "statementMeta": {
+   "dueDate": "15/07/2026",
+   "issuerName": "SBI Card",
+   "statementDate": "25/06/2026"
+  },
+  "transactions": [
+   {
+    "amount": 854.4,
+    "currency": "INR",
+    "date": "18/06/2026",
+    "description": "GREEN SM INDIA PRIVA Gurgaon IND",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1,
+    "currency": "INR",
+    "date": "18/06/2026",
+    "description": "GREEN SM INDIA PRIVA Gurgaon IND",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1,
+    "currency": "INR",
+    "date": "18/06/2026",
+    "description": "GREEN SM INDIA PRIVA Gurgaon IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 854.4,
+    "currency": "INR",
+    "date": "18/06/2026",
+    "description": "GREEN SM INDIA PRIVA Gurgaon IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 1015.02,
+    "currency": "INR",
+    "date": "22/06/2026",
+    "description": "GREEN SM INDIA PRIVA Gurgaon IND",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 331.6,
+    "currency": "INR",
+    "date": "23/06/2026",
+    "description": "GREEN SM INDIA PRIVA Gurgaon IND",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 331.6,
+    "currency": "INR",
+    "date": "23/06/2026",
+    "description": "GREEN SM INDIA PRIVA Gurgaon IND",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "REFUND"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_406632776_19f045532d95a65c_6804720524927025_25062026.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/SBI_PROMPT.txt",
+ "prompt_sha256": "b7e06b291803cbcf46bbc6a07af427363d545d3c87d39ee8f64113c8058b3b92",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"CASHBACK SBI CARD\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX47\",\"network\":null,\"productFamily\":\"CASHBACK\"}}],\"rewards\":{\"closingPoints\":50,\"openingPoints\":null,\"pointsEarnedThisCycle\":50,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":197999.98,\"totalAmountDue\":1000,\"totalCreditLimit\":199000,\"totalMinimumAmountDue\":200},\"statementMeta\":{\"dueDate\":\"15/07/2026\",\"issuerName\":\"SBI Card\",\"statementDate\":\"25/06/2026\"},\"transactions\":[{\"amount\":854.4,\"currency\":\"INR\",\"date\":\"18/06/2026\",\"description\":\"GREEN SM INDIA PRIVA Gurgaon IND\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1,\"currency\":\"INR\",\"date\":\"18/06/2026\",\"description\":\"GREEN SM INDIA PRIVA Gurgaon IND\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1,\"currency\":\"INR\",\"date\":\"18/06/2026\",\"description\":\"GREEN SM INDIA PRIVA Gurgaon IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":854.4,\"currency\":\"INR\",\"date\":\"18/06/2026\",\"description\":\"GREEN SM INDIA PRIVA Gurgaon IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"},{\"amount\":1015.02,\"currency\":\"INR\",\"date\":\"22/06/2026\",\"description\":\"GREEN SM INDIA PRIVA Gurgaon IND\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":331.6,\"currency\":\"INR\",\"date\":\"23/06/2026\",\"description\":\"GREEN SM INDIA PRIVA Gurgaon IND\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":331.6,\"currency\":\"INR\",\"date\":\"23/06/2026\",\"description\":\"GREEN SM INDIA PRIVA Gurgaon IND\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"REFUND\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "406632776",
+ "started_at": "2026-08-14T13:36:59",
+ "usage_raw": {
+  "completion_tokens": 762,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 243,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 20796,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 21558
+ }
+}

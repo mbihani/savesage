@@ -3,14 +3,14 @@
  "failure_class": null,
  "filename_sent_to_model": "statement.pdf",
  "finish_reason": "stop",
- "finished_at": "2026-08-14T13:39:19",
+ "finished_at": "2026-08-13T13:02:44",
  "max_tokens": 96000,
  "meta": {
   "attempts": 1,
   "error": null,
   "http_status": 200,
   "ip_acl": false,
-  "latency_ms": 13654,
+  "latency_ms": 11569,
   "rate_limited": 0
  },
  "model": "databricks-gpt-5-6-luna",
@@ -30,7 +30,7 @@
    }
   ],
   "rewards": {
-   "closingPoints": 106,
+   "closingPoints": null,
    "openingPoints": null,
    "pointsEarnedThisCycle": 106,
    "pointsExpiringNext30Days": null,
@@ -117,26 +117,26 @@
  },
  "pdf_real_filename": "decrypt_1036185244_19fccf62f39f2d74_8798353479959158_03082026.pdf",
  "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/SBI_PROMPT.txt",
- "prompt_sha256": "b7e06b291803cbcf46bbc6a07af427363d545d3c87d39ee8f64113c8058b3b92",
- "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"CASHBACK SBI CARD\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX57\",\"network\":null,\"productFamily\":\"CASHBACK\"}}],\"rewards\":{\"closingPoints\":106,\"openingPoints\":null,\"pointsEarnedThisCycle\":106,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":36094,\"totalAmountDue\":3906,\"totalCreditLimit\":40000,\"totalMinimumAmountDue\":200},\"statementMeta\":{\"dueDate\":\"23/08/2026\",\"issuerName\":\"SBI Card\",\"statementDate\":\"03/08/2026\"},\"transactions\":[{\"amount\":390,\"currency\":\"INR\",\"date\":\"03/07/2026\",\"description\":\"CARD CASHBACK CREDIT\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":8076,\"currency\":\"INR\",\"date\":\"22/07/2026\",\"description\":\"PAYMENT RECEIVED 000KM016203BALAAAAWALM7\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":477,\"currency\":\"INR\",\"date\":\"05/07/2026\",\"description\":\"RAZ*Swiggy Bangalore KA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":181,\"currency\":\"INR\",\"date\":\"05/07/2026\",\"description\":\"BLINKIT GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1489,\"currency\":\"INR\",\"date\":\"05/07/2026\",\"description\":\"Myntra Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1800,\"currency\":\"INR\",\"date\":\"06/07/2026\",\"description\":\"ICAI EXAM NEW DELHI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":349,\"currency\":\"INR\",\"date\":\"07/07/2026\",\"description\":\"RELIANCE RETAIL LIMITE NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"}]}",
+ "prompt_sha256": "f7ff966bd7f23082dece02f9fccb92ee2d3c8a8c7a5193d1e4288921b5472b94",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"CASHBACK SBI CARD\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX57\",\"network\":null,\"productFamily\":\"CASHBACK\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":106,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":36094,\"totalAmountDue\":3906,\"totalCreditLimit\":40000,\"totalMinimumAmountDue\":200},\"statementMeta\":{\"dueDate\":\"23/08/2026\",\"issuerName\":\"SBI Card\",\"statementDate\":\"03/08/2026\"},\"transactions\":[{\"amount\":390,\"currency\":\"INR\",\"date\":\"03/07/2026\",\"description\":\"CARD CASHBACK CREDIT\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"CASHBACK\"},{\"amount\":8076,\"currency\":\"INR\",\"date\":\"22/07/2026\",\"description\":\"PAYMENT RECEIVED 000KM016203BALAAAAWALM7\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":477,\"currency\":\"INR\",\"date\":\"05/07/2026\",\"description\":\"RAZ*Swiggy Bangalore KA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":181,\"currency\":\"INR\",\"date\":\"05/07/2026\",\"description\":\"BLINKIT GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1489,\"currency\":\"INR\",\"date\":\"05/07/2026\",\"description\":\"Myntra Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":1800,\"currency\":\"INR\",\"date\":\"06/07/2026\",\"description\":\"ICAI EXAM NEW DELHI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":349,\"currency\":\"INR\",\"date\":\"07/07/2026\",\"description\":\"RELIANCE RETAIL LIMITE NOIDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"}]}",
  "reasoning_effort": "medium",
  "schema": "GEMINI_SCHEMA.json",
  "schema_leaf_count": 26,
  "sid": "1036185244",
- "started_at": "2026-08-14T13:39:06",
+ "started_at": "2026-08-13T13:02:32",
  "usage_raw": {
-  "completion_tokens": 833,
+  "completion_tokens": 815,
   "completion_tokens_details": {
    "accepted_prediction_tokens": 0,
    "audio_tokens": 0,
-   "reasoning_tokens": 313,
+   "reasoning_tokens": 295,
    "rejected_prediction_tokens": 0
   },
-  "prompt_tokens": 20790,
+  "prompt_tokens": 20667,
   "prompt_tokens_details": {
    "audio_tokens": 0,
    "cached_tokens": 0
   },
-  "total_tokens": 21623
+  "total_tokens": 21482
  }
 }

@@ -1,16 +1,16 @@
 {
- "arm": "E",
+ "arm": "A",
  "failure_class": null,
  "filename_sent_to_model": "statement.pdf",
  "finish_reason": "stop",
- "finished_at": "2026-08-14T13:40:41",
+ "finished_at": "2026-08-14T13:38:35",
  "max_tokens": 96000,
  "meta": {
   "attempts": 1,
   "error": null,
   "http_status": 200,
   "ip_acl": false,
-  "latency_ms": 12127,
+  "latency_ms": 14677,
   "rate_limited": 0
  },
  "model": "databricks-gpt-5-6-luna",
@@ -123,20 +123,20 @@
  "schema": "GEMINI_SCHEMA.json",
  "schema_leaf_count": 26,
  "sid": "1118980175",
- "started_at": "2026-08-14T13:40:29",
+ "started_at": "2026-08-14T13:38:21",
  "usage_raw": {
-  "completion_tokens": 851,
+  "completion_tokens": 993,
   "completion_tokens_details": {
    "accepted_prediction_tokens": 0,
    "audio_tokens": 0,
-   "reasoning_tokens": 273,
+   "reasoning_tokens": 415,
    "rejected_prediction_tokens": 0
   },
   "prompt_tokens": 20735,
   "prompt_tokens_details": {
    "audio_tokens": 0,
-   "cached_tokens": 20224
+   "cached_tokens": 0
   },
-  "total_tokens": 21586
+  "total_tokens": 21728
  }
 }

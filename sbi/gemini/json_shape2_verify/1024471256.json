@@ -1,0 +1,178 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-14T13:38:31",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 18643,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 11,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "IRCTC SBI Platinum Card",
+     "isPrimaryCard": true,
+     "lastFourDigit": "XX47",
+     "network": null,
+     "productFamily": "IRCTC Platinum"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 19,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 36.32,
+   "totalAmountDue": 19964,
+   "totalCreditLimit": 20000,
+   "totalMinimumAmountDue": 600
+  },
+  "statementMeta": {
+   "dueDate": "06/08/2026",
+   "issuerName": "SBI Card",
+   "statementDate": "17/07/2026"
+  },
+  "transactions": [
+   {
+    "amount": 19788,
+    "currency": "INR",
+    "date": "07/07/2026",
+    "description": "PAYMENT RECEIVED 000DP016188170338SfPuZ4",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 20.43,
+    "currency": "INR",
+    "date": "09/07/2026",
+    "description": "WALLET LOAD FEE DB (EXCL TAX 3.68)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 51.09,
+    "currency": "INR",
+    "date": "09/07/2026",
+    "description": "WALLET LOAD FEE DB (EXCL TAX 9.20)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 51.09,
+    "currency": "INR",
+    "date": "09/07/2026",
+    "description": "WALLET LOAD FEE DB (EXCL TAX 9.20)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 51.09,
+    "currency": "INR",
+    "date": "09/07/2026",
+    "description": "WALLET LOAD FEE DB (EXCL TAX 9.20)",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 31.28,
+    "currency": "INR",
+    "date": null,
+    "description": "IGST DB @ 18.00%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 2388,
+    "currency": "INR",
+    "date": "08/07/2026",
+    "description": "BHOJLAXMI FOODS AHMEDABAD IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 2043.6,
+    "currency": "INR",
+    "date": "09/07/2026",
+    "description": "Cred Mumbai IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 5109,
+    "currency": "INR",
+    "date": "09/07/2026",
+    "description": "CRED WALLET BENGALURU IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 5109,
+    "currency": "INR",
+    "date": "09/07/2026",
+    "description": "CRED WALLET BENGALURU IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 5109,
+    "currency": "INR",
+    "date": "09/07/2026",
+    "description": "CRED WALLET BENGALURU IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PURCHASE"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_encrypt_1024471256_19f765ca13615907_8622029437748015_17072026.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/SBI_PROMPT.txt",
+ "prompt_sha256": "b7e06b291803cbcf46bbc6a07af427363d545d3c87d39ee8f64113c8058b3b92",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"IRCTC SBI Platinum Card\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX47\",\"network\":null,\"productFamily\":\"IRCTC Platinum\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":19,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":36.32,\"totalAmountDue\":19964,\"totalCreditLimit\":20000,\"totalMinimumAmountDue\":600},\"statementMeta\":{\"dueDate\":\"06/08/2026\",\"issuerName\":\"SBI Card\",\"statementDate\":\"17/07/2026\"},\"transactions\":[{\"amount\":19788,\"currency\":\"INR\",\"date\":\"07/07/2026\",\"description\":\"PAYMENT RECEIVED 000DP016188170338SfPuZ4\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":20.43,\"currency\":\"INR\",\"date\":\"09/07/2026\",\"description\":\"WALLET LOAD FEE DB (EXCL TAX 3.68)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"FEE\"},{\"amount\":51.09,\"currency\":\"INR\",\"date\":\"09/07/2026\",\"description\":\"WALLET LOAD FEE DB (EXCL TAX 9.20)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"FEE\"},{\"amount\":51.09,\"currency\":\"INR\",\"date\":\"09/07/2026\",\"description\":\"WALLET LOAD FEE DB (EXCL TAX 9.20)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"FEE\"},{\"amount\":51.09,\"currency\":\"INR\",\"date\":\"09/07/2026\",\"description\":\"WALLET LOAD FEE DB (EXCL TAX 9.20)\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"FEE\"},{\"amount\":31.28,\"currency\":\"INR\",\"date\":null,\"description\":\"IGST DB @ 18.00%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":2388,\"currency\":\"INR\",\"date\":\"08/07/2026\",\"description\":\"BHOJLAXMI FOODS AHMEDABAD IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":2043.6,\"currency\":\"INR\",\"date\":\"09/07/2026\",\"description\":\"Cred Mumbai IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":5109,\"currency\":\"INR\",\"date\":\"09/07/2026\",\"description\":\"CRED WALLET BENGALURU IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":5109,\"currency\":\"INR\",\"date\":\"09/07/2026\",\"description\":\"CRED WALLET BENGALURU IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"},{\"amount\":5109,\"currency\":\"INR\",\"date\":\"09/07/2026\",\"description\":\"CRED WALLET BENGALURU IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PURCHASE\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "1024471256",
+ "started_at": "2026-08-14T13:38:12",
+ "usage_raw": {
+  "completion_tokens": 1333,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 564,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 20996,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 22329
+ }
+}

@@ -70,3 +70,20 @@
 12:34:53 OK                     393366914    txn=2 fr=stop pt=20390 ct=511 tt=20901 rl=0 ms=12298
 12:34:57 OK                     905768587    txn=8 fr=stop pt=20648 ct=1012 tt=21660 rl=0 ms=11870
 12:34:59 DONE arm=A ok=12/12 calls_that_saw_429=0
+13:36:09 START arm=A prompt=SBI_PROMPT.txt n=15 conc=2 prompt_sha=b7e06b291803 schema=GEMINI_SCHEMA(26 leaves)
+13:36:23 OK                     1602650870   txn=1 fr=stop pt=20729 ct=431 tt=21160 rl=0 ms=13636
+13:36:30 OK                     1120623464   txn=1 fr=stop pt=20514 ct=472 tt=20986 rl=0 ms=20218
+13:36:44 OK                     1765558172   txn=2 fr=stop pt=20710 ct=469 tt=21179 rl=0 ms=12500
+13:36:56 OK                     1707857175   txn=71 fr=stop pt=22884 ct=4167 tt=27051 rl=0 ms=31499
+13:36:56 OK                     186473748    txn=1 fr=stop pt=20688 ct=436 tt=21124 rl=0 ms=10645
+13:37:13 OK                     406632776    txn=7 fr=stop pt=20796 ct=762 tt=21558 rl=0 ms=14802
+13:37:14 OK                     369606524    txn=16 fr=stop pt=21027 ct=1361 tt=22388 rl=0 ms=15055
+13:37:34 OK                     533941211    txn=22 fr=stop pt=21140 ct=1676 tt=22816 rl=0 ms=18547
+13:37:35 OK                     658182494    txn=4 fr=stop pt=20637 ct=789 tt=21426 rl=0 ms=18505
+13:38:10 OK                     746869826    txn=28 fr=stop pt=20938 ct=1878 tt=22816 rl=0 ms=33802
+13:38:18 OK                     850576275    txn=36 fr=stop pt=21907 ct=2545 tt=24452 rl=0 ms=41780
+13:38:31 OK                     1024471256   txn=11 fr=stop pt=20996 ct=1333 tt=22329 rl=0 ms=18643
+13:38:35 OK                     1118980175   txn=7 fr=stop pt=20735 ct=993 tt=21728 rl=0 ms=14677
+13:38:42 OK                     393366914    txn=2 fr=stop pt=20693 ct=506 tt=21199 rl=0 ms=9998
+13:38:49 OK                     877262556    txn=5 fr=stop pt=20840 ct=728 tt=21568 rl=0 ms=12779
+13:38:52 DONE arm=A ok=15/15 calls_that_saw_429=0

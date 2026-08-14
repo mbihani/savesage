@@ -1,0 +1,88 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-14T13:36:56",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 10645,
+  "rate_limited": 0
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 1,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "IRCTC SBI Card Premier",
+     "isPrimaryCard": true,
+     "lastFourDigit": "XX60",
+     "network": null,
+     "productFamily": "IRCTC Premier"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 0,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 40000,
+   "totalAmountDue": 0,
+   "totalCreditLimit": 40000,
+   "totalMinimumAmountDue": 0
+  },
+  "statementMeta": {
+   "dueDate": "NO PAYMENT REQUIRED",
+   "issuerName": "SBI Card",
+   "statementDate": "01/07/2025"
+  },
+  "transactions": [
+   {
+    "amount": 1203,
+    "currency": "INR",
+    "date": "20/06/2025",
+    "description": "PAYMENT RECEIVED 000DP015171134315yaZFT7",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_186473748_197cbf17ca7b3b2c_9187258435616183_01072025.pdf",
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/sbi/SBI_PROMPT.txt",
+ "prompt_sha256": "b7e06b291803cbcf46bbc6a07af427363d545d3c87d39ee8f64113c8058b3b92",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"IRCTC SBI Card Premier\",\"isPrimaryCard\":true,\"lastFourDigit\":\"XX60\",\"network\":null,\"productFamily\":\"IRCTC Premier\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":0,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":40000,\"totalAmountDue\":0,\"totalCreditLimit\":40000,\"totalMinimumAmountDue\":0},\"statementMeta\":{\"dueDate\":\"NO PAYMENT REQUIRED\",\"issuerName\":\"SBI Card\",\"statementDate\":\"01/07/2025\"},\"transactions\":[{\"amount\":1203,\"currency\":\"INR\",\"date\":\"20/06/2025\",\"description\":\"PAYMENT RECEIVED 000DP015171134315yaZFT7\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "186473748",
+ "started_at": "2026-08-14T13:36:46",
+ "usage_raw": {
+  "completion_tokens": 436,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 205,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 20688,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 21124
+ }
+}
