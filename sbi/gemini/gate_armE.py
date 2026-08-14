@@ -13,7 +13,14 @@ PROTECTED ITEMS (each was won by an earlier, separately measured prompt change)
                               important invariant here.
   3. network                  null on 12/12 (all 135 network mentions in this corpus are
                               boilerplate)
-  4. pointsExpiringNext30Days / ...60Days   null on 12/12
+  4. pointsExpiringNext30Days   null on the 11 statements whose page 1 prints no expiry
+                              cell, and 0 on the one that does (221159806, the SHOP & SMILE
+                              strip, whose 'Points Expiry Details' cell prints the word
+                              NONE -- the schema mandates NONE -> 0, not null). Keyed on
+                              PDF evidence, not on the statement id.
+     pointsExpiringNext60Days null on 12/12. NOT symmetric with the 30-day field, by
+                              contract: the printed cell names no period, and the schema
+                              forbids feeding a period-less cell into the 60-day field.
   5. pointsEarnedThisCycle    unchanged per statement
   6. txnType                  no off-vocabulary value; the REFUND anchor still fires
   7. row counts               identical to arm D on the other 11 statements
@@ -62,6 +69,11 @@ SHAPE_2A_HEADERS = {
     "CASHBACK SUMMARY FOR THIS STATEMENT",
 }
 
+# The only expiry label SBI prints on this corpus. It sits in the SHOP & SMILE reward strip
+# (Previous Balance / Earned / Redeemed-Expired-Forfeited / Closing Balance / Points Expiry
+# Details) and its value on 221159806 is the word NONE.
+EXPIRY_CELL_LABEL = "POINTS EXPIRY DETAILS"
+
 TXNTYPE_VOCAB = {"PURCHASE", "PAYMENT", "REFUND", "REVERSAL", "CASHBACK", "FEE", "TAX",
                  "INTEREST", "EMI", "CASH_ADVANCE", "UPI", None}
 
@@ -95,14 +107,43 @@ def load(path):
     return json.load(open(path))
 
 
-def pdf_has_shape_2a(sid):
-    """Anchor the equality exception in page-1 PDF evidence, never model output."""
+def pdf_page1(sid):
+    """Page-1 text of the ONE source PDF for sid, whitespace-flattened and upper-cased."""
     matches = glob.glob(os.path.join(PDF_DIR, f"decrypt*_{sid}_*.pdf"))
     if len(matches) != 1:
         raise AssertionError(f"{sid}: expected one source PDF, found {len(matches)}")
     with fitz.open(matches[0]) as doc:
-        page1 = re.sub(r"\s+", " ", doc[0].get_text()).upper()
-    return any(header in page1 for header in SHAPE_2A_HEADERS)
+        return re.sub(r"\s+", " ", doc[0].get_text()).upper()
+
+
+def pdf_has_shape_2a(sid):
+    """Anchor the equality exception in page-1 PDF evidence, never model output."""
+    return any(header in pdf_page1(sid) for header in SHAPE_2A_HEADERS)
+
+
+def pdf_has_expiry_cell(sid):
+    """True when page 1 actually prints an expiry cell. Same discipline as Shape 2a: read
+    the PDF, never trust model output, and never key the exception on a statement id -- a
+    hardcoded sid rots the moment the sample set changes, a PDF predicate does not."""
+    return EXPIRY_CELL_LABEL in pdf_page1(sid)
+
+
+def expected_expiry(has_cell):
+    """Contract expectation for (30-day, 60-day) given whether an expiry cell is printed.
+
+    The two fields are deliberately ASYMMETRIC, straight off GEMINI_SCHEMA.json:
+      * 30-day: the schema binds the unqualified 'Points Expiry Details' cell to this field
+        and mandates 'its printed value is the word NONE, which means zero points are
+        expiring and must be emitted as 0'. So a printed cell => 0, no cell => null.
+      * 60-day: 'taken only from a cell that distinctly says 60 days ... SBI statements on
+        this corpus print NO 60-day expiry figure anywhere, so null is the expected answer.
+        Do NOT copy the 30-day figure into this field, do not derive it from a Points Expiry
+        Details cell that names no period.' The printed cell names no period at all (no '30
+        DAY' or '60 DAY' string appears on 221159806 page 1), so 60 stays null even where
+        30 is 0. A model echoing 0 into the 60-day field is the exact fabrication the
+        schema prohibits, and this gate must fail it.
+    """
+    return (0 if has_cell else None), None
 
 
 def unbacked_duplication(closing, earned, shape_2a):
@@ -115,6 +156,35 @@ def self_test():
     assert not unbacked_duplication(12, 12, True)
     assert not unbacked_duplication(None, None, False)
     print("PASS: synthetic equality without a Shape-2a PDF block fires the invariant")
+
+    # --- expiry expectation: it has to be able to FAIL, in both directions.
+    def check(e30, e60, has_cell):
+        """Mirror of the two comparisons in main(); returns the list of violations."""
+        x30, x60 = expected_expiry(has_cell)
+        return [lbl for lbl, got, want in (("30", e30, x30), ("60", e60, x60))
+                if got != want]
+
+    # the real, contract-correct records
+    assert check(0, None, True) == [], "printed NONE cell must accept 30=0 / 60=null"
+    assert check(None, None, False) == [], "no expiry cell must accept null / null"
+    # negatives where an expiry cell IS printed
+    assert check(None, None, True) == ["30"], "null where a cell is printed must FAIL"
+    assert check(1500, None, True) == ["30"], "fabricated non-zero must FAIL"
+    assert check(0, 0, True) == ["60"], "echoing the 30-day 0 into 60 must FAIL"
+    assert check(0, 1500, True) == ["60"], "fabricated 60-day figure must FAIL"
+    # negatives where NO expiry cell is printed
+    assert check(0, None, False) == ["30"], "0 invented with no printed cell must FAIL"
+    assert check(1500, 1500, False) == ["30", "60"], "both invented must FAIL"
+    print("PASS: wrong expiry values fail the gate -- fabricated non-zero, null where a "
+          "cell is printed, 30->60 echo, and 0 invented with no cell")
+
+    # the PDF predicate must be the thing deciding, and it must not be a hardcoded sid
+    assert pdf_has_expiry_cell("221159806"), "221159806 page 1 does print the expiry cell"
+    others = [s for s in TRUTH if s != "221159806"]
+    assert not any(pdf_has_expiry_cell(s) for s in others), \
+        "no other statement in this corpus prints an expiry cell"
+    print(f"PASS: PDF-anchored predicate -- expiry cell on 1/{len(TRUTH)} statements, "
+          f"read from page 1 with fitz, not from a sid allowlist or model output")
 
 
 def rowkeys(rec):
@@ -269,8 +339,15 @@ def main():
             moved.append(f"{s}: closingPoints expected {EXPECTED_CLOSING[s]!r}, got {ce!r}")
         if unbacked_duplication(ce, pe, shape_2a):
             moved.append(f"{s}: DUPLICATION INVARIANT BROKEN without Shape-2a PDF evidence")
-        if e30e is not None or e60e is not None:
-            moved.append(f"{s}: expiry fields must be null in E, got {e30e!r}/{e60e!r}")
+        exp30, exp60 = expected_expiry(pdf_has_expiry_cell(s))
+        if e30e != exp30:
+            moved.append(f"{s}: pointsExpiringNext30Days expected {exp30!r} "
+                         f"(expiry cell printed on page 1: {pdf_has_expiry_cell(s)}), "
+                         f"got {e30e!r}")
+        if e60e != exp60:
+            moved.append(f"{s}: pointsExpiringNext60Days expected {exp60!r} "
+                         f"(no period-qualified 60-day cell exists in this corpus), "
+                         f"got {e60e!r}")
         if ne not in (None, "ABSENT"):
             moved.append(f"{s}: network must be null in E, got {ne!r}")
         print(f"{s:<13}{str(cd)+' / '+str(ce):>26}{str(pd_)+' / '+str(pe):>28}"
