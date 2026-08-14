@@ -1,5 +1,30 @@
 # SBI `closingPoints` adjudication — 12 statements
 
+## CORRECTION — 2026-08-14
+
+**PREDICTED correction (static PDF inspection; model output UNVERIFIED):** The verdict
+below that only 221159806 should have non-null `closingPoints` is wrong under the user's
+SBI cashback convention. The adjudication detector anchored on three balance headings
+and did not inspect the separate page-1 cashback block. The 221159806 positive control
+proved only that the detector recognizes the layouts it searches for.
+
+**PREDICTED corrected 12-set targets:** Shape 2a maps the printed cashback figure to
+`closingPoints` for 1036185244=106, 1511624796=476, 905768587=453,
+515948911=-1467, 369606524=375.25, and 1118980175=1525.25. Equality with
+`pointsEarnedThisCycle` is intentional only for those PDF-backed Shape 2a blocks.
+221159806 remains 18068; the four Shape 2b statements and 1390952698 remain null.
+
+**PREDICTED separate correction for 1390952698:** The earlier description of arm D's
+`openingPoints=53724` as a lifetime-flow defect was wrong. The PDF prints `REWARD
+SUMMARY` columns `Current Stmt Period` (x=45.5), `Till Last Cycle` (x=195.9), and
+`Earned Till Date` (x=328.3), with values 0 (x=80.1), 53724 (x=211.9), and 12380
+(x=356.4), all at y=403.7. Shape 3 correctly maps `Till Last Cycle` to
+`openingPoints`; arm D was correct. The incumbent 12380 is `Earned Till Date`, which the
+prompt intentionally forbids. No behavior change was made for Shape 3.
+
+No model rerun was performed because authentication is dead; all new extraction behavior
+and accuracy are **UNVERIFIED**. The superseded analysis remains below as history.
+
 ## Verdict
 
 Arm A is a regression on this field. It copied a current-cycle accrual flow into both

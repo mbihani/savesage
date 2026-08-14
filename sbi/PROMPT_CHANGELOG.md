@@ -1,5 +1,27 @@
 # SBI prompt changelog — every change tied to a measured defect
 
+## 2026-08-14 — Shape 2a cashback convention for `closingPoints`
+
+**PREDICTED change (static PDF inspection; model output UNVERIFIED):** Split the former
+single-figure Shape 2 into Shape 2a cashback and Shape 2b points variants. For Shape 2a
+only, both `CARD CASHBACK SUMMARY FOR THIS STATEMENT` and `CASHBACK SUMMARY FOR THIS
+STATEMENT` map the signed rupee figure beneath `CASHBACK / Amount` to both
+`closingPoints` and `pointsEarnedThisCycle`. `openingPoints` and
+`pointsRedeemedThisCycle` remain null. Therefore `closingPoints ==
+pointsEarnedThisCycle` is **by design** on Shape 2a cards; this is a user-directed
+convention decision, not a claim that the PDF prints a running cashback balance.
+
+**PREDICTED scope:** 7/15 statements in the first sample and 6/12 in the second sample
+match Shape 2a. The earlier 5/15 blast-radius statement was wrong because it missed
+369606524 and 1118980175, whose header omits `CARD`. Shape 2b (`Reward Point Summary`,
+single-value `REWARD SUMMARY`, `NeuCoins Summary`) is unchanged: its lone points figure
+maps only to `pointsEarnedThisCycle`, because no balance cell is printed. Shape 1 and
+Shape 3 are unchanged.
+
+The gate now derives the Shape 2a exception from page-1 PDF text and continues to reject
+equal closing/earned values without that evidence. No model calls were made because the
+`fevm-stable` refresh token is invalid; runtime accuracy is **UNVERIFIED**.
+
 ## 2026-08-13 — row completeness on long tables: statement 1707857175, the 28 Apr cluster
 
 **Defect.** Statement **1707857175** prints **71** transaction rows. The refined prompt

@@ -168,17 +168,28 @@ REWARDS_RULES (AUTHORITATIVE):
          pointsRedeemedThisCycle = Redeemed/Expired/Forfeited
          closingPoints           = Closing Balance
 
-    SHAPE 2 - SINGLE CURRENT-STATEMENT FIGURE. Header is one of
-      "CARD CASHBACK SUMMARY FOR THIS STATEMENT", "CASHBACK SUMMARY FOR THIS STATEMENT",
-      "Reward Point Summary", "REWARD SUMMARY" or "NeuCoins Summary", and exactly ONE
-      figure is printed, under a label such as "CASHBACK Amount ( ` )", "Points Earned",
-      "Reward Points" or "NeuCoins". That single figure is what this card earned during
-      THIS statement period. It populates exactly ONE field:
-         pointsEarnedThisCycle = that figure
-      closingPoints, openingPoints and pointsRedeemedThisCycle stay null, because this
-      shape prints no balance or redeemed cell. NEVER copy the same single printed figure
-      into both closingPoints and pointsEarnedThisCycle. The figure may legitimately be
-      negative or zero; copy it at its printed sign and magnitude.
+    SHAPE 2 - SINGLE CURRENT-STATEMENT FIGURE. Split this shape by programme/header:
+
+      SHAPE 2a - CASHBACK VARIANT. Header is exactly
+        "CARD CASHBACK SUMMARY FOR THIS STATEMENT" or
+        "CASHBACK SUMMARY FOR THIS STATEMENT", and exactly one rupee figure is printed
+        under "CASHBACK" / "Amount ( ` )". By the SBI cashback convention, populate BOTH:
+           pointsEarnedThisCycle = that printed figure
+           closingPoints         = that same printed figure
+        This equality is intentional for Shape 2a: the cashback programme has no running
+        balance, and closingPoints represents the statement's printed cashback figure.
+        openingPoints and pointsRedeemedThisCycle stay null. Preserve the printed sign
+        and magnitude, including a negative cashback amount.
+
+      SHAPE 2b - POINTS VARIANT. Header is "Reward Point Summary", a single-value
+        "REWARD SUMMARY", or "NeuCoins Summary", and exactly one points figure is printed
+        under "Points Earned", "Reward Points", or "NeuCoins". It populates exactly one
+        field:
+           pointsEarnedThisCycle = that figure
+        closingPoints, openingPoints and pointsRedeemedThisCycle stay null, because this
+        shape prints no balance or redeemed cell. NEVER copy the same single printed
+        points figure into both closingPoints and pointsEarnedThisCycle. The figure may
+        legitimately be zero; copy it at its printed sign and magnitude.
 
     SHAPE 3 - THREE-COLUMN EARNED TABLE, headed "REWARD SUMMARY" with the columns
       "Current Stmt Period | Till Last Cycle | Earned Till Date". Then:

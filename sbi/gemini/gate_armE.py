@@ -5,10 +5,12 @@ else the current prompt already wins is MEASURED and must not move. This script 
 each protected item and prints a table, plus a revert recommendation if anything moved.
 
 PROTECTED ITEMS (each was won by an earlier, separately measured prompt change)
-  1. closingPoints            18068 on 221159806, null on the other 11
+  1. closingPoints            the printed cashback figure on six Shape-2a statements,
+                              18068 on 221159806, null on the other five
   2. DUPLICATION INVARIANT    count of statements with closingPoints == pointsEarnedThisCycle
-                              must be 0/12. It was 10/12 before the closingPoints fix, so
-                              this is the single most important invariant here.
+                              must be zero OUTSIDE PDF-proven Shape 2a. It was widespread
+                              before the closingPoints fix, so this remains the most
+                              important invariant here.
   3. network                  null on 12/12 (all 135 network mentions in this corpus are
                               boilerplate)
   4. pointsExpiringNext30Days / ...60Days   null on 12/12
@@ -34,8 +36,31 @@ import re
 import sys
 from collections import Counter
 
+import fitz
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 TRUTH = json.load(open(os.path.join(HERE, "pdf_rowtruth.json")))
+PDF_DIR = "/Users/mayanck.bihani/Downloads/output/SBI/PDF"
+
+EXPECTED_CLOSING = {
+    "1036185244": 106,
+    "1118980175": 1525.25,
+    "1120623464": None,
+    "1152718739": None,
+    "1390952698": None,
+    "1511624796": 476,
+    "1707857175": None,
+    "221159806": 18068,
+    "369606524": 375.25,
+    "393366914": None,
+    "515948911": -1467,
+    "905768587": 453,
+}
+
+SHAPE_2A_HEADERS = {
+    "CARD CASHBACK SUMMARY FOR THIS STATEMENT",
+    "CASHBACK SUMMARY FOR THIS STATEMENT",
+}
 
 TXNTYPE_VOCAB = {"PURCHASE", "PAYMENT", "REFUND", "REVERSAL", "CASHBACK", "FEE", "TAX",
                  "INTEREST", "EMI", "CASH_ADVANCE", "UPI", None}
@@ -68,6 +93,28 @@ def K(d, a, desc):
 
 def load(path):
     return json.load(open(path))
+
+
+def pdf_has_shape_2a(sid):
+    """Anchor the equality exception in page-1 PDF evidence, never model output."""
+    matches = glob.glob(os.path.join(PDF_DIR, f"decrypt*_{sid}_*.pdf"))
+    if len(matches) != 1:
+        raise AssertionError(f"{sid}: expected one source PDF, found {len(matches)}")
+    with fitz.open(matches[0]) as doc:
+        page1 = re.sub(r"\s+", " ", doc[0].get_text()).upper()
+    return any(header in page1 for header in SHAPE_2A_HEADERS)
+
+
+def unbacked_duplication(closing, earned, shape_2a):
+    """True only for the old mis-slot defect; Shape 2a equality is by convention."""
+    return closing is not None and closing == earned and not shape_2a
+
+
+def self_test():
+    assert unbacked_duplication(12, 12, False)
+    assert not unbacked_duplication(12, 12, True)
+    assert not unbacked_duplication(None, None, False)
+    print("PASS: synthetic equality without a Shape-2a PDF block fires the invariant")
 
 
 def rowkeys(rec):
@@ -196,7 +243,7 @@ def main():
     # ---- rewards protected fields
     print(f"\n{'sid':<13}{'closingPoints D/E':>26}{'earnedThisCycle D/E':>28}"
           f"{'exp30 D/E':>14}{'exp60 D/E':>14}{'net D/E':>14}")
-    dup_d = dup_e = 0
+    dup_d = dup_e = allowed_dup_e = 0
     for s in sids:
         cd, ce = rewards(D[s], "closingPoints"), rewards(E[s], "closingPoints")
         pd_, pe = rewards(D[s], "pointsEarnedThisCycle"), rewards(E[s], "pointsEarnedThisCycle")
@@ -207,16 +254,21 @@ def main():
         ne = ne[0] if ne else "ABSENT"
         if cd is not None and cd == pd_:
             dup_d += 1
+        shape_2a = pdf_has_shape_2a(s)
         if ce is not None and ce == pe:
             dup_e += 1
-        for label, a, b in (("closingPoints", cd, ce), ("pointsEarnedThisCycle", pd_, pe),
+            if shape_2a:
+                allowed_dup_e += 1
+        for label, a, b in (("pointsEarnedThisCycle", pd_, pe),
                             ("pointsExpiringNext30Days", e30d, e30e),
                             ("pointsExpiringNext60Days", e60d, e60e),
                             ("network", nd_, ne)):
             if a != b:
                 moved.append(f"{s}: {label} D={a!r} -> E={b!r}")
-        if ce is not None and s != "221159806":
-            moved.append(f"{s}: closingPoints should be null in E, got {ce!r}")
+        if ce != EXPECTED_CLOSING[s]:
+            moved.append(f"{s}: closingPoints expected {EXPECTED_CLOSING[s]!r}, got {ce!r}")
+        if unbacked_duplication(ce, pe, shape_2a):
+            moved.append(f"{s}: DUPLICATION INVARIANT BROKEN without Shape-2a PDF evidence")
         if e30e is not None or e60e is not None:
             moved.append(f"{s}: expiry fields must be null in E, got {e30e!r}/{e60e!r}")
         if ne not in (None, "ABSENT"):
@@ -225,9 +277,8 @@ def main():
               f"{str(e30d)+'/'+str(e30e):>14}{str(e60d)+'/'+str(e60e):>14}"
               f"{str(nd_)+'/'+str(ne):>14}")
     print(f"\nDUPLICATION INVARIANT  closingPoints == pointsEarnedThisCycle:"
-          f"  armD {dup_d}/12   armE {dup_e}/12   (must be 0/12)")
-    if dup_e != 0:
-        moved.append(f"DUPLICATION INVARIANT BROKEN: armE {dup_e}/12")
+          f"  armD {dup_d}/12   armE {dup_e}/12; "
+          f"Shape-2a-backed {allowed_dup_e}, unbacked {dup_e - allowed_dup_e} (must be 0)")
     if "221159806" in sids and rewards(E["221159806"], "closingPoints") != 18068:
         moved.append(f"221159806 closingPoints expected 18068, "
                      f"got {rewards(E['221159806'], 'closingPoints')!r}")
@@ -283,4 +334,7 @@ def main():
 
 
 if __name__ == "__main__":
+    if "--self-test" in sys.argv:
+        self_test()
+        sys.exit(0)
     sys.exit(main())
