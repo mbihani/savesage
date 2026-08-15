@@ -1,0 +1,10 @@
+command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+env:
+  - name: DATABRICKS_HOST
+    valueFrom: DATABRICKS_HOST
+  - name: EXTRACTION_ENDPOINT
+    value: databricks-gpt-5-6-luna
+  - name: JUDGE_ENDPOINT
+    value: databricks-claude-opus-5
+# TODO(workstream-3): bind Lakebase and UC resources here.
+# TODO(workstream-4): bind MLflow experiment resources here.
