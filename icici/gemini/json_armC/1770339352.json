@@ -1,0 +1,253 @@
+{
+ "arm": "C",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:36:09",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 16713,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 2,
+ "n_transactions": 18,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": null,
+     "isPrimaryCard": null,
+     "lastFourDigit": "5585",
+     "network": null,
+     "productFamily": "MakeMyTrip"
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": null,
+     "isPrimaryCard": null,
+     "lastFourDigit": "8005",
+     "network": null,
+     "productFamily": "MakeMyTrip"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 0,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": 0,
+   "programType": "My Cash"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 948.26,
+   "totalAmountDue": 44820.89,
+   "totalCreditLimit": 50000,
+   "totalMinimumAmountDue": 3650
+  },
+  "statementMeta": {
+   "dueDate": "June 8, 2026",
+   "issuerName": "ICICI Bank",
+   "statementDate": "May 21, 2026"
+  },
+  "transactions": [
+   {
+    "amount": 1625.96,
+    "currency": "INR",
+    "date": "2026-05-21",
+    "description": "Interest Charges",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "INTEREST"
+   },
+   {
+    "amount": 292.67,
+    "currency": "INR",
+    "date": "2026-05-21",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 515,
+    "currency": "INR",
+    "date": "2026-04-21",
+    "description": "Dreamplug Technologies BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 98,
+    "currency": "INR",
+    "date": "2026-04-22",
+    "description": "DREAMPLUG PAYTECH SO BENGALURU IN",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": -1,
+    "txnType": "REFUND"
+   },
+   {
+    "amount": 98,
+    "currency": "INR",
+    "date": "2026-04-22",
+    "description": "DREAMPLUG PAYTECH SO BENGALURU IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 3640,
+    "currency": "INR",
+    "date": "2026-05-09",
+    "description": "BBPS Payment received",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 27.39,
+    "currency": "INR",
+    "date": "2026-05-11",
+    "description": "Interest Amount Amortization - <21/24>IKEA INDIA PVT LTD",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 4.93,
+    "currency": "INR",
+    "date": "2026-05-11",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 446.34,
+    "currency": "INR",
+    "date": "2026-05-11",
+    "description": "Principal Amount Amortization - <21/24>IKEA INDIA PVT LTD",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 5.28,
+    "currency": "INR",
+    "date": "2026-05-11",
+    "description": "Interest Amount Amortization - <21/24>LULU INTERNATIONAL SHO",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 0.95,
+    "currency": "INR",
+    "date": "2026-05-11",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 86.01,
+    "currency": "INR",
+    "date": "2026-05-11",
+    "description": "Principal Amount Amortization - <21/24>LULU INTERNATIONAL SH",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 10.44,
+    "currency": "INR",
+    "date": "2026-05-19",
+    "description": "Interest Amount Amortization - <21/24>IKEA INDIA PVT LTD",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 1.88,
+    "currency": "INR",
+    "date": "2026-05-19",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 170.09,
+    "currency": "INR",
+    "date": "2026-05-19",
+    "description": "Principal Amount Amortization - <21/24>IKEA INDIA PVT LTD",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 24.53,
+    "currency": "INR",
+    "date": "2026-05-19",
+    "description": "Interest Amount Amortization - <21/24>MAJOR BRANDS INDIA PVT",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 4.42,
+    "currency": "INR",
+    "date": "2026-05-19",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 399.77,
+    "currency": "INR",
+    "date": "2026-05-19",
+    "description": "Principal Amount Amortization - <21/24>MAJOR BRANDS INDIA PV",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_1770339352_19e4d7d3f5f047ac_4748XXXXXXXX5000_9866_Retail_MMT_NORM.pdf",
+ "prompt_chars": 5778,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/gemini/GEMINI_GENERIC_PROMPT.txt",
+ "prompt_sha256": "7886583cba60ee6da1b62081994cb839b74d11f5b9220c8537453ef581a7505f",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":null,\"isPrimaryCard\":null,\"lastFourDigit\":\"5585\",\"network\":null,\"productFamily\":\"MakeMyTrip\"}},{\"cardMeta\":{\"cardDisplayName\":null,\"isPrimaryCard\":null,\"lastFourDigit\":\"8005\",\"network\":null,\"productFamily\":\"MakeMyTrip\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":0,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":0,\"programType\":\"My Cash\"},\"statementLevelSummary\":{\"availableCreditLimit\":948.26,\"totalAmountDue\":44820.89,\"totalCreditLimit\":50000,\"totalMinimumAmountDue\":3650},\"statementMeta\":{\"dueDate\":\"June 8, 2026\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"May 21, 2026\"},\"transactions\":[{\"amount\":1625.96,\"currency\":\"INR\",\"date\":\"2026-05-21\",\"description\":\"Interest Charges\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"INTEREST\"},{\"amount\":292.67,\"currency\":\"INR\",\"date\":\"2026-05-21\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":515,\"currency\":\"INR\",\"date\":\"2026-04-21\",\"description\":\"Dreamplug Technologies BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PURCHASE\"},{\"amount\":98,\"currency\":\"INR\",\"date\":\"2026-04-22\",\"description\":\"DREAMPLUG PAYTECH SO BENGALURU IN\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":-1,\"txnType\":\"REFUND\"},{\"amount\":98,\"currency\":\"INR\",\"date\":\"2026-04-22\",\"description\":\"DREAMPLUG PAYTECH SO BENGALURU IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"PURCHASE\"},{\"amount\":3640,\"currency\":\"INR\",\"date\":\"2026-05-09\",\"description\":\"BBPS Payment received\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PAYMENT\"},{\"amount\":27.39,\"currency\":\"INR\",\"date\":\"2026-05-11\",\"description\":\"Interest Amount Amortization - <21/24>IKEA INDIA PVT LTD\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":4.93,\"currency\":\"INR\",\"date\":\"2026-05-11\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":446.34,\"currency\":\"INR\",\"date\":\"2026-05-11\",\"description\":\"Principal Amount Amortization - <21/24>IKEA INDIA PVT LTD\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":5.28,\"currency\":\"INR\",\"date\":\"2026-05-11\",\"description\":\"Interest Amount Amortization - <21/24>LULU INTERNATIONAL SHO\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":0.95,\"currency\":\"INR\",\"date\":\"2026-05-11\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":86.01,\"currency\":\"INR\",\"date\":\"2026-05-11\",\"description\":\"Principal Amount Amortization - <21/24>LULU INTERNATIONAL SH\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":10.44,\"currency\":\"INR\",\"date\":\"2026-05-19\",\"description\":\"Interest Amount Amortization - <21/24>IKEA INDIA PVT LTD\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":1.88,\"currency\":\"INR\",\"date\":\"2026-05-19\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":170.09,\"currency\":\"INR\",\"date\":\"2026-05-19\",\"description\":\"Principal Amount Amortization - <21/24>IKEA INDIA PVT LTD\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":24.53,\"currency\":\"INR\",\"date\":\"2026-05-19\",\"description\":\"Interest Amount Amortization - <21/24>MAJOR BRANDS INDIA PVT\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":4.42,\"currency\":\"INR\",\"date\":\"2026-05-19\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":399.77,\"currency\":\"INR\",\"date\":\"2026-05-19\",\"description\":\"Principal Amount Amortization - <21/24>MAJOR BRANDS INDIA PV\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "1770339352",
+ "started_at": "2026-08-15T16:35:52",
+ "token_identity_detail": "ok p=15259 c=1795 t=17054 reasoning=623",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 1795,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 623,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 15259,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 17054
+ }
+}

@@ -1,0 +1,6 @@
+__pycache__/
+# Page renders and raw text dumps of client statements: these show cardholder
+# names, full postal addresses and card numbers as printed. Diagnostic only and
+# regenerable via probe/render_top.py and probe/probe_reward_strip.py.
+probe/*.png
+probe/strip_dump.txt

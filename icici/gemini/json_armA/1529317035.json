@@ -1,0 +1,145 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:32:41",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 10212,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 2,
+ "n_transactions": 6,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "MakeMyTrip",
+     "isPrimaryCard": true,
+     "lastFourDigit": "6043",
+     "network": null,
+     "productFamily": "MakeMyTrip"
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": "MakeMyTrip",
+     "isPrimaryCard": false,
+     "lastFourDigit": "9003",
+     "network": null,
+     "productFamily": "MakeMyTrip"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 3,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": 172,
+   "programType": "Cashback"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 145609.22,
+   "totalAmountDue": 4390.78,
+   "totalCreditLimit": 150000,
+   "totalMinimumAmountDue": 370
+  },
+  "statementMeta": {
+   "dueDate": "08/08/2022",
+   "issuerName": "ICICI Bank",
+   "statementDate": "21/07/2022"
+  },
+  "transactions": [
+   {
+    "amount": 500,
+    "currency": "INR",
+    "date": "13/07/2022",
+    "description": "Late Payment Fee",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 90,
+    "currency": "INR",
+    "date": "13/07/2022",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 201.51,
+    "currency": "INR",
+    "date": "21/07/2022",
+    "description": "Interest Charges",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "INTEREST"
+   },
+   {
+    "amount": 36.27,
+    "currency": "INR",
+    "date": "21/07/2022",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 649,
+    "currency": "INR",
+    "date": "30/06/2022",
+    "description": "NETFLIX NETFLIX IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 3,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 2,
+    "currency": "INR",
+    "date": "17/07/2022",
+    "description": "AMAZON MUMBAI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PURCHASE"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_1529317035_1822e98dd8f123c0_0000 XXXX XXXX 6043-324412.pdf",
+ "prompt_chars": 20994,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/ICICI_PROMPT.txt",
+ "prompt_sha256": "4b047526c218a6d79d26f954f946c05dcbed0e2c0a9e9a2799eecbb48e6802c7",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"MakeMyTrip\",\"isPrimaryCard\":true,\"lastFourDigit\":\"6043\",\"network\":null,\"productFamily\":\"MakeMyTrip\"}},{\"cardMeta\":{\"cardDisplayName\":\"MakeMyTrip\",\"isPrimaryCard\":false,\"lastFourDigit\":\"9003\",\"network\":null,\"productFamily\":\"MakeMyTrip\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":3,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":172,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":145609.22,\"totalAmountDue\":4390.78,\"totalCreditLimit\":150000,\"totalMinimumAmountDue\":370},\"statementMeta\":{\"dueDate\":\"08/08/2022\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"21/07/2022\"},\"transactions\":[{\"amount\":500,\"currency\":\"INR\",\"date\":\"13/07/2022\",\"description\":\"Late Payment Fee\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"FEE\"},{\"amount\":90,\"currency\":\"INR\",\"date\":\"13/07/2022\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":201.51,\"currency\":\"INR\",\"date\":\"21/07/2022\",\"description\":\"Interest Charges\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"INTEREST\"},{\"amount\":36.27,\"currency\":\"INR\",\"date\":\"21/07/2022\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":649,\"currency\":\"INR\",\"date\":\"30/06/2022\",\"description\":\"NETFLIX NETFLIX IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":3,\"txnType\":\"PURCHASE\"},{\"amount\":2,\"currency\":\"INR\",\"date\":\"17/07/2022\",\"description\":\"AMAZON MUMBAI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PURCHASE\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "1529317035",
+ "started_at": "2026-08-15T16:32:30",
+ "token_identity_detail": "ok p=10306 c=777 t=11083 reasoning=284",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 777,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 284,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 10306,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 11083
+ }
+}

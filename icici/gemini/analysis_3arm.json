@@ -1,0 +1,897 @@
+{
+ "A": {
+  "n_statements": 11,
+  "outcomes": {
+   "OK": 11
+  },
+  "prompt_sha256": "4b047526c218a6d79d26f954f946c05dcbed0e2c0a9e9a2799eecbb48e6802c7",
+  "prompt_path": "ICICI_PROMPT.txt",
+  "transactions": {
+   "pdf_rows": 172,
+   "model_rows": 172,
+   "matched": 172,
+   "desc_exact": 109,
+   "desc_sim95": 153,
+   "date_ok": 170,
+   "date_n": 172,
+   "amount_ok": 170,
+   "amount_n": 172,
+   "dir_ok": 172,
+   "dir_n": 172,
+   "cur_inr": 172,
+   "cur_n": 172,
+   "txnType_in_vocab": 172,
+   "txnType_n": 172
+  },
+  "per_statement_txn": {
+   "1529317035": {
+    "pdf": 6,
+    "model": 6,
+    "matched": 6,
+    "desc_exact": 6,
+    "desc_sim95": 6
+   },
+   "1737715836": {
+    "pdf": 8,
+    "model": 8,
+    "matched": 8,
+    "desc_exact": 8,
+    "desc_sim95": 8
+   },
+   "1770339352": {
+    "pdf": 18,
+    "model": 18,
+    "matched": 18,
+    "desc_exact": 8,
+    "desc_sim95": 11
+   },
+   "205034973": {
+    "pdf": 7,
+    "model": 7,
+    "matched": 7,
+    "desc_exact": 3,
+    "desc_sim95": 4
+   },
+   "232344130": {
+    "pdf": 52,
+    "model": 52,
+    "matched": 52,
+    "desc_exact": 4,
+    "desc_sim95": 43
+   },
+   "238910814": {
+    "pdf": 10,
+    "model": 10,
+    "matched": 10,
+    "desc_exact": 10,
+    "desc_sim95": 10
+   },
+   "354990911": {
+    "pdf": 9,
+    "model": 9,
+    "matched": 9,
+    "desc_exact": 9,
+    "desc_sim95": 9
+   },
+   "410444357": {
+    "pdf": 9,
+    "model": 9,
+    "matched": 9,
+    "desc_exact": 9,
+    "desc_sim95": 9
+   },
+   "606359443": {
+    "pdf": 16,
+    "model": 16,
+    "matched": 16,
+    "desc_exact": 15,
+    "desc_sim95": 16
+   },
+   "693462745": {
+    "pdf": 3,
+    "model": 3,
+    "matched": 3,
+    "desc_exact": 3,
+    "desc_sim95": 3
+   },
+   "952325284": {
+    "pdf": 34,
+    "model": 34,
+    "matched": 34,
+    "desc_exact": 34,
+    "desc_sim95": 34
+   }
+  },
+  "scalars": {
+   "lastFourDigit": {
+    "cards_correct": 21,
+    "cards_total": 21,
+    "statements_set_exact": 11,
+    "values_containing_X": 0
+   },
+   "network": {
+    "non_null_values": 0,
+    "detail": [],
+    "oracle": "null on all 11 (no card-own network printed anywhere)"
+   },
+   "rewards": {
+    "programType": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsEarnedThisCycle": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsRedeemedThisCycle": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "closingPoints": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "openingPoints": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsExpiringNext30Days": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsExpiringNext60Days": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    }
+   },
+   "issuerName": {
+    "ok": 11,
+    "n": 11,
+    "wrong": []
+   },
+   "duplication_invariant": {
+    "closingPoints_equals_pointsEarned": 0,
+    "BACKED": 0,
+    "UNBACKED": 0,
+    "detail": []
+   }
+  },
+  "populated": {
+   "statementMeta.issuerName": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementMeta.statementDate": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementMeta.dueDate": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "values": 11,
+    "non_null": 11
+   },
+   "cards[].cardMeta.cardDisplayName": {
+    "values": 21,
+    "non_null": 17
+   },
+   "cards[].cardMeta.productFamily": {
+    "values": 21,
+    "non_null": 17
+   },
+   "cards[].cardMeta.lastFourDigit": {
+    "values": 21,
+    "non_null": 21
+   },
+   "cards[].cardMeta.network": {
+    "values": 21,
+    "non_null": 0
+   },
+   "cards[].cardMeta.isPrimaryCard": {
+    "values": 21,
+    "non_null": 21
+   },
+   "transactions[].date": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].description": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].amount": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].direction": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].txnType": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "values": 172,
+    "non_null": 145
+   },
+   "transactions[].currency": {
+    "values": 172,
+    "non_null": 172
+   },
+   "rewards.programType": {
+    "values": 11,
+    "non_null": 11
+   },
+   "rewards.openingPoints": {
+    "values": 11,
+    "non_null": 0
+   },
+   "rewards.pointsEarnedThisCycle": {
+    "values": 11,
+    "non_null": 11
+   },
+   "rewards.pointsRedeemedThisCycle": {
+    "values": 11,
+    "non_null": 5
+   },
+   "rewards.closingPoints": {
+    "values": 11,
+    "non_null": 0
+   },
+   "rewards.pointsExpiringNext30Days": {
+    "values": 11,
+    "non_null": 0
+   },
+   "rewards.pointsExpiringNext60Days": {
+    "values": 11,
+    "non_null": 0
+   }
+  },
+  "tokens": {
+   "prompt_tokens": 169753,
+   "completion_tokens": 16156,
+   "total_tokens": 185909,
+   "identity_holds": true,
+   "violations": []
+  }
+ },
+ "B": {
+  "n_statements": 11,
+  "outcomes": {
+   "OK": 11
+  },
+  "prompt_sha256": "79325334991ca5ec423118cbb1c7d70236240bf05519100cc2884129b0f17105",
+  "prompt_path": "ICICI_PROMPT_PREV.txt",
+  "transactions": {
+   "pdf_rows": 172,
+   "model_rows": 172,
+   "matched": 172,
+   "desc_exact": 109,
+   "desc_sim95": 153,
+   "date_ok": 170,
+   "date_n": 172,
+   "amount_ok": 170,
+   "amount_n": 172,
+   "dir_ok": 172,
+   "dir_n": 172,
+   "cur_inr": 172,
+   "cur_n": 172,
+   "txnType_in_vocab": 172,
+   "txnType_n": 172
+  },
+  "per_statement_txn": {
+   "1529317035": {
+    "pdf": 6,
+    "model": 6,
+    "matched": 6,
+    "desc_exact": 6,
+    "desc_sim95": 6
+   },
+   "1737715836": {
+    "pdf": 8,
+    "model": 8,
+    "matched": 8,
+    "desc_exact": 8,
+    "desc_sim95": 8
+   },
+   "1770339352": {
+    "pdf": 18,
+    "model": 18,
+    "matched": 18,
+    "desc_exact": 8,
+    "desc_sim95": 11
+   },
+   "205034973": {
+    "pdf": 7,
+    "model": 7,
+    "matched": 7,
+    "desc_exact": 3,
+    "desc_sim95": 4
+   },
+   "232344130": {
+    "pdf": 52,
+    "model": 52,
+    "matched": 52,
+    "desc_exact": 4,
+    "desc_sim95": 43
+   },
+   "238910814": {
+    "pdf": 10,
+    "model": 10,
+    "matched": 10,
+    "desc_exact": 10,
+    "desc_sim95": 10
+   },
+   "354990911": {
+    "pdf": 9,
+    "model": 9,
+    "matched": 9,
+    "desc_exact": 9,
+    "desc_sim95": 9
+   },
+   "410444357": {
+    "pdf": 9,
+    "model": 9,
+    "matched": 9,
+    "desc_exact": 9,
+    "desc_sim95": 9
+   },
+   "606359443": {
+    "pdf": 16,
+    "model": 16,
+    "matched": 16,
+    "desc_exact": 15,
+    "desc_sim95": 16
+   },
+   "693462745": {
+    "pdf": 3,
+    "model": 3,
+    "matched": 3,
+    "desc_exact": 3,
+    "desc_sim95": 3
+   },
+   "952325284": {
+    "pdf": 34,
+    "model": 34,
+    "matched": 34,
+    "desc_exact": 34,
+    "desc_sim95": 34
+   }
+  },
+  "scalars": {
+   "lastFourDigit": {
+    "cards_correct": 21,
+    "cards_total": 21,
+    "statements_set_exact": 11,
+    "values_containing_X": 0
+   },
+   "network": {
+    "non_null_values": 0,
+    "detail": [],
+    "oracle": "null on all 11 (no card-own network printed anywhere)"
+   },
+   "rewards": {
+    "programType": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsEarnedThisCycle": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsRedeemedThisCycle": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "closingPoints": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "openingPoints": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsExpiringNext30Days": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsExpiringNext60Days": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    }
+   },
+   "issuerName": {
+    "ok": 11,
+    "n": 11,
+    "wrong": []
+   },
+   "duplication_invariant": {
+    "closingPoints_equals_pointsEarned": 0,
+    "BACKED": 0,
+    "UNBACKED": 0,
+    "detail": []
+   }
+  },
+  "populated": {
+   "statementMeta.issuerName": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementMeta.statementDate": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementMeta.dueDate": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "values": 11,
+    "non_null": 11
+   },
+   "cards[].cardMeta.cardDisplayName": {
+    "values": 21,
+    "non_null": 17
+   },
+   "cards[].cardMeta.productFamily": {
+    "values": 21,
+    "non_null": 9
+   },
+   "cards[].cardMeta.lastFourDigit": {
+    "values": 21,
+    "non_null": 21
+   },
+   "cards[].cardMeta.network": {
+    "values": 21,
+    "non_null": 0
+   },
+   "cards[].cardMeta.isPrimaryCard": {
+    "values": 21,
+    "non_null": 21
+   },
+   "transactions[].date": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].description": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].amount": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].direction": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].txnType": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "values": 172,
+    "non_null": 145
+   },
+   "transactions[].currency": {
+    "values": 172,
+    "non_null": 172
+   },
+   "rewards.programType": {
+    "values": 11,
+    "non_null": 11
+   },
+   "rewards.openingPoints": {
+    "values": 11,
+    "non_null": 0
+   },
+   "rewards.pointsEarnedThisCycle": {
+    "values": 11,
+    "non_null": 11
+   },
+   "rewards.pointsRedeemedThisCycle": {
+    "values": 11,
+    "non_null": 5
+   },
+   "rewards.closingPoints": {
+    "values": 11,
+    "non_null": 0
+   },
+   "rewards.pointsExpiringNext30Days": {
+    "values": 11,
+    "non_null": 0
+   },
+   "rewards.pointsExpiringNext60Days": {
+    "values": 11,
+    "non_null": 0
+   }
+  },
+  "tokens": {
+   "prompt_tokens": 152483,
+   "completion_tokens": 16673,
+   "total_tokens": 169156,
+   "identity_holds": true,
+   "violations": []
+  }
+ },
+ "C": {
+  "n_statements": 11,
+  "outcomes": {
+   "OK": 11
+  },
+  "prompt_sha256": "7886583cba60ee6da1b62081994cb839b74d11f5b9220c8537453ef581a7505f",
+  "prompt_path": "GEMINI_GENERIC_PROMPT.txt",
+  "transactions": {
+   "pdf_rows": 172,
+   "model_rows": 172,
+   "matched": 172,
+   "desc_exact": 104,
+   "desc_sim95": 112,
+   "date_ok": 76,
+   "date_n": 172,
+   "amount_ok": 167,
+   "amount_n": 172,
+   "dir_ok": 172,
+   "dir_n": 172,
+   "cur_inr": 122,
+   "cur_n": 129,
+   "txnType_in_vocab": 171,
+   "txnType_n": 171
+  },
+  "per_statement_txn": {
+   "1529317035": {
+    "pdf": 6,
+    "model": 6,
+    "matched": 6,
+    "desc_exact": 6,
+    "desc_sim95": 6
+   },
+   "1737715836": {
+    "pdf": 8,
+    "model": 8,
+    "matched": 8,
+    "desc_exact": 8,
+    "desc_sim95": 8
+   },
+   "1770339352": {
+    "pdf": 18,
+    "model": 18,
+    "matched": 18,
+    "desc_exact": 8,
+    "desc_sim95": 11
+   },
+   "205034973": {
+    "pdf": 7,
+    "model": 7,
+    "matched": 7,
+    "desc_exact": 3,
+    "desc_sim95": 4
+   },
+   "232344130": {
+    "pdf": 52,
+    "model": 52,
+    "matched": 52,
+    "desc_exact": 0,
+    "desc_sim95": 3
+   },
+   "238910814": {
+    "pdf": 10,
+    "model": 10,
+    "matched": 10,
+    "desc_exact": 10,
+    "desc_sim95": 10
+   },
+   "354990911": {
+    "pdf": 9,
+    "model": 9,
+    "matched": 9,
+    "desc_exact": 9,
+    "desc_sim95": 9
+   },
+   "410444357": {
+    "pdf": 9,
+    "model": 9,
+    "matched": 9,
+    "desc_exact": 9,
+    "desc_sim95": 9
+   },
+   "606359443": {
+    "pdf": 16,
+    "model": 16,
+    "matched": 16,
+    "desc_exact": 15,
+    "desc_sim95": 16
+   },
+   "693462745": {
+    "pdf": 3,
+    "model": 3,
+    "matched": 3,
+    "desc_exact": 3,
+    "desc_sim95": 3
+   },
+   "952325284": {
+    "pdf": 34,
+    "model": 34,
+    "matched": 34,
+    "desc_exact": 33,
+    "desc_sim95": 33
+   }
+  },
+  "scalars": {
+   "lastFourDigit": {
+    "cards_correct": 21,
+    "cards_total": 21,
+    "statements_set_exact": 11,
+    "values_containing_X": 0
+   },
+   "network": {
+    "non_null_values": 0,
+    "detail": [],
+    "oracle": "null on all 11 (no card-own network printed anywhere)"
+   },
+   "rewards": {
+    "programType": {
+     "ok": 0,
+     "n": 11,
+     "wrong": [
+      [
+       "1529317035",
+       "My Cash",
+       "Cashback"
+      ],
+      [
+       "1737715836",
+       "ICICI Bank Rewards",
+       "Reward Points"
+      ],
+      [
+       "1770339352",
+       "My Cash",
+       "Cashback"
+      ],
+      [
+       "205034973",
+       "Amazon Pay balance",
+       "Cashback"
+      ],
+      [
+       "232344130",
+       "ICICI Bank Rewards",
+       "Reward Points"
+      ],
+      [
+       "238910814",
+       "ICICI Bank Rewards",
+       "Reward Points"
+      ],
+      [
+       "354990911",
+       "ICICI Bank Rewards",
+       "Reward Points"
+      ],
+      [
+       "410444357",
+       "MakeMyTrip My Cash",
+       "Cashback"
+      ],
+      [
+       "606359443",
+       "ICICI Bank Rewards",
+       "Reward Points"
+      ],
+      [
+       "693462745",
+       "ICICI Bank Rewards",
+       "Reward Points"
+      ],
+      [
+       "952325284",
+       "PAYBACK",
+       "Reward Points"
+      ]
+     ]
+    },
+    "pointsEarnedThisCycle": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsRedeemedThisCycle": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "closingPoints": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "openingPoints": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsExpiringNext30Days": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    },
+    "pointsExpiringNext60Days": {
+     "ok": 11,
+     "n": 11,
+     "wrong": []
+    }
+   },
+   "issuerName": {
+    "ok": 10,
+    "n": 11,
+    "wrong": [
+     [
+      "1529317035",
+      "ICICI Bank Limited"
+     ]
+    ]
+   },
+   "duplication_invariant": {
+    "closingPoints_equals_pointsEarned": 0,
+    "BACKED": 0,
+    "UNBACKED": 0,
+    "detail": []
+   }
+  },
+  "populated": {
+   "statementMeta.issuerName": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementMeta.statementDate": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementMeta.dueDate": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.totalAmountDue": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.totalMinimumAmountDue": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.totalCreditLimit": {
+    "values": 11,
+    "non_null": 11
+   },
+   "statementLevelSummary.availableCreditLimit": {
+    "values": 11,
+    "non_null": 11
+   },
+   "cards[].cardMeta.cardDisplayName": {
+    "values": 21,
+    "non_null": 5
+   },
+   "cards[].cardMeta.productFamily": {
+    "values": 21,
+    "non_null": 17
+   },
+   "cards[].cardMeta.lastFourDigit": {
+    "values": 21,
+    "non_null": 21
+   },
+   "cards[].cardMeta.network": {
+    "values": 21,
+    "non_null": 0
+   },
+   "cards[].cardMeta.isPrimaryCard": {
+    "values": 21,
+    "non_null": 0
+   },
+   "transactions[].date": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].description": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].amount": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].direction": {
+    "values": 172,
+    "non_null": 172
+   },
+   "transactions[].txnType": {
+    "values": 172,
+    "non_null": 171
+   },
+   "transactions[].rewardPointsOnThisTransaction": {
+    "values": 172,
+    "non_null": 145
+   },
+   "transactions[].currency": {
+    "values": 172,
+    "non_null": 129
+   },
+   "rewards.programType": {
+    "values": 11,
+    "non_null": 11
+   },
+   "rewards.openingPoints": {
+    "values": 11,
+    "non_null": 0
+   },
+   "rewards.pointsEarnedThisCycle": {
+    "values": 11,
+    "non_null": 11
+   },
+   "rewards.pointsRedeemedThisCycle": {
+    "values": 11,
+    "non_null": 5
+   },
+   "rewards.closingPoints": {
+    "values": 11,
+    "non_null": 0
+   },
+   "rewards.pointsExpiringNext30Days": {
+    "values": 11,
+    "non_null": 0
+   },
+   "rewards.pointsExpiringNext60Days": {
+    "values": 11,
+    "non_null": 0
+   }
+  },
+  "tokens": {
+   "prompt_tokens": 127194,
+   "completion_tokens": 17262,
+   "total_tokens": 144456,
+   "identity_holds": true,
+   "violations": []
+  }
+ }
+}

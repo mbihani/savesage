@@ -1,0 +1,397 @@
+{
+ "arm": "C",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:37:16",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 16502,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 2,
+ "n_transactions": 34,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": null,
+     "isPrimaryCard": null,
+     "lastFourDigit": "0599",
+     "network": null,
+     "productFamily": null
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": "SAMIK DAS",
+     "isPrimaryCard": null,
+     "lastFourDigit": "4008",
+     "network": null,
+     "productFamily": null
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 146,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": 146,
+   "programType": "PAYBACK"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 0,
+   "totalAmountDue": 30013.95,
+   "totalCreditLimit": 52000,
+   "totalMinimumAmountDue": 5980
+  },
+  "statementMeta": {
+   "dueDate": "11/10/2018",
+   "issuerName": "ICICI Bank",
+   "statementDate": "23/09/2018"
+  },
+  "transactions": [
+   {
+    "amount": 839.45,
+    "currency": null,
+    "date": "23/09/2018",
+    "description": "Interest Charges",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "INTEREST"
+   },
+   {
+    "amount": 151.1,
+    "currency": null,
+    "date": "23/09/2018",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 659.33,
+    "currency": null,
+    "date": "04/09/2018",
+    "description": "Principal Amount Amortization - <9/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 29.04,
+    "currency": null,
+    "date": "04/09/2018",
+    "description": "Interest Amount Amortization - <9/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 5.23,
+    "currency": null,
+    "date": "04/09/2018",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 35.21,
+    "currency": null,
+    "date": "06/09/2018",
+    "description": "Interest Amount Amortization - <6/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 449.47,
+    "currency": null,
+    "date": "06/09/2018",
+    "description": "Principal Amount Amortization - <6/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 6.34,
+    "currency": null,
+    "date": "06/09/2018",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 8000,
+    "currency": null,
+    "date": "06/09/2018",
+    "description": "824912464451 UPI Payment Received",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 426.43,
+    "currency": null,
+    "date": "07/09/2018",
+    "description": "Principal Amount Amortization - <5/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 38.39,
+    "currency": null,
+    "date": "07/09/2018",
+    "description": "Interest Amount Amortization - <5/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 6.91,
+    "currency": null,
+    "date": "07/09/2018",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 1200,
+    "currency": "IN",
+    "date": "10/09/2018",
+    "description": "ASSAMPOWER BILLDESK MUMBAI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 24,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 850,
+    "currency": "IN",
+    "date": "11/09/2018",
+    "description": "KALPANA FURNITURE Guwahati HQ IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 17,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1394,
+    "currency": "IN",
+    "date": "12/09/2018",
+    "description": "M K ENTERPRISE KAMRUP IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 28,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 842,
+    "currency": "IN",
+    "date": "15/09/2018",
+    "description": "THE YELLOW CHILLI GUWAHATI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 17,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1190,
+    "currency": "IN",
+    "date": "16/09/2018",
+    "description": "ZOO POINT WINE SHOP GUWAHATI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 24,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 372.59,
+    "currency": null,
+    "date": "16/09/2018",
+    "description": "Principal Amount Amortization - <6/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 29.19,
+    "currency": null,
+    "date": "16/09/2018",
+    "description": "Interest Amount Amortization - <6/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 5.25,
+    "currency": null,
+    "date": "16/09/2018",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 1099,
+    "currency": "IN",
+    "date": "17/09/2018",
+    "description": "W GUWAHATI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 22,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 717,
+    "currency": "IN",
+    "date": "18/09/2018",
+    "description": "AIRTEL.IN MUMBAI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 14,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 48.62,
+    "currency": null,
+    "date": "19/09/2018",
+    "description": "Interest Amount Amortization - <2/6>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 8.75,
+    "currency": null,
+    "date": "19/09/2018",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 1004.5,
+    "currency": null,
+    "date": "19/09/2018",
+    "description": "Principal Amount Amortization - <8/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 878.39,
+    "currency": null,
+    "date": "19/09/2018",
+    "description": "Principal Amount Amortization - <2/6>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 55.6,
+    "currency": null,
+    "date": "19/09/2018",
+    "description": "Interest Amount Amortization - <8/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 10.01,
+    "currency": null,
+    "date": "19/09/2018",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 3.28,
+    "currency": null,
+    "date": "20/09/2018",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 232.79,
+    "currency": null,
+    "date": "20/09/2018",
+    "description": "Principal Amount Amortization - <6/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 18.24,
+    "currency": null,
+    "date": "20/09/2018",
+    "description": "Interest Amount Amortization - <6/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 398.41,
+    "currency": null,
+    "date": "21/09/2018",
+    "description": "Principal Amount Amortization - <5/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 35.87,
+    "currency": null,
+    "date": "21/09/2018",
+    "description": "Interest Amount Amortization - <5/12>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 6.46,
+    "currency": null,
+    "date": "21/09/2018",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": null,
+    "txnType": "TAX"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_952325284_1660ca0866de4cee_4375 XXXX XXXX 4008-261274.pdf",
+ "prompt_chars": 5778,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/gemini/GEMINI_GENERIC_PROMPT.txt",
+ "prompt_sha256": "7886583cba60ee6da1b62081994cb839b74d11f5b9220c8537453ef581a7505f",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":null,\"isPrimaryCard\":null,\"lastFourDigit\":\"0599\",\"network\":null,\"productFamily\":null}},{\"cardMeta\":{\"cardDisplayName\":\"SAMIK DAS\",\"isPrimaryCard\":null,\"lastFourDigit\":\"4008\",\"network\":null,\"productFamily\":null}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":146,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":146,\"programType\":\"PAYBACK\"},\"statementLevelSummary\":{\"availableCreditLimit\":0,\"totalAmountDue\":30013.95,\"totalCreditLimit\":52000,\"totalMinimumAmountDue\":5980},\"statementMeta\":{\"dueDate\":\"11/10/2018\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"23/09/2018\"},\"transactions\":[{\"amount\":839.45,\"currency\":null,\"date\":\"23/09/2018\",\"description\":\"Interest Charges\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"INTEREST\"},{\"amount\":151.1,\"currency\":null,\"date\":\"23/09/2018\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":659.33,\"currency\":null,\"date\":\"04/09/2018\",\"description\":\"Principal Amount Amortization - <9/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":29.04,\"currency\":null,\"date\":\"04/09/2018\",\"description\":\"Interest Amount Amortization - <9/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":5.23,\"currency\":null,\"date\":\"04/09/2018\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":35.21,\"currency\":null,\"date\":\"06/09/2018\",\"description\":\"Interest Amount Amortization - <6/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":449.47,\"currency\":null,\"date\":\"06/09/2018\",\"description\":\"Principal Amount Amortization - <6/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":6.34,\"currency\":null,\"date\":\"06/09/2018\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":8000,\"currency\":null,\"date\":\"06/09/2018\",\"description\":\"824912464451 UPI Payment Received\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"PAYMENT\"},{\"amount\":426.43,\"currency\":null,\"date\":\"07/09/2018\",\"description\":\"Principal Amount Amortization - <5/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":38.39,\"currency\":null,\"date\":\"07/09/2018\",\"description\":\"Interest Amount Amortization - <5/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":6.91,\"currency\":null,\"date\":\"07/09/2018\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":1200,\"currency\":\"IN\",\"date\":\"10/09/2018\",\"description\":\"ASSAMPOWER BILLDESK MUMBAI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":24,\"txnType\":\"PURCHASE\"},{\"amount\":850,\"currency\":\"IN\",\"date\":\"11/09/2018\",\"description\":\"KALPANA FURNITURE Guwahati HQ IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":17,\"txnType\":\"PURCHASE\"},{\"amount\":1394,\"currency\":\"IN\",\"date\":\"12/09/2018\",\"description\":\"M K ENTERPRISE KAMRUP IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":28,\"txnType\":\"PURCHASE\"},{\"amount\":842,\"currency\":\"IN\",\"date\":\"15/09/2018\",\"description\":\"THE YELLOW CHILLI GUWAHATI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":17,\"txnType\":\"PURCHASE\"},{\"amount\":1190,\"currency\":\"IN\",\"date\":\"16/09/2018\",\"description\":\"ZOO POINT WINE SHOP GUWAHATI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":24,\"txnType\":\"PURCHASE\"},{\"amount\":372.59,\"currency\":null,\"date\":\"16/09/2018\",\"description\":\"Principal Amount Amortization - <6/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":29.19,\"currency\":null,\"date\":\"16/09/2018\",\"description\":\"Interest Amount Amortization - <6/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":5.25,\"currency\":null,\"date\":\"16/09/2018\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":1099,\"currency\":\"IN\",\"date\":\"17/09/2018\",\"description\":\"W GUWAHATI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":22,\"txnType\":\"PURCHASE\"},{\"amount\":717,\"currency\":\"IN\",\"date\":\"18/09/2018\",\"description\":\"AIRTEL.IN MUMBAI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":14,\"txnType\":\"PURCHASE\"},{\"amount\":48.62,\"currency\":null,\"date\":\"19/09/2018\",\"description\":\"Interest Amount Amortization - <2/6>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":8.75,\"currency\":null,\"date\":\"19/09/2018\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":1004.5,\"currency\":null,\"date\":\"19/09/2018\",\"description\":\"Principal Amount Amortization - <8/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":878.39,\"currency\":null,\"date\":\"19/09/2018\",\"description\":\"Principal Amount Amortization - <2/6>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":55.6,\"currency\":null,\"date\":\"19/09/2018\",\"description\":\"Interest Amount Amortization - <8/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":10.01,\"currency\":null,\"date\":\"19/09/2018\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":3.28,\"currency\":null,\"date\":\"20/09/2018\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"},{\"amount\":232.79,\"currency\":null,\"date\":\"20/09/2018\",\"description\":\"Principal Amount Amortization - <6/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":18.24,\"currency\":null,\"date\":\"20/09/2018\",\"description\":\"Interest Amount Amortization - <6/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":398.41,\"currency\":null,\"date\":\"21/09/2018\",\"description\":\"Principal Amount Amortization - <5/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":35.87,\"currency\":null,\"date\":\"21/09/2018\",\"description\":\"Interest Amount Amortization - <5/12>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"EMI\"},{\"amount\":6.46,\"currency\":null,\"date\":\"21/09/2018\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":null,\"txnType\":\"TAX\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "952325284",
+ "started_at": "2026-08-15T16:36:59",
+ "token_identity_detail": "ok p=7314 c=2631 t=9945 reasoning=716",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 2631,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 716,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 7314,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 9945
+ }
+}

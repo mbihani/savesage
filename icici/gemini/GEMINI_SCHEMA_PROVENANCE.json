@@ -1,0 +1,43 @@
+{
+  "source_file": "/Users/mayanck.bihani/Downloads/gemini-3-flash--prompt-shcema.txt",
+  "source_schema_line": 64,
+  "note": "Leaf types are the client's own 'string|null' spellings, verbatim. Nullability is expressed in the built schema as a TYPE ARRAY (['string','null']), not anyOf -- so any enum added later MUST include null on a nullable leaf or a correct null becomes unrepresentable under strict:true.",
+  "leaf_count": 26,
+  "leaves": {
+    "statementMeta.issuerName": "string|null",
+    "statementMeta.statementDate": "string|null",
+    "statementMeta.dueDate": "string|null",
+    "statementLevelSummary.totalAmountDue": "number|null",
+    "statementLevelSummary.totalMinimumAmountDue": "number|null",
+    "statementLevelSummary.totalCreditLimit": "number|null",
+    "statementLevelSummary.availableCreditLimit": "number|null",
+    "cards.cardMeta.cardDisplayName": "string|null",
+    "cards.cardMeta.productFamily": "string|null",
+    "cards.cardMeta.lastFourDigit": "string|null",
+    "cards.cardMeta.network": "string|null",
+    "cards.cardMeta.isPrimaryCard": "boolean|null",
+    "transactions.date": "string|null",
+    "transactions.description": "string|null",
+    "transactions.amount": "number|null",
+    "transactions.direction": "string|null",
+    "transactions.txnType": "string|null",
+    "transactions.rewardPointsOnThisTransaction": "number|null",
+    "transactions.currency": "string|null",
+    "rewards.programType": "string|null",
+    "rewards.openingPoints": "number|null",
+    "rewards.pointsEarnedThisCycle": "number|null",
+    "rewards.pointsRedeemedThisCycle": "number|null",
+    "rewards.closingPoints": "number|null",
+    "rewards.pointsExpiringNext30Days": "number|null",
+    "rewards.pointsExpiringNext60Days": "number|null"
+  },
+  "absent_by_design": [
+    "statementLevelSummary.utilisationPercent",
+    "rewards.bonusPointsThisCycle",
+    "statementMeta.rawStatementId",
+    "statementMeta.statementPeriodStart",
+    "statementMeta.statementPeriodEnd",
+    "cards[].bigPicture.cardCreditLimit",
+    "cards[].bigPicture.cardAvailableCreditLimit"
+  ]
+}

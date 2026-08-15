@@ -25,7 +25,7 @@ TRANSACTION RULES:
       - Payments TO the bank → DEBIT
       - Refunds, reversals, cashback credited → CREDIT
   - NEVER output raw statement markers (e.g., "DR", "CR", "+") as the direction value.
-- For currency:
+- For currency: 
   - If the transaction row explicitly states a currency code (e.g., INR, USD, GBP) → use it.
   - If the transaction amount has a currency symbol (e.g., ₹ → INR, $ → USD) → map the symbol to its ISO 4217 currency code and use it.
   - If no currency is stated per transaction, inherit the default currency from the statement header or account summary section.
@@ -39,13 +39,14 @@ REWARDS_RULES (AUTHORITATIVE):
 - Identify rewards.programType first.
 - rewards.programType:
     - Understand the rewards section and classify the program type.
-    - ONLY these values are allowed: "Cashback", "Reward Points", "Membership Rewards".
+    - Common types: "Cashback", "Reward Points"
+      "Membership Rewards"
     - If cashback/wallet credit/balance credited → "Cashback"
-    - DO NOT copy payment methods, wallet names, or the programme's brand name as programType.
-      See ICICI_REWARDS_LAYOUTS for the specific ICICI brand names that must NOT be emitted here.
-- closingPoints is a REWARDS BALANCE. Populate it only from a numeric POINTS balance printed inside a
-  rewards/points block — a figure whose own column or row label is about points, not about money.
-- Set closingPoints = null if no numeric POINTS balance is explicitly shown in a rewards block.
+    - DO NOT copy payment methods or wallet names as programType.
+- If the statement explicitly displays ANY numeric rewards balance (including zero) using labels such as
+  RewardPoints, Reward Points, Reward Points Balance, Points Earned Till Date, Closing Balance,
+  Closing Points, or any equivalent bank/co-brand rewards balance, populate closingPoints with that exact numeric value.
+- Set closingPoints = null ONLY if no numeric rewards balance is explicitly shown anywhere in the statement.
 - RewardPoints can be negative.
 - For cashback cards: cashback earned = pointsEarnedThisCycle; cashback credited or transferred = pointsRedeemedThisCycle.
   Cashback credited MUST NOT be treated as closingPoints.
@@ -53,15 +54,33 @@ REWARDS_RULES (AUTHORITATIVE):
   If the description contains "Cashback Credit", do not derive rewards from the cashback amount;
   set rewardPointsOnThisTransaction only to an explicitly stated reward value in the description, otherwise null.
 
+INFERENCE_RULES (ALLOWLIST):
+- The following fields MUST be inferred or derived when not explicitly stated: financeChargesThisCycle.
+- Finance charges inference:
+    - If the statement explicitly shows finance or interest charges → use the stated amount.
+    - If the statement indicates no interest or no finance charges were applied → set financeChargesThisCycle = 0.
+    - If finance charges cannot be determined from the statement → set financeChargesThisCycle = null.
+- Utilisation percent inference:
+    - If the statement explicitly shows a utilisation or utilization percent → use the stated value.
+    - If totalCreditLimit and totalAmountDue (or cardCreditLimit and cardLevelTotalAmountDue for card-level)
+      are both explicitly available → compute as (amountDue / creditLimit) × 100, rounded to 2 decimal places.
+    - If either value required for computation is missing or null → set utilisationPercent = null.
+
 MISSING_DATA_RULE:
-- If a value is not explicitly present in the statement, set it to null. Nothing in this schema is
-  inferred or derived: there is no field you are allowed to compute when the statement does not print it.
+- If a value is not explicitly present in the statement, set it to null,
+  EXCEPT for fields listed in INFERENCE_RULES, which must be inferred.
+
+BONUS_POINTS_RULE (STRICT):
+- Populate rewards->bonusPointsThisCycle ONLY when the statement explicitly contains a distinct
+  reward field labeled as bonus points.
+- If the statement does not explicitly show a separate bonus points value,
+  rewards->bonusPointsThisCycle MUST be null and MUST NOT be inferred, derived, split,
+  or reclassified from any other field.
 
 EDGE_CASES:
 - If due date is non-date text (e.g., IMMEDIATELY, PAY IMMEDIATELY, DUE IMMEDIATELY),
   set dueDate to the exact text as shown — do not infer, normalize, or replace it with statementDate.
-- For cardDisplayName: extract the credit card product name as printed in the page-1 identity block.
-  See ICICI_CARD_IDENTITY for the exact form to use on this bank.
+- For cardDisplayName: extract only the credit card product name as printed (e.g., "ICICI Bank Coral Credit Card", "Amazon Pay ICICI Bank Credit Card", "Sapphiro").
   Do NOT include the cardholder's name or account holder name.
 - For lastFourDigit: extract ONLY the last 4 characters of the card number as a string.
   Preserve leading zeros (e.g., 0576 → "0576").
@@ -79,41 +98,28 @@ ICICI_BANK_RULES (this corpus is ICICI Bank; these override anything above on co
   Emeralde, Platinum, MakeMyTrip, Adani One, HPCL, Expressions, Mine, Manu). The co-brand partner and
   the product name are NOT the issuer. Never return "Amazon", "MakeMyTrip", "Adani One", "HPCL",
   "Coral", "Sapphiro" or any other product/partner name in issuerName.
-- THE RUPEE SIGN ON THIS BANK IS A BACKTICK. ICICI encodes the rupee symbol as the single character
-  ` (grave accent) in a dedicated rupee font, so the amount column header prints as "Amount (in `)"
-  and money values may be preceded by a bare `. Treat ` in a money position as the rupee sign and
-  report currency "INR"; never copy it into a description or read it as a digit.
-  A capital "C" on this bank is NOT a currency glyph — it is a genuine CREDIT marker, so a "C" next
-  to an amount means direction = "CREDIT".
-- Amounts use Indian digit grouping (e.g. 1,23,456.78). Read the whole grouped number; never truncate
-  at a comma.
+- closingPoints: do NOT compute it from points earned and points redeemed. ICICI statements print
+  "Total Points earned" and "Points earned on iShop" in the header, which are CYCLE EARN figures, not a
+  closing balance. If no closing/available points BALANCE is printed, closingPoints = null.
+  Where the header prints "Points Earned" and "Points Transferred to PAYBACK", the transferred figure
+  is pointsRedeemedThisCycle. It is not closingPoints.
 - IGNORE the "Closing Balance" line inside the illustrative Minimum-Amount-Due worked example
-  (the numbered "SL. No / Transaction" table whose money column is headed by a bare ` and which
-  begins "On statement dated <Month> <DD>, <YYYY>, following Minimum Amount Due is calculated").
-  That whole table is PRE-PRINTED BOILERPLATE with fixed specimen values (e.g. Closing Balance
-  26,958.20, Tax on Over-limit Fee 99.00, Overdue of previous statement 1,200.00) and hardcoded
-  specimen dates; it belongs to no real cardholder. Never use any figure from it for closingPoints,
-  for any statementLevelSummary field, or as a transaction.
-  On this bank "Closing Balance" ALWAYS refers to that money specimen. It is never a points balance,
-  so it must NEVER populate closingPoints.
+  (the numbered "SL. No / Transaction" table that begins "On statement dated <Month> <DD>, <YYYY>,
+  following Minimum Amount Due is calculated"). That whole table is PRE-PRINTED BOILERPLATE with
+  fixed specimen values (e.g. Closing Balance 26,958.20) and belongs to no real cardholder. Never
+  use any figure from it for closingPoints, for any statementLevelSummary field, or as a transaction.
 - network — EVIDENCE-FIRST, DEFAULT NULL. ICICI statements do NOT state the card's own network.
   Return a network ONLY when the statement visibly prints THIS card's own network as its own label or
   logo caption in or beside that card's own section. If you cannot point to such a printed label for
-  that specific card, network MUST be null. The only place a network name appears as text in this
-  corpus is the fuel-surcharge disclaimer "For RuPay/American Express/ Visa/Mastercard Credit Cards:
-  Fuel surcharge ...", which lists ALL FOUR networks and identifies nothing — it is never evidence
-  for any card. Never infer network from the card BIN/first digits (a leading "4" is not evidence of
-  Visa), from the product or co-brand name, from marketing or cross-sell copy, from merchant names in
-  the transaction table, from rewards/offer wording, from that disclaimer, or from the network of
-  another card on the same statement. When in doubt, null.
-  Two further reasons a BIN can never settle this on ICICI: the leading four printed characters are
-  themselves frequently MASKED (a heading may read "0000XXXXXXXX6043", so there is no BIN to read at
-  all), and two cards on the SAME statement routinely carry different leading digits (e.g. one
-  heading "3747XXXXXXXX4004" beside another "5241XXXXXXXX8004"), so no single network describes the
-  statement.
-  A network name that appears only INSIDE A PICTURE — a card photograph or marketing banner, such as
-  an Aadhaar-update or iMobile-Pay promo showing a specimen card with a network logo on it — is
-  artwork, not this cardholder's card. It is never evidence. network stays null.
+  that specific card, network MUST be null. The only place a network name appears in this corpus is
+  the fuel-surcharge disclaimer "For RuPay/American Express/ Visa/Mastercard Credit Cards: Fuel
+  surcharge ...", which lists ALL FOUR networks and identifies nothing — it is never evidence for any
+  card. Never infer network from the card BIN/first digits (a leading "4" is not evidence of Visa),
+  from the product or co-brand name, from marketing or cross-sell copy, from merchant names in the
+  transaction table, from rewards/offer wording, from that disclaimer, or from the network of another
+  card on the same statement. When in doubt, null.
+- rawStatementId: the header prints "Invoice No: <16 digits>". That is an invoice number, not a
+  statement identifier; set rawStatementId = null unless a label "Statement No/Number/ID" appears.
 - FOREIGN-CURRENCY ROWS: the transaction table has a separate "Intl.# amount" column printed to the LEFT
   of the "Amount (in `)" column, e.g. "CLAUDE.AI SUBSCRIPTION ANTHROPIC.COM US* | 0 | 118 USD | 11,632.05".
   Here 118 USD is the original foreign amount and 11,632.05 is the rupee amount billed. Report the RUPEE
@@ -135,16 +141,9 @@ ICICI_BANK_RULES (this corpus is ICICI Bank; these override anything above on co
   digits (not "XX02", not "X001", not "XX21"); return "X" only for a position that is itself masked
   within those rightmost four. Do not slice the window from the middle of the number, and do not read
   the leading 4-digit BIN fragment as the last four.
-  The same rule applies when the mask is printed in SPACE-SEPARATED groups — "4375 XXXX XXXX 4008" →
-  "4008", "0000 XXXX XXXX 0599" → "0599" — and when the number sits in a labelled cell such as
-  "Card Number : 4375 XXXX XXXX 4008 - <CARDHOLDER NAME>" or a "Card Account No" box. Ignore the
-  trailing " - <NAME>" part; it is the cardholder, not part of the number.
   Bind the value to the SAME card section the heading belongs to: never take it from another card's
   heading, from the credit-card account number, from the "Invoice No", or from a transaction
   reference number.
-  NEVER take a card number from a PICTURE. The marketing banners on page 1 display specimen cards
-  bearing numbers such as "4378 XXXX XXXX XXXX" and "4375 5174 1234 5678"; those are stock artwork
-  and belong to nobody. Use only card numbers printed as text in a card heading or a card-number cell.
 - TRAILING COUNTRY CODE IS PART OF THE DESCRIPTION. ICICI prints a terminal country-code token
   (IN, US, ...) as the last token of many transaction narrations, e.g. "UPI-570397032082-Babasahe b IN",
   "GOOGLE *Discovery Plus g.co/helppay# US", "UPI-...-PARASHRA IN". It is often laid out flush to the
@@ -177,87 +176,8 @@ ICICI_BANK_RULES (this corpus is ICICI Bank; these override anything above on co
   do not aggregate points of all cards if there are multiple cards.
 - Transaction Date must not exceed the Statement Date, nor fall more than two months prior to it.
 - If statement is not a credit card statement, set all fields to null.
-- For all date fields (statementDate, dueDate, and every transaction date):
+- For all date fields (statementDate, dueDate, statementPeriodStart, statementPeriodEnd, transaction date, etc.):
   - always format the value as DD/MM/YYYY, regardless of how the date appears in the statement.
   - Exception: if dueDate is non-date text (e.g., "PAY IMMEDIATELY"), preserve it as-is per the existing rule.
-  - Sanity check before output: a transaction date must not exceed statementDate, and must not fall more
-    than two months before it. If a parsed date fails this check, swap day/month and re-validate before
-    finalizing. Use the statement period printed on the page only as a reading aid for this check; it is
-    not itself an output field.
+  - Sanity check before output: transaction dates must fall within statementPeriodStart and statementPeriodEnd (inclusive), and must not exceed statementDate. If a parsed date fails this check, swap day/month and re-validate before finalizing.
 - If the transaction amount carries a "+", "Cr", "C" or "CREDIT" marker, set direction to "CREDIT".
-
-ICICI_CARD_IDENTITY (cardDisplayName / productFamily):
-- The product name is printed ONCE, in the page-1 identity block at the TOP RIGHT, immediately beside
-  the "ICICI Bank Credit Cards" logo — for example "Sapphiro", "Coral", "Rubyx", or the co-brand
-  wordmark "amazon pay". On the older "CREDIT CARD E-STATEMENT" template there is no such block.
-- USE THE BARE PRINTED FORM, exactly as it appears there: "Sapphiro", not "ICICI Bank Sapphiro Credit
-  Card"; "Coral", not "ICICI Bank Coral Credit Card"; "Rubyx", not "ICICI Bank RubiX Credit Card".
-  Do NOT expand it, do not prepend the issuer, and do not append "Credit Card".
-- If that identity block shows only the "ICICI Bank Credit Cards" logo and NO product name, then this
-  statement prints no product name: cardDisplayName = null and productFamily = null. Do not substitute
-  the logo text "ICICI Bank Credit Card" as if it were a product.
-- Do NOT take the product name from anywhere else on the page. In particular the offers and rewards
-  footnotes print whole marketing sentences containing an expanded product name — e.g. "*My Cash
-  earned on qualifying expenditure using MakeMyTrip ICICI Bank Credit Card will be added to your
-  MakeMyTrip account ..." — and a product name inside such a sentence, or inside a fee table listing
-  many products, is marketing copy, not this card's identity label.
-- Do NOT read a product name off a card PHOTOGRAPH in a marketing banner. Those show stock artwork.
-- All cards listed on one statement belong to the same product unless the identity block itself shows
-  otherwise; give each card the same cardDisplayName.
-
-ICICI_REWARDS_LAYOUTS (authoritative for rewards.*; bind every value to its own label by COLUMN):
-  ICICI prints its rewards block low on page 1. Four layouts occur. In every one of them the LABELS sit
-  on one or two lines and the VALUES sit BELOW them on a single shared line, separated only by their x
-  position — so you must bind each value to the label that sits in the SAME COLUMN, not to the nearest
-  text in reading order.
-
-  Layout 1 — heading "ICICI Bank Rewards" (the letterforms may render as "ICICl Bank Rewards"):
-      Total Points earned*        <value>
-      Points earned on iShop      <value>
-    pointsEarnedThisCycle = the "Total Points earned" value.
-    The footnote states "*The total points earned are inclusive of points earned on iShop", so iShop is
-    a SUBSET of the total: NEVER add the two together, and never report iShop as its own field.
-    This layout prints NO redeemed, NO opening and NO closing figure →
-    pointsRedeemedThisCycle = null, openingPoints = null, closingPoints = null.
-    programType = "Reward Points".
-
-  Layout 2 — heading "MakeMyTrip My Cash":
-      My Cash earned      |  My Cash transferred to MakeMyTrip*
-      <value>             |  <value>
-    pointsEarnedThisCycle = the "My Cash earned" value (left column).
-    pointsRedeemedThisCycle = the "My Cash transferred to MakeMyTrip" value (right column).
-    programType = "Cashback".  "MakeMyTrip My Cash" and "My Cash" are the programme's BRAND name —
-    never emit them as programType.
-
-  Layout 3 — heading "EARNINGS" (Amazon Pay co-brand):
-      Earned              |  Earnings transfered to Amazon Pay balance*
-      <value>             |  <value>
-    (the statement itself misspells "transfered"; match it loosely.)
-    pointsEarnedThisCycle = the "Earned" value (left column).
-    pointsRedeemedThisCycle = the "Earnings transfered to Amazon Pay balance" value (right column).
-    programType = "Cashback".  "Amazon Pay balance" is a WALLET name — never emit it as programType.
-
-  Layout 4 — older "CREDIT CARD E-STATEMENT" template, two labels side by side:
-      Points Earned       |  Points Transferred to PAYBACK (Acc:<number>)
-      <value>             |  <value>
-    pointsEarnedThisCycle = the "Points Earned" value.
-    pointsRedeemedThisCycle = the "Points Transferred to PAYBACK" value.
-    programType = "Reward Points".  "PAYBACK" is the loyalty programme's BRAND name — never emit it as
-    programType, and never emit the PAYBACK account number as a points figure.
-
-- EARNED AND TRANSFERRED MAY LEGITIMATELY BE EQUAL. When the statement prints two SEPARATE cells and
-  both happen to show the same number (a cycle in which everything earned was transferred out), report
-  BOTH — that is the printed truth, not a duplicate. Only refuse to fill the second field when the
-  statement prints just ONE cell; never copy a single printed cell into two different fields.
-- "Points Transferred", "transferred to", and "Earnings transfered to" all mean REDEEMED. They are
-  pointsRedeemedThisCycle. They are never closingPoints.
-- closingPoints on ICICI: none of the four layouts above prints a closing or available POINTS balance.
-  "Total Points earned" and "Points earned on iShop" are CYCLE EARN figures, not a balance. So unless
-  the statement really does print a labelled points BALANCE, closingPoints = null. Do NOT compute it
-  from earned minus redeemed, do NOT copy the earned figure into it, and do NOT take the money
-  "Closing Balance" specimen from the Minimum-Amount-Due worked example.
-- openingPoints on ICICI: likewise not printed by any of these layouts → null unless an explicitly
-  labelled opening/brought-forward POINTS balance appears. Never the money "Previous Balance".
-- No ICICI layout in this corpus prints a points-expiry figure → pointsExpiringNext30Days and
-  pointsExpiringNext60Days are null. A terms-and-conditions sentence describing when points expire is
-  a policy, not a value.

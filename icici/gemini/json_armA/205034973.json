@@ -1,0 +1,154 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:32:57",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 13093,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 2,
+ "n_transactions": 7,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "amazon pay",
+     "isPrimaryCard": true,
+     "lastFourDigit": "7212",
+     "network": null,
+     "productFamily": "Amazon Pay"
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": "amazon pay",
+     "isPrimaryCard": false,
+     "lastFourDigit": "2000",
+     "network": null,
+     "productFamily": "Amazon Pay"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 33,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": 33,
+   "programType": "Cashback"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 4705.98,
+   "totalAmountDue": 42360.65,
+   "totalCreditLimit": 50000,
+   "totalMinimumAmountDue": 3090
+  },
+  "statementMeta": {
+   "dueDate": "30/12/2025",
+   "issuerName": "ICICI Bank",
+   "statementDate": "12/12/2025"
+  },
+  "transactions": [
+   {
+    "amount": 0,
+    "currency": "INR",
+    "date": "30/11/2025",
+    "description": "Auto Dr.Retn-Insuff. fund",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "REVERSAL"
+   },
+   {
+    "amount": 33106.89,
+    "currency": "INR",
+    "date": "30/11/2025",
+    "description": "BBPS Payment received",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 663,
+    "currency": "INR",
+    "date": "30/11/2025",
+    "description": "AMAZON PAY IN E COMMERC BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 33,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 40684.35,
+    "currency": "INR",
+    "date": "06/12/2025",
+    "description": "CHEQ DIGITAL PRIVATE LIMI HTTPS://WWW.C IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 51.78,
+    "currency": "INR",
+    "date": "07/12/2025",
+    "description": "Interest Amount Amortization - <9/12>Flipkart Internet PVT L",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 9.32,
+    "currency": "INR",
+    "date": "07/12/2025",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 952.2,
+    "currency": "INR",
+    "date": "07/12/2025",
+    "description": "Principal Amount Amortization - <9/12>Flipkart Internet PVT",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_205034973_19b1796b4d0eb0b7_4315XXXXXXXX2000_460159_Retail_Amazon_NORM.pdf",
+ "prompt_chars": 20994,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/ICICI_PROMPT.txt",
+ "prompt_sha256": "4b047526c218a6d79d26f954f946c05dcbed0e2c0a9e9a2799eecbb48e6802c7",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"amazon pay\",\"isPrimaryCard\":true,\"lastFourDigit\":\"7212\",\"network\":null,\"productFamily\":\"Amazon Pay\"}},{\"cardMeta\":{\"cardDisplayName\":\"amazon pay\",\"isPrimaryCard\":false,\"lastFourDigit\":\"2000\",\"network\":null,\"productFamily\":\"Amazon Pay\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":33,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":33,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":4705.98,\"totalAmountDue\":42360.65,\"totalCreditLimit\":50000,\"totalMinimumAmountDue\":3090},\"statementMeta\":{\"dueDate\":\"30/12/2025\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"12/12/2025\"},\"transactions\":[{\"amount\":0,\"currency\":\"INR\",\"date\":\"30/11/2025\",\"description\":\"Auto Dr.Retn-Insuff. fund\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"REVERSAL\"},{\"amount\":33106.89,\"currency\":\"INR\",\"date\":\"30/11/2025\",\"description\":\"BBPS Payment received\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PAYMENT\"},{\"amount\":663,\"currency\":\"INR\",\"date\":\"30/11/2025\",\"description\":\"AMAZON PAY IN E COMMERC BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":33,\"txnType\":\"PURCHASE\"},{\"amount\":40684.35,\"currency\":\"INR\",\"date\":\"06/12/2025\",\"description\":\"CHEQ DIGITAL PRIVATE LIMI HTTPS://WWW.C IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PURCHASE\"},{\"amount\":51.78,\"currency\":\"INR\",\"date\":\"07/12/2025\",\"description\":\"Interest Amount Amortization - <9/12>Flipkart Internet PVT L\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":9.32,\"currency\":\"INR\",\"date\":\"07/12/2025\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":952.2,\"currency\":\"INR\",\"date\":\"07/12/2025\",\"description\":\"Principal Amount Amortization - <9/12>Flipkart Internet PVT\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "205034973",
+ "started_at": "2026-08-15T16:32:44",
+ "token_identity_detail": "ok p=16176 c=1085 t=17261 reasoning=502",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 1085,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 502,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 16176,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 17261
+ }
+}

@@ -1,0 +1,181 @@
+{
+ "arm": "B",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:34:46",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 10757,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 2,
+ "n_transactions": 10,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "Coral",
+     "isPrimaryCard": true,
+     "lastFourDigit": "8739",
+     "network": null,
+     "productFamily": "Coral"
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": "Coral",
+     "isPrimaryCard": false,
+     "lastFourDigit": "0008",
+     "network": null,
+     "productFamily": "Coral"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 695,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 51525.58,
+   "totalAmountDue": 48474.42,
+   "totalCreditLimit": 100000,
+   "totalMinimumAmountDue": 2670
+  },
+  "statementMeta": {
+   "dueDate": "04/12/2025",
+   "issuerName": "ICICI Bank",
+   "statementDate": "16/11/2025"
+  },
+  "transactions": [
+   {
+    "amount": 490,
+    "currency": "INR",
+    "date": "03/11/2025",
+    "description": "Autodebit Payment Recd.",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 1421.42,
+    "currency": "INR",
+    "date": "16/11/2025",
+    "description": "Interest Charges",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "INTEREST"
+   },
+   {
+    "amount": 255.86,
+    "currency": "INR",
+    "date": "16/11/2025",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 11500,
+    "currency": "INR",
+    "date": "19/10/2025",
+    "description": "FACTORY OUTLET BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 230,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1403,
+    "currency": "INR",
+    "date": "19/10/2025",
+    "description": "AMAZON PAY INDIA PRIVATET Bangalore IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 28,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 5473,
+    "currency": "INR",
+    "date": "28/10/2025",
+    "description": "Agoda Company PTE LTD Mumbai IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 109,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 5651.22,
+    "currency": "INR",
+    "date": "30/10/2025",
+    "description": "NOBROKER BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 56,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 5059,
+    "currency": "INR",
+    "date": "07/11/2025",
+    "description": "ATO*IRCTC LTD HTTPS://IRCTC IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 101,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 6976.76,
+    "currency": "INR",
+    "date": "07/11/2025",
+    "description": "ATO*IRCTC LTD HTTPS://IRCTC IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 139,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1618.37,
+    "currency": "INR",
+    "date": "07/11/2025",
+    "description": "ATO*IRCTC LTD HTTPS://IRCTC IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 32,
+    "txnType": "PURCHASE"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_238910814_19a9010e02ea35bf_4035XXXXXXXX0008_370235_Retail_Coral_NORM.pdf",
+ "prompt_chars": 14940,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/gemini/ICICI_PROMPT_PREV.txt",
+ "prompt_sha256": "79325334991ca5ec423118cbb1c7d70236240bf05519100cc2884129b0f17105",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Coral\",\"isPrimaryCard\":true,\"lastFourDigit\":\"8739\",\"network\":null,\"productFamily\":\"Coral\"}},{\"cardMeta\":{\"cardDisplayName\":\"Coral\",\"isPrimaryCard\":false,\"lastFourDigit\":\"0008\",\"network\":null,\"productFamily\":\"Coral\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":695,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":51525.58,\"totalAmountDue\":48474.42,\"totalCreditLimit\":100000,\"totalMinimumAmountDue\":2670},\"statementMeta\":{\"dueDate\":\"04/12/2025\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"16/11/2025\"},\"transactions\":[{\"amount\":490,\"currency\":\"INR\",\"date\":\"03/11/2025\",\"description\":\"Autodebit Payment Recd.\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PAYMENT\"},{\"amount\":1421.42,\"currency\":\"INR\",\"date\":\"16/11/2025\",\"description\":\"Interest Charges\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"INTEREST\"},{\"amount\":255.86,\"currency\":\"INR\",\"date\":\"16/11/2025\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":11500,\"currency\":\"INR\",\"date\":\"19/10/2025\",\"description\":\"FACTORY OUTLET BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":230,\"txnType\":\"PURCHASE\"},{\"amount\":1403,\"currency\":\"INR\",\"date\":\"19/10/2025\",\"description\":\"AMAZON PAY INDIA PRIVATET Bangalore IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":28,\"txnType\":\"PURCHASE\"},{\"amount\":5473,\"currency\":\"INR\",\"date\":\"28/10/2025\",\"description\":\"Agoda Company PTE LTD Mumbai IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":109,\"txnType\":\"PURCHASE\"},{\"amount\":5651.22,\"currency\":\"INR\",\"date\":\"30/10/2025\",\"description\":\"NOBROKER BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":56,\"txnType\":\"PURCHASE\"},{\"amount\":5059,\"currency\":\"INR\",\"date\":\"07/11/2025\",\"description\":\"ATO*IRCTC LTD HTTPS://IRCTC IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":101,\"txnType\":\"PURCHASE\"},{\"amount\":6976.76,\"currency\":\"INR\",\"date\":\"07/11/2025\",\"description\":\"ATO*IRCTC LTD HTTPS://IRCTC IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":139,\"txnType\":\"PURCHASE\"},{\"amount\":1618.37,\"currency\":\"INR\",\"date\":\"07/11/2025\",\"description\":\"ATO*IRCTC LTD HTTPS://IRCTC IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":32,\"txnType\":\"PURCHASE\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "238910814",
+ "started_at": "2026-08-15T16:34:35",
+ "token_identity_detail": "ok p=13664 c=1026 t=14690 reasoning=309",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 1026,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 309,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 13664,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 14690
+ }
+}

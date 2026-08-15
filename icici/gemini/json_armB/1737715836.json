@@ -1,0 +1,163 @@
+{
+ "arm": "B",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:34:14",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 11208,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 2,
+ "n_transactions": 8,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "Sapphiro",
+     "isPrimaryCard": true,
+     "lastFourDigit": "4004",
+     "network": null,
+     "productFamily": "Sapphiro"
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": "Sapphiro",
+     "isPrimaryCard": false,
+     "lastFourDigit": "8004",
+     "network": null,
+     "productFamily": "Sapphiro"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 661,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 458578,
+   "totalAmountDue": 41422,
+   "totalCreditLimit": 500000,
+   "totalMinimumAmountDue": 6000
+  },
+  "statementMeta": {
+   "dueDate": "29/05/2026",
+   "issuerName": "ICICI Bank",
+   "statementDate": "11/05/2026"
+  },
+  "transactions": [
+   {
+    "amount": 12432,
+    "currency": "INR",
+    "date": "11/04/2026",
+    "description": "FLIPKART ONLINE PG BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 248,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 3500,
+    "currency": "INR",
+    "date": "10/05/2026",
+    "description": "Annual Fee reversal for 1st yr",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "REVERSAL"
+   },
+   {
+    "amount": 630,
+    "currency": "INR",
+    "date": "10/05/2026",
+    "description": "IGST-Rev-CI@18%",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 3500,
+    "currency": "INR",
+    "date": "11/05/2026",
+    "description": "Annual Fee - 2nd Year",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 630,
+    "currency": "INR",
+    "date": "11/05/2026",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 12432,
+    "currency": "INR",
+    "date": "11/04/2026",
+    "description": "FLIPKART INTERNET PVT BANGALORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 248,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 16558,
+    "currency": "INR",
+    "date": "26/04/2026",
+    "description": "THE CHENNAI MOBILES SANGAGIRI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 165,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 48889.82,
+    "currency": "INR",
+    "date": "28/04/2026",
+    "description": "BBPS Payment received",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PAYMENT"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_1737715836_19e1a7d958194a20_4748XXXXXXXX5000_412838_Retail_Sapphiro_NORM.pdf",
+ "prompt_chars": 14940,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/gemini/ICICI_PROMPT_PREV.txt",
+ "prompt_sha256": "79325334991ca5ec423118cbb1c7d70236240bf05519100cc2884129b0f17105",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Sapphiro\",\"isPrimaryCard\":true,\"lastFourDigit\":\"4004\",\"network\":null,\"productFamily\":\"Sapphiro\"}},{\"cardMeta\":{\"cardDisplayName\":\"Sapphiro\",\"isPrimaryCard\":false,\"lastFourDigit\":\"8004\",\"network\":null,\"productFamily\":\"Sapphiro\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":661,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":458578,\"totalAmountDue\":41422,\"totalCreditLimit\":500000,\"totalMinimumAmountDue\":6000},\"statementMeta\":{\"dueDate\":\"29/05/2026\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"11/05/2026\"},\"transactions\":[{\"amount\":12432,\"currency\":\"INR\",\"date\":\"11/04/2026\",\"description\":\"FLIPKART ONLINE PG BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":248,\"txnType\":\"PURCHASE\"},{\"amount\":3500,\"currency\":\"INR\",\"date\":\"10/05/2026\",\"description\":\"Annual Fee reversal for 1st yr\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"REVERSAL\"},{\"amount\":630,\"currency\":\"INR\",\"date\":\"10/05/2026\",\"description\":\"IGST-Rev-CI@18%\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":3500,\"currency\":\"INR\",\"date\":\"11/05/2026\",\"description\":\"Annual Fee - 2nd Year\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"FEE\"},{\"amount\":630,\"currency\":\"INR\",\"date\":\"11/05/2026\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":12432,\"currency\":\"INR\",\"date\":\"11/04/2026\",\"description\":\"FLIPKART INTERNET PVT BANGALORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":248,\"txnType\":\"PURCHASE\"},{\"amount\":16558,\"currency\":\"INR\",\"date\":\"26/04/2026\",\"description\":\"THE CHENNAI MOBILES SANGAGIRI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":165,\"txnType\":\"PURCHASE\"},{\"amount\":48889.82,\"currency\":\"INR\",\"date\":\"28/04/2026\",\"description\":\"BBPS Payment received\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PAYMENT\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "1737715836",
+ "started_at": "2026-08-15T16:34:03",
+ "token_identity_detail": "ok p=16150 c=958 t=17108 reasoning=347",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 958,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 347,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 16150,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 17108
+ }
+}

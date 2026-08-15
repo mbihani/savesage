@@ -1,0 +1,172 @@
+{
+ "arm": "B",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:35:01",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 13481,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 2,
+ "n_transactions": 9,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "ICICI Bank Coral Credit Card",
+     "isPrimaryCard": true,
+     "lastFourDigit": "1658",
+     "network": null,
+     "productFamily": "Coral"
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": null,
+     "isPrimaryCard": false,
+     "lastFourDigit": "0005",
+     "network": null,
+     "productFamily": null
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 10,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 46928.02,
+   "totalAmountDue": 3071.98,
+   "totalCreditLimit": 50000,
+   "totalMinimumAmountDue": 530
+  },
+  "statementMeta": {
+   "dueDate": "07/02/2026",
+   "issuerName": "ICICI Bank",
+   "statementDate": "20/01/2026"
+  },
+  "transactions": [
+   {
+    "amount": 0,
+    "currency": "INR",
+    "date": "07/01/2026",
+    "description": "Auto Dr.Retn-Insuff. fund",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "REVERSAL"
+   },
+   {
+    "amount": 925.06,
+    "currency": "INR",
+    "date": "08/01/2026",
+    "description": "AUTO DEBIT RETURN FEE",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 166.51,
+    "currency": "INR",
+    "date": "08/01/2026",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 1100,
+    "currency": "INR",
+    "date": "11/01/2026",
+    "description": "Late Payment Fee",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "FEE"
+   },
+   {
+    "amount": 198,
+    "currency": "INR",
+    "date": "11/01/2026",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 2177.95,
+    "currency": "INR",
+    "date": "20/01/2026",
+    "description": "Interest Charges",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "INTEREST"
+   },
+   {
+    "amount": 392.03,
+    "currency": "INR",
+    "date": "20/01/2026",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 48642.8,
+    "currency": "INR",
+    "date": "12/01/2026",
+    "description": "INFINITY PAYMENT RECEIVED, THANK YOU",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 502,
+    "currency": "INR",
+    "date": "17/01/2026",
+    "description": "MNCY HOSPITALITY EAST GODAVARI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 10,
+    "txnType": "PURCHASE"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_354990911_19bded023426d71d_4748XXXXXXXX8005_85790_Retail_Coral_NORM.pdf",
+ "prompt_chars": 14940,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/gemini/ICICI_PROMPT_PREV.txt",
+ "prompt_sha256": "79325334991ca5ec423118cbb1c7d70236240bf05519100cc2884129b0f17105",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"ICICI Bank Coral Credit Card\",\"isPrimaryCard\":true,\"lastFourDigit\":\"1658\",\"network\":null,\"productFamily\":\"Coral\"}},{\"cardMeta\":{\"cardDisplayName\":null,\"isPrimaryCard\":false,\"lastFourDigit\":\"0005\",\"network\":null,\"productFamily\":null}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":10,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":46928.02,\"totalAmountDue\":3071.98,\"totalCreditLimit\":50000,\"totalMinimumAmountDue\":530},\"statementMeta\":{\"dueDate\":\"07/02/2026\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"20/01/2026\"},\"transactions\":[{\"amount\":0,\"currency\":\"INR\",\"date\":\"07/01/2026\",\"description\":\"Auto Dr.Retn-Insuff. fund\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"REVERSAL\"},{\"amount\":925.06,\"currency\":\"INR\",\"date\":\"08/01/2026\",\"description\":\"AUTO DEBIT RETURN FEE\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"FEE\"},{\"amount\":166.51,\"currency\":\"INR\",\"date\":\"08/01/2026\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":1100,\"currency\":\"INR\",\"date\":\"11/01/2026\",\"description\":\"Late Payment Fee\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"FEE\"},{\"amount\":198,\"currency\":\"INR\",\"date\":\"11/01/2026\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":2177.95,\"currency\":\"INR\",\"date\":\"20/01/2026\",\"description\":\"Interest Charges\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"INTEREST\"},{\"amount\":392.03,\"currency\":\"INR\",\"date\":\"20/01/2026\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":48642.8,\"currency\":\"INR\",\"date\":\"12/01/2026\",\"description\":\"INFINITY PAYMENT RECEIVED, THANK YOU\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PAYMENT\"},{\"amount\":502,\"currency\":\"INR\",\"date\":\"17/01/2026\",\"description\":\"MNCY HOSPITALITY EAST GODAVARI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":10,\"txnType\":\"PURCHASE\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "354990911",
+ "started_at": "2026-08-15T16:34:48",
+ "token_identity_detail": "ok p=13588 c=1089 t=14677 reasoning=440",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 1089,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 440,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 13588,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 14677
+ }
+}

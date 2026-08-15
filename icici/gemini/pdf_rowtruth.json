@@ -1,0 +1,1605 @@
+{
+ "1529317035": {
+  "n_rows": 6,
+  "rows": [
+   {
+    "page": 1,
+    "y": 407.08,
+    "date": "13/07/2022",
+    "description": "Late Payment Fee",
+    "amount": 500.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 420.03,
+    "date": "13/07/2022",
+    "description": "IGST-CI@18%",
+    "amount": 90.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 432.98,
+    "date": "21/07/2022",
+    "description": "Interest Charges",
+    "amount": 201.51,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 445.93,
+    "date": "21/07/2022",
+    "description": "IGST-CI@18%",
+    "amount": 36.27,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 474.21,
+    "date": "30/06/2022",
+    "description": "NETFLIX NETFLIX IN",
+    "amount": 649.0,
+    "direction": "DEBIT",
+    "rewardPoints": 3
+   },
+   {
+    "page": 1,
+    "y": 487.16,
+    "date": "17/07/2022",
+    "description": "AMAZON MUMBAI IN",
+    "amount": 2.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   }
+  ]
+ },
+ "1737715836": {
+  "n_rows": 8,
+  "rows": [
+   {
+    "page": 1,
+    "y": 407.08,
+    "date": "11/04/2026",
+    "description": "FLIPKART ONLINE PG BANGALORE IN",
+    "amount": 12432.0,
+    "direction": "DEBIT",
+    "rewardPoints": 248
+   },
+   {
+    "page": 1,
+    "y": 420.03,
+    "date": "10/05/2026",
+    "description": "Annual Fee reversal for 1st yr",
+    "amount": 3500.0,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 432.98,
+    "date": "10/05/2026",
+    "description": "IGST-Rev-CI@18%",
+    "amount": 630.0,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 445.93,
+    "date": "11/05/2026",
+    "description": "Annual Fee - 2nd Year",
+    "amount": 3500.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 458.88,
+    "date": "11/05/2026",
+    "description": "IGST-CI@18%",
+    "amount": 630.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 487.16,
+    "date": "11/04/2026",
+    "description": "FLIPKART INTERNET PVT BANGALORE IN",
+    "amount": 12432.0,
+    "direction": "DEBIT",
+    "rewardPoints": 248
+   },
+   {
+    "page": 1,
+    "y": 500.11,
+    "date": "26/04/2026",
+    "description": "THE CHENNAI MOBILES SANGAGIRI IN",
+    "amount": 16558.0,
+    "direction": "DEBIT",
+    "rewardPoints": 165
+   },
+   {
+    "page": 1,
+    "y": 513.05,
+    "date": "28/04/2026",
+    "description": "BBPS Payment received",
+    "amount": 48889.82,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   }
+  ]
+ },
+ "1770339352": {
+  "n_rows": 18,
+  "rows": [
+   {
+    "page": 1,
+    "y": 407.08,
+    "date": "21/05/2026",
+    "description": "Interest Charges",
+    "amount": 1625.96,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 420.03,
+    "date": "21/05/2026",
+    "description": "IGST-CI@18%",
+    "amount": 292.67,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 448.31,
+    "date": "21/04/2026",
+    "description": "Dreamplug Technologies BANGALORE IN",
+    "amount": 515.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 461.26,
+    "date": "22/04/2026",
+    "description": "DREAMPLUG PAYTECH SO BENGALURU IN",
+    "amount": 98.0,
+    "direction": "CREDIT",
+    "rewardPoints": -1
+   },
+   {
+    "page": 1,
+    "y": 474.21,
+    "date": "22/04/2026",
+    "description": "DREAMPLUG PAYTECH SO BENGALURU IN",
+    "amount": 98.0,
+    "direction": "DEBIT",
+    "rewardPoints": 1
+   },
+   {
+    "page": 1,
+    "y": 487.16,
+    "date": "09/05/2026",
+    "description": "BBPS Payment received",
+    "amount": 3640.0,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 500.11,
+    "date": "11/05/2026",
+    "description": "Interest Amount Amortization - <21/24>IKEA",
+    "amount": 27.39,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 520.33,
+    "date": "11/05/2026",
+    "description": "IGST-CI@18%",
+    "amount": 4.93,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 533.28,
+    "date": "11/05/2026",
+    "description": "Principal Amount Amortization - <21/24>IKEA",
+    "amount": 446.34,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 553.51,
+    "date": "11/05/2026",
+    "description": "Interest Amount Amortization - <21/24>LULU",
+    "amount": 5.28,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 573.74,
+    "date": "11/05/2026",
+    "description": "IGST-CI@18%",
+    "amount": 0.95,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 586.68,
+    "date": "11/05/2026",
+    "description": "Principal Amount Amortization -",
+    "amount": 86.01,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 606.91,
+    "date": "19/05/2026",
+    "description": "Interest Amount Amortization - <21/24>IKEA",
+    "amount": 10.44,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 2,
+    "y": 73.86,
+    "date": "19/05/2026",
+    "description": "IGST-CI@18% 0",
+    "amount": 1.88,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 86.81,
+    "date": "19/05/2026",
+    "description": "Principal Amount Amortization - <21/24>IKEA INDIA PVT LTD 0",
+    "amount": 170.09,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 99.76,
+    "date": "19/05/2026",
+    "description": "Interest Amount Amortization - <21/24>MAJOR BRANDS INDIA PVT 0",
+    "amount": 24.53,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 112.71,
+    "date": "19/05/2026",
+    "description": "IGST-CI@18% 0",
+    "amount": 4.42,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 125.66,
+    "date": "19/05/2026",
+    "description": "Principal Amount Amortization - <21/24>MAJOR BRANDS INDIA PV 0",
+    "amount": 399.77,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   }
+  ]
+ },
+ "205034973": {
+  "n_rows": 7,
+  "rows": [
+   {
+    "page": 1,
+    "y": 407.08,
+    "date": "30/11/2025",
+    "description": "Auto Dr.Retn-Insuff. fund",
+    "amount": 0.0,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 435.36,
+    "date": "30/11/2025",
+    "description": "BBPS Payment received",
+    "amount": 33106.89,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 448.31,
+    "date": "30/11/2025",
+    "description": "AMAZON PAY IN E COMMERC BANGALORE",
+    "amount": 663.0,
+    "direction": "DEBIT",
+    "rewardPoints": 33
+   },
+   {
+    "page": 1,
+    "y": 468.54,
+    "date": "06/12/2025",
+    "description": "CHEQ DIGITAL PRIVATE LIMI",
+    "amount": 40684.35,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 488.77,
+    "date": "07/12/2025",
+    "description": "Interest Amount Amortization -",
+    "amount": 51.78,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 508.99,
+    "date": "07/12/2025",
+    "description": "IGST-CI@18%",
+    "amount": 9.32,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 521.94,
+    "date": "07/12/2025",
+    "description": "Principal Amount Amortization -",
+    "amount": 952.2,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   }
+  ]
+ },
+ "232344130": {
+  "n_rows": 52,
+  "rows": [
+   {
+    "page": 1,
+    "y": 407.08,
+    "date": "02/12/2025",
+    "description": "UPI-570244597745-GLOBAL H OSPITALITY",
+    "amount": 80.0,
+    "direction": "DEBIT",
+    "rewardPoints": 1
+   },
+   {
+    "page": 1,
+    "y": 427.31,
+    "date": "03/12/2025",
+    "description": "UPI-570397032082-Babasahe b IN",
+    "amount": 35.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 440.26,
+    "date": "03/12/2025",
+    "description": "UPI-570386414506-Babasahe b IN",
+    "amount": 80.0,
+    "direction": "DEBIT",
+    "rewardPoints": 1
+   },
+   {
+    "page": 1,
+    "y": 453.21,
+    "date": "03/12/2025",
+    "description": "UPI-570305934844-SHRI AVI NASH",
+    "amount": 50.0,
+    "direction": "DEBIT",
+    "rewardPoints": 1
+   },
+   {
+    "page": 1,
+    "y": 473.43,
+    "date": "03/12/2025",
+    "description": "UPI-570367725227-Vishal T arachand Dhom",
+    "amount": 30.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 493.66,
+    "date": "04/12/2025",
+    "description": "UPI-570455685916-GLOBAL H OSPITALITY",
+    "amount": 70.0,
+    "direction": "DEBIT",
+    "rewardPoints": 1
+   },
+   {
+    "page": 1,
+    "y": 513.89,
+    "date": "04/12/2025",
+    "description": "UPI-570458699497-NYAS FOO DS AND",
+    "amount": 170.0,
+    "direction": "DEBIT",
+    "rewardPoints": 3
+   },
+   {
+    "page": 1,
+    "y": 534.12,
+    "date": "04/12/2025",
+    "description": "UPI-533833909759-Namrata Mahesh Paul IN",
+    "amount": 30.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 547.07,
+    "date": "05/12/2025",
+    "description": "UPI-570518803438-NEW PANK AJ SUPER",
+    "amount": 29.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 567.29,
+    "date": "06/12/2025",
+    "description": "UPI-570651316691-DEEPA EN TERPRISES IN",
+    "amount": 140.0,
+    "direction": "DEBIT",
+    "rewardPoints": 2
+   },
+   {
+    "page": 1,
+    "y": 580.24,
+    "date": "06/12/2025",
+    "description": "UPI-570652323853-Mr SWAP NIL",
+    "amount": 80.0,
+    "direction": "DEBIT",
+    "rewardPoints": 1
+   },
+   {
+    "page": 1,
+    "y": 600.47,
+    "date": "06/12/2025",
+    "description": "UPI-570623163900-JAY MALH AR",
+    "amount": 30.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 2,
+    "y": 73.86,
+    "date": "06/12/2025",
+    "description": "UPI-570698452251-Mr HIVR E SHRIRAM TR IN 0",
+    "amount": 40.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 86.81,
+    "date": "06/12/2025",
+    "description": "UPI-570637669637-Mrs ANIT A GOKUL THAN IN 2",
+    "amount": 115.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 99.76,
+    "date": "06/12/2025",
+    "description": "UPI-570668258434-SACHIN R AMDAS DABHADE IN 1",
+    "amount": 50.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 112.71,
+    "date": "06/12/2025",
+    "description": "UPI-570683062088-PANCHWAT I MARKET IN 0",
+    "amount": 36.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 125.65,
+    "date": "07/12/2025",
+    "description": "UPI-570709483797-RAMJIVAN PRABHU MOHI IN 0",
+    "amount": 10.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 138.6,
+    "date": "07/12/2025",
+    "description": "UPI-570717499089-NEW PANK AJ SUPER SHOP IN 0",
+    "amount": 29.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 151.55,
+    "date": "07/12/2025",
+    "description": "UPI-534185948627-DAYALALP ATIDARANDSMT IN 0",
+    "amount": 12.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 164.5,
+    "date": "07/12/2025",
+    "description": "UPI-534191842714-AMOL SAN TOSH JADHAV IN 1",
+    "amount": 50.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 177.45,
+    "date": "08/12/2025",
+    "description": "UPI-534217684411-SATISH N IVRUTTI BANDA IN 0",
+    "amount": 48.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 190.4,
+    "date": "08/12/2025",
+    "description": "UPI-570899030127-INSTA WA SH IN 2",
+    "amount": 120.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 203.34,
+    "date": "10/12/2025",
+    "description": "UPI-534434478628-STAR BAZ AAR IN 11",
+    "amount": 564.68,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 216.29,
+    "date": "10/12/2025",
+    "description": "UPI-534467882547-SUJITKUM AR SURYABHAN IN 1",
+    "amount": 50.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 229.24,
+    "date": "10/12/2025",
+    "description": "UPI-534462891899-SANGITA DEVI IN 0",
+    "amount": 25.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 242.19,
+    "date": "10/12/2025",
+    "description": "UPI-534458275022-SANGITA DEVI IN 0",
+    "amount": 5.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 255.14,
+    "date": "10/12/2025",
+    "description": "UPI-534407575832-SHRI AVI NASH PARASHRA IN 0",
+    "amount": 40.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 268.09,
+    "date": "10/12/2025",
+    "description": "UPI-534468790288-ANKUSH D ILIP DEORE IN 1",
+    "amount": 60.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 281.03,
+    "date": "10/12/2025",
+    "description": "UPI-534490577166-LAKDE DH ANESH EKNATH IN 0",
+    "amount": 30.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 293.98,
+    "date": "10/12/2025",
+    "description": "UPI-534438684575-RAHIM EI DU SHAIKH IN 1",
+    "amount": 70.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 306.93,
+    "date": "11/12/2025",
+    "description": "UPI-571149122590-GLOBAL H OSPITALITY SO IN 1",
+    "amount": 70.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 319.88,
+    "date": "12/12/2025",
+    "description": "UPI-534603815812-ENCORE R ESORT IN 238",
+    "amount": 11920.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 332.83,
+    "date": "13/12/2025",
+    "description": "UPI-571300003901-SONU RAT HAUR IN 1",
+    "amount": 80.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 345.78,
+    "date": "13/12/2025",
+    "description": "UPI-534743999583-RAJ VILA S KOLI IN 1",
+    "amount": 90.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 358.72,
+    "date": "13/12/2025",
+    "description": "UPI-534723592484-Mr HIVR E SHRIRAM TR IN 1",
+    "amount": 90.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 371.67,
+    "date": "13/12/2025",
+    "description": "UPI-571329313302-Avinash Parasram Rath IN 0",
+    "amount": 40.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 384.62,
+    "date": "13/12/2025",
+    "description": "UPI-534741699439-Avinash Parasram Rath IN 0",
+    "amount": 20.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 397.57,
+    "date": "13/12/2025",
+    "description": "UPI-571374211431-Dnyanesh war Sirsat IN 0",
+    "amount": 10.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 410.52,
+    "date": "13/12/2025",
+    "description": "UPI-571324506767-PANCHWAT I MARKET IN 1",
+    "amount": 89.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 423.47,
+    "date": "13/12/2025",
+    "description": "UPI-191605910860-Swiggy L imited IN 3",
+    "amount": 173.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 436.41,
+    "date": "14/12/2025",
+    "description": "UPI-571473446918-BASAVARA J REVANAPPA IN 0",
+    "amount": 40.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 449.36,
+    "date": "14/12/2025",
+    "description": "UPI-571427840212-BASAVARA J REVANAPPA IN 0",
+    "amount": 10.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 462.31,
+    "date": "14/12/2025",
+    "description": "UPI-571445942755-CHANDANE AVINASH VISH IN 0",
+    "amount": 24.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 475.26,
+    "date": "14/12/2025",
+    "description": "UPI-571495957614-STAR BAZ AAR IN 7",
+    "amount": 363.1,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 488.21,
+    "date": "15/12/2025",
+    "description": "UPI-534992515916-05 Shree Murari petro IN 0",
+    "amount": 500.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 501.15,
+    "date": "15/12/2025",
+    "description": "UPI-534976405522-Google I ndia Digital IN 6",
+    "amount": 693.2,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 514.1,
+    "date": "15/12/2025",
+    "description": "UPI-534951666068-DAYALALP ATIDARANDSMT IN 0",
+    "amount": 25.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 527.05,
+    "date": "15/12/2025",
+    "description": "UPI-534937571511-Ram Prav esh B Gupta IN 1",
+    "amount": 50.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 540.0,
+    "date": "15/12/2025",
+    "description": "YES 0",
+    "amount": 5.9,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 552.95,
+    "date": "16/12/2025",
+    "description": "BBPS Payment received 0",
+    "amount": 20901.21,
+    "direction": "CREDIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 565.9,
+    "date": "16/12/2025",
+    "description": "UPI-571651546129-PARMESHW AR TEKALE IN 9",
+    "amount": 498.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 578.84,
+    "date": "19/12/2025",
+    "description": "UPI-571955582745-VSMDOWNT OWN FOODTOWN IN 2",
+    "amount": 100.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   }
+  ]
+ },
+ "238910814": {
+  "n_rows": 10,
+  "rows": [
+   {
+    "page": 1,
+    "y": 407.08,
+    "date": "03/11/2025",
+    "description": "Autodebit Payment Recd.",
+    "amount": 490.0,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 420.03,
+    "date": "16/11/2025",
+    "description": "Interest Charges",
+    "amount": 1421.42,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 432.98,
+    "date": "16/11/2025",
+    "description": "IGST-CI@18%",
+    "amount": 255.86,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 461.26,
+    "date": "19/10/2025",
+    "description": "FACTORY OUTLET BANGALORE IN",
+    "amount": 11500.0,
+    "direction": "DEBIT",
+    "rewardPoints": 230
+   },
+   {
+    "page": 1,
+    "y": 474.21,
+    "date": "19/10/2025",
+    "description": "AMAZON PAY INDIA PRIVATET Bangalore IN",
+    "amount": 1403.0,
+    "direction": "DEBIT",
+    "rewardPoints": 28
+   },
+   {
+    "page": 1,
+    "y": 487.16,
+    "date": "28/10/2025",
+    "description": "Agoda Company PTE LTD Mumbai IN",
+    "amount": 5473.0,
+    "direction": "DEBIT",
+    "rewardPoints": 109
+   },
+   {
+    "page": 1,
+    "y": 500.11,
+    "date": "30/10/2025",
+    "description": "NOBROKER BANGALORE IN",
+    "amount": 5651.22,
+    "direction": "DEBIT",
+    "rewardPoints": 56
+   },
+   {
+    "page": 1,
+    "y": 513.05,
+    "date": "07/11/2025",
+    "description": "ATO*IRCTC LTD HTTPS://IRCTC IN",
+    "amount": 5059.0,
+    "direction": "DEBIT",
+    "rewardPoints": 101
+   },
+   {
+    "page": 1,
+    "y": 526.0,
+    "date": "07/11/2025",
+    "description": "ATO*IRCTC LTD HTTPS://IRCTC IN",
+    "amount": 6976.76,
+    "direction": "DEBIT",
+    "rewardPoints": 139
+   },
+   {
+    "page": 1,
+    "y": 538.95,
+    "date": "07/11/2025",
+    "description": "ATO*IRCTC LTD HTTPS://IRCTC IN",
+    "amount": 1618.37,
+    "direction": "DEBIT",
+    "rewardPoints": 32
+   }
+  ]
+ },
+ "354990911": {
+  "n_rows": 9,
+  "rows": [
+   {
+    "page": 1,
+    "y": 407.08,
+    "date": "07/01/2026",
+    "description": "Auto Dr.Retn-Insuff. fund",
+    "amount": 0.0,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 420.03,
+    "date": "08/01/2026",
+    "description": "AUTO DEBIT RETURN FEE",
+    "amount": 925.06,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 432.98,
+    "date": "08/01/2026",
+    "description": "IGST-CI@18%",
+    "amount": 166.51,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 445.93,
+    "date": "11/01/2026",
+    "description": "Late Payment Fee",
+    "amount": 1100.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 458.88,
+    "date": "11/01/2026",
+    "description": "IGST-CI@18%",
+    "amount": 198.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 471.83,
+    "date": "20/01/2026",
+    "description": "Interest Charges",
+    "amount": 2177.95,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 484.77,
+    "date": "20/01/2026",
+    "description": "IGST-CI@18%",
+    "amount": 392.03,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 513.05,
+    "date": "12/01/2026",
+    "description": "INFINITY PAYMENT RECEIVED, THANK YOU",
+    "amount": 48642.8,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 526.0,
+    "date": "17/01/2026",
+    "description": "MNCY HOSPITALITY EAST GODAVARI IN",
+    "amount": 502.0,
+    "direction": "DEBIT",
+    "rewardPoints": 10
+   }
+  ]
+ },
+ "410444357": {
+  "n_rows": 9,
+  "rows": [
+   {
+    "page": 1,
+    "y": 407.08,
+    "date": "03/02/2026",
+    "description": "Auto Dr.Retn-Insuff. fund",
+    "amount": 0.0,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 435.36,
+    "date": "24/01/2026",
+    "description": "Interest Amount Amortization - <22/24>",
+    "amount": 188.14,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 448.31,
+    "date": "24/01/2026",
+    "description": "IGST-CI@18%",
+    "amount": 33.87,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 461.26,
+    "date": "24/01/2026",
+    "description": "Principal Amount Amortization - <22/24>",
+    "amount": 4644.19,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 474.21,
+    "date": "26/01/2026",
+    "description": "Interest Amount Amortization - <23/24>",
+    "amount": 140.07,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 487.16,
+    "date": "26/01/2026",
+    "description": "IGST-CI@18%",
+    "amount": 25.21,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 500.11,
+    "date": "26/01/2026",
+    "description": "Principal Amount Amortization - <23/24>",
+    "amount": 5221.26,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 528.39,
+    "date": "03/02/2026",
+    "description": "BBPS Payment received",
+    "amount": 10276.09,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 541.34,
+    "date": "14/02/2026",
+    "description": "BLINKIT ECOM GURGAON IN",
+    "amount": 1936.35,
+    "direction": "DEBIT",
+    "rewardPoints": 10
+   }
+  ]
+ },
+ "606359443": {
+  "n_rows": 16,
+  "rows": [
+   {
+    "page": 1,
+    "y": 407.08,
+    "date": "22/01/2026",
+    "description": "WESTSIDE PUNE IN",
+    "amount": 4905.0,
+    "direction": "DEBIT",
+    "rewardPoints": 98
+   },
+   {
+    "page": 1,
+    "y": 420.03,
+    "date": "29/01/2026",
+    "description": "BBPS Payment received",
+    "amount": 46155.0,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 432.98,
+    "date": "29/01/2026",
+    "description": "razorpay*Indigo Gurgaon IN",
+    "amount": 7458.0,
+    "direction": "DEBIT",
+    "rewardPoints": 149
+   },
+   {
+    "page": 1,
+    "y": 445.93,
+    "date": "04/02/2026",
+    "description": "RBL*S K Fillers AMRITSAR AMRITSAR IN",
+    "amount": 1500.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 458.88,
+    "date": "05/02/2026",
+    "description": "Rev of Fuel Surcharge",
+    "amount": 37.5,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 471.83,
+    "date": "05/02/2026",
+    "description": "IGST-Rev-CI@18%",
+    "amount": 6.75,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 484.77,
+    "date": "05/02/2026",
+    "description": "INDIGO AIRLINE INR PG GURGAON IN",
+    "amount": 8900.0,
+    "direction": "DEBIT",
+    "rewardPoints": 178
+   },
+   {
+    "page": 1,
+    "y": 497.72,
+    "date": "07/02/2026",
+    "description": "RBL*S K Fillers AMRITSAR AMRITSAR IN",
+    "amount": 1500.0,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 510.67,
+    "date": "08/02/2026",
+    "description": "Rev of Fuel Surcharge",
+    "amount": 37.5,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 523.62,
+    "date": "08/02/2026",
+    "description": "IGST-Rev-CI@18%",
+    "amount": 6.75,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 551.9,
+    "date": "13/01/2026",
+    "description": "YOUTUBEGOOGLE MUMBAI IN",
+    "amount": 299.0,
+    "direction": "DEBIT",
+    "rewardPoints": 5
+   },
+   {
+    "page": 1,
+    "y": 564.85,
+    "date": "19/01/2026",
+    "description": "Avenue Supermarts Ltd AMRITSAR IN",
+    "amount": 7211.43,
+    "direction": "DEBIT",
+    "rewardPoints": 144
+   },
+   {
+    "page": 1,
+    "y": 577.8,
+    "date": "28/01/2026",
+    "description": "NETFLIX MUMBAI IN",
+    "amount": 649.0,
+    "direction": "DEBIT",
+    "rewardPoints": 6
+   },
+   {
+    "page": 1,
+    "y": 590.74,
+    "date": "31/01/2026",
+    "description": "Avenue Supermarts Ltd AMRITSAR IN",
+    "amount": 3350.66,
+    "direction": "DEBIT",
+    "rewardPoints": 67
+   },
+   {
+    "page": 1,
+    "y": 603.69,
+    "date": "06/02/2026",
+    "description": "SARVJEET SINGH AMRITSAR IN",
+    "amount": 450.0,
+    "direction": "DEBIT",
+    "rewardPoints": 9
+   },
+   {
+    "page": 2,
+    "y": 73.86,
+    "date": "06/02/2026",
+    "description": "LIFE STYLE INTERNATIO AMRITSAR IN 69",
+    "amount": 3451.57,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   }
+  ]
+ },
+ "693462745": {
+  "n_rows": 3,
+  "rows": [
+   {
+    "page": 1,
+    "y": 407.08,
+    "date": "31/12/2025",
+    "description": "BBPS Payment received",
+    "amount": 12752.61,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 420.03,
+    "date": "08/01/2026",
+    "description": "DEEGWAL FILLING STATIO ALWAR IN",
+    "amount": 3541.3,
+    "direction": "DEBIT",
+    "rewardPoints": 0
+   },
+   {
+    "page": 1,
+    "y": 432.98,
+    "date": "09/01/2026",
+    "description": "Super saver - Offus - Fuel surcharge REV",
+    "amount": 35.41,
+    "direction": "CREDIT",
+    "rewardPoints": 0
+   }
+  ]
+ },
+ "952325284": {
+  "n_rows": 34,
+  "rows": [
+   {
+    "page": 1,
+    "y": 667.69,
+    "date": "23/09/2018",
+    "description": "Interest Charges",
+    "amount": 839.45,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 1,
+    "y": 688.69,
+    "date": "23/09/2018",
+    "description": "IGST-CI@18%",
+    "amount": 151.1,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 1,
+    "y": 757.69,
+    "date": "04/09/2018",
+    "description": "Principal Amount Amortization - <9/12>",
+    "amount": 659.33,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 1,
+    "y": 778.69,
+    "date": "04/09/2018",
+    "description": "Interest Amount Amortization - <9/12>",
+    "amount": 29.04,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 1,
+    "y": 799.69,
+    "date": "04/09/2018",
+    "description": "IGST-CI@18%",
+    "amount": 5.23,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 1,
+    "y": 820.69,
+    "date": "06/09/2018",
+    "description": "Interest Amount Amortization - <6/12>",
+    "amount": 35.21,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 1,
+    "y": 841.69,
+    "date": "06/09/2018",
+    "description": "Principal Amount Amortization - <6/12>",
+    "amount": 449.47,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 1,
+    "y": 862.69,
+    "date": "06/09/2018",
+    "description": "IGST-CI@18%",
+    "amount": 6.34,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 1,
+    "y": 883.69,
+    "date": "06/09/2018",
+    "description": "UPI Payment Received",
+    "amount": 8000.0,
+    "direction": "CREDIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 1,
+    "y": 904.69,
+    "date": "07/09/2018",
+    "description": "Principal Amount Amortization - <5/12>",
+    "amount": 426.43,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 1,
+    "y": 925.69,
+    "date": "07/09/2018",
+    "description": "Interest Amount Amortization - <5/12>",
+    "amount": 38.39,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 167.69,
+    "date": "07/09/2018",
+    "description": "IGST-CI@18%",
+    "amount": 6.91,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 188.69,
+    "date": "10/09/2018",
+    "description": "ASSAMPOWER BILLDESK MUMBAI IN",
+    "amount": 1200.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 209.69,
+    "date": "11/09/2018",
+    "description": "KALPANA FURNITURE Guwahati HQ IN",
+    "amount": 850.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 230.69,
+    "date": "12/09/2018",
+    "description": "M K ENTERPRISE KAMRUP IN",
+    "amount": 1394.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 251.69,
+    "date": "15/09/2018",
+    "description": "THE YELLOW CHILLI GUWAHATI IN",
+    "amount": 842.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 272.69,
+    "date": "16/09/2018",
+    "description": "ZOO POINT WINE SHOP GUWAHATI IN",
+    "amount": 1190.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 293.69,
+    "date": "16/09/2018",
+    "description": "Principal Amount Amortization - <6/12>",
+    "amount": 372.59,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 314.69,
+    "date": "16/09/2018",
+    "description": "Interest Amount Amortization - <6/12>",
+    "amount": 29.19,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 335.69,
+    "date": "16/09/2018",
+    "description": "IGST-CI@18%",
+    "amount": 5.25,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 356.69,
+    "date": "17/09/2018",
+    "description": "W GUWAHATI IN",
+    "amount": 1099.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 377.69,
+    "date": "18/09/2018",
+    "description": "AIRTEL.IN MUMBAI IN",
+    "amount": 717.0,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 398.69,
+    "date": "19/09/2018",
+    "description": "Interest Amount Amortization - <2/6>",
+    "amount": 48.62,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 419.69,
+    "date": "19/09/2018",
+    "description": "IGST-CI@18%",
+    "amount": 8.75,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 440.69,
+    "date": "19/09/2018",
+    "description": "Principal Amount Amortization - <8/12>",
+    "amount": 1004.5,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 461.69,
+    "date": "19/09/2018",
+    "description": "Principal Amount Amortization - <2/6>",
+    "amount": 878.39,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 482.69,
+    "date": "19/09/2018",
+    "description": "Interest Amount Amortization - <8/12>",
+    "amount": 55.6,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 503.69,
+    "date": "19/09/2018",
+    "description": "IGST-CI@18%",
+    "amount": 10.01,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 524.69,
+    "date": "20/09/2018",
+    "description": "IGST-CI@18%",
+    "amount": 3.28,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 545.69,
+    "date": "20/09/2018",
+    "description": "Principal Amount Amortization - <6/12>",
+    "amount": 232.79,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 566.69,
+    "date": "20/09/2018",
+    "description": "Interest Amount Amortization - <6/12>",
+    "amount": 18.24,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 587.69,
+    "date": "21/09/2018",
+    "description": "Principal Amount Amortization - <5/12>",
+    "amount": 398.41,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 608.69,
+    "date": "21/09/2018",
+    "description": "Interest Amount Amortization - <5/12>",
+    "amount": 35.87,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   },
+   {
+    "page": 2,
+    "y": 629.69,
+    "date": "21/09/2018",
+    "description": "IGST-CI@18%",
+    "amount": 6.46,
+    "direction": "DEBIT",
+    "rewardPoints": null
+   }
+  ]
+ }
+}

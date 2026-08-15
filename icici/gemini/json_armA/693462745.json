@@ -1,0 +1,109 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:33:47",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 8887,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 3,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": null,
+     "isPrimaryCard": true,
+     "lastFourDigit": "5002",
+     "network": null,
+     "productFamily": null
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 0,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 150494.11,
+   "totalAmountDue": 3505.89,
+   "totalCreditLimit": 220000,
+   "totalMinimumAmountDue": 180
+  },
+  "statementMeta": {
+   "dueDate": "07/02/2026",
+   "issuerName": "ICICI Bank",
+   "statementDate": "20/01/2026"
+  },
+  "transactions": [
+   {
+    "amount": 12752.61,
+    "currency": "INR",
+    "date": "31/12/2025",
+    "description": "BBPS Payment received",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 3541.3,
+    "currency": "INR",
+    "date": "08/01/2026",
+    "description": "DEEGWAL FILLING STATIO ALWAR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 35.41,
+    "currency": "INR",
+    "date": "09/01/2026",
+    "description": "Super saver - Offus - Fuel surcharge REV",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "REVERSAL"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_693462745_19bdf9b521009119_6528XXXXXXXX8005_698439_Retail_HPCL_NORM.pdf",
+ "prompt_chars": 20994,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/ICICI_PROMPT.txt",
+ "prompt_sha256": "4b047526c218a6d79d26f954f946c05dcbed0e2c0a9e9a2799eecbb48e6802c7",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":null,\"isPrimaryCard\":true,\"lastFourDigit\":\"5002\",\"network\":null,\"productFamily\":null}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":0,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":150494.11,\"totalAmountDue\":3505.89,\"totalCreditLimit\":220000,\"totalMinimumAmountDue\":180},\"statementMeta\":{\"dueDate\":\"07/02/2026\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"20/01/2026\"},\"transactions\":[{\"amount\":12752.61,\"currency\":\"INR\",\"date\":\"31/12/2025\",\"description\":\"BBPS Payment received\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PAYMENT\"},{\"amount\":3541.3,\"currency\":\"INR\",\"date\":\"08/01/2026\",\"description\":\"DEEGWAL FILLING STATIO ALWAR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PURCHASE\"},{\"amount\":35.41,\"currency\":\"INR\",\"date\":\"09/01/2026\",\"description\":\"Super saver - Offus - Fuel surcharge REV\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"REVERSAL\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "693462745",
+ "started_at": "2026-08-15T16:33:38",
+ "token_identity_detail": "ok p=14996 c=573 t=15569 reasoning=244",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 573,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 244,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 14996,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 14080
+  },
+  "total_tokens": 15569
+ }
+}

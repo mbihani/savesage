@@ -1,0 +1,181 @@
+{
+ "arm": "B",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:35:08",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 12751,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 3,
+ "n_transactions": 9,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "MakeMyTrip ICICI Bank Platinum Credit Card",
+     "isPrimaryCard": true,
+     "lastFourDigit": "3447",
+     "network": null,
+     "productFamily": null
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": "MakeMyTrip ICICI Bank Platinum Credit Card",
+     "isPrimaryCard": false,
+     "lastFourDigit": "5005",
+     "network": null,
+     "productFamily": null
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": "MakeMyTrip ICICI Bank Platinum Credit Card",
+     "isPrimaryCard": false,
+     "lastFourDigit": "5013",
+     "network": null,
+     "productFamily": null
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 10,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": 69,
+   "programType": "Cashback"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 433045.13,
+   "totalAmountDue": 12189.09,
+   "totalCreditLimit": 460000,
+   "totalMinimumAmountDue": 10350
+  },
+  "statementMeta": {
+   "dueDate": "06/03/2026",
+   "issuerName": "ICICI Bank",
+   "statementDate": "16/02/2026"
+  },
+  "transactions": [
+   {
+    "amount": 0,
+    "currency": "INR",
+    "date": "03/02/2026",
+    "description": "Auto Dr.Retn-Insuff. fund",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "REVERSAL"
+   },
+   {
+    "amount": 188.14,
+    "currency": "INR",
+    "date": "24/01/2026",
+    "description": "Interest Amount Amortization - <22/24>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 33.87,
+    "currency": "INR",
+    "date": "24/01/2026",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 4644.19,
+    "currency": "INR",
+    "date": "24/01/2026",
+    "description": "Principal Amount Amortization - <22/24>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 140.07,
+    "currency": "INR",
+    "date": "26/01/2026",
+    "description": "Interest Amount Amortization - <23/24>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 25.21,
+    "currency": "INR",
+    "date": "26/01/2026",
+    "description": "IGST-CI@18%",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 5221.26,
+    "currency": "INR",
+    "date": "26/01/2026",
+    "description": "Principal Amount Amortization - <23/24>",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "EMI"
+   },
+   {
+    "amount": 10276.09,
+    "currency": "INR",
+    "date": "03/02/2026",
+    "description": "BBPS Payment received",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 1936.35,
+    "currency": "INR",
+    "date": "14/02/2026",
+    "description": "BLINKIT ECOM GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 10,
+    "txnType": "PURCHASE"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_410444357_19c6a07f18ff7ab9_4748XXXXXXXX5013_521841_Retail_MMT_NORM.pdf",
+ "prompt_chars": 14940,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/gemini/ICICI_PROMPT_PREV.txt",
+ "prompt_sha256": "79325334991ca5ec423118cbb1c7d70236240bf05519100cc2884129b0f17105",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"MakeMyTrip ICICI Bank Platinum Credit Card\",\"isPrimaryCard\":true,\"lastFourDigit\":\"3447\",\"network\":null,\"productFamily\":null}},{\"cardMeta\":{\"cardDisplayName\":\"MakeMyTrip ICICI Bank Platinum Credit Card\",\"isPrimaryCard\":false,\"lastFourDigit\":\"5005\",\"network\":null,\"productFamily\":null}},{\"cardMeta\":{\"cardDisplayName\":\"MakeMyTrip ICICI Bank Platinum Credit Card\",\"isPrimaryCard\":false,\"lastFourDigit\":\"5013\",\"network\":null,\"productFamily\":null}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":10,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":69,\"programType\":\"Cashback\"},\"statementLevelSummary\":{\"availableCreditLimit\":433045.13,\"totalAmountDue\":12189.09,\"totalCreditLimit\":460000,\"totalMinimumAmountDue\":10350},\"statementMeta\":{\"dueDate\":\"06/03/2026\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"16/02/2026\"},\"transactions\":[{\"amount\":0,\"currency\":\"INR\",\"date\":\"03/02/2026\",\"description\":\"Auto Dr.Retn-Insuff. fund\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"REVERSAL\"},{\"amount\":188.14,\"currency\":\"INR\",\"date\":\"24/01/2026\",\"description\":\"Interest Amount Amortization - <22/24>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":33.87,\"currency\":\"INR\",\"date\":\"24/01/2026\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":4644.19,\"currency\":\"INR\",\"date\":\"24/01/2026\",\"description\":\"Principal Amount Amortization - <22/24>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":140.07,\"currency\":\"INR\",\"date\":\"26/01/2026\",\"description\":\"Interest Amount Amortization - <23/24>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":25.21,\"currency\":\"INR\",\"date\":\"26/01/2026\",\"description\":\"IGST-CI@18%\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":5221.26,\"currency\":\"INR\",\"date\":\"26/01/2026\",\"description\":\"Principal Amount Amortization - <23/24>\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"EMI\"},{\"amount\":10276.09,\"currency\":\"INR\",\"date\":\"03/02/2026\",\"description\":\"BBPS Payment received\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PAYMENT\"},{\"amount\":1936.35,\"currency\":\"INR\",\"date\":\"14/02/2026\",\"description\":\"BLINKIT ECOM GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":10,\"txnType\":\"PURCHASE\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "410444357",
+ "started_at": "2026-08-15T16:34:55",
+ "token_identity_detail": "ok p=14642 c=1161 t=15803 reasoning=434",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 1161,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 434,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 14642,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 15803
+ }
+}

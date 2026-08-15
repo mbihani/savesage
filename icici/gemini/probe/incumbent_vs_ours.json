@@ -1,0 +1,425 @@
+{
+ "1529317035": {
+  "inc_networks": [
+   null
+  ],
+  "our_networks": [
+   null,
+   null
+  ],
+  "inc_names": [
+   "MakeMyTrip ICICI Bank Platinum Credit Card"
+  ],
+  "our_names": [
+   "MakeMyTrip ICICI Bank Platinum Credit Card",
+   "MakeMyTrip ICICI Bank Platinum Credit Card"
+  ],
+  "inc_l4": [
+   "XXXX9003"
+  ],
+  "our_l4": [
+   "6043",
+   "9003"
+  ],
+  "pdf_l4": [
+   "6043",
+   "9003"
+  ],
+  "pdf_bins": {
+   "6043": "UNKNOWN(0)",
+   "9003": "VISA"
+  },
+  "inc_closing": null,
+  "our_closing": null,
+  "inc_prog": "MakeMyTrip My Cash",
+  "our_prog": "Cashback",
+  "inc_redeem": 172,
+  "our_redeem": 172,
+  "inc_earn": 3,
+  "our_earn": 3
+ },
+ "1737715836": {
+  "inc_networks": [
+   "Mastercard"
+  ],
+  "our_networks": [
+   null,
+   null
+  ],
+  "inc_names": [
+   "Sapphiro"
+  ],
+  "our_names": [
+   "Sapphiro",
+   "Sapphiro"
+  ],
+  "inc_l4": [
+   "8004"
+  ],
+  "our_l4": [
+   "4004",
+   "8004"
+  ],
+  "pdf_l4": [
+   "4004",
+   "8004"
+  ],
+  "pdf_bins": {
+   "4004": "AMEX/DINERS",
+   "8004": "MASTERCARD"
+  },
+  "inc_closing": 661,
+  "our_closing": null,
+  "inc_prog": "ICICI Bank Rewards",
+  "our_prog": "Reward Points",
+  "inc_redeem": 0,
+  "our_redeem": null,
+  "inc_earn": 661,
+  "our_earn": 661
+ },
+ "1770339352": {
+  "inc_networks": [
+   null
+  ],
+  "our_networks": [
+   null,
+   null
+  ],
+  "inc_names": [
+   "MakeMyTrip ICICI Bank Platinum Credit Card"
+  ],
+  "our_names": [
+   "MakeMyTrip ICICI Bank Platinum Credit Card",
+   "MakeMyTrip ICICI Bank Platinum Credit Card"
+  ],
+  "inc_l4": [
+   "8005"
+  ],
+  "our_l4": [
+   "5585",
+   "8005"
+  ],
+  "pdf_l4": [
+   "5585",
+   "8005"
+  ],
+  "pdf_bins": {
+   "5585": "UNKNOWN(0)",
+   "8005": "VISA"
+  },
+  "inc_closing": null,
+  "our_closing": null,
+  "inc_prog": "MakeMyTrip My Cash",
+  "our_prog": "Cashback",
+  "inc_redeem": 0,
+  "our_redeem": 0,
+  "inc_earn": 0,
+  "our_earn": 0
+ },
+ "205034973": {
+  "inc_networks": [
+   null
+  ],
+  "our_networks": [
+   null,
+   null
+  ],
+  "inc_names": [
+   "Amazon Pay ICICI Bank Credit Card"
+  ],
+  "our_names": [
+   "Amazon Pay ICICI Bank Credit Card",
+   "Amazon Pay ICICI Bank Credit Card"
+  ],
+  "inc_l4": [
+   "2000"
+  ],
+  "our_l4": [
+   "7212",
+   "2000"
+  ],
+  "pdf_l4": [
+   "7212",
+   "2000"
+  ],
+  "pdf_bins": {
+   "7212": "UNKNOWN(0)",
+   "2000": "VISA"
+  },
+  "inc_closing": null,
+  "our_closing": null,
+  "inc_prog": "Amazon Pay Balance",
+  "our_prog": "Cashback",
+  "inc_redeem": 33,
+  "our_redeem": 33,
+  "inc_earn": 33,
+  "our_earn": 33
+ },
+ "232344130": {
+  "inc_networks": [
+   null
+  ],
+  "our_networks": [
+   null
+  ],
+  "inc_names": [
+   "ICICI Bank Credit Card"
+  ],
+  "our_names": [
+   null
+  ],
+  "inc_l4": [
+   "6000"
+  ],
+  "our_l4": [
+   "6000"
+  ],
+  "pdf_l4": [
+   "6000"
+  ],
+  "pdf_bins": {
+   "6000": "RUPAY/DISCOVER"
+  },
+  "inc_closing": 301,
+  "our_closing": null,
+  "inc_prog": "ICICI Bank Rewards",
+  "our_prog": "Reward Points",
+  "inc_redeem": 0,
+  "our_redeem": null,
+  "inc_earn": 301,
+  "our_earn": 301
+ },
+ "238910814": {
+  "inc_networks": [],
+  "our_networks": [
+   null,
+   null
+  ],
+  "inc_names": [],
+  "our_names": [
+   "ICICI Bank Coral Credit Card",
+   "ICICI Bank Coral Credit Card"
+  ],
+  "inc_l4": [],
+  "our_l4": [
+   "8739",
+   "0008"
+  ],
+  "pdf_l4": [
+   "8739",
+   "0008"
+  ],
+  "pdf_bins": {
+   "8739": "UNKNOWN(0)",
+   "0008": "VISA"
+  },
+  "inc_closing": null,
+  "our_closing": null,
+  "inc_prog": null,
+  "our_prog": "Reward Points",
+  "inc_redeem": null,
+  "our_redeem": null,
+  "inc_earn": null,
+  "our_earn": 695
+ },
+ "354990911": {
+  "inc_networks": [
+   null
+  ],
+  "our_networks": [
+   null,
+   null
+  ],
+  "inc_names": [
+   "Coral Credit Card"
+  ],
+  "our_names": [
+   "Coral",
+   "Coral"
+  ],
+  "inc_l4": [
+   "1658"
+  ],
+  "our_l4": [
+   "1658",
+   "0005"
+  ],
+  "pdf_l4": [
+   "1658",
+   "0005"
+  ],
+  "pdf_bins": {
+   "1658": "UNKNOWN(0)",
+   "0005": "VISA"
+  },
+  "inc_closing": 10,
+  "our_closing": null,
+  "inc_prog": "ICICI Bank Rewards",
+  "our_prog": "Reward Points",
+  "inc_redeem": 0,
+  "our_redeem": null,
+  "inc_earn": 10,
+  "our_earn": 10
+ },
+ "410444357": {
+  "inc_networks": [
+   null
+  ],
+  "our_networks": [
+   null,
+   null,
+   null
+  ],
+  "inc_names": [
+   "MakeMyTrip ICICI Bank Platinum Credit Card"
+  ],
+  "our_names": [
+   "MakeMyTrip ICICI Bank Platinum Credit Card",
+   "MakeMyTrip ICICI Bank Platinum Credit Card",
+   "MakeMyTrip ICICI Bank Platinum Credit Card"
+  ],
+  "inc_l4": [
+   "5013"
+  ],
+  "our_l4": [
+   "3447",
+   "5005",
+   "5013"
+  ],
+  "pdf_l4": [
+   "3447",
+   "5005",
+   "5013"
+  ],
+  "pdf_bins": {
+   "3447": "UNKNOWN(0)",
+   "5005": "VISA",
+   "5013": "VISA"
+  },
+  "inc_closing": null,
+  "our_closing": null,
+  "inc_prog": "MakeMyTrip My Cash",
+  "our_prog": "Cashback",
+  "inc_redeem": 69,
+  "our_redeem": 69,
+  "inc_earn": 10,
+  "our_earn": 10
+ },
+ "606359443": {
+  "inc_networks": [
+   "American Express",
+   "MasterCard"
+  ],
+  "our_networks": [
+   null,
+   null
+  ],
+  "inc_names": [
+   "ICICI Bank RubiX Credit Card",
+   "ICICI Bank RubiX Credit Card"
+  ],
+  "our_names": [
+   "Rubyx",
+   "Rubyx"
+  ],
+  "inc_l4": [
+   "3009",
+   "5005"
+  ],
+  "our_l4": [
+   "3009",
+   "5005"
+  ],
+  "pdf_l4": [
+   "3009",
+   "5005"
+  ],
+  "pdf_bins": {
+   "3009": "AMEX/DINERS",
+   "5005": "MASTERCARD"
+  },
+  "inc_closing": 725,
+  "our_closing": null,
+  "inc_prog": "ICICI Bank Rewards",
+  "our_prog": "Reward Points",
+  "inc_redeem": 0,
+  "our_redeem": null,
+  "inc_earn": 725,
+  "our_earn": 725
+ },
+ "693462745": {
+  "inc_networks": [
+   "Visa"
+  ],
+  "our_networks": [
+   null
+  ],
+  "inc_names": [
+   "ICICI Bank HPCL Coral Credit Card"
+  ],
+  "our_names": [
+   "ICICI Bank HPCL Coral Credit Card"
+  ],
+  "inc_l4": [
+   "5002"
+  ],
+  "our_l4": [
+   "5002"
+  ],
+  "pdf_l4": [
+   "5002"
+  ],
+  "pdf_bins": {
+   "5002": "VISA"
+  },
+  "inc_closing": 0,
+  "our_closing": null,
+  "inc_prog": "ICICI Bank Rewards",
+  "our_prog": "Reward Points",
+  "inc_redeem": 0,
+  "our_redeem": null,
+  "inc_earn": 0,
+  "our_earn": 0
+ },
+ "952325284": {
+  "inc_networks": [
+   null
+  ],
+  "our_networks": [
+   null,
+   null
+  ],
+  "inc_names": [
+   "ICICI Bank Credit Card"
+  ],
+  "our_names": [
+   null,
+   null
+  ],
+  "inc_l4": [
+   "4008"
+  ],
+  "our_l4": [
+   "0599",
+   "4008"
+  ],
+  "pdf_l4": [
+   "4008",
+   "0599",
+   "4008",
+   "4008"
+  ],
+  "pdf_bins": {
+   "4008": "VISA",
+   "0599": "UNKNOWN(0)"
+  },
+  "inc_closing": null,
+  "our_closing": null,
+  "inc_prog": "PAYBACK",
+  "our_prog": "Reward Points",
+  "inc_redeem": 146,
+  "our_redeem": 146,
+  "inc_earn": 146,
+  "our_earn": 146
+ }
+}

@@ -1,0 +1,550 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:33:22",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 23557,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 1,
+ "n_transactions": 52,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": null,
+     "isPrimaryCard": true,
+     "lastFourDigit": "6000",
+     "network": null,
+     "productFamily": null
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 301,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 182930.12,
+   "totalAmountDue": 17069.88,
+   "totalCreditLimit": 200000,
+   "totalMinimumAmountDue": 860
+  },
+  "statementMeta": {
+   "dueDate": "19/01/2026",
+   "issuerName": "ICICI Bank",
+   "statementDate": "01/01/2026"
+  },
+  "transactions": [
+   {
+    "amount": 80,
+    "currency": "INR",
+    "date": "02/12/2025",
+    "description": "UPI-570244597745-GLOBAL H OSPITALITY SO IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 35,
+    "currency": "INR",
+    "date": "03/12/2025",
+    "description": "UPI-570397032082-Babasahe b IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 80,
+    "currency": "INR",
+    "date": "03/12/2025",
+    "description": "UPI-570386414506-Babasahe b IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 50,
+    "currency": "INR",
+    "date": "03/12/2025",
+    "description": "UPI-570305934844-SHRI AVI NASH PARASHRA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 30,
+    "currency": "INR",
+    "date": "03/12/2025",
+    "description": "UPI-570367725227-Vishal T arachand Dhom IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 70,
+    "currency": "INR",
+    "date": "04/12/2025",
+    "description": "UPI-570455685916-GLOBAL H OSPITALITY SO IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 170,
+    "currency": "INR",
+    "date": "04/12/2025",
+    "description": "UPI-570458699497-NYAS FOO DS AND BEVERA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 3,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 30,
+    "currency": "INR",
+    "date": "04/12/2025",
+    "description": "UPI-533833909759-Namrata Mahesh Paul IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 29,
+    "currency": "INR",
+    "date": "05/12/2025",
+    "description": "UPI-570518803438-NEW PANK AJ SUPER SHOP IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 140,
+    "currency": "INR",
+    "date": "06/12/2025",
+    "description": "UPI-570651316691-DEEPA EN TERPRISES IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 2,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 80,
+    "currency": "INR",
+    "date": "06/12/2025",
+    "description": "UPI-570652323853-Mr SWAP NIL PARASHUR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 30,
+    "currency": "INR",
+    "date": "06/12/2025",
+    "description": "UPI-570623163900-JAY MALH AR VEGITABLE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 40,
+    "currency": "INR",
+    "date": "06/12/2025",
+    "description": "UPI-570698452251-Mr HIVR E SHRIRAM TR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 115,
+    "currency": "INR",
+    "date": "06/12/2025",
+    "description": "UPI-570637669637-Mrs ANIT A GOKUL THAN IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 2,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 50,
+    "currency": "INR",
+    "date": "06/12/2025",
+    "description": "UPI-570668258434-SACHIN R AMDAS DABHADE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 36,
+    "currency": "INR",
+    "date": "06/12/2025",
+    "description": "UPI-570683062088-PANCHWAT I MARKET IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 10,
+    "currency": "INR",
+    "date": "07/12/2025",
+    "description": "UPI-570709483797-RAMJIVAN PRABHU MOHI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 29,
+    "currency": "INR",
+    "date": "07/12/2025",
+    "description": "UPI-570717499089-NEW PANK AJ SUPER SHOP IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 12,
+    "currency": "INR",
+    "date": "07/12/2025",
+    "description": "UPI-534185948627-DAYALALP ATIDARANDSMT IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 50,
+    "currency": "INR",
+    "date": "07/12/2025",
+    "description": "UPI-534191842714-AMOL SAN TOSH JADHAV IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 48,
+    "currency": "INR",
+    "date": "08/12/2025",
+    "description": "UPI-534217684411-SATISH N IVRUTTI BANDA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 120,
+    "currency": "INR",
+    "date": "08/12/2025",
+    "description": "UPI-570899030127-INSTA WA SH IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 2,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 564.68,
+    "currency": "INR",
+    "date": "10/12/2025",
+    "description": "UPI-534434478628-STAR BAZ AAR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 11,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 50,
+    "currency": "INR",
+    "date": "10/12/2025",
+    "description": "UPI-534467882547-SUJITKUM AR SURYABHAN IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 25,
+    "currency": "INR",
+    "date": "10/12/2025",
+    "description": "UPI-534462891899-SANGITA DEVI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 5,
+    "currency": "INR",
+    "date": "10/12/2025",
+    "description": "UPI-534458275022-SANGITA DEVI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 40,
+    "currency": "INR",
+    "date": "10/12/2025",
+    "description": "UPI-534407575832-SHRI AVI NASH PARASHRA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 60,
+    "currency": "INR",
+    "date": "10/12/2025",
+    "description": "UPI-534468790288-ANKUSH D ILIP DEORE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 30,
+    "currency": "INR",
+    "date": "10/12/2025",
+    "description": "UPI-534490577166-LAKDE DH ANESH EKNATH IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 70,
+    "currency": "INR",
+    "date": "10/12/2025",
+    "description": "UPI-534438684575-RAHIM EI DU SHAIKH IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 70,
+    "currency": "INR",
+    "date": "11/12/2025",
+    "description": "UPI-571149122590-GLOBAL H OSPITALITY SO IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 11920,
+    "currency": "INR",
+    "date": "12/12/2025",
+    "description": "UPI-534603815812-ENCORE R ESORT IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 238,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 80,
+    "currency": "INR",
+    "date": "13/12/2025",
+    "description": "UPI-571300003901-SONU RAT HAUR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 90,
+    "currency": "INR",
+    "date": "13/12/2025",
+    "description": "UPI-534743999583-RAJ VILA S KOLI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 90,
+    "currency": "INR",
+    "date": "13/12/2025",
+    "description": "UPI-534723592484-Mr HIVR E SHRIRAM TR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 40,
+    "currency": "INR",
+    "date": "13/12/2025",
+    "description": "UPI-571329313302-Avinash Parasram Rath IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 20,
+    "currency": "INR",
+    "date": "13/12/2025",
+    "description": "UPI-534741699439-Avinash Parasram Rath IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 10,
+    "currency": "INR",
+    "date": "13/12/2025",
+    "description": "UPI-571374211431-Dnyanesh war Sirsat IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 89,
+    "currency": "INR",
+    "date": "13/12/2025",
+    "description": "UPI-571324506767-PANCHWAT I MARKET IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 173,
+    "currency": "INR",
+    "date": "13/12/2025",
+    "description": "UPI-191605910860-Swiggy L imited IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 3,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 40,
+    "currency": "INR",
+    "date": "14/12/2025",
+    "description": "UPI-571473446918-BASAVARA J REVANAPPA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 10,
+    "currency": "INR",
+    "date": "14/12/2025",
+    "description": "UPI-571427840212-BASAVARA J REVANAPPA IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 24,
+    "currency": "INR",
+    "date": "14/12/2025",
+    "description": "UPI-571445942755-CHANDANE AVINASH VISH IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 363.1,
+    "currency": "INR",
+    "date": "14/12/2025",
+    "description": "UPI-571495957614-STAR BAZ AAR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 7,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 500,
+    "currency": "INR",
+    "date": "15/12/2025",
+    "description": "UPI-534992515916-05 Shree Murari petro IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 693.2,
+    "currency": "INR",
+    "date": "15/12/2025",
+    "description": "UPI-534976405522-Google I ndia Digital IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 6,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 25,
+    "currency": "INR",
+    "date": "15/12/2025",
+    "description": "UPI-534951666068-DAYALALP ATIDARANDSMT IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 50,
+    "currency": "INR",
+    "date": "15/12/2025",
+    "description": "UPI-534937571511-Ram Prav esh B Gupta IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 1,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 5.9,
+    "currency": "INR",
+    "date": "15/12/2025",
+    "description": "YES",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 20901.21,
+    "currency": "INR",
+    "date": "16/12/2025",
+    "description": "BBPS Payment received",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 498,
+    "currency": "INR",
+    "date": "16/12/2025",
+    "description": "UPI-571651546129-PARMESHW AR TEKALE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 9,
+    "txnType": "UPI"
+   },
+   {
+    "amount": 100,
+    "currency": "INR",
+    "date": "19/12/2025",
+    "description": "UPI-571955582745-VSMDOWNT OWN FOODTOWN IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 2,
+    "txnType": "UPI"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_232344130_19b7bb21bb01aa4e_5241XXXXXXXX9017_24706_Retail_general_NORM.pdf",
+ "prompt_chars": 20994,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/ICICI_PROMPT.txt",
+ "prompt_sha256": "4b047526c218a6d79d26f954f946c05dcbed0e2c0a9e9a2799eecbb48e6802c7",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":null,\"isPrimaryCard\":true,\"lastFourDigit\":\"6000\",\"network\":null,\"productFamily\":null}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":301,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":182930.12,\"totalAmountDue\":17069.88,\"totalCreditLimit\":200000,\"totalMinimumAmountDue\":860},\"statementMeta\":{\"dueDate\":\"19/01/2026\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"01/01/2026\"},\"transactions\":[{\"amount\":80,\"currency\":\"INR\",\"date\":\"02/12/2025\",\"description\":\"UPI-570244597745-GLOBAL H OSPITALITY SO IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":35,\"currency\":\"INR\",\"date\":\"03/12/2025\",\"description\":\"UPI-570397032082-Babasahe b IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":80,\"currency\":\"INR\",\"date\":\"03/12/2025\",\"description\":\"UPI-570386414506-Babasahe b IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":50,\"currency\":\"INR\",\"date\":\"03/12/2025\",\"description\":\"UPI-570305934844-SHRI AVI NASH PARASHRA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":30,\"currency\":\"INR\",\"date\":\"03/12/2025\",\"description\":\"UPI-570367725227-Vishal T arachand Dhom IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":70,\"currency\":\"INR\",\"date\":\"04/12/2025\",\"description\":\"UPI-570455685916-GLOBAL H OSPITALITY SO IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":170,\"currency\":\"INR\",\"date\":\"04/12/2025\",\"description\":\"UPI-570458699497-NYAS FOO DS AND BEVERA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":3,\"txnType\":\"UPI\"},{\"amount\":30,\"currency\":\"INR\",\"date\":\"04/12/2025\",\"description\":\"UPI-533833909759-Namrata Mahesh Paul IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":29,\"currency\":\"INR\",\"date\":\"05/12/2025\",\"description\":\"UPI-570518803438-NEW PANK AJ SUPER SHOP IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":140,\"currency\":\"INR\",\"date\":\"06/12/2025\",\"description\":\"UPI-570651316691-DEEPA EN TERPRISES IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":2,\"txnType\":\"UPI\"},{\"amount\":80,\"currency\":\"INR\",\"date\":\"06/12/2025\",\"description\":\"UPI-570652323853-Mr SWAP NIL PARASHUR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":30,\"currency\":\"INR\",\"date\":\"06/12/2025\",\"description\":\"UPI-570623163900-JAY MALH AR VEGITABLE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":40,\"currency\":\"INR\",\"date\":\"06/12/2025\",\"description\":\"UPI-570698452251-Mr HIVR E SHRIRAM TR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":115,\"currency\":\"INR\",\"date\":\"06/12/2025\",\"description\":\"UPI-570637669637-Mrs ANIT A GOKUL THAN IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":2,\"txnType\":\"UPI\"},{\"amount\":50,\"currency\":\"INR\",\"date\":\"06/12/2025\",\"description\":\"UPI-570668258434-SACHIN R AMDAS DABHADE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":36,\"currency\":\"INR\",\"date\":\"06/12/2025\",\"description\":\"UPI-570683062088-PANCHWAT I MARKET IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":10,\"currency\":\"INR\",\"date\":\"07/12/2025\",\"description\":\"UPI-570709483797-RAMJIVAN PRABHU MOHI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":29,\"currency\":\"INR\",\"date\":\"07/12/2025\",\"description\":\"UPI-570717499089-NEW PANK AJ SUPER SHOP IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":12,\"currency\":\"INR\",\"date\":\"07/12/2025\",\"description\":\"UPI-534185948627-DAYALALP ATIDARANDSMT IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":50,\"currency\":\"INR\",\"date\":\"07/12/2025\",\"description\":\"UPI-534191842714-AMOL SAN TOSH JADHAV IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":48,\"currency\":\"INR\",\"date\":\"08/12/2025\",\"description\":\"UPI-534217684411-SATISH N IVRUTTI BANDA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":120,\"currency\":\"INR\",\"date\":\"08/12/2025\",\"description\":\"UPI-570899030127-INSTA WA SH IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":2,\"txnType\":\"UPI\"},{\"amount\":564.68,\"currency\":\"INR\",\"date\":\"10/12/2025\",\"description\":\"UPI-534434478628-STAR BAZ AAR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":11,\"txnType\":\"UPI\"},{\"amount\":50,\"currency\":\"INR\",\"date\":\"10/12/2025\",\"description\":\"UPI-534467882547-SUJITKUM AR SURYABHAN IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":25,\"currency\":\"INR\",\"date\":\"10/12/2025\",\"description\":\"UPI-534462891899-SANGITA DEVI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":5,\"currency\":\"INR\",\"date\":\"10/12/2025\",\"description\":\"UPI-534458275022-SANGITA DEVI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":40,\"currency\":\"INR\",\"date\":\"10/12/2025\",\"description\":\"UPI-534407575832-SHRI AVI NASH PARASHRA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":60,\"currency\":\"INR\",\"date\":\"10/12/2025\",\"description\":\"UPI-534468790288-ANKUSH D ILIP DEORE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":30,\"currency\":\"INR\",\"date\":\"10/12/2025\",\"description\":\"UPI-534490577166-LAKDE DH ANESH EKNATH IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":70,\"currency\":\"INR\",\"date\":\"10/12/2025\",\"description\":\"UPI-534438684575-RAHIM EI DU SHAIKH IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":70,\"currency\":\"INR\",\"date\":\"11/12/2025\",\"description\":\"UPI-571149122590-GLOBAL H OSPITALITY SO IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":11920,\"currency\":\"INR\",\"date\":\"12/12/2025\",\"description\":\"UPI-534603815812-ENCORE R ESORT IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":238,\"txnType\":\"UPI\"},{\"amount\":80,\"currency\":\"INR\",\"date\":\"13/12/2025\",\"description\":\"UPI-571300003901-SONU RAT HAUR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":90,\"currency\":\"INR\",\"date\":\"13/12/2025\",\"description\":\"UPI-534743999583-RAJ VILA S KOLI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":90,\"currency\":\"INR\",\"date\":\"13/12/2025\",\"description\":\"UPI-534723592484-Mr HIVR E SHRIRAM TR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":40,\"currency\":\"INR\",\"date\":\"13/12/2025\",\"description\":\"UPI-571329313302-Avinash Parasram Rath IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":20,\"currency\":\"INR\",\"date\":\"13/12/2025\",\"description\":\"UPI-534741699439-Avinash Parasram Rath IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":10,\"currency\":\"INR\",\"date\":\"13/12/2025\",\"description\":\"UPI-571374211431-Dnyanesh war Sirsat IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":89,\"currency\":\"INR\",\"date\":\"13/12/2025\",\"description\":\"UPI-571324506767-PANCHWAT I MARKET IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":173,\"currency\":\"INR\",\"date\":\"13/12/2025\",\"description\":\"UPI-191605910860-Swiggy L imited IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":3,\"txnType\":\"UPI\"},{\"amount\":40,\"currency\":\"INR\",\"date\":\"14/12/2025\",\"description\":\"UPI-571473446918-BASAVARA J REVANAPPA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":10,\"currency\":\"INR\",\"date\":\"14/12/2025\",\"description\":\"UPI-571427840212-BASAVARA J REVANAPPA IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":24,\"currency\":\"INR\",\"date\":\"14/12/2025\",\"description\":\"UPI-571445942755-CHANDANE AVINASH VISH IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":363.1,\"currency\":\"INR\",\"date\":\"14/12/2025\",\"description\":\"UPI-571495957614-STAR BAZ AAR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":7,\"txnType\":\"UPI\"},{\"amount\":500,\"currency\":\"INR\",\"date\":\"15/12/2025\",\"description\":\"UPI-534992515916-05 Shree Murari petro IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":693.2,\"currency\":\"INR\",\"date\":\"15/12/2025\",\"description\":\"UPI-534976405522-Google I ndia Digital IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":6,\"txnType\":\"UPI\"},{\"amount\":25,\"currency\":\"INR\",\"date\":\"15/12/2025\",\"description\":\"UPI-534951666068-DAYALALP ATIDARANDSMT IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"UPI\"},{\"amount\":50,\"currency\":\"INR\",\"date\":\"15/12/2025\",\"description\":\"UPI-534937571511-Ram Prav esh B Gupta IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":1,\"txnType\":\"UPI\"},{\"amount\":5.9,\"currency\":\"INR\",\"date\":\"15/12/2025\",\"description\":\"YES\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PURCHASE\"},{\"amount\":20901.21,\"currency\":\"INR\",\"date\":\"16/12/2025\",\"description\":\"BBPS Payment received\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PAYMENT\"},{\"amount\":498,\"currency\":\"INR\",\"date\":\"16/12/2025\",\"description\":\"UPI-571651546129-PARMESHW AR TEKALE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":9,\"txnType\":\"UPI\"},{\"amount\":100,\"currency\":\"INR\",\"date\":\"19/12/2025\",\"description\":\"UPI-571955582745-VSMDOWNT OWN FOODTOWN IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":2,\"txnType\":\"UPI\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "232344130",
+ "started_at": "2026-08-15T16:32:58",
+ "token_identity_detail": "ok p=17440 c=3767 t=21207 reasoning=701",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 3767,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 701,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 17440,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 21207
+ }
+}

@@ -1,0 +1,16 @@
+16:32:04 START arm=A prompt=ICICI_PROMPT.txt n=1 conc=1 prompt_sha=4b047526c218 schema=GEMINI_SCHEMA(26 leaves)
+16:32:14 OK                   693462745    txn=3 cards=1 fr=stop pt=14996 ct=650 tt=15646 tokid=True rl=False ms=10010
+16:32:16 DONE arm=A ok=1/1 calls_that_saw_429=0 token_identity_violations=[]
+16:32:30 START arm=A prompt=ICICI_PROMPT.txt n=11 conc=2 prompt_sha=4b047526c218 schema=GEMINI_SCHEMA(26 leaves)
+16:32:41 OK                   1529317035   txn=6 cards=2 fr=stop pt=10306 ct=777 tt=11083 tokid=True rl=False ms=10212
+16:32:43 OK                   1737715836   txn=8 cards=2 fr=stop pt=17720 ct=908 tt=18628 tokid=True rl=False ms=12279
+16:32:57 OK                   205034973    txn=7 cards=2 fr=stop pt=16176 ct=1085 tt=17261 tokid=True rl=False ms=13093
+16:33:01 OK                   1770339352   txn=18 cards=2 fr=stop pt=19128 ct=1932 tt=21060 tokid=True rl=False ms=17098
+16:33:13 OK                   238910814    txn=10 cards=2 fr=stop pt=15234 ct=972 tt=16206 tokid=True rl=False ms=11033
+16:33:22 OK                   232344130    txn=52 cards=1 fr=stop pt=17440 ct=3767 tt=21207 tokid=True rl=False ms=23557
+16:33:25 OK                   354990911    txn=9 cards=2 fr=stop pt=15158 ct=926 tt=16084 tokid=True rl=False ms=9837
+16:33:37 OK                   410444357    txn=9 cards=3 fr=stop pt=16212 ct=1172 tt=17384 tokid=True rl=False ms=12834
+16:33:41 OK                   606359443    txn=16 cards=2 fr=stop pt=16200 ct=1316 tt=17516 tokid=True rl=False ms=13529
+16:33:47 OK                   693462745    txn=3 cards=1 fr=stop pt=14996 ct=573 tt=15569 tokid=True rl=False ms=8887
+16:34:00 OK                   952325284    txn=34 cards=2 fr=stop pt=11183 ct=2728 tt=13911 tokid=True rl=False ms=17130
+16:34:03 DONE arm=A ok=11/11 calls_that_saw_429=0 token_identity_violations=[]

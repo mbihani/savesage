@@ -1,0 +1,235 @@
+{
+ "arm": "A",
+ "failure_class": null,
+ "filename_sent_to_model": "statement.pdf",
+ "finish_reason": "stop",
+ "finished_at": "2026-08-15T16:33:41",
+ "max_tokens": 96000,
+ "meta": {
+  "attempts": 1,
+  "error": null,
+  "http_status": 200,
+  "ip_acl": false,
+  "latency_ms": 13529,
+  "rate_limited": false
+ },
+ "model": "databricks-gpt-5-6-luna",
+ "n_cards": 2,
+ "n_transactions": 16,
+ "outcome": "OK",
+ "parsed_json": {
+  "cards": [
+   {
+    "cardMeta": {
+     "cardDisplayName": "Rubyx",
+     "isPrimaryCard": true,
+     "lastFourDigit": "3009",
+     "network": null,
+     "productFamily": "Rubyx"
+    }
+   },
+   {
+    "cardMeta": {
+     "cardDisplayName": "Rubyx",
+     "isPrimaryCard": false,
+     "lastFourDigit": "5005",
+     "network": null,
+     "productFamily": "Rubyx"
+    }
+   }
+  ],
+  "rewards": {
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsEarnedThisCycle": 725,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null,
+   "pointsRedeemedThisCycle": null,
+   "programType": "Reward Points"
+  },
+  "statementLevelSummary": {
+   "availableCreditLimit": 212413.84,
+   "totalAmountDue": 39586.16,
+   "totalCreditLimit": 280000,
+   "totalMinimumAmountDue": 1980
+  },
+  "statementMeta": {
+   "dueDate": "01/03/2026",
+   "issuerName": "ICICI Bank",
+   "statementDate": "11/02/2026"
+  },
+  "transactions": [
+   {
+    "amount": 4905,
+    "currency": "INR",
+    "date": "22/01/2026",
+    "description": "WESTSIDE PUNE IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 98,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 46155,
+    "currency": "INR",
+    "date": "29/01/2026",
+    "description": "BBPS Payment received",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PAYMENT"
+   },
+   {
+    "amount": 7458,
+    "currency": "INR",
+    "date": "29/01/2026",
+    "description": "razorpay*Indigo Gurgaon IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 149,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1500,
+    "currency": "INR",
+    "date": "04/02/2026",
+    "description": "RBL*S K Fillers AMRITSAR AMRITSAR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 37.5,
+    "currency": "INR",
+    "date": "05/02/2026",
+    "description": "Rev of Fuel Surcharge",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "REVERSAL"
+   },
+   {
+    "amount": 6.75,
+    "currency": "INR",
+    "date": "05/02/2026",
+    "description": "IGST-Rev-CI@18%",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 8900,
+    "currency": "INR",
+    "date": "05/02/2026",
+    "description": "INDIGO AIRLINE INR PG GURGAON IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 178,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 1500,
+    "currency": "INR",
+    "date": "07/02/2026",
+    "description": "RBL*S K Fillers AMRITSAR AMRITSAR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 37.5,
+    "currency": "INR",
+    "date": "08/02/2026",
+    "description": "Rev of Fuel Surcharge",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "REVERSAL"
+   },
+   {
+    "amount": 6.75,
+    "currency": "INR",
+    "date": "08/02/2026",
+    "description": "IGST-Rev-CI@18%",
+    "direction": "CREDIT",
+    "rewardPointsOnThisTransaction": 0,
+    "txnType": "TAX"
+   },
+   {
+    "amount": 299,
+    "currency": "INR",
+    "date": "13/01/2026",
+    "description": "YOUTUBEGOOGLE MUMBAI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 5,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 7211.43,
+    "currency": "INR",
+    "date": "19/01/2026",
+    "description": "Avenue Supermarts Ltd AMRITSAR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 144,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 649,
+    "currency": "INR",
+    "date": "28/01/2026",
+    "description": "NETFLIX MUMBAI IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 6,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 3350.66,
+    "currency": "INR",
+    "date": "31/01/2026",
+    "description": "Avenue Supermarts Ltd AMRITSAR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 67,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 450,
+    "currency": "INR",
+    "date": "06/02/2026",
+    "description": "SARVJEET SINGH AMRITSAR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 9,
+    "txnType": "PURCHASE"
+   },
+   {
+    "amount": 3451.57,
+    "currency": "INR",
+    "date": "06/02/2026",
+    "description": "LIFE STYLE INTERNATIO AMRITSAR IN",
+    "direction": "DEBIT",
+    "rewardPointsOnThisTransaction": 69,
+    "txnType": "PURCHASE"
+   }
+  ]
+ },
+ "pdf_real_filename": "decrypt_606359443_19c51c67eb9efe14_3747XXXXXXXX3009_750986_Retail_Rubyx_NORM.pdf",
+ "prompt_chars": 20994,
+ "prompt_path": "/Users/mayanck.bihani/Savesage/bank_eval/.claude/worktrees/icici-parity/icici/ICICI_PROMPT.txt",
+ "prompt_sha256": "4b047526c218a6d79d26f954f946c05dcbed0e2c0a9e9a2799eecbb48e6802c7",
+ "raw_response_text": "{\"cards\":[{\"cardMeta\":{\"cardDisplayName\":\"Rubyx\",\"isPrimaryCard\":true,\"lastFourDigit\":\"3009\",\"network\":null,\"productFamily\":\"Rubyx\"}},{\"cardMeta\":{\"cardDisplayName\":\"Rubyx\",\"isPrimaryCard\":false,\"lastFourDigit\":\"5005\",\"network\":null,\"productFamily\":\"Rubyx\"}}],\"rewards\":{\"closingPoints\":null,\"openingPoints\":null,\"pointsEarnedThisCycle\":725,\"pointsExpiringNext30Days\":null,\"pointsExpiringNext60Days\":null,\"pointsRedeemedThisCycle\":null,\"programType\":\"Reward Points\"},\"statementLevelSummary\":{\"availableCreditLimit\":212413.84,\"totalAmountDue\":39586.16,\"totalCreditLimit\":280000,\"totalMinimumAmountDue\":1980},\"statementMeta\":{\"dueDate\":\"01/03/2026\",\"issuerName\":\"ICICI Bank\",\"statementDate\":\"11/02/2026\"},\"transactions\":[{\"amount\":4905,\"currency\":\"INR\",\"date\":\"22/01/2026\",\"description\":\"WESTSIDE PUNE IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":98,\"txnType\":\"PURCHASE\"},{\"amount\":46155,\"currency\":\"INR\",\"date\":\"29/01/2026\",\"description\":\"BBPS Payment received\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PAYMENT\"},{\"amount\":7458,\"currency\":\"INR\",\"date\":\"29/01/2026\",\"description\":\"razorpay*Indigo Gurgaon IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":149,\"txnType\":\"PURCHASE\"},{\"amount\":1500,\"currency\":\"INR\",\"date\":\"04/02/2026\",\"description\":\"RBL*S K Fillers AMRITSAR AMRITSAR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PURCHASE\"},{\"amount\":37.5,\"currency\":\"INR\",\"date\":\"05/02/2026\",\"description\":\"Rev of Fuel Surcharge\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"REVERSAL\"},{\"amount\":6.75,\"currency\":\"INR\",\"date\":\"05/02/2026\",\"description\":\"IGST-Rev-CI@18%\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":8900,\"currency\":\"INR\",\"date\":\"05/02/2026\",\"description\":\"INDIGO AIRLINE INR PG GURGAON IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":178,\"txnType\":\"PURCHASE\"},{\"amount\":1500,\"currency\":\"INR\",\"date\":\"07/02/2026\",\"description\":\"RBL*S K Fillers AMRITSAR AMRITSAR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"PURCHASE\"},{\"amount\":37.5,\"currency\":\"INR\",\"date\":\"08/02/2026\",\"description\":\"Rev of Fuel Surcharge\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"REVERSAL\"},{\"amount\":6.75,\"currency\":\"INR\",\"date\":\"08/02/2026\",\"description\":\"IGST-Rev-CI@18%\",\"direction\":\"CREDIT\",\"rewardPointsOnThisTransaction\":0,\"txnType\":\"TAX\"},{\"amount\":299,\"currency\":\"INR\",\"date\":\"13/01/2026\",\"description\":\"YOUTUBEGOOGLE MUMBAI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":5,\"txnType\":\"PURCHASE\"},{\"amount\":7211.43,\"currency\":\"INR\",\"date\":\"19/01/2026\",\"description\":\"Avenue Supermarts Ltd AMRITSAR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":144,\"txnType\":\"PURCHASE\"},{\"amount\":649,\"currency\":\"INR\",\"date\":\"28/01/2026\",\"description\":\"NETFLIX MUMBAI IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":6,\"txnType\":\"PURCHASE\"},{\"amount\":3350.66,\"currency\":\"INR\",\"date\":\"31/01/2026\",\"description\":\"Avenue Supermarts Ltd AMRITSAR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":67,\"txnType\":\"PURCHASE\"},{\"amount\":450,\"currency\":\"INR\",\"date\":\"06/02/2026\",\"description\":\"SARVJEET SINGH AMRITSAR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":9,\"txnType\":\"PURCHASE\"},{\"amount\":3451.57,\"currency\":\"INR\",\"date\":\"06/02/2026\",\"description\":\"LIFE STYLE INTERNATIO AMRITSAR IN\",\"direction\":\"DEBIT\",\"rewardPointsOnThisTransaction\":69,\"txnType\":\"PURCHASE\"}]}",
+ "reasoning_effort": "medium",
+ "schema": "GEMINI_SCHEMA.json",
+ "schema_leaf_count": 26,
+ "sid": "606359443",
+ "started_at": "2026-08-15T16:33:27",
+ "token_identity_detail": "ok p=16200 c=1316 t=17516 reasoning=292",
+ "token_identity_ok": true,
+ "usage_raw": {
+  "completion_tokens": 1316,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 0,
+   "audio_tokens": 0,
+   "reasoning_tokens": 292,
+   "rejected_prediction_tokens": 0
+  },
+  "prompt_tokens": 16200,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "total_tokens": 17516
+ }
+}

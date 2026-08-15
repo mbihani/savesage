@@ -1,0 +1,39 @@
+16:32:30 START arm=A prompt=ICICI_PROMPT.txt n=11 conc=2 prompt_sha=4b047526c218 schema=GEMINI_SCHEMA(26 leaves)
+16:32:41 OK                   1529317035   txn=6 cards=2 fr=stop pt=10306 ct=777 tt=11083 tokid=True rl=False ms=10212
+16:32:43 OK                   1737715836   txn=8 cards=2 fr=stop pt=17720 ct=908 tt=18628 tokid=True rl=False ms=12279
+16:32:57 OK                   205034973    txn=7 cards=2 fr=stop pt=16176 ct=1085 tt=17261 tokid=True rl=False ms=13093
+16:33:01 OK                   1770339352   txn=18 cards=2 fr=stop pt=19128 ct=1932 tt=21060 tokid=True rl=False ms=17098
+16:33:13 OK                   238910814    txn=10 cards=2 fr=stop pt=15234 ct=972 tt=16206 tokid=True rl=False ms=11033
+16:33:22 OK                   232344130    txn=52 cards=1 fr=stop pt=17440 ct=3767 tt=21207 tokid=True rl=False ms=23557
+16:33:25 OK                   354990911    txn=9 cards=2 fr=stop pt=15158 ct=926 tt=16084 tokid=True rl=False ms=9837
+16:33:37 OK                   410444357    txn=9 cards=3 fr=stop pt=16212 ct=1172 tt=17384 tokid=True rl=False ms=12834
+16:33:41 OK                   606359443    txn=16 cards=2 fr=stop pt=16200 ct=1316 tt=17516 tokid=True rl=False ms=13529
+16:33:47 OK                   693462745    txn=3 cards=1 fr=stop pt=14996 ct=573 tt=15569 tokid=True rl=False ms=8887
+16:34:00 OK                   952325284    txn=34 cards=2 fr=stop pt=11183 ct=2728 tt=13911 tokid=True rl=False ms=17130
+16:34:03 DONE arm=A ok=11/11 calls_that_saw_429=0 token_identity_violations=[]
+16:34:03 START arm=B prompt=ICICI_PROMPT_PREV.txt n=11 conc=2 prompt_sha=79325334991c schema=GEMINI_SCHEMA(26 leaves)
+16:34:14 OK                   1737715836   txn=8 cards=2 fr=stop pt=16150 ct=958 tt=17108 tokid=True rl=False ms=11208
+16:34:16 OK                   1529317035   txn=6 cards=2 fr=stop pt=8736 ct=972 tt=9708 tokid=True rl=False ms=11059
+16:34:30 OK                   205034973    txn=7 cards=2 fr=stop pt=14606 ct=1165 tt=15771 tokid=True rl=False ms=12064
+16:34:33 OK                   1770339352   txn=18 cards=2 fr=stop pt=17558 ct=2033 tt=19591 tokid=True rl=False ms=17379
+16:34:46 OK                   238910814    txn=10 cards=2 fr=stop pt=13664 ct=1026 tt=14690 tokid=True rl=False ms=10757
+16:34:53 OK                   232344130    txn=52 cards=1 fr=stop pt=15870 ct=3427 tt=19297 tokid=True rl=False ms=20778
+16:35:01 OK                   354990911    txn=9 cards=2 fr=stop pt=13588 ct=1089 tt=14677 tokid=True rl=False ms=13481
+16:35:08 OK                   410444357    txn=9 cards=3 fr=stop pt=14642 ct=1161 tt=15803 tokid=True rl=False ms=12751
+16:35:17 OK                   606359443    txn=16 cards=2 fr=stop pt=14630 ct=1446 tt=16076 tokid=True rl=False ms=13639
+16:35:20 OK                   693462745    txn=3 cards=1 fr=stop pt=13426 ct=829 tt=14255 tokid=True rl=False ms=10624
+16:35:37 OK                   952325284    txn=34 cards=2 fr=stop pt=9613 ct=2567 tt=12180 tokid=True rl=False ms=17397
+16:35:38 DONE arm=B ok=11/11 calls_that_saw_429=0 token_identity_violations=[]
+16:35:38 START arm=C prompt=GEMINI_GENERIC_PROMPT.txt n=11 conc=2 prompt_sha=7886583cba60 schema=GEMINI_SCHEMA(26 leaves)
+16:35:51 OK                   1737715836   txn=8 cards=2 fr=stop pt=13851 ct=998 tt=14849 tokid=True rl=False ms=12354
+16:35:52 OK                   1529317035   txn=6 cards=2 fr=stop pt=6437 ct=1004 tt=7441 tokid=True rl=False ms=11527
+16:36:09 OK                   1770339352   txn=18 cards=2 fr=stop pt=15259 ct=1795 tt=17054 tokid=True rl=False ms=16713
+16:36:11 OK                   205034973    txn=7 cards=2 fr=stop pt=12307 ct=1715 tt=14022 tokid=True rl=False ms=17288
+16:36:25 OK                   238910814    txn=10 cards=2 fr=stop pt=11365 ct=1166 tt=12531 tokid=True rl=False ms=11700
+16:36:32 OK                   232344130    txn=52 cards=1 fr=stop pt=13571 ct=3437 tt=17008 tokid=True rl=False ms=21364
+16:36:41 OK                   354990911    txn=9 cards=2 fr=stop pt=11289 ct=1163 tt=12452 tokid=True rl=False ms=13844
+16:36:48 OK                   410444357    txn=9 cards=3 fr=stop pt=12343 ct=1324 tt=13667 tokid=True rl=False ms=13526
+16:36:57 OK                   606359443    txn=16 cards=2 fr=stop pt=12331 ct=1392 tt=13723 tokid=True rl=False ms=14357
+16:37:00 OK                   693462745    txn=3 cards=1 fr=stop pt=11127 ct=637 tt=11764 tokid=True rl=False ms=9557
+16:37:16 OK                   952325284    txn=34 cards=2 fr=stop pt=7314 ct=2631 tt=9945 tokid=True rl=False ms=16502
+16:37:19 DONE arm=C ok=11/11 calls_that_saw_429=0 token_identity_violations=[]

@@ -1,0 +1,762 @@
+{
+ "1529317035": {
+  "n_pages": 3,
+  "layouts_detected": [
+   2
+  ],
+  "bindings": [
+   {
+    "role": "redeemed",
+    "layout": 2,
+    "label": "My Cash transferred to",
+    "label_page": 1,
+    "label_bbox_x0": 112.23,
+    "label_y": 676.9,
+    "mode": "COLUMN",
+    "value": 172.0,
+    "value_x0": 144.76,
+    "value_y": 698.31
+   },
+   {
+    "role": "earned",
+    "layout": 2,
+    "label": "My Cash earned",
+    "label_page": 1,
+    "label_bbox_x0": 46.98,
+    "label_y": 680.5,
+    "mode": "COLUMN",
+    "value": 3.0,
+    "value_x0": 71.29,
+    "value_y": 698.31
+   }
+  ],
+  "rewards": {
+   "programType": "Cashback",
+   "pointsEarnedThisCycle": 3.0,
+   "pointsRedeemedThisCycle": 172.0,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no 'Closing Balance' string anywhere in the document",
+  "cards": {
+   "last4_reading_order": [
+    "6043",
+    "9003"
+   ],
+   "last4_distinct": [
+    "6043",
+    "9003"
+   ],
+   "n_card_headings": 2,
+   "network": null,
+   "network_evidence": "ALL_IN_DISCLAIMER"
+  },
+  "issuerName": "ICICI Bank"
+ },
+ "1737715836": {
+  "n_pages": 9,
+  "layouts_detected": [
+   1
+  ],
+  "bindings": [
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "Points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 47.84,
+    "label_y": 672.17,
+    "mode": "SAME_ROW",
+    "value": 0.0,
+    "value_x0": 161.76,
+    "value_y": 675.32
+   },
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "inclusive of points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 697.79,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "Total Points earned*",
+    "label_page": 1,
+    "label_bbox_x0": 48.42,
+    "label_y": 655.81,
+    "mode": "SAME_ROW",
+    "value": 661.0,
+    "value_x0": 158.28,
+    "value_y": 658.25
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "*The total points earned are",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 688.19,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   }
+  ],
+  "rewards": {
+   "programType": "Reward Points",
+   "pointsEarnedThisCycle": 661.0,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no points balance printed in any layout; the only 'Closing Balance' is the money specimen 26,958.20 at SL.No 18 of the pre-printed Minimum-Amount-Due example",
+  "cards": {
+   "last4_reading_order": [
+    "4004",
+    "8004"
+   ],
+   "last4_distinct": [
+    "4004",
+    "8004"
+   ],
+   "n_card_headings": 2,
+   "network": null,
+   "network_evidence": "ALL_IN_DISCLAIMER"
+  },
+  "issuerName": "ICICI Bank"
+ },
+ "1770339352": {
+  "n_pages": 10,
+  "layouts_detected": [
+   2
+  ],
+  "bindings": [
+   {
+    "role": "redeemed",
+    "layout": 2,
+    "label": "My Cash transferred to",
+    "label_page": 1,
+    "label_bbox_x0": 112.23,
+    "label_y": 676.9,
+    "mode": "COLUMN",
+    "value": 0.0,
+    "value_x0": 148.24,
+    "value_y": 698.31
+   },
+   {
+    "role": "earned",
+    "layout": 2,
+    "label": "My Cash earned",
+    "label_page": 1,
+    "label_bbox_x0": 46.98,
+    "label_y": 680.5,
+    "mode": "COLUMN",
+    "value": 0.0,
+    "value_x0": 71.29,
+    "value_y": 698.31
+   }
+  ],
+  "rewards": {
+   "programType": "Cashback",
+   "pointsEarnedThisCycle": 0.0,
+   "pointsRedeemedThisCycle": 0.0,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no points balance printed in any layout; the only 'Closing Balance' is the money specimen 26,958.20 at SL.No 18 of the pre-printed Minimum-Amount-Due example",
+  "cards": {
+   "last4_reading_order": [
+    "5585",
+    "8005"
+   ],
+   "last4_distinct": [
+    "5585",
+    "8005"
+   ],
+   "n_card_headings": 2,
+   "network": null,
+   "network_evidence": "ALL_IN_DISCLAIMER"
+  },
+  "issuerName": "ICICI Bank"
+ },
+ "205034973": {
+  "n_pages": 8,
+  "layouts_detected": [
+   3
+  ],
+  "bindings": [
+   {
+    "role": "redeemed",
+    "layout": 3,
+    "label": "Earnings transfered to",
+    "label_page": 1,
+    "label_bbox_x0": 112.23,
+    "label_y": 672.18,
+    "mode": "COLUMN",
+    "value": 33.0,
+    "value_x0": 146.5,
+    "value_y": 698.31
+   },
+   {
+    "role": "earned",
+    "layout": 3,
+    "label": "Earned",
+    "label_page": 1,
+    "label_bbox_x0": 58.71,
+    "label_y": 675.78,
+    "mode": "COLUMN",
+    "value": 33.0,
+    "value_x0": 69.55,
+    "value_y": 698.31
+   }
+  ],
+  "rewards": {
+   "programType": "Cashback",
+   "pointsEarnedThisCycle": 33.0,
+   "pointsRedeemedThisCycle": 33.0,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no points balance printed in any layout; the only 'Closing Balance' is the money specimen 26,958.20 at SL.No 18 of the pre-printed Minimum-Amount-Due example",
+  "cards": {
+   "last4_reading_order": [
+    "7212",
+    "2000"
+   ],
+   "last4_distinct": [
+    "2000",
+    "7212"
+   ],
+   "n_card_headings": 2,
+   "network": null,
+   "network_evidence": "HAS_NON_DISCLAIMER_HIT"
+  },
+  "issuerName": "ICICI Bank"
+ },
+ "232344130": {
+  "n_pages": 8,
+  "layouts_detected": [
+   1
+  ],
+  "bindings": [
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "Points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 47.84,
+    "label_y": 672.17,
+    "mode": "SAME_ROW",
+    "value": 0.0,
+    "value_x0": 161.76,
+    "value_y": 675.32
+   },
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "inclusive of points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 697.79,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "Total Points earned*",
+    "label_page": 1,
+    "label_bbox_x0": 48.42,
+    "label_y": 655.81,
+    "mode": "SAME_ROW",
+    "value": 301.0,
+    "value_x0": 158.28,
+    "value_y": 658.25
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "*The total points earned are",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 688.19,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   }
+  ],
+  "rewards": {
+   "programType": "Reward Points",
+   "pointsEarnedThisCycle": 301.0,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no points balance printed in any layout; the only 'Closing Balance' is the money specimen 26,958.20 at SL.No 18 of the pre-printed Minimum-Amount-Due example",
+  "cards": {
+   "last4_reading_order": [
+    "6000"
+   ],
+   "last4_distinct": [
+    "6000"
+   ],
+   "n_card_headings": 1,
+   "network": null,
+   "network_evidence": "ALL_IN_DISCLAIMER"
+  },
+  "issuerName": "ICICI Bank"
+ },
+ "238910814": {
+  "n_pages": 7,
+  "layouts_detected": [
+   1
+  ],
+  "bindings": [
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "Points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 47.84,
+    "label_y": 672.17,
+    "mode": "SAME_ROW",
+    "value": 0.0,
+    "value_x0": 161.76,
+    "value_y": 675.32
+   },
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "inclusive of points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 697.79,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "Total Points earned*",
+    "label_page": 1,
+    "label_bbox_x0": 48.42,
+    "label_y": 655.81,
+    "mode": "SAME_ROW",
+    "value": 695.0,
+    "value_x0": 158.28,
+    "value_y": 658.25
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "*The total points earned are",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 688.19,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   }
+  ],
+  "rewards": {
+   "programType": "Reward Points",
+   "pointsEarnedThisCycle": 695.0,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no points balance printed in any layout; the only 'Closing Balance' is the money specimen 26,958.20 at SL.No 18 of the pre-printed Minimum-Amount-Due example",
+  "cards": {
+   "last4_reading_order": [
+    "8739",
+    "0008"
+   ],
+   "last4_distinct": [
+    "0008",
+    "8739"
+   ],
+   "n_card_headings": 2,
+   "network": null,
+   "network_evidence": "ALL_IN_DISCLAIMER"
+  },
+  "issuerName": "ICICI Bank"
+ },
+ "354990911": {
+  "n_pages": 7,
+  "layouts_detected": [
+   1
+  ],
+  "bindings": [
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "Points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 47.84,
+    "label_y": 672.17,
+    "mode": "SAME_ROW",
+    "value": 0.0,
+    "value_x0": 161.76,
+    "value_y": 675.32
+   },
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "inclusive of points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 697.79,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "Total Points earned*",
+    "label_page": 1,
+    "label_bbox_x0": 48.42,
+    "label_y": 655.81,
+    "mode": "SAME_ROW",
+    "value": 10.0,
+    "value_x0": 160.02,
+    "value_y": 658.25
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "*The total points earned are",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 688.19,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   }
+  ],
+  "rewards": {
+   "programType": "Reward Points",
+   "pointsEarnedThisCycle": 10.0,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no points balance printed in any layout; the only 'Closing Balance' is the money specimen 26,958.20 at SL.No 18 of the pre-printed Minimum-Amount-Due example",
+  "cards": {
+   "last4_reading_order": [
+    "1658",
+    "0005"
+   ],
+   "last4_distinct": [
+    "0005",
+    "1658"
+   ],
+   "n_card_headings": 2,
+   "network": null,
+   "network_evidence": "ALL_IN_DISCLAIMER"
+  },
+  "issuerName": "ICICI Bank"
+ },
+ "410444357": {
+  "n_pages": 8,
+  "layouts_detected": [
+   2
+  ],
+  "bindings": [
+   {
+    "role": "redeemed",
+    "layout": 2,
+    "label": "My Cash transferred to",
+    "label_page": 1,
+    "label_bbox_x0": 112.23,
+    "label_y": 676.9,
+    "mode": "COLUMN",
+    "value": 69.0,
+    "value_x0": 146.5,
+    "value_y": 698.31
+   },
+   {
+    "role": "earned",
+    "layout": 2,
+    "label": "My Cash earned",
+    "label_page": 1,
+    "label_bbox_x0": 46.98,
+    "label_y": 680.5,
+    "mode": "COLUMN",
+    "value": 10.0,
+    "value_x0": 69.55,
+    "value_y": 698.31
+   }
+  ],
+  "rewards": {
+   "programType": "Cashback",
+   "pointsEarnedThisCycle": 10.0,
+   "pointsRedeemedThisCycle": 69.0,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no points balance printed in any layout; the only 'Closing Balance' is the money specimen 26,958.20 at SL.No 18 of the pre-printed Minimum-Amount-Due example",
+  "cards": {
+   "last4_reading_order": [
+    "3447",
+    "5005",
+    "5013"
+   ],
+   "last4_distinct": [
+    "3447",
+    "5005",
+    "5013"
+   ],
+   "n_card_headings": 3,
+   "network": null,
+   "network_evidence": "ALL_IN_DISCLAIMER"
+  },
+  "issuerName": "ICICI Bank"
+ },
+ "606359443": {
+  "n_pages": 8,
+  "layouts_detected": [
+   1
+  ],
+  "bindings": [
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "Points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 47.84,
+    "label_y": 672.17,
+    "mode": "SAME_ROW",
+    "value": 0.0,
+    "value_x0": 161.76,
+    "value_y": 675.32
+   },
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "inclusive of points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 697.79,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "Total Points earned*",
+    "label_page": 1,
+    "label_bbox_x0": 48.42,
+    "label_y": 655.81,
+    "mode": "SAME_ROW",
+    "value": 725.0,
+    "value_x0": 158.28,
+    "value_y": 658.25
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "*The total points earned are",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 688.19,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   }
+  ],
+  "rewards": {
+   "programType": "Reward Points",
+   "pointsEarnedThisCycle": 725.0,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no points balance printed in any layout; the only 'Closing Balance' is the money specimen 26,958.20 at SL.No 18 of the pre-printed Minimum-Amount-Due example",
+  "cards": {
+   "last4_reading_order": [
+    "3009",
+    "5005"
+   ],
+   "last4_distinct": [
+    "3009",
+    "5005"
+   ],
+   "n_card_headings": 2,
+   "network": null,
+   "network_evidence": "ALL_IN_DISCLAIMER"
+  },
+  "issuerName": "ICICI Bank"
+ },
+ "693462745": {
+  "n_pages": 7,
+  "layouts_detected": [
+   1
+  ],
+  "bindings": [
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "Points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 47.84,
+    "label_y": 672.17,
+    "mode": "SAME_ROW",
+    "value": 0.0,
+    "value_x0": 161.76,
+    "value_y": 675.32
+   },
+   {
+    "role": "ishop",
+    "layout": 1,
+    "label": "inclusive of points earned on iShop",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 697.79,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "Total Points earned*",
+    "label_page": 1,
+    "label_bbox_x0": 48.42,
+    "label_y": 655.81,
+    "mode": "SAME_ROW",
+    "value": 0.0,
+    "value_x0": 161.76,
+    "value_y": 658.25
+   },
+   {
+    "role": "earned",
+    "layout": 1,
+    "label": "*The total points earned are",
+    "label_page": 1,
+    "label_bbox_x0": 48.51,
+    "label_y": 688.19,
+    "mode": "UNBOUND",
+    "value": null,
+    "value_x0": null,
+    "value_y": null
+   }
+  ],
+  "rewards": {
+   "programType": "Reward Points",
+   "pointsEarnedThisCycle": 0.0,
+   "pointsRedeemedThisCycle": null,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no points balance printed in any layout; the only 'Closing Balance' is the money specimen 26,958.20 at SL.No 18 of the pre-printed Minimum-Amount-Due example",
+  "cards": {
+   "last4_reading_order": [
+    "5002"
+   ],
+   "last4_distinct": [
+    "5002"
+   ],
+   "n_card_headings": 1,
+   "network": null,
+   "network_evidence": "ALL_IN_DISCLAIMER"
+  },
+  "issuerName": "ICICI Bank"
+ },
+ "952325284": {
+  "n_pages": 4,
+  "layouts_detected": [
+   4
+  ],
+  "bindings": [
+   {
+    "role": "redeemed",
+    "layout": 4,
+    "label": "Points Transferred to PAYBACK (Acc:9401165034966009)",
+    "label_page": 1,
+    "label_bbox_x0": 361.0,
+    "label_y": 504.69,
+    "mode": "COLUMN",
+    "value": 146.0,
+    "value_x0": 494.68,
+    "value_y": 523.84
+   },
+   {
+    "role": "earned",
+    "layout": 4,
+    "label": "Points Earned",
+    "label_page": 1,
+    "label_bbox_x0": 206.92,
+    "label_y": 504.69,
+    "mode": "COLUMN",
+    "value": 146.0,
+    "value_x0": 246.37,
+    "value_y": 523.84
+   }
+  ],
+  "rewards": {
+   "programType": "Reward Points",
+   "pointsEarnedThisCycle": 146.0,
+   "pointsRedeemedThisCycle": 146.0,
+   "closingPoints": null,
+   "openingPoints": null,
+   "pointsExpiringNext30Days": null,
+   "pointsExpiringNext60Days": null
+  },
+  "closing_points_evidence": "no 'Closing Balance' string anywhere in the document",
+  "cards": {
+   "last4_reading_order": [
+    "4008",
+    "0599",
+    "4008",
+    "4008"
+   ],
+   "last4_distinct": [
+    "0599",
+    "4008"
+   ],
+   "n_card_headings": 4,
+   "network": null,
+   "network_evidence": "NO_NETWORK_TOKENS"
+  },
+  "issuerName": "ICICI Bank"
+ }
+}
