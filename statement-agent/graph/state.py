@@ -111,5 +111,11 @@ class GraphState:
 def _txn_count(extraction: ExtractionResult | None) -> int | None:
     if extraction is None:
         return None
-    txns = extraction.payload.get("transactions")
+    # Defensive: payload is expected to be a dict (map_response rejects non-dict
+    # JSON), but never assume a mapping -- a summary helper must not crash on the
+    # user-facing path if an object slips through another code path.
+    payload = extraction.payload
+    if not isinstance(payload, dict):
+        return None
+    txns = payload.get("transactions")
     return len(txns) if isinstance(txns, list) else None

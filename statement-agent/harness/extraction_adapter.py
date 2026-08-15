@@ -87,24 +87,28 @@ def parse_json_strict(text: str) -> dict[str, Any]:
 
 
 def _check_completion(resp: dict[str, Any]) -> None:
-    """Raise :class:`ExtractionError` on truncation or refusal.
+    """Raise :class:`ExtractionError` on truncation, refusal, or a malformed response.
 
     A response whose content is still parseable JSON but whose first choice has
     ``finish_reason: "length"`` was clipped at ``max_tokens`` -- statements with
     long transaction lists are exactly where this happens, and the clipped JSON
     would silently drop transactions and then be judged as an extraction error.
     ``finish_reason: "content_filter"`` and a non-empty ``message.refusal`` are
-    refusals. Only ``stop`` (and the legacy absent/None) are clean completions.
+    refusals. For a SYNCHRONOUS invocation of this endpoint there is no legitimate
+    reason for ``finish_reason`` to be absent or None, so only an exact ``"stop"``
+    is a clean completion -- anything else is treated as a malformed/incomplete
+    response and raised as an :class:`ExtractionError`.
     """
     choices = resp.get("choices") or []
     if not choices:
         raise ExtractionError("response has no choices")
     choice = choices[0]
     finish_reason = choice.get("finish_reason")
-    if finish_reason not in (None, "stop"):
+    if finish_reason != "stop":
         raise ExtractionError(
             f"model did not finish cleanly: finish_reason={finish_reason!r} "
-            f"(truncation or content filter -- output may be incomplete)"
+            f"(expected 'stop'; truncation, content filter, or malformed response -- "
+            f"output may be incomplete)"
         )
     message = choice.get("message") or {}
     refusal = message.get("refusal")
@@ -129,6 +133,14 @@ def map_response(resp: dict[str, Any], request: ParseRequest, latency_ms: float)
         payload = parse_json_strict(raw_text)
     except json.JSONDecodeError as exc:
         raise ExtractionError(f"model output is not valid JSON: {exc}") from exc
+    if not isinstance(payload, dict):
+        # A top-level array, string, number, bool, or null is valid JSON but not a
+        # statement object; letting it through would crash later (e.g. _txn_count
+        # calls .get on a list). Defence in depth: reject here AND type-check
+        # defensively in the summary helpers.
+        raise ExtractionError(
+            f"model output is not a JSON object: got {type(payload).__name__}"
+        )
     usage = _map_usage(resp.get("usage"))
     return ExtractionResult(
         request_id=request.request_id,

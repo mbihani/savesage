@@ -118,6 +118,86 @@ class SchemaConformanceTest(unittest.TestCase):
         errors = validate_schema_conformance(p)
         self.assertTrue(any("cardCreditLimit" in e for e in errors), errors)
 
+    def test_huge_int_accepted_as_number(self) -> None:
+        # NEW-B1: math.isfinite coerces to float and overflows on huge ints.
+        # An int is finite by definition and must be accepted directly; the
+        # validator must return a report, not raise OverflowError.
+        p = _clone()
+        p["statementLevelSummary"]["totalAmountDue"] = 10**10000
+        errors = validate_schema_conformance(p)
+        self.assertEqual(errors, [])  # valid: int is a number
+
+    def test_huge_negative_int_accepted_as_number(self) -> None:
+        p = _clone()
+        p["statementLevelSummary"]["totalAmountDue"] = -(10**10000)
+        errors = validate_schema_conformance(p)
+        self.assertEqual(errors, [])
+
+    def test_validate_payload_never_raises_on_huge_int(self) -> None:
+        # The core guarantee: validate_payload returns a report, never raises.
+        p = _clone()
+        p["statementLevelSummary"]["totalAmountDue"] = 10**10000
+        p["statementLevelSummary"]["totalCreditLimit"] = -(10**10000)
+        p["cards"][0]["bigPicture"]["cardCreditLimit"] = 10**99999
+        report = validate_payload(p)
+        self.assertIsInstance(report, ValidationReport)
+
+    def test_huge_int_in_closing_points_no_overflow(self) -> None:
+        # The closing-points arithmetic must not overflow on huge ints either.
+        p = _clone()
+        p["rewards"]["openingPoints"] = 10**10000
+        p["rewards"]["pointsEarnedThisCycle"] = 10**10000
+        p["rewards"]["pointsRedeemedThisCycle"] = 0
+        p["rewards"]["bonusPointsThisCycle"] = 0
+        p["rewards"]["closingPoints"] = 2 * (10**10000)
+        report = validate_payload(p)
+        self.assertTrue(report.ok, report.all_errors)
+
+    def test_huge_int_mismatched_closing_points_error_message_no_overflow(self) -> None:
+        # Regression: formatting a huge int in the error message hit Python's
+        # int-to-str digit limit and raised ValueError. The error message must
+        # truncate so validate_payload never raises.
+        p = _clone()
+        p["rewards"]["openingPoints"] = 10**10000
+        p["rewards"]["pointsEarnedThisCycle"] = 10**10000
+        p["rewards"]["pointsRedeemedThisCycle"] = 0
+        p["rewards"]["bonusPointsThisCycle"] = 0
+        p["rewards"]["closingPoints"] = 1  # mismatch -> error path
+        report = validate_payload(p)  # must not raise
+        self.assertIsInstance(report, ValidationReport)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("arithmetic violation" in e for e in report.rule_errors))
+
+    def test_huge_negative_int_amount_error_message_no_overflow(self) -> None:
+        # Regression: a huge negative int amount hits the < 0 error branch whose
+        # message stringified the amount -> ValueError on the digit limit.
+        p = _clone()
+        p["transactions"][0]["amount"] = -(10**10000)
+        report = validate_payload(p)  # must not raise
+        self.assertIsInstance(report, ValidationReport)
+        self.assertTrue(any("non-negative" in e for e in report.rule_errors))
+
+    def test_validate_payload_adversarial_never_raises(self) -> None:
+        # Exhaustive: every numeric position, every hostile value, returns a report.
+        # NOTE: the assertion message must not stringify a huge int (Python's
+        # int-to-str digit limit would raise) -- use type(v).__name__ instead.
+        for v in [10**10000, -(10**10000), 10**99999, float("nan"), float("inf"),
+                  float("-inf"), True, "str", None, [1], 0, -1, 3.14, 10**5000]:
+            for loc in [("statementLevelSummary", "totalAmountDue"),
+                        ("cards", 0, "bigPicture", "cardCreditLimit"),
+                        ("rewards", "closingPoints"), ("rewards", "openingPoints"),
+                        ("transactions", 0, "amount")]:
+                p = _clone()
+                cur = p
+                for k in loc[:-1]:
+                    cur = cur[k]
+                cur[loc[-1]] = v
+                report = validate_payload(p)
+                self.assertIsInstance(
+                    report, ValidationReport,
+                    f"{type(v).__name__} at {loc} did not return a report",
+                )
+
     def test_bool_is_not_number(self) -> None:
         # bool is a subclass of int; schema says "number" -- a bool must NOT pass.
         p = _clone()

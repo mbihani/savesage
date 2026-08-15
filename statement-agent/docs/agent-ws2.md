@@ -36,16 +36,27 @@ output that benefits most from judging — you want to know whether the model
 read the PDF correctly even when it shaped the answer wrong. Only a hard
 `EXTRACTION_FAILED` outcome skips the judge (there is nothing to judge).
 
-### Judge structural-shape gate (NB2)
+### Judge per-section structural gate (NB2 / NB round 3)
 
-A *schema-invalid-but-structurally-usable* payload (cards and transactions are
-lists, payload is a dict) IS still judged. But a *structurally unusable* payload
-(cards/transactions are not lists, or payload is not a dict) is NOT sent to the
-judge: a real judge (WS5, PR #13) may reject such input, turning an intended
-PARTIAL into JUDGE_FAILED. The `judge_node` checks
-`_meets_judge_minimum_shape(extraction)` before calling the judge and records a
-clear `judge_skipped_reason` when the payload does not meet it. The point is to
-distinguish "invalid but judgeable" from "structurally unusable."
+The judge grades sections **independently**: `cards[].cardMeta.*` (scalar per
+card), `transactions[].*` (per row), and `rewards.*` (scalar). WS5's judge (PR
+#13) returns `ABSENT_IN_PDF` for null truth rather than erroring, so a payload
+that malforms ONE section can still usefully grade the others.
+
+The `judge_node` gates **per-section**, not on the whole payload. A section is
+judgeable when its payload value has the type the judge adapter can serialise:
+`cards`/`transactions` must be lists (the judge iterates rows); `rewards` must
+be a dict (scalar fields). The judge is invoked if **at least one** section is
+judgeable. A payload missing or malforming one section still gets the surviving
+sections graded instead of suppressing the whole verdict — this preserves
+gradeable signal on exactly the partially-broken parses where the judge is most
+informative. The judge is skipped only when NO section is structurally
+judgeable (or on `EXTRACTION_FAILED` / no judge wired), and a clear
+`judge_skipped_reason` is recorded.
+
+The point is to distinguish "invalid but judgeable" from "structurally
+unusable": a schema-invalid-but-structurally-usable payload IS still judged;
+a payload with no judgeable section at all is not.
 
 ### Persistence-failure outcome (BLOCKING 4)
 

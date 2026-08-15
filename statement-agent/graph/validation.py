@@ -78,11 +78,17 @@ def _type_ok(value: Any, types: list[str]) -> bool:
             if isinstance(value, bool):
                 return True
         elif t == "number":
-            # Reject non-finite numbers: json.loads accepts NaN/Infinity literals,
-            # and a NaN totalAmountDue would poison the Lakebase table and any
-            # downstream arithmetic. math.isfinite(False) is True, but bool is
-            # already excluded above.
-            if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value):
+            # Accept every non-boolean int directly: ints are finite by
+            # definition, and math.isfinite() coerces to float, so an
+            # arbitrarily large int (e.g. 10**10000 from a buggy/hostile
+            # endpoint) would OverflowError -- which would violate the
+            # "validate_payload never raises" contract. Apply isfinite ONLY
+            # to floats, where NaN/inf/-inf are the real hazard.
+            if isinstance(value, bool):
+                continue
+            if isinstance(value, int):
+                return True
+            if isinstance(value, float) and math.isfinite(value):
                 return True
         elif t == "string":
             if isinstance(value, str):
@@ -144,8 +150,30 @@ def validate_schema_conformance(payload: Any, schema: dict[str, Any] | None = No
 
 
 def _is_number(v: Any) -> bool:
-    """True for a finite non-bool numeric value (NaN/inf are NOT numbers here)."""
-    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+    """True for a finite non-bool numeric value (NaN/inf are NOT numbers here).
+
+    Accept ints directly (they are finite by definition); apply isfinite only to
+    floats so a huge int never raises OverflowError out of validate_payload.
+    """
+    if isinstance(v, bool):
+        return False
+    if isinstance(v, int):
+        return True
+    return isinstance(v, float) and math.isfinite(v)
+
+
+def _short(v: Any) -> str:
+    """Repr a value WITHOUT letting a huge int raise ValueError.
+
+    Python's int-to-str digit limit (4300 by default) makes repr(10**10000)
+    raise; that would escape validate_payload and violate the never-raises
+    contract. Show ints by type, floats/other by repr.
+    """
+    if isinstance(v, bool):
+        return repr(v)
+    if isinstance(v, int):
+        return "<int>"
+    return repr(v)
 
 
 def _check_last_four(payload: dict[str, Any], errors: list[str]) -> None:
@@ -178,14 +206,15 @@ def _check_amount_direction(payload: dict[str, Any], errors: list[str]) -> None:
         if _is_number(amount):
             if amount < 0:
                 errors.append(
-                    f"transactions[{i}].amount: must be non-negative, got {amount!r} "
+                    f"transactions[{i}].amount: must be non-negative, "
+                    f"got {_short(amount)} "
                     f"(direction carries debit/credit sign semantics)"
                 )
         elif isinstance(amount, (int, float)) and not isinstance(amount, bool):
             # Present and numeric but non-finite (NaN/inf/-inf); schema conformance
             # is the primary guard, but flag it here too so validate_rules alone
             # never silently accepts one.
-            errors.append(f"transactions[{i}].amount: must be finite, got {amount!r}")
+            errors.append(f"transactions[{i}].amount: must be finite, got {_short(amount)}")
 
 
 def _check_closing_points(payload: dict[str, Any], errors: list[str]) -> None:
@@ -205,7 +234,8 @@ def _check_closing_points(payload: dict[str, Any], errors: list[str]) -> None:
         errors.append(
             "rewards.closingPoints: arithmetic violation closing != "
             "opening + earned + bonus - redeemed "
-            f"({closing} != {opening} + {earned} + {bonus} - {redeemed})"
+            f"({_short(closing)} != {_short(opening)} + {_short(earned)} + "
+            f"{_short(bonus)} - {_short(redeemed)})"
         )
 
 

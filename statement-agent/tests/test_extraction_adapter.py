@@ -108,22 +108,24 @@ class MapResponseTest(unittest.TestCase):
         self.assertEqual(result.payload["statementMeta"]["issuerName"], "S")
 
     def test_empty_content_raises(self) -> None:
-        resp = {"choices": [{"message": {"content": ""}}]}
+        resp = {"choices": [{"finish_reason": "stop", "message": {"content": ""}}]}
         with self.assertRaises(ExtractionError):
             map_response(resp, _req(), 1.0)
 
     def test_invalid_json_raises(self) -> None:
-        resp = {"choices": [{"message": {"content": "not json"}}]}
+        resp = {"choices": [{"finish_reason": "stop", "message": {"content": "not json"}}]}
         with self.assertRaises(ExtractionError):
             map_response(resp, _req(), 1.0)
 
     def test_missing_usage_returns_empty_token_usage(self) -> None:
-        resp = {"id": "x", "model": "m", "choices": [{"message": {"content": "{}"}}]}
+        resp = {"id": "x", "model": "m",
+                "choices": [{"finish_reason": "stop", "message": {"content": "{}"}}]}
         result = map_response(resp, _req(), 1.0)
         self.assertEqual(result.token_usage, TokenUsage())
 
     def test_missing_id_leaves_none(self) -> None:
-        resp = {"model": "m", "choices": [{"message": {"content": "{}"}}]}
+        resp = {"model": "m",
+                "choices": [{"finish_reason": "stop", "message": {"content": "{}"}}]}
         result = map_response(resp, _req(), 1.0)
         self.assertIsNone(result.raw_response_id)
 
@@ -163,11 +165,53 @@ class CompletionCheckTest(unittest.TestCase):
             map_response({"choices": []}, _req(), 1.0)
         self.assertIn("no choices", str(cm.exception))
 
-    def test_missing_finish_reason_is_accepted(self) -> None:
-        # Legacy responses with no finish_reason are treated as clean.
+    def test_absent_finish_reason_raises(self) -> None:
+        # NEW-B2: for a synchronous invocation, finish_reason must be present.
         resp = {"id": "x", "model": "m", "choices": [{"message": {"content": "{}"}}]}
-        result = map_response(resp, _req(), 1.0)
-        self.assertEqual(result.payload, {})
+        with self.assertRaises(ExtractionError) as cm:
+            map_response(resp, _req(), 1.0)
+        self.assertIn("None", str(cm.exception))
+
+    def test_none_finish_reason_raises(self) -> None:
+        # NEW-B2: an explicit None finish_reason is also malformed.
+        resp = {"id": "x", "model": "m",
+                "choices": [{"finish_reason": None, "message": {"content": "{}"}}]}
+        with self.assertRaises(ExtractionError) as cm:
+            map_response(resp, _req(), 1.0)
+        self.assertIn("None", str(cm.exception))
+
+
+class TopLevelShapeTest(unittest.TestCase):
+    """NEW-B3: non-dict top-level JSON must raise, not crash later."""
+
+    def _resp(self, content: str) -> dict:
+        return {"id": "x", "model": "m",
+                "choices": [{"finish_reason": "stop", "message": {"content": content}}]}
+
+    def test_top_level_array_raises(self) -> None:
+        with self.assertRaises(ExtractionError) as cm:
+            map_response(self._resp("[]"), _req(), 1.0)
+        self.assertIn("not a JSON object", str(cm.exception))
+
+    def test_top_level_bare_string_raises(self) -> None:
+        with self.assertRaises(ExtractionError) as cm:
+            map_response(self._resp('"hello"'), _req(), 1.0)
+        self.assertIn("not a JSON object", str(cm.exception))
+
+    def test_top_level_bare_number_raises(self) -> None:
+        with self.assertRaises(ExtractionError) as cm:
+            map_response(self._resp("42"), _req(), 1.0)
+        self.assertIn("not a JSON object", str(cm.exception))
+
+    def test_top_level_null_raises(self) -> None:
+        with self.assertRaises(ExtractionError) as cm:
+            map_response(self._resp("null"), _req(), 1.0)
+        self.assertIn("not a JSON object", str(cm.exception))
+
+    def test_top_level_bool_raises(self) -> None:
+        with self.assertRaises(ExtractionError) as cm:
+            map_response(self._resp("true"), _req(), 1.0)
+        self.assertIn("not a JSON object", str(cm.exception))
 
 
 def _fake_urlopen(payload_resp, status=200):

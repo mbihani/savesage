@@ -143,31 +143,53 @@ def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
     return state
 
 
-def _meets_judge_minimum_shape(extraction: ExtractionResult) -> bool:
-    """Minimum structural shape for the judge to be meaningful.
+# Sections the judge grades, keyed by the payload path they live under. The
+# judge (WS5) grades each section INDEPENDENTLY and returns ABSENT_IN_PDF for
+# null truth rather than erroring, so a payload that malforms ONE section can
+# still usefully grade the others. We gate per-section rather than suppressing
+# the whole verdict on a partially-broken parse.
+_JUDGE_SECTIONS = ("cards", "transactions", "rewards")
 
-    A schema-invalid-but-structurally-usable payload (cards and transactions are
-    lists, payload is a dict) IS still judged -- the point is to distinguish
-    'invalid but judgeable' from 'structurally unusable'. A payload whose
-    cards/transactions are not lists would make a real judge (WS5) reject the
-    input or produce garbage, turning an intended PARTIAL into JUDGE_FAILED.
+
+def _judgeable_sections(extraction: ExtractionResult) -> tuple[str, ...]:
+    """Return the section names that are structurally present and judgeable.
+
+    A section is judgeable when its payload value has the type the judge adapter
+    can serialise: ``cards``/``transactions`` must be lists (the judge iterates
+    rows); ``rewards`` must be a dict (scalar fields). A payload that is not a
+    dict has no judgeable sections. The judge is invoked if AT LEAST ONE section
+    is judgeable, so a partially-broken parse (e.g. cards missing but
+    transactions present) still gets the surviving sections graded instead of
+    throwing away the whole verdict.
     """
     payload = extraction.payload
     if not isinstance(payload, dict):
-        return False
-    return isinstance(payload.get("cards"), list) and isinstance(payload.get("transactions"), list)
+        return ()
+    sections: list[str] = []
+    if isinstance(payload.get("cards"), list):
+        sections.append("cards")
+    if isinstance(payload.get("transactions"), list):
+        sections.append("transactions")
+    if isinstance(payload.get("rewards"), dict):
+        sections.append("rewards")
+    return tuple(sections)
+
+
+def _meets_judge_minimum_shape(extraction: ExtractionResult) -> bool:
+    """True if at least one judged section is structurally present."""
+    return bool(_judgeable_sections(extraction))
 
 
 def judge_node(state: GraphState, deps: NodeDeps) -> GraphState:
-    """Run the judge if one is wired and the extraction is structurally judgeable.
+    """Run the judge if one is wired and at least one section is judgeable.
 
     Decision (documented in docs/agent-ws2.md): a validation failure does NOT
     short-circuit the judge -- a schema-invalid-but-structurally-usable payload
-    is exactly the kind of output that benefits most from judging. But a
-    *structurally unusable* payload (no cards/transactions lists) is NOT sent to
-    the judge, because a real judge (WS5) may reject it, turning an intended
-    PARTIAL into JUDGE_FAILED. Only EXTRACTION_FAILED (nothing to judge) and a
-    structural-shape failure skip the judge.
+    is exactly the kind of output that benefits most from judging. The judge
+    grades sections INDEPENDENTLY (cards/transactions/rewards), so a payload
+    that malforms ONE section is still judged on the surviving sections rather
+    than suppressing the whole verdict. The judge is skipped only when NO
+    section is structurally judgeable (or on EXTRACTION_FAILED / no judge wired).
     """
     if state.outcome is Outcome.EXTRACTION_FAILED:
         return state
@@ -175,10 +197,11 @@ def judge_node(state: GraphState, deps: NodeDeps) -> GraphState:
         return state  # no judge wired -> stage skipped, not a failure
     if state.extraction is None:
         return state
-    if not _meets_judge_minimum_shape(state.extraction):
+    sections = _judgeable_sections(state.extraction)
+    if not sections:
         state.judge_skipped_reason = (
-            "payload does not meet minimum structural shape for judging "
-            "(cards/transactions must be lists)"
+            "payload has no structurally judgeable sections "
+            "(cards/transactions must be lists, rewards a dict)"
         )
         _trace(deps, state, "judge_skipped", error=state.judge_skipped_reason)
         return state

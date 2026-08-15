@@ -73,6 +73,29 @@ class GraphStateTest(unittest.TestCase):
             set(Outcome),
         )
 
+    def test_as_summary_never_crashes_on_non_dict_payload(self) -> None:
+        # NEW-B3 (defence in depth): as_summary is on the user-facing path and
+        # must not crash even if a non-dict payload slips past map_response.
+        from contracts.models import ExtractionResult
+        for bad_payload in ([1, 2, 3], "a string", 42, True, None):
+            state = GraphState(request=self._request())
+            state.extraction = ExtractionResult(
+                request_id="r1", payload=bad_payload,  # type: ignore[arg-type]
+                model_id="m", latency_ms=0.0,
+            )
+            summary = state.as_summary()  # must not raise
+            self.assertIsNone(summary["n_transactions"])
+
+    def test_as_summary_reports_txn_count_for_valid_payload(self) -> None:
+        from contracts.models import ExtractionResult
+        state = GraphState(request=self._request())
+        state.extraction = ExtractionResult(
+            request_id="r1",
+            payload={"transactions": [{}, {}, {}]},
+            model_id="m", latency_ms=0.0,
+        )
+        self.assertEqual(state.as_summary()["n_transactions"], 3)
+
 
 if __name__ == "__main__":
     unittest.main()

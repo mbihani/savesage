@@ -286,27 +286,28 @@ class NodeUnitTest(unittest.TestCase):
         finalize_node(state, deps)
         self.assertEqual(state.outcome, Outcome.PARTIAL)
 
-    def test_judge_skipped_on_structurally_unusable_payload(self) -> None:
-        # NB2: a structurally unusable payload is NOT sent to the judge.
+    def test_judge_skipped_when_no_section_judgeable(self) -> None:
+        # NB: a payload with NO structurally judgeable section is not judged.
+        # cards is a string, transactions is a string, rewards is a string.
         from graph.nodes import judge_node
 
         judge = FakeJudgeAdapter()
         deps = self._deps(extraction=FakeExtractionAdapter(), judge=judge)
         state = _state()
-        # Build an extraction with a structurally unusable payload (cards not a list).
         from contracts.models import ExtractionResult
         state.extraction = ExtractionResult(
-            request_id=state.request_id, payload={"cards": "not a list", "transactions": []},
+            request_id=state.request_id,
+            payload={"cards": "not a list", "transactions": "also not", "rewards": "not a dict"},
             model_id="fake", latency_ms=0.0, schema_valid=False,
         )
         judge_node(state, deps)
         self.assertIsNone(state.verdict)
         self.assertEqual(judge.calls, [])  # judge never called
         self.assertIsNotNone(state.judge_skipped_reason)
-        self.assertIn("structural", state.judge_skipped_reason)
+        self.assertIn("no structurally judgeable sections", state.judge_skipped_reason)
 
     def test_judge_runs_on_schema_invalid_but_structurally_usable(self) -> None:
-        # NB2: schema-invalid but structurally usable -> judge STILL runs.
+        # NB: schema-invalid but structurally usable -> judge STILL runs.
         from graph.nodes import judge_node
 
         judge = FakeJudgeAdapter()
@@ -322,6 +323,64 @@ class NodeUnitTest(unittest.TestCase):
         judge_node(state, deps)
         self.assertEqual(len(judge.calls), 1)
         self.assertIsNone(state.judge_skipped_reason)
+
+    def test_judge_runs_with_only_transactions_present(self) -> None:
+        # NB per-section gating: cards missing, but transactions present -> judge
+        # still runs and grades the surviving sections.
+        from graph.nodes import judge_node
+
+        judge = FakeJudgeAdapter()
+        deps = self._deps(judge=judge)
+        state = _state()
+        from contracts.models import ExtractionResult
+        state.extraction = ExtractionResult(
+            request_id=state.request_id,
+            payload={"cards": None, "transactions": [{"date": "01/01/2026",
+                "description": "x", "amount": 1.0, "direction": "DEBIT",
+                "txnType": "PURCHASE", "rewardPointsOnThisTransaction": 0, "currency": "INR"}]},
+            model_id="fake", latency_ms=0.0, schema_valid=False,
+        )
+        judge_node(state, deps)
+        self.assertEqual(len(judge.calls), 1)
+        self.assertIsNotNone(state.verdict)
+        self.assertIsNone(state.judge_skipped_reason)
+
+    def test_judge_runs_with_only_rewards_present(self) -> None:
+        # NB per-section gating: cards/transactions missing, rewards present.
+        from graph.nodes import judge_node
+
+        judge = FakeJudgeAdapter()
+        deps = self._deps(judge=judge)
+        state = _state()
+        from contracts.models import ExtractionResult
+        state.extraction = ExtractionResult(
+            request_id=state.request_id,
+            payload={"cards": "broken", "transactions": "broken",
+                      "rewards": {"closingPoints": 5}},
+            model_id="fake", latency_ms=0.0, schema_valid=False,
+        )
+        judge_node(state, deps)
+        self.assertEqual(len(judge.calls), 1)
+        self.assertIsNotNone(state.verdict)
+
+    def test_judge_runs_with_only_cards_present(self) -> None:
+        # NB per-section gating: only cards present as a list.
+        from graph.nodes import judge_node
+
+        judge = FakeJudgeAdapter()
+        deps = self._deps(judge=judge)
+        state = _state()
+        from contracts.models import ExtractionResult
+        state.extraction = ExtractionResult(
+            request_id=state.request_id,
+            payload={"cards": [{"cardMeta": {"cardDisplayName": "x", "productFamily": "y",
+                "lastFourDigit": "0000", "network": "VISA", "isPrimaryCard": True},
+                "bigPicture": {"cardCreditLimit": 100.0, "cardAvailableCreditLimit": 99.0}}],
+                "transactions": "broken", "rewards": "broken"},
+            model_id="fake", latency_ms=0.0, schema_valid=False,
+        )
+        judge_node(state, deps)
+        self.assertEqual(len(judge.calls), 1)
 
     def test_judge_skipped_on_non_dict_payload(self) -> None:
         from graph.nodes import judge_node

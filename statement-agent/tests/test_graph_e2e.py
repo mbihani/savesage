@@ -72,11 +72,12 @@ class GraphE2ETest(unittest.TestCase):
         self.assertTrue(state.has_stage_errors)
 
     def test_judge_skipped_on_structurally_unusable_payload(self) -> None:
-        # NB2: structurally unusable payload -> judge skipped, not JUDGE_FAILED.
+        # NB: payload with NO structurally judgeable section -> judge skipped.
         judge = FakeJudgeAdapter()
         deps = NodeDeps(
             extraction=FakeExtractionAdapter(
-                payload={"cards": "not a list", "transactions": "also not"},
+                payload={"cards": "not a list", "transactions": "also not",
+                         "rewards": "not a dict"},
             ),
             result_store=InMemoryResultStore(),
             judge=judge,
