@@ -31,7 +31,7 @@ from contracts.models import (
     FieldFeedback,
     TraceEvent,
 )
-from contracts.paths import is_valid_feedback_path
+from contracts.paths import canonical_feedback_path, is_valid_feedback_path
 from contracts.ports import TraceSink
 
 # ---------------------------------------------------------------------------
@@ -132,9 +132,29 @@ def _comparison_to_dict(c: FieldComparison) -> dict[str, Any]:
 
     Enum values are flattened to their ``.value`` strings so the frontend
     receives plain JSON (no enum-serialisation knowledge required).
+
+    ``feedback_path`` is the canonical concrete dot-path the frontend
+    should use when submitting Accept/Correct feedback for this field.
+    For transaction rows, ``actual_row_index`` is preferred, falling
+    back to ``expected_row_index`` so unmatched rows (where
+    ``actual_row_index`` is ``None``) still get a valid path.
     """
+    row_index = c.actual_row_index
+    if row_index is None:
+        row_index = c.expected_row_index
+    feedback_path = None
+    try:
+        feedback_path = canonical_feedback_path(
+            c.field_path,
+            row_index=row_index,
+            card_index=c.card_index,
+        )
+    except (ValueError, TypeError):
+        pass  # feedback_path stays None — frontend hides Accept/Correct
+
     return {
         "field_path": c.field_path,
+        "feedback_path": feedback_path,
         "expected": c.expected,
         "actual": c.actual,
         "outcome": c.outcome.value,
@@ -252,11 +272,26 @@ class _ProgressTraceSink(TraceSink):
     The graph's ``_trace`` helper calls :meth:`record` after each node, so
     this sink gives us per-node progress events for the SSE stream while the
     real (wrapped) sink receives the same event for MLflow telemetry.
+
+    When the **extract** node completes, individual extraction items
+    (cards, transactions, rewards) are pushed as separate
+    ``extraction_item`` SSE events — the frontend renders each as it
+    arrives rather than waiting for a batch at the end.
+
+    When the **judge** node completes, each :class:`FieldComparison` is
+    pushed as an individual ``field_verdict`` SSE event, so the frontend
+    can render per-field verdicts live as the judge produces them.
     """
 
-    def __init__(self, wrapped: Optional[TraceSink], ctx: RequestContext) -> None:
+    def __init__(
+        self,
+        wrapped: Optional[TraceSink],
+        ctx: RequestContext,
+        state: Any = None,
+    ) -> None:
         self._wrapped = wrapped
         self._ctx = ctx
+        self._state = state
 
     def record(self, event: TraceEvent) -> None:
         stage = _STAGE_MAP.get(event.name, event.name)
@@ -265,16 +300,81 @@ class _ProgressTraceSink(TraceSink):
             "trace_name": event.name,
             "error": event.error,
         })
+
+        # Stream individual extraction items when the extract node finishes.
+        if event.name == "extract" and not event.error:
+            self._push_extraction_items()
+
+        # Stream individual field verdicts when the judge node finishes.
+        if event.name == "judge" and not event.error:
+            self._push_field_verdicts()
+
         if self._wrapped is not None:
             self._wrapped.record(event)
 
+    def _push_extraction_items(self) -> None:
+        """Push one ``extraction_item`` SSE event per card / transaction / reward."""
+        state = self._state
+        if state is None or getattr(state, "extraction", None) is None:
+            return
+        payload = state.extraction.payload
+        if not isinstance(payload, dict):
+            return
+        # Cards
+        cards = payload.get("cards", [])
+        if isinstance(cards, list):
+            for i, card in enumerate(cards):
+                self._ctx.push("extraction_item", {
+                    "type": "card",
+                    "index": i,
+                    "data": card,
+                })
+        # Transactions
+        txns = payload.get("transactions", [])
+        if isinstance(txns, list):
+            for i, txn in enumerate(txns):
+                self._ctx.push("extraction_item", {
+                    "type": "transaction",
+                    "index": i,
+                    "data": txn,
+                })
+        # Rewards (scalar dict, single event)
+        rewards = payload.get("rewards")
+        if rewards is not None:
+            self._ctx.push("extraction_item", {
+                "type": "rewards",
+                "data": rewards,
+            })
+        # Summary event (kept for model_id / schema_valid display)
+        self._ctx.push("extraction", {
+            "model_id": state.extraction.model_id,
+            "schema_valid": state.extraction.schema_valid,
+        })
 
-def _build_deps(ctx: RequestContext) -> Any:
+    def _push_field_verdicts(self) -> None:
+        """Push one ``field_verdict`` SSE event per :class:`FieldComparison`."""
+        state = self._state
+        if state is None or getattr(state, "verdict", None) is None:
+            return
+        for comp in state.verdict.comparisons:
+            self._ctx.push("field_verdict", _comparison_to_dict(comp))
+        # Summary event (kept for judge_model_id / summary display)
+        self._ctx.push("verdict", {
+            "judge_model_id": state.verdict.judge_model_id,
+            "summary": state.verdict.summary,
+        })
+
+
+def _build_deps(ctx: RequestContext, state: Any = None) -> Any:
     """Build production :class:`NodeDeps` with real ports wired.
 
     Degrades gracefully: if a port cannot be constructed (Lakebase down,
     MLflow unavailable, judge adapter fails), the graph skips that stage
     rather than failing the entire parse.
+
+    ``state`` is the live :class:`GraphState` — passed to
+    :class:`_ProgressTraceSink` so it can push per-field SSE events
+    when the extract / judge nodes complete.
     """
     from graph.nodes import NodeDeps
     from harness.extraction_adapter import LunaExtractionAdapter
@@ -289,7 +389,7 @@ def _build_deps(ctx: RequestContext) -> Any:
         pass  # judge is optional — graph skips the judge stage if unwired
 
     result_store, feedback_store = _get_stores()
-    trace_sink = _ProgressTraceSink(_get_trace_sink(), ctx)
+    trace_sink = _ProgressTraceSink(_get_trace_sink(), ctx, state)
 
     return NodeDeps(
         extraction=extraction,
@@ -304,9 +404,14 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
     """Background-thread entry point: run the LangGraph parse pipeline.
 
     Pushes SSE events into ``ctx.events`` as each node completes (via the
-    :class:`_ProgressTraceSink` that wraps the real MLflow sink) and pushes
-    the extraction / verdict / complete events after the graph returns.
-    Any exception becomes an ``error`` event so the frontend can display it.
+    :class:`_ProgressTraceSink` that wraps the real MLflow sink).  The trace
+    sink pushes individual ``extraction_item`` and ``field_verdict`` events
+    when the extract / judge nodes complete — *during* the graph run, not
+    after — so the frontend renders per-field results live as they arrive.
+
+    After the graph returns, this function stores the extraction / verdict
+    snapshots on ``ctx`` for the ``GET /api/results`` fallback and pushes the
+    terminal ``complete`` (or ``error``) event.
     """
     try:
         from contracts.models import Bank as _Bank, ParseRequest as _PR
@@ -327,21 +432,24 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
             "stages": list(PIPELINE_STAGES),
         })
 
-        deps = _build_deps(ctx)
+        deps = _build_deps(ctx, state)
 
         from graph.graph import run_graph
         final_state = run_graph(deps, state)
 
-        # Push extraction payload (available after extract + validate nodes).
+        # Store extraction snapshot for /api/results fallback.
+        # The extraction_item + extraction SSE events were already pushed
+        # by _ProgressTraceSink when the extract node completed.
         if final_state.extraction is not None:
             ctx.extraction_data = {
                 "payload": final_state.extraction.payload,
                 "model_id": final_state.extraction.model_id,
                 "schema_valid": final_state.extraction.schema_valid,
             }
-            ctx.push("extraction", ctx.extraction_data)
 
-        # Push per-field judge verdict (available after the judge node).
+        # Store verdict snapshot for /api/results fallback.
+        # The field_verdict + verdict SSE events were already pushed
+        # by _ProgressTraceSink when the judge node completed.
         if final_state.verdict is not None:
             ctx.verdict_data = {
                 "comparisons": [
@@ -350,7 +458,6 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
                 "judge_model_id": final_state.verdict.judge_model_id,
                 "summary": final_state.verdict.summary,
             }
-            ctx.push("verdict", ctx.verdict_data)
 
         # Push terminal outcome.
         ctx.outcome = final_state.outcome.value if final_state.outcome else None

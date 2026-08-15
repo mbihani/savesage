@@ -259,6 +259,27 @@
         margin: 1.5rem 0 0.75rem;
       }
 
+      /* Streaming items (live per-field results) */
+      .streaming-section { margin-top: 1rem; }
+      .stream-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        background: var(--bg);
+        margin-bottom: 0.375rem;
+        font-size: 0.8125rem;
+        animation: fadein 0.2s ease;
+      }
+      @keyframes fadein {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .stream-row .field-label { font-weight: 600; }
+      .stream-row .stream-val { font-family: var(--mono); color: var(--text-muted); font-size: 0.75rem; }
+
       /* Responsive */
       @media (max-width: 540px) {
         .field-values { grid-template-columns: 1fr; }
@@ -324,7 +345,8 @@
       function fieldLabel(comp) {
         const base = FIELD_LABELS[comp.field_path] || comp.field_path;
         if (comp.scope === "TRANSACTION_ROW") {
-          return `${base} — Txn #${(comp.actual_row_index ?? 0) + 1}`;
+          const idx = comp.actual_row_index ?? comp.expected_row_index ?? 0;
+          return `${base} — Txn #${idx + 1}`;
         }
         if (comp.scope === "SCALAR" && comp.card_index != null) {
           return `${base} — Card ${comp.card_index + 1}`;
@@ -333,12 +355,17 @@
       }
 
       function toCanonicalPath(comp) {
+        // Prefer the backend-supplied feedback_path (always valid, handles
+        // unmatched rows where actual_row_index is None by falling back to
+        // expected_row_index).  Only compute locally as a fallback.
+        if (comp.feedback_path) return comp.feedback_path;
         const fp = comp.field_path;
         if (fp.startsWith("cards[].")) {
           return fp.replace("cards[]", `cards.${comp.card_index}`, 1);
         }
         if (fp.startsWith("transactions[].")) {
-          return fp.replace("transactions[]", `transactions.${comp.actual_row_index}`, 1);
+          const idx = comp.actual_row_index ?? comp.expected_row_index ?? 0;
+          return fp.replace("transactions[]", `transactions.${idx}`, 1);
         }
         return fp;
       }
@@ -436,16 +463,24 @@
         const [error, setError] = useState(null);
         const [extraction, setExtraction] = useState(null);
         const [verdict, setVerdict] = useState(null);
+        const [extractionItems, setExtractionItems] = useState([]);
+        const [fieldVerdicts, setFieldVerdicts] = useState([]);
 
         // Refs to avoid stale-closure in the complete handler — the SSE
         // listeners are registered once (useEffect [requestId]) but need
-        // the latest extraction/verdict data when "complete" fires.
+        // the latest data when "complete" fires.
         const extractionRef = useRef(null);
         const verdictRef = useRef(null);
+        const extractionItemsRef = useRef([]);
+        const fieldVerdictsRef = useRef([]);
         const onCompleteRef = useRef(onComplete);
         onCompleteRef.current = onComplete;
 
         useEffect(() => {
+          // Reset refs for a new request
+          extractionItemsRef.current = [];
+          fieldVerdictsRef.current = [];
+
           let closed = false;
           const es = new EventSource(`/api/parse/${requestId}/stream`);
 
@@ -456,10 +491,28 @@
             );
           });
 
+          // F1: individual extraction items stream live as the extract
+          // node produces them — cards, transactions, rewards each arrive
+          // as separate events so the UI renders them immediately.
+          es.addEventListener("extraction_item", (e) => {
+            const d = JSON.parse(e.data);
+            extractionItemsRef.current = [...extractionItemsRef.current, d];
+            setExtractionItems([...extractionItemsRef.current]);
+          });
+
           es.addEventListener("extraction", (e) => {
             const d = JSON.parse(e.data);
             extractionRef.current = d;
             setExtraction(d);
+          });
+
+          // F1: individual field verdicts stream live as the judge
+          // produces them — each FieldComparison arrives as a separate
+          // event so the UI shows per-field verdicts immediately.
+          es.addEventListener("field_verdict", (e) => {
+            const d = JSON.parse(e.data);
+            fieldVerdictsRef.current = [...fieldVerdictsRef.current, d];
+            setFieldVerdicts([...fieldVerdictsRef.current]);
           });
 
           es.addEventListener("verdict", (e) => {
@@ -472,9 +525,14 @@
             const d = JSON.parse(e.data);
             closed = true;
             es.close();
+            // Merge streaming verdicts into the verdict summary so
+            // ResultsView receives the full comparisons array.
+            const mergedVerdict = verdictRef.current
+              ? { ...verdictRef.current, comparisons: fieldVerdictsRef.current }
+              : { comparisons: fieldVerdictsRef.current };
             onCompleteRef.current({
               extraction: extractionRef.current,
-              verdict: verdictRef.current,
+              verdict: mergedVerdict,
               complete: d,
             });
           });
@@ -525,9 +583,49 @@
                   Extraction received: ${extraction.model_id}, schema ${extraction.schema_valid ? "valid" : "invalid"}
                 </div>
               `}
+              ${extractionItems.length > 0 && h`
+                <div class="streaming-section">
+                  <div class="section-title" style=${{ fontSize: "0.9375rem" }}>
+                    Extracted Items (${extractionItems.length})
+                  </div>
+                  ${extractionItems.map((item) => h`
+                    <div class="stream-row" key=${item.type + "-" + item.index}>
+                      <span class="field-label">
+                        ${item.type === "card" ? `Card ${item.index + 1}` : ""}
+                        ${item.type === "transaction" ? `Transaction ${item.index + 1}` : ""}
+                        ${item.type === "rewards" ? "Rewards" : ""}
+                      </span>
+                      <span class="stream-val">
+                        ${item.type === "card" && item.data?.cardMeta
+                          ? `${item.data.cardMeta.cardDisplayName || ""} ${item.data.cardMeta.lastFourDigit || ""}`
+                          : ""}
+                        ${item.type === "transaction"
+                          ? `${item.data?.date || ""} ${item.data?.description || ""} ${item.data?.amount ?? ""}`
+                          : ""}
+                        ${item.type === "rewards"
+                          ? `Points: ${item.data?.closingPoints ?? "—"}`
+                          : ""}
+                      </span>
+                    </div>
+                  `)}
+                </div>
+              `}
               ${verdict && h`
                 <div class="alert alert-info" style=${{ marginTop: "0.5rem" }}>
-                  Judge verdict received: ${verdict.comparisons.length} field comparisons
+                  Judge verdict received: ${fieldVerdicts.length} field comparisons
+                </div>
+              `}
+              ${fieldVerdicts.length > 0 && h`
+                <div class="streaming-section">
+                  <div class="section-title" style=${{ fontSize: "0.9375rem" }}>
+                    Field Verdicts (${fieldVerdicts.length})
+                  </div>
+                  ${fieldVerdicts.map((v, i) => h`
+                    <div class="stream-row" key=${toCanonicalPath(v) + "-" + i}>
+                      <span class="field-label">${fieldLabel(v)}</span>
+                      <span class=${"verdict verdict-" + v.outcome}>${v.outcome}</span>
+                    </div>
+                  `)}
                 </div>
               `}
               ${error && h`
@@ -556,13 +654,14 @@
         const [error, setError] = useState(null);
 
         const canonical = toCanonicalPath(comp);
+        const feedbackPath = comp.feedback_path;
         const outcome = comp.outcome;
 
         const handleAccept = async () => {
           setError(null);
           try {
             await submitFeedback(requestId, {
-              field_path: canonical,
+              field_path: feedbackPath,
               disposition: "ACCEPT",
               original_value: comp.actual,
             });
@@ -577,7 +676,7 @@
           if (!corrected.trim()) return;
           try {
             await submitFeedback(requestId, {
-              field_path: canonical,
+              field_path: feedbackPath,
               disposition: "CORRECT",
               original_value: comp.actual,
               corrected_value: corrected,
@@ -612,30 +711,34 @@
               ? h`<div class="feedback-note">
                   ${submitted === "accept" ? "✓ Accepted as correct" : "✓ Correction submitted"}
                 </div>`
-              : h`<div class="field-actions">
-                  <button class="btn btn-sm btn-accept" onClick=${handleAccept}>
-                    ✓ Accept
-                  </button>
-                  <button class="btn btn-sm btn-correct" onClick=${() => setShowCorrect(!showCorrect)}>
-                    ✎ Correct
-                  </button>
-                </div>
-                ${showCorrect && h`
-                  <div class="correct-input" style=${{ marginTop: "0.5rem" }}>
-                    <input
-                      type="text"
-                      placeholder="Corrected value"
-                      value=${corrected}
-                      onChange=${(e) => setCorrected(e.target.value)}
-                      onKeyDown=${(e) => { if (e.key === "Enter") handleCorrect(); }}
-                    />
-                    <button class="btn btn-sm btn-primary" onClick=${handleCorrect} disabled=${!corrected.trim()}>
-                      Submit
+              : feedbackPath
+                ? h`<div class="field-actions">
+                    <button class="btn btn-sm btn-accept" onClick=${handleAccept}>
+                      ✓ Accept
+                    </button>
+                    <button class="btn btn-sm btn-correct" onClick=${() => setShowCorrect(!showCorrect)}>
+                      ✎ Correct
                     </button>
                   </div>
-                `}
-                ${error && h`<div class="alert alert-error" style=${{ marginTop: "0.5rem" }}>${error}</div>`}
-              `}
+                  ${showCorrect && h`
+                    <div class="correct-input" style=${{ marginTop: "0.5rem" }}>
+                      <input
+                        type="text"
+                        placeholder="Corrected value"
+                        value=${corrected}
+                        onChange=${(e) => setCorrected(e.target.value)}
+                        onKeyDown=${(e) => { if (e.key === "Enter") handleCorrect(); }}
+                      />
+                      <button class="btn btn-sm btn-primary" onClick=${handleCorrect} disabled=${!corrected.trim()}>
+                        Submit
+                      </button>
+                    </div>
+                  `}
+                  ${error && h`<div class="alert alert-error" style=${{ marginTop: "0.5rem" }}>${error}</div>`}`
+                : h`<div class="feedback-note" style=${{ color: "var(--text-muted)" }}>
+                    Feedback unavailable (no valid path)
+                  </div>`
+            }
           </div>
         `;
       }

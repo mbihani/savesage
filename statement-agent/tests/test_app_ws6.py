@@ -17,6 +17,7 @@ from app.main import (
     RequestContext,
     _comparison_to_dict,
     _new_request_id,
+    _ProgressTraceSink,
     _sse_event,
     _validate_feedback_body,
 )
@@ -25,6 +26,7 @@ from contracts.models import (
     FieldComparison,
     FieldScope,
     MatchMethod,
+    TraceEvent,
 )
 
 
@@ -268,6 +270,66 @@ class ComparisonDictTest(unittest.TestCase):
         self.assertEqual(d["actual"], 42)
         self.assertEqual(d["rationale"], "expected missing")
 
+    def test_feedback_path_scalar(self) -> None:
+        """Scalar fields get a feedback_path matching the field_path."""
+        d = _comparison_to_dict(self._scalar())
+        self.assertEqual(d["feedback_path"], "rewards.closingPoints")
+
+    def test_feedback_path_card(self) -> None:
+        """Card fields get a canonical indexed feedback_path."""
+        c = FieldComparison(
+            field_path="cards[].cardMeta.cardDisplayName",
+            expected="Platinum",
+            actual="Gold",
+            outcome=ComparisonOutcome.DISAGREE,
+            scope=FieldScope.SCALAR,
+            card_index=1,
+        )
+        d = _comparison_to_dict(c)
+        self.assertEqual(d["feedback_path"], "cards.1.cardMeta.cardDisplayName")
+
+    def test_feedback_path_transaction_with_actual_index(self) -> None:
+        """Transaction fields use actual_row_index for feedback_path."""
+        d = _comparison_to_dict(self._txn())
+        self.assertEqual(d["feedback_path"], "transactions.0.amount")
+
+    def test_feedback_path_transaction_fallback_to_expected(self) -> None:
+        """F2: when actual_row_index is None, fall back to expected_row_index."""
+        c = FieldComparison(
+            field_path="transactions[].amount",
+            expected=100.0,
+            actual=None,
+            outcome=ComparisonOutcome.UNMATCHED_ROW,
+            scope=FieldScope.TRANSACTION_ROW,
+            match_method=MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+            expected_row_index=3,
+            actual_row_index=None,
+        )
+        d = _comparison_to_dict(c)
+        self.assertEqual(d["feedback_path"], "transactions.3.amount")
+
+    def test_feedback_path_transaction_both_none(self) -> None:
+        """When both row indices are None, feedback_path is None."""
+        c = FieldComparison(
+            field_path="transactions[].amount",
+            expected=100.0,
+            actual=None,
+            outcome=ComparisonOutcome.UNMATCHED_ROW,
+            scope=FieldScope.TRANSACTION_ROW,
+            match_method=MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+            expected_row_index=None,
+            actual_row_index=None,
+        )
+        d = _comparison_to_dict(c)
+        self.assertIsNone(d["feedback_path"])
+
+    def test_feedback_path_is_json_serialisable(self) -> None:
+        """feedback_path (str or None) must be JSON-serialisable."""
+        import json
+        for c in (self._scalar(), self._txn()):
+            d = _comparison_to_dict(c)
+            json.dumps(d)  # must not raise
+
 
 # ---------------------------------------------------------------------------
 # RequestContext
@@ -493,6 +555,187 @@ class RouteHelperTest(unittest.TestCase):
         self.assertEqual(len(event_lines), 1)
         self.assertEqual(len(data_lines), 1)
         self.assertTrue(line.endswith("\n\n"))  # SSE requires blank-line terminator
+
+
+# ---------------------------------------------------------------------------
+# _ProgressTraceSink — per-field streaming (F1 fix)
+# ---------------------------------------------------------------------------
+
+class ProgressTraceSinkTest(unittest.TestCase):
+    """Test the SSE streaming behaviour of _ProgressTraceSink.
+
+    The sink intercepts trace events from graph nodes and pushes individual
+    extraction_item / field_verdict SSE events so the frontend renders
+    per-field results live, not as a batch at the end.
+    """
+
+    def _make_event(self, name: str, error: str | None = None) -> TraceEvent:
+        now = datetime.now(UTC)
+        return TraceEvent(
+            request_id="req-test",
+            name=name,
+            started_at=now,
+            ended_at=now,
+            error=error,
+        )
+
+    def _drain(self, ctx: RequestContext) -> list[dict]:
+        """Drain all events from the context queue (including sentinel)."""
+        events = []
+        while not ctx.events.empty():
+            ev = ctx.events.get_nowait()
+            if ev is None:
+                break
+            events.append(ev)
+        return events
+
+    def test_progress_event_pushed(self) -> None:
+        """Every trace event produces a progress SSE event."""
+        ctx = RequestContext("req-1")
+        sink = _ProgressTraceSink(None, ctx)
+        sink.record(self._make_event("route"))
+        events = self._drain(ctx)
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["event"], "progress")
+        self.assertEqual(events[0]["data"]["stage"], "route")
+
+    def test_extraction_items_pushed_on_extract(self) -> None:
+        """F1: extract trace pushes individual extraction_item events."""
+        ctx = RequestContext("req-2")
+
+        # Mock state with extraction payload
+        class _MockExtraction:
+            model_id = "luna-test"
+            schema_valid = True
+            payload = {
+                "cards": [
+                    {"cardMeta": {"cardDisplayName": "Platinum", "lastFourDigit": "1234"}},
+                    {"cardMeta": {"cardDisplayName": "Gold", "lastFourDigit": "5678"}},
+                ],
+                "transactions": [
+                    {"date": "2026-01-01", "description": "Store", "amount": 100.0},
+                    {"date": "2026-01-02", "description": "Online", "amount": 50.0},
+                    {"date": "2026-01-03", "description": "Refund", "amount": -25.0},
+                ],
+                "rewards": {"pointsEarnedThisCycle": 500, "closingPoints": 1200},
+            }
+
+        class _MockState:
+            extraction = _MockExtraction()
+            verdict = None
+
+        sink = _ProgressTraceSink(None, ctx, _MockState())
+        sink.record(self._make_event("extract"))
+
+        events = self._drain(ctx)
+        event_types = [e["event"] for e in events]
+        # 1 progress + 2 cards + 3 transactions + 1 rewards + 1 extraction summary = 8
+        self.assertEqual(event_types.count("extraction_item"), 6)
+        self.assertIn("extraction", event_types)
+        self.assertIn("progress", event_types)
+
+        # Verify card items
+        card_items = [e for e in events if e["event"] == "extraction_item" and e["data"]["type"] == "card"]
+        self.assertEqual(len(card_items), 2)
+        self.assertEqual(card_items[0]["data"]["index"], 0)
+        self.assertEqual(card_items[1]["data"]["index"], 1)
+
+        # Verify transaction items
+        txn_items = [e for e in events if e["event"] == "extraction_item" and e["data"]["type"] == "transaction"]
+        self.assertEqual(len(txn_items), 3)
+
+        # Verify rewards item
+        rewards_items = [e for e in events if e["event"] == "extraction_item" and e["data"]["type"] == "rewards"]
+        self.assertEqual(len(rewards_items), 1)
+
+    def test_field_verdicts_pushed_on_judge(self) -> None:
+        """F1: judge trace pushes individual field_verdict events."""
+        ctx = RequestContext("req-3")
+
+        class _MockVerdict:
+            judge_model_id = "opus-test"
+            summary = "2/3 agree"
+            comparisons = (
+                FieldComparison(
+                    "rewards.closingPoints", 1200, 1200,
+                    ComparisonOutcome.AGREE, FieldScope.SCALAR,
+                ),
+                FieldComparison(
+                    "cards[].cardMeta.cardDisplayName", "Platinum", "Gold",
+                    ComparisonOutcome.DISAGREE, FieldScope.SCALAR, card_index=0,
+                ),
+                FieldComparison(
+                    "transactions[].amount", 100.0, 100.0,
+                    ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                    MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                    expected_row_index=0, actual_row_index=0,
+                ),
+            )
+
+        class _MockState:
+            extraction = None
+            verdict = _MockVerdict()
+
+        sink = _ProgressTraceSink(None, ctx, _MockState())
+        sink.record(self._make_event("judge"))
+
+        events = self._drain(ctx)
+        event_types = [e["event"] for e in events]
+        # 1 progress + 3 field_verdict + 1 verdict summary = 5
+        self.assertEqual(event_types.count("field_verdict"), 3)
+        self.assertIn("verdict", event_types)
+
+        # Verify each field_verdict has a feedback_path
+        fv_events = [e for e in events if e["event"] == "field_verdict"]
+        self.assertEqual(fv_events[0]["data"]["feedback_path"], "rewards.closingPoints")
+        self.assertEqual(fv_events[1]["data"]["feedback_path"], "cards.0.cardMeta.cardDisplayName")
+        self.assertEqual(fv_events[2]["data"]["feedback_path"], "transactions.0.amount")
+
+    def test_no_extraction_items_on_error(self) -> None:
+        """When extract node errors, no extraction_item events are pushed."""
+        ctx = RequestContext("req-4")
+        sink = _ProgressTraceSink(None, ctx)  # no state
+        sink.record(self._make_event("extract", error="boom"))
+        events = self._drain(ctx)
+        # Only the progress event with error
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["event"], "progress")
+        self.assertEqual(events[0]["data"]["error"], "boom")
+
+    def test_no_field_verdicts_on_error(self) -> None:
+        """When judge node errors, no field_verdict events are pushed."""
+        ctx = RequestContext("req-5")
+        sink = _ProgressTraceSink(None, ctx)  # no state
+        sink.record(self._make_event("judge", error="judge failed"))
+        events = self._drain(ctx)
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["event"], "progress")
+
+    def test_wrapped_sink_receives_event(self) -> None:
+        """The wrapped (real) sink must still receive every trace event."""
+        ctx = RequestContext("req-6")
+        received = []
+
+        class _CapturingSink:
+            def record(self, event: TraceEvent) -> None:
+                received.append(event)
+
+        sink = _ProgressTraceSink(_CapturingSink(), ctx, None)
+        ev = self._make_event("route")
+        sink.record(ev)
+        self.assertEqual(len(received), 1)
+        self.assertIs(received[0], ev)
+
+    def test_no_state_no_extraction_items(self) -> None:
+        """When state is None, extract/judge traces push only progress."""
+        ctx = RequestContext("req-7")
+        sink = _ProgressTraceSink(None, ctx, None)
+        sink.record(self._make_event("extract"))
+        sink.record(self._make_event("judge"))
+        events = self._drain(ctx)
+        # Two progress events, no extraction_item or field_verdict
+        self.assertEqual(len(events), 2)
+        self.assertTrue(all(e["event"] == "progress" for e in events))
 
 
 if __name__ == "__main__":
