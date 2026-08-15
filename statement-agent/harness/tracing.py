@@ -213,6 +213,25 @@ class MLflowTraceSink(TraceSink):
         """Return AND remove the run_id — preferred for explicit handoff."""
         return best_effort("tracing.pop_run_id", self._run_ids.pop, request_id, None)
 
+    def _end_run(self, request_id: str) -> None:
+        """Finalize the MLflow run for this request (RUNNING → ENDED).
+
+        Called once after the root span flushes — all child spans are ended,
+        and artifacts were logged during the graph run (before the root
+        arrived). Best-effort: if ``end_run`` fails, MLflow auto-ends the run
+        on the next ``start_run()`` or process exit. The run_id is popped from
+        the bounded map regardless, so the slot is freed for reuse.
+        """
+        if request_id not in self._run_ids:
+            return  # no run was started (e.g. _ensure_run failed)
+
+        def _do() -> None:
+            mlf = self._mlflow()
+            mlf.end_run()
+
+        best_effort("mlflow.end_run", _do)
+        self.pop_run_id(request_id)
+
     # --- TraceSink ABC ---
     def record(self, event: TraceEvent) -> None:
         if not self._config.enabled:
@@ -234,6 +253,10 @@ class MLflowTraceSink(TraceSink):
             return  # malformed tree (logged in _build)
         self._ensure_configured()
         self._flush(ops, event.request_id)
+        # The root span has flushed — all child spans are ended, and artifacts
+        # were logged during the graph run (before the root arrived). Finalize
+        # the MLflow run (RUNNING → ENDED) and free the run_id slot.
+        self._end_run(event.request_id)
 
     def _flush(self, ops: list[SpanOp], request_id: str) -> None:
         def _do() -> None:

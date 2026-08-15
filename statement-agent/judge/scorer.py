@@ -71,7 +71,7 @@ def score_trace(run_id: str) -> dict[str, Any]:
         return _score_trace_impl(run_id)
     except Exception as exc:
         _LOGGER.warning("score_trace failed for run %s: %s", run_id, exc)
-        return {"run_id": run_id, "status": "ERROR", "error": str(exc)}
+        return {"run_id": run_id, "status": "ERROR", "error": "scorer error"}
 
 
 def _score_trace_impl(run_id: str) -> dict[str, Any]:

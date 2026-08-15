@@ -47,6 +47,7 @@ class _RecordingMLflow:
         self.start_calls = []  # (name, span_type, parent_live, start_time_ns)
         self._counter = 0
         self._trace_id = "tr-fake-001"
+        self.end_run_calls = 0
 
     def set_tracking_uri(self, uri):
         self.tracking_uri = uri
@@ -59,6 +60,16 @@ class _RecordingMLflow:
 
     class langchain:
         autolog = staticmethod(lambda **kw: None)
+
+    def start_run(self):
+        class _FakeRunInfo:
+            run_id = "fake-run-001"
+        class _FakeRun:
+            info = _FakeRunInfo()
+        return _FakeRun()
+
+    def end_run(self):
+        self.end_run_calls += 1
 
     def start_span_no_context(self, *, name, span_type, parent_span=None, start_time_ns=None):
         self._counter += 1
@@ -115,6 +126,11 @@ class NestingTest(unittest.TestCase):
             self.assertIsNotNone(parent_live, f"{name} was flattened (parent_span=None)")
             self.assertEqual(parent_live.name, "parse")
 
+        # The root span flush triggers end_run — the MLflow run is finalized.
+        self.assertEqual(fake.end_run_calls, 1)
+        # The run_id is popped after end_run (slot freed for reuse).
+        self.assertNotIn("req-1", sink._run_ids)
+
     def test_span_types_assigned_by_phase(self):
         fake = _RecordingMLflow()
         sink = MLflowTraceSink(
@@ -165,6 +181,29 @@ class NestingTest(unittest.TestCase):
         # Find the live span via the recording (the end call went through it).
         # We verify by checking no exception propagated and trace_id captured.
         self.assertEqual(sink.get_trace_id("req-1"), "tr-fake-001")
+
+    def test_end_run_not_called_on_buffered_events(self):
+        """end_run is NOT called while events are buffered (no root yet).
+
+        The run stays active so log_artifact() from persist_node can log to it.
+        Only the root span's arrival triggers end_run.
+        """
+        fake = _RecordingMLflow()
+        sink = MLflowTraceSink(
+            TracingConfig(enabled=True, tracking_uri="databricks",
+                          databricks_profile="fevm-stable",
+                          experiment_path="/x", autolog_langchain=False),
+            mlflow_factory=lambda: fake,
+        )
+        # Emit a child event (buffered — no root yet).
+        sink.record(_evt("extraction", "s-e", parent="s-p", offset=1))
+        # end_run NOT called yet (run stays active for log_artifact).
+        self.assertEqual(fake.end_run_calls, 0)
+        self.assertIn("req-1", sink._run_ids)
+        # Now emit the root — triggers flush + end_run.
+        sink.record(_evt("parse", "s-p", parent=None, offset=0))
+        self.assertEqual(fake.end_run_calls, 1)
+        self.assertNotIn("req-1", sink._run_ids)
 
 
 if __name__ == "__main__":

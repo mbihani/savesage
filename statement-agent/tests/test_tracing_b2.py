@@ -43,6 +43,13 @@ class _FakeMLflow:
     class langchain:
         autolog = staticmethod(lambda **kw: None)
     def start_span_no_context(self, **kw): return _FakeLiveSpan()
+    def start_run(self):
+        class _FakeRunInfo:
+            run_id = "fake-run-b2"
+        class _FakeRun:
+            info = _FakeRunInfo()
+        return _FakeRun()
+    def end_run(self): pass
 
 
 class BoundedMemoryTest(unittest.TestCase):

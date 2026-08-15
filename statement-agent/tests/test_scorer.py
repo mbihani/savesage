@@ -261,7 +261,8 @@ class ScoreTraceTest(unittest.TestCase):
             result = score_trace("run-opus-fail")
 
         self.assertEqual(result["status"], "ERROR")
-        self.assertIn("opus 500", result["error"])
+        # Error is sanitized — raw exception string is NOT exposed to the client.
+        self.assertEqual(result["error"], "scorer error")
 
     def test_score_trace_per_field_metrics(self):
         """Per-field metrics are returned in the result."""
