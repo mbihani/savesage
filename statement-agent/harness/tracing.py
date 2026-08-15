@@ -120,6 +120,7 @@ class MLflowTraceSink(TraceSink):
             root_stage="parse",
             max_pending=self._config.max_pending_requests,
             max_flushed=self._config.max_flushed,
+            max_events_per_request=self._config.max_events_per_request,
         )
         # Bounded LRU trace-id map (review B2). Prefer pop_trace_id() for explicit
         # handoff with the parse result; this map is the fallback.
@@ -259,6 +260,10 @@ class MLflowTraceSink(TraceSink):
             self._trace_ids.popitem(last=False)
 
     def get_trace_id(self, request_id: str) -> str | None:
+        # Read-only lookup: best_effort (swallow + return None, no disable).
+        return best_effort("tracing.get_trace_id", self._get_trace_id_impl, request_id)
+
+    def _get_trace_id_impl(self, request_id: str) -> str | None:
         tid = self._trace_ids.get(request_id)
         if tid is not None:
             self._trace_ids.move_to_end(request_id)  # LRU refresh
@@ -271,12 +276,22 @@ class MLflowTraceSink(TraceSink):
         rely on this process-global map (review B2). This method takes the id out
         of the bounded LRU so it cannot leak.
         """
-        return self._trace_ids.pop(request_id, None)
+        return best_effort("tracing.pop_trace_id", self._trace_ids.pop, request_id, None)
 
     def abandon(self, request_id: str) -> None:
-        """Drop all telemetry state for a request whose parse crashed (review B2)."""
-        self._builder.abandon(request_id)
-        self._trace_ids.pop(request_id, None)
+        """Drop all telemetry state for a request whose parse crashed (review B2).
+
+        This is a cleanup method called on error paths — it must never raise, so
+        an additional exception cannot mask the original failure. It works even
+        when telemetry is disabled (to clean up leftover state).
+        """
+        try:
+            self._builder.abandon(request_id)
+            self._trace_ids.pop(request_id, None)
+        except _CONTROL_EXCEPTIONS:
+            raise
+        except BaseException as exc:  # noqa: BLE001 - cleanup must never raise
+            _LOGGER.warning("telemetry abandon failed for %s: %s", request_id, exc)
 
     # --- field-wise client feedback (requirement 3) ---
     def log_field_feedback(self, feedback: FieldFeedback, trace_id: str | None = None) -> None:
@@ -351,9 +366,25 @@ class MLflowTraceSink(TraceSink):
 
     # Convenience for WS6/WS3: also return metrics for run-side logging if desired.
     def judge_metrics(self, verdict: JudgeVerdict) -> dict[str, float]:
-        return verdict_to_metrics(verdict)
+        """Compute judge metrics for run-side logging if desired.
+
+        This is a telemetry-only computation; a failure here returns an empty
+        dict rather than propagating (review B1).
+        """
+        return self._guard("tracing.judge_metrics", verdict_to_metrics, verdict) or {}
 
 
 def build_trace_sink(config: TracingConfig | None = None) -> MLflowTraceSink:
-    """Construct the concrete TraceSink used by the agent."""
-    return MLflowTraceSink(config)
+    """Construct the concrete TraceSink used by the agent.
+
+    Fail-safe: if construction raises (e.g. invalid env-var config), returns a
+    disabled no-op sink rather than propagating — app startup must not break
+    (review B1).
+    """
+    try:
+        return MLflowTraceSink(config)
+    except _CONTROL_EXCEPTIONS:
+        raise
+    except BaseException as exc:  # noqa: BLE001 - construction must never break startup
+        _LOGGER.warning("telemetry sink construction failed; returning disabled no-op: %s", exc)
+        return MLflowTraceSink(TracingConfig(enabled=False))

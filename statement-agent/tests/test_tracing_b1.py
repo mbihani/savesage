@@ -9,11 +9,12 @@ through record()/log_field_feedback() and can break the caller's parse.
 """
 
 from datetime import UTC, datetime
+import os
 import unittest
 
-from contracts.models import FieldFeedback, TraceEvent
+from contracts.models import FieldFeedback, JudgeVerdict, TraceEvent
 from harness.config_ws4 import TracingConfig
-from harness.tracing import MLflowTraceSink
+from harness.tracing import MLflowTraceSink, build_trace_sink
 
 
 class _ExplodingValue:
@@ -45,6 +46,16 @@ def _config():
         enabled=True, tracking_uri="databricks", databricks_profile="fevm-stable",
         experiment_path="/x", autolog_langchain=False,
         feedback_hmac_key=b"test-key",
+    )
+
+
+def _evt_for_abandon(name, rid, sid, parent=None):
+    """Build a minimal TraceEvent for abandon/buffer tests."""
+    base = datetime(2026, 1, 1, 12, 0, 0, tzinfo=UTC)
+    return TraceEvent(
+        request_id=rid, name=name, started_at=base,
+        ended_at=datetime.fromtimestamp(base.timestamp() + 1, tz=UTC),
+        attributes={}, span_id=sid, parent_span_id=parent,
     )
 
 
@@ -113,6 +124,84 @@ class PayloadConstructionFailureTest(unittest.TestCase):
         sink._disabled = True
         sink._disabled = False  # ops can reset
         self.assertFalse(sink._disabled)
+
+    def test_judge_metrics_with_exploding_verdict_does_not_raise(self):
+        # judge_metrics() computes payload from the verdict; if the verdict's
+        # comparisons field raises on iteration, _guard must catch it.
+        sink = MLflowTraceSink(_config(), mlflow_factory=lambda: None)
+
+        class _ExplodingIterable:
+            def __iter__(self):
+                raise RuntimeError("verdict iteration bomb")
+
+        v = JudgeVerdict("req-1", "opus", _ExplodingIterable(), 0.0)  # type: ignore[arg-type]
+        result = sink.judge_metrics(v)
+        # Must return empty dict (or None coerced to {}), never propagate.
+        self.assertEqual(result, {})
+        # Hard failure disables telemetry.
+        self.assertTrue(sink._disabled)
+
+    def test_judge_metrics_with_good_verdict_returns_metrics(self):
+        from contracts.models import ComparisonOutcome, FieldComparison, FieldScope
+
+        sink = MLflowTraceSink(_config(), mlflow_factory=lambda: None)
+        v = JudgeVerdict(
+            "req-1", "opus",
+            (FieldComparison("rewards.closingPoints", 100, 100,
+                             ComparisonOutcome.AGREE, FieldScope.SCALAR),),
+            50.0,
+        )
+        result = sink.judge_metrics(v)
+        self.assertEqual(result["judge.accuracy"], 1.0)
+
+    def test_abandon_does_not_raise_on_nonexistent_request(self):
+        sink = MLflowTraceSink(_config(), mlflow_factory=lambda: None)
+        # Abandon a request that was never buffered — must not raise.
+        sink.abandon("req-nonexistent")
+        # Abandon a request that IS buffered.
+        sink.record(_evt_for_abandon("extraction", "req-1", "s-e", "s-p"))
+        sink.abandon("req-1")
+        self.assertNotIn("req-1", sink._builder.pending())
+
+    def test_abandon_works_when_telemetry_disabled(self):
+        sink = MLflowTraceSink(_config(), mlflow_factory=lambda: None)
+        # Buffer a request, then disable telemetry.
+        sink.record(_evt_for_abandon("extraction", "req-1", "s-e", "s-p"))
+        sink._disabled = True
+        # abandon must still clean up (it bypasses the disabled check).
+        sink.abandon("req-1")
+        self.assertNotIn("req-1", sink._builder.pending())
+
+    def test_get_trace_id_and_pop_trace_id_do_not_raise(self):
+        sink = MLflowTraceSink(_config(), mlflow_factory=lambda: None)
+        # Lookups on a non-existent request — must return None, not raise.
+        self.assertIsNone(sink.get_trace_id("req-missing"))
+        self.assertIsNone(sink.pop_trace_id("req-missing"))
+
+    def test_build_trace_sink_with_invalid_env_does_not_raise(self):
+        # Invalid WS4_MAX_* env var must not prevent construction — _env_int
+        # falls back to the default with a warning.
+        os.environ["WS4_MAX_PENDING"] = "not-a-number"
+        os.environ["WS4_MAX_EVENTS_PER_REQUEST"] = "also-not-a-number"
+        try:
+            sink = build_trace_sink()
+            self.assertIsNotNone(sink)
+            # The invalid values fell back to defaults, not crashed.
+            self.assertEqual(sink._config.max_pending_requests, 1024)
+            self.assertEqual(sink._config.max_events_per_request, 100)
+        finally:
+            del os.environ["WS4_MAX_PENDING"]
+            del os.environ["WS4_MAX_EVENTS_PER_REQUEST"]
+
+    def test_get_tracing_config_with_invalid_env_does_not_raise(self):
+        from harness.config_ws4 import get_tracing_config
+
+        os.environ["WS4_MAX_TRACE_IDS"] = "garbage"
+        try:
+            cfg = get_tracing_config()
+            self.assertEqual(cfg.max_trace_ids, 1024)  # fell back to default
+        finally:
+            del os.environ["WS4_MAX_TRACE_IDS"]
 
 
 if __name__ == "__main__":

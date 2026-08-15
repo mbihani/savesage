@@ -9,6 +9,7 @@ and an explicit per-model cost-rate table.
 This module is stdlib-only (no mlflow import) so it stays on the contract-test path.
 """
 
+import logging
 import os
 from dataclasses import dataclass, field
 
@@ -41,16 +42,22 @@ class TracingConfig:
         default_factory=lambda: {k: dict(v) for k, v in _DEFAULT_COST_RATES.items()}
     )
     # HMAC key (raw bytes) for pseudonymising PII values and actors in telemetry.
-    # When empty, PII leaves (cardholder names, descriptions) and the actor are
-    # OMITTED entirely from telemetry (sent as None) rather than hashed with an
+    # When empty: PII values (cardholder names, descriptions) are OMITTED (sent
+    # as None) and the actor is sent as "redacted" — rather than hashing with an
     # unsalted digest (which is dictionary-reversible for low-entropy values).
     # Set WS4_FEEDBACK_HMAC_KEY at deploy to a per-workspace secret to retain
     # linkable pseudonyms. CONFIGURE(ws4-feedback-hmac-key)
     feedback_hmac_key: bytes = b""  # CONFIGURE(ws4-feedback-hmac-key)
     # Bounded-memory limits for long-lived Apps processes. CONFIGURE(ws4-max-*)
-    max_pending_requests: int = 1024  # CONFIGURE(ws4-max-pending) — buffered trees
+    max_pending_requests: int = 1024  # CONFIGURE(ws4-max-pending) — buffered request IDs
     max_trace_ids: int = 1024  # CONFIGURE(ws4-max-trace-ids) — LRU trace-id map
     max_flushed: int = 2048  # CONFIGURE(ws4-max-flushed) — late-arrival guard
+    # Per-request event cap: a single stuck request (whose root never arrives)
+    # must not accumulate events indefinitely. When exceeded, the request's
+    # buffer is abandoned and a warning is logged. The root event is always
+    # allowed through even if it exceeds the cap (it triggers a flush, so no
+    # accumulation). CONFIGURE(ws4-max-events-per-request)
+    max_events_per_request: int = 100  # CONFIGURE(ws4-max-events-per-request)
 
 
 def _env_bool(name: str, default: bool) -> bool:
@@ -60,8 +67,30 @@ def _env_bool(name: str, default: bool) -> bool:
     return raw.strip().lower() in ("1", "true", "yes", "on")
 
 
+def _env_int(name: str, default: int) -> int:
+    """Fail-safe int env-var parse: returns default on non-numeric values.
+
+    A malformed ``WS4_MAX_*`` env var must not prevent app startup — it degrades
+    to the default with a warning, never a raise (review B1).
+    """
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return int(raw)
+    except (ValueError, TypeError):
+        logging.getLogger("statement-agent.tracing").warning(
+            "invalid WS4 config %s=%r; using default %d", name, raw, default,
+        )
+        return default
+
+
 def get_tracing_config() -> TracingConfig:
-    """Read a fresh environment snapshot on every call (mirrors config.get_settings)."""
+    """Read a fresh environment snapshot on every call (mirrors config.get_settings).
+
+    Fail-safe: invalid ``WS4_MAX_*`` env vars fall back to defaults rather than
+    raising (review B1) — a config typo must not prevent app startup.
+    """
     hmac_raw = os.getenv("WS4_FEEDBACK_HMAC_KEY", "")
     return TracingConfig(
         enabled=_env_bool("WS4_TRACING_ENABLED", True),
@@ -72,9 +101,10 @@ def get_tracing_config() -> TracingConfig:
         redact_pii_values=_env_bool("WS4_REDACT_PII", True),
         log_nonpii_values_raw=_env_bool("WS4_LOG_NONPII_RAW", True),
         feedback_hmac_key=hmac_raw.encode() if hmac_raw else b"",
-        max_pending_requests=int(os.getenv("WS4_MAX_PENDING", "1024")),
-        max_trace_ids=int(os.getenv("WS4_MAX_TRACE_IDS", "1024")),
-        max_flushed=int(os.getenv("WS4_MAX_FLUSHED", "2048")),
+        max_pending_requests=_env_int("WS4_MAX_PENDING", 1024),
+        max_trace_ids=_env_int("WS4_MAX_TRACE_IDS", 1024),
+        max_flushed=_env_int("WS4_MAX_FLUSHED", 2048),
+        max_events_per_request=_env_int("WS4_MAX_EVENTS_PER_REQUEST", 100),
     )
 
 

@@ -46,12 +46,12 @@ class _FakeMLflow:
 
 
 class BoundedMemoryTest(unittest.TestCase):
-    def _sink(self, max_trace_ids=5, max_pending=5, max_flushed=5):
+    def _sink(self, max_trace_ids=5, max_pending=5, max_flushed=5, max_events_per_request=100):
         cfg = TracingConfig(
             enabled=True, tracking_uri="databricks", databricks_profile="fevm-stable",
             experiment_path="/x", autolog_langchain=False,
             max_trace_ids=max_trace_ids, max_pending_requests=max_pending,
-            max_flushed=max_flushed,
+            max_flushed=max_flushed, max_events_per_request=max_events_per_request,
         )
         return MLflowTraceSink(cfg, mlflow_factory=lambda: _FakeMLflow())
 
@@ -103,6 +103,66 @@ class BoundedMemoryTest(unittest.TestCase):
         for i in range(10):
             b.feed(_evt("extraction", rid=f"r-{i}", sid=f"s-{i}", parent="s-p"))
         self.assertLessEqual(len(b.pending()), 3)
+
+    def test_per_request_event_cap_abandons_buffer(self):
+        # A single request whose root never arrives must not accumulate events
+        # indefinitely. After max_events_per_request, the buffer is abandoned.
+        sink = self._sink(max_events_per_request=5)
+        for i in range(10):
+            # All non-root events for the SAME request_id — no root ever arrives.
+            sink.record(_evt("extraction", rid="req-stuck", sid=f"s-{i}", parent="s-parse"))
+        # The request was abandoned after the cap; not in pending.
+        self.assertNotIn("req-stuck", sink._builder.pending())
+
+    def test_per_request_event_cap_allows_root_through(self):
+        # The root event itself is always allowed through even if it's the one
+        # that exceeds the cap — is_root=True skips the cap check and flushes.
+        sink = self._sink(max_events_per_request=3)
+        # Feed 3 non-root children (within cap, buffered).
+        for i in range(3):
+            sink.record(_evt("extraction", rid="req-1", sid=f"s-c-{i}", parent="s-parse"))
+        # Now the root arrives as the 4th event — exceeds cap BUT is_root=True,
+        # so the cap check is skipped and the root flushes.
+        sink.record(_evt("parse", rid="req-1", sid="s-parse", parent=None))
+        self.assertEqual(sink.get_trace_id("req-1"), "tr-fake")
+
+    def test_per_request_event_cap_abandons_and_drops_subsequent(self):
+        # After abandonment, subsequent events (including a late root) are dropped
+        # because the request is marked as flushed.
+        sink = self._sink(max_events_per_request=3)
+        for i in range(4):  # 4 > 3 → abandons on 4th event
+            sink.record(_evt("extraction", rid="req-1", sid=f"s-{i}", parent="s-parse"))
+        self.assertNotIn("req-1", sink._builder.pending())
+        # Subsequent non-root event is dropped (request in _flushed).
+        sink.record(_evt("extraction", rid="req-1", sid="s-late", parent="s-parse"))
+        self.assertNotIn("req-1", sink._builder.pending())
+        # Late root is also dropped.
+        sink.record(_evt("parse", rid="req-1", sid="s-parse", parent=None))
+        self.assertIsNone(sink.get_trace_id("req-1"))
+
+    def test_per_request_event_cap_at_exact_boundary(self):
+        # Events up to and including the cap are buffered; cap+1 triggers abandon.
+        sink = self._sink(max_events_per_request=3)
+        # 3 events: within cap (len(buf) <= 3 after each append, non-root).
+        for i in range(3):
+            sink.record(_evt("extraction", rid="req-1", sid=f"s-{i}", parent="s-p"))
+        self.assertIn("req-1", sink._builder.pending())
+        # 4th event: exceeds cap (len(buf) = 4 > 3), abandons.
+        sink.record(_evt("extraction", rid="req-1", sid="s-3", parent="s-p"))
+        self.assertNotIn("req-1", sink._builder.pending())
+
+    def test_span_tree_builder_per_request_cap_directly(self):
+        b = SpanTreeBuilder(max_pending=10, max_events_per_request=3)
+        for i in range(5):
+            b.feed(_evt("extraction", rid="r-1", sid=f"s-{i}", parent="s-p"))
+        # Abandoned after 4th event (4 > 3); in _flushed, not pending.
+        self.assertNotIn("r-1", b.pending())
+        # Subsequent events for r-1 are dropped (in _flushed).
+        b.feed(_evt("extraction", rid="r-1", sid="s-late", parent="s-p"))
+        self.assertNotIn("r-1", b.pending())
+        # Other requests still work.
+        b.feed(_evt("extraction", rid="r-2", sid="s-x", parent="s-p"))
+        self.assertIn("r-2", b.pending())
 
 
 if __name__ == "__main__":

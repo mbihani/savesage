@@ -21,7 +21,12 @@ events (whose parent never arrived) are omitted from the tree and logged.
 
 Bounded memory (review B2): ``_buffer`` (pending), ``_flushed`` (completed), are
 bounded LRU structures; over-capacity pending requests are abandoned. The
-trace-id map in the sink is likewise bounded.
+trace-id map in the sink is likewise bounded. Additionally, EACH request's
+event list is capped (``max_events_per_request``) so a single stuck request
+whose root never arrives cannot accumulate events indefinitely — when the cap
+is exceeded the request's buffer is abandoned and a warning is logged. The root
+event is always allowed through even if it exceeds the cap (it triggers a flush,
+so no accumulation).
 """
 
 import logging
@@ -161,10 +166,12 @@ class SpanTreeBuilder:
         root_stage: str = ROOT_STAGE_DEFAULT,
         max_pending: int = 1024,
         max_flushed: int = 2048,
+        max_events_per_request: int = 100,
     ) -> None:
         self._root_stage = root_stage
         self._max_pending = max_pending
         self._max_flushed = max_flushed
+        self._max_events_per_request = max_events_per_request
         self._buffer: "OrderedDict[str, list[TraceEvent]]" = OrderedDict()
         self._flushed: "OrderedDict[str, None]" = OrderedDict()
 
@@ -177,20 +184,35 @@ class SpanTreeBuilder:
         event with ``parent_span_id=None`` but a non-root name is an orphan: it is
         buffered but does NOT trigger a flush (review B3). Late arrivals after a
         flush return None. Non-root events return None while buffered.
+
+        Per-request event cap (review B2): a non-root event that pushes the
+        request's buffer beyond ``max_events_per_request`` causes the request to
+        be abandoned (buffer dropped + warning logged). The root is always allowed
+        through even if it exceeds the cap — it triggers a flush immediately, so
+        no accumulation.
         """
         rid = event.request_id
         if rid in self._flushed:
             return None  # late arrival after flush — drop (trace already ended)
         buf = self._buffer.setdefault(rid, [])
-        if not buf:
-            self._buffer[rid] = buf  # ensure key exists (setdefault did this)
         buf.append(event)
+        # Flush only on the declared root (explicit invariant, review B3).
+        is_root = event.parent_span_id is None and event.name == self._root_stage
+        # Per-request event cap (review B2): a stuck request with no root must
+        # not accumulate events indefinitely. Non-root events beyond the cap
+        # cause the request to be abandoned. The root always flushes.
+        if not is_root and len(buf) > self._max_events_per_request:
+            self._buffer.pop(rid, None)
+            self._mark_flushed(rid)  # prevent re-buffering of subsequent events
+            _LOGGER.warning(
+                "request %s exceeded max_events_per_request (%d > %d); abandoning buffer",
+                rid, len(buf), self._max_events_per_request,
+            )
+            return None
         # Evict oldest pending if over capacity (abandon — root will never come).
         while len(self._buffer) > self._max_pending:
             evicted_rid, _ = self._buffer.popitem(last=False)
             _LOGGER.warning("tracing buffer full; abandoning pending request %s", evicted_rid)
-        # Flush only on the declared root (explicit invariant, review B3).
-        is_root = event.parent_span_id is None and event.name == self._root_stage
         if is_root:
             tree = self._build(rid)
             self._buffer.pop(rid, None)
