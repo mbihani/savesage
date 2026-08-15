@@ -6,5 +6,35 @@ env:
     value: databricks-gpt-5-6-luna
   - name: JUDGE_ENDPOINT
     value: databricks-claude-opus-5
-# TODO(workstream-3): bind Lakebase and UC resources here.
-# TODO(workstream-4): bind MLflow experiment resources here.
+  # --- Workstream 3: Lakebase connection ---
+  # The database resource binding injects PGHOST/PGUSER/PGPORT/PGDATABASE
+  # automatically; ENDPOINT_NAME is consumed by the OAuthConnectionFactory
+  # to request a fresh per-connection credential token.
+  - name: ENDPOINT_NAME
+    value: projects/savesage-statement-agent/branches/production/endpoints/primary
+  - name: PGSSLMODE
+    value: require
+  # --- Workstream 4: MLflow tracing ---
+  - name: WS4_TRACING_ENABLED
+    value: "true"
+  - name: WS4_TRACKING_URI
+    value: databricks
+# --- Bound resources ---
+# WS3: Lakebase Postgres (permission CAN_CONNECT_AND_CREATE so the app SP
+# can both connect and create the source tables on first boot).
+# WS4: MLflow experiment (CAN_EDIT so the agent can write traces and log
+# feedback assessments).  The experiment_id is the numeric ID from
+# `databricks experiments list`; replace it if deploying to a different
+# workspace.
+resources:
+  - name: savesage-statement-agent-mlflow
+    description: "MLflow experiment for statement-agent tracing + field feedback"
+    experiment:
+      experiment_id: "967014443183055"
+      permission: CAN_EDIT
+  - name: savesage-lakebase
+    description: "Lakebase Postgres for statement results + field feedback"
+    database:
+      instance_name: "savesage-statement-agent"
+      database_name: "databricks_postgres"
+      permission: CAN_CONNECT_AND_CREATE

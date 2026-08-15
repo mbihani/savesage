@@ -1,16 +1,594 @@
-"""FastAPI shell owned by workstream 6; dependency import is function-local."""
+"""FastAPI app for SaveSage Statement Agent (workstream 6).
 
+Wires the real ports into the LangGraph parse pipeline:
+
+* ``ExtractionAdapter`` → :class:`harness.extraction_adapter.LunaExtractionAdapter`
+* ``JudgeAdapter`` → :class:`harness.judge_adapter.OpusJudgeAdapter`
+* ``ResultStore`` + ``FeedbackStore`` → :mod:`db.stores` (Lakebase/psycopg)
+* ``TraceSink`` → :class:`harness.tracing.MLflowTraceSink`, wrapped by
+  :class:`_ProgressTraceSink` which mirrors per-node trace events into the SSE
+  stream.
+
+**Import discipline.**  FastAPI/uvicorn are imported function-local inside
+:func:`create_app` so the module is importable in a stdlib-only environment
+(the contract-test gate).  All other module-level imports are stdlib-only;
+the modules they pull in (``graph.*``, ``harness.*``, ``db.*``) defer their
+own third-party imports (langgraph, psycopg, mlflow, databricks-sdk) to
+function-local scopes — importing them never requires those packages.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import queue
+import threading
+import uuid
+from datetime import UTC, datetime
+from typing import Any
+
+from contracts.models import (
+    Bank,
+    FieldComparison,
+    FieldFeedback,
+    TraceEvent,
+)
+from contracts.paths import is_valid_feedback_path
+from contracts.ports import TraceSink
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+# Trace event names emitted by graph nodes → frontend stage labels.
+# ``persist_extraction`` and ``judge_skipped`` are internal trace names that
+# map to the user-facing ``persist`` and ``judge`` stages respectively.
+_STAGE_MAP: dict[str, str] = {
+    "route": "route",
+    "extract": "extract",
+    "validate": "validate",
+    "persist_extraction": "persist",
+    "judge": "judge",
+    "judge_skipped": "judge",
+    "finalize": "finalize",
+}
+
+# The six pipeline stages the frontend renders, in order.
+PIPELINE_STAGES: tuple[str, ...] = (
+    "route", "extract", "validate", "persist", "judge", "finalize",
+)
+
+# In-memory request contexts, keyed by request_id.  Populated by
+# ``POST /api/parse`` and consumed by the SSE + results endpoints.  Entries
+# persist for the process lifetime; a long-lived Apps process would eventually
+# want TTL eviction, but for a demo this is sufficient.
+_REQUESTS: dict[str, RequestContext] = {}
+
+# Module-level caches so we don't create a WorkspaceClient or MLflow sink
+# per request.  ``None`` means "not yet attempted"; a tuple/store means
+# "attempted" (including the failure sentinel).
+_stores: tuple[Any, Any] | None = None
+_trace_sink: Any = None
+
+
+# ---------------------------------------------------------------------------
+# RequestContext — thread-safe progress + result holder for one parse request
+# ---------------------------------------------------------------------------
+
+class RequestContext:
+    """Thread-safe context bridging the background graph thread and the SSE endpoint.
+
+    The background graph thread pushes events into ``events`` (a stdlib
+    ``queue.Queue``, thread-safe); the async SSE endpoint reads from it via
+    ``run_in_executor``.  After the graph completes, ``extraction_data`` and
+    ``verdict_data`` are available for the ``GET /api/results`` fallback when
+    Lakebase is unreachable.
+    """
+
+    def __init__(self, request_id: str) -> None:
+        self.request_id = request_id
+        self.events: queue.Queue[dict[str, Any] | None] = queue.Queue()
+        self.done = threading.Event()
+        self.outcome: str | None = None
+        self.error: str | None = None
+        self.started_at = datetime.now(UTC)
+        # Result snapshots for /api/results (populated after the graph completes).
+        self.extraction_data: dict[str, Any] | None = None
+        self.verdict_data: dict[str, Any] | None = None
+        self.complete_data: dict[str, Any] | None = None
+        # In-memory feedback list (fallback when Lakebase feedback store is down).
+        self.feedback: list[dict[str, Any]] = []
+
+    def push(self, event_type: str, data: dict[str, Any]) -> None:
+        """Push an SSE event (thread-safe; called from the background thread)."""
+        self.events.put_nowait({"event": event_type, "data": data})
+
+    def push_sentinel(self) -> None:
+        """Signal that no more events will arrive (sentinel = ``None``)."""
+        self.events.put_nowait(None)
+        self.done.set()
+
+
+# ---------------------------------------------------------------------------
+# Pure, stdlib-only helpers (unit-tested by tests/test_app_ws6.py)
+# ---------------------------------------------------------------------------
+
+def _new_request_id() -> str:
+    """Generate a unique request ID (``req-`` prefix + 12 hex chars)."""
+    return f"req-{uuid.uuid4().hex[:12]}"
+
+
+def _sse_event(event_type: str, data: Any) -> str:
+    """Format one Server-Sent Event frame.
+
+    SSE wire format: ``event: <type>\\ndata: <json>\\n\\n``.
+    ``data`` is JSON-serialised with ``default=str`` so datetimes and other
+    non-JSON objects degrade gracefully rather than crashing the stream.
+    """
+    payload = json.dumps(data, default=str)
+    return f"event: {event_type}\ndata: {payload}\n\n"
+
+
+def _comparison_to_dict(c: FieldComparison) -> dict[str, Any]:
+    """Serialise a :class:`FieldComparison` to a JSON-safe dict for the API.
+
+    Enum values are flattened to their ``.value`` strings so the frontend
+    receives plain JSON (no enum-serialisation knowledge required).
+    """
+    return {
+        "field_path": c.field_path,
+        "expected": c.expected,
+        "actual": c.actual,
+        "outcome": c.outcome.value,
+        "scope": c.scope.value,
+        "match_method": c.match_method.value,
+        "card_index": c.card_index,
+        "expected_row_index": c.expected_row_index,
+        "actual_row_index": c.actual_row_index,
+        "similarity": c.similarity,
+        "rationale": c.rationale,
+    }
+
+
+def _validate_feedback_body(body: dict[str, Any]) -> dict[str, Any]:
+    """Validate a feedback request body and return normalised fields.
+
+    Raises :class:`ValueError` with a human-readable message on invalid input.
+    Validation includes the canonical-path check via :func:`contracts.paths.
+    is_valid_feedback_path` — a path that is not a concrete, indexed canonical
+    path (e.g. a template like ``cards[].cardMeta.cardDisplayName`` or a
+    JSON-Pointer-style ``/cards/0/...``) is rejected.
+    """
+    field_path = str(body.get("field_path", ""))
+    disposition = str(body.get("disposition", "")).upper()
+
+    if not is_valid_feedback_path(field_path):
+        raise ValueError(f"invalid field_path: {field_path!r}")
+
+    if disposition == "ACCEPT":
+        accepted = True
+    elif disposition == "CORRECT":
+        accepted = False
+    else:
+        raise ValueError("disposition must be ACCEPT or CORRECT")
+
+    original_value = body.get("original_value")
+    corrected_value = body.get("corrected_value")
+
+    if not accepted and corrected_value is None:
+        raise ValueError("corrected_value is required when disposition is CORRECT")
+
+    return {
+        "field_path": field_path,
+        "disposition": disposition,
+        "accepted": accepted,
+        "original_value": original_value,
+        "corrected_value": corrected_value,
+        "actor": str(body.get("actor", "web-ui")),
+    }
+
+
+def _queue_get(q: queue.Queue, timeout: float) -> Any:
+    """Blocking ``Queue.get`` with timeout — helper for ``run_in_executor``."""
+    return q.get(block=True, timeout=timeout)
+
+
+# ---------------------------------------------------------------------------
+# Production port wiring (third-party imports deferred to call-time)
+# ---------------------------------------------------------------------------
+
+def _build_lakebase_stores() -> tuple[Any, Any]:
+    """Build Lakebase-backed ``ResultStore`` + ``FeedbackStore``.
+
+    Returns ``(result_store, feedback_store)``.  Raises on failure; callers
+    catch and degrade to in-memory.  ``databricks-sdk`` and ``psycopg`` are
+    imported function-local inside the dependency modules, so importing this
+    function does not require them — only *calling* it does.
+    """
+    from databricks.sdk import WorkspaceClient
+    from db.config_ws3 import get_lakebase_settings
+    from db.connection import OAuthConnectionFactory
+    from db.provision import resolve_runtime
+    from db.stores import LakebaseFeedbackStore, LakebaseResultStore
+
+    settings = get_lakebase_settings()
+    client = WorkspaceClient()
+    _branch, endpoint, host = resolve_runtime(client, settings)
+    user = client.current_user.me().user_name
+    connect = OAuthConnectionFactory(client, endpoint, host, settings.database, user)
+    return LakebaseResultStore(connect), LakebaseFeedbackStore(connect)
+
+
+def _get_stores() -> tuple[Any, Any]:
+    """Return cached Lakebase stores ``(result_store, feedback_store)``.
+
+    Lazily initialised on first call; on failure, caches ``(None, None)`` so
+    subsequent calls are fast no-ops rather than repeated failed attempts.
+    """
+    global _stores
+    if _stores is not None:
+        return _stores
+    try:
+        _stores = _build_lakebase_stores()
+    except Exception:
+        _stores = (None, None)
+    return _stores
+
+
+def _get_trace_sink() -> Any:
+    """Return a cached MLflow trace sink, or ``None`` if MLflow is unavailable."""
+    global _trace_sink
+    if _trace_sink is not None:
+        return _trace_sink
+    try:
+        from harness.tracing import build_trace_sink
+        _trace_sink = build_trace_sink()
+    except Exception:
+        _trace_sink = None
+    return _trace_sink
+
+
+class _ProgressTraceSink(TraceSink):
+    """Wraps the real TraceSink and mirrors per-node events into the SSE stream.
+
+    The graph's ``_trace`` helper calls :meth:`record` after each node, so
+    this sink gives us per-node progress events for the SSE stream while the
+    real (wrapped) sink receives the same event for MLflow telemetry.
+    """
+
+    def __init__(self, wrapped: TraceSink | None, ctx: RequestContext) -> None:
+        self._wrapped = wrapped
+        self._ctx = ctx
+
+    def record(self, event: TraceEvent) -> None:
+        stage = _STAGE_MAP.get(event.name, event.name)
+        self._ctx.push("progress", {
+            "stage": stage,
+            "trace_name": event.name,
+            "error": event.error,
+        })
+        if self._wrapped is not None:
+            self._wrapped.record(event)
+
+
+def _build_deps(ctx: RequestContext) -> Any:
+    """Build production :class:`NodeDeps` with real ports wired.
+
+    Degrades gracefully: if a port cannot be constructed (Lakebase down,
+    MLflow unavailable, judge adapter fails), the graph skips that stage
+    rather than failing the entire parse.
+    """
+    from graph.nodes import NodeDeps
+    from harness.extraction_adapter import LunaExtractionAdapter
+
+    extraction = LunaExtractionAdapter()
+
+    judge = None
+    try:
+        from harness.judge_adapter import OpusJudgeAdapter
+        judge = OpusJudgeAdapter()
+    except Exception:
+        pass  # judge is optional — graph skips the judge stage if unwired
+
+    result_store, feedback_store = _get_stores()
+    trace_sink = _ProgressTraceSink(_get_trace_sink(), ctx)
+
+    return NodeDeps(
+        extraction=extraction,
+        result_store=result_store,
+        trace_sink=trace_sink,
+        judge=judge,
+        feedback_store=feedback_store,
+    )
+
+
+def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) -> None:
+    """Background-thread entry point: run the LangGraph parse pipeline.
+
+    Pushes SSE events into ``ctx.events`` as each node completes (via the
+    :class:`_ProgressTraceSink` that wraps the real MLflow sink) and pushes
+    the extraction / verdict / complete events after the graph returns.
+    Any exception becomes an ``error`` event so the frontend can display it.
+    """
+    try:
+        from contracts.models import Bank as _Bank, ParseRequest as _PR
+        from graph.state import GraphState
+
+        request = _PR(
+            pdf=pdf_bytes,
+            filename=filename,
+            bank=_Bank(bank),
+            request_id=ctx.request_id,
+        )
+        state = GraphState(request=request)
+
+        ctx.push("start", {
+            "request_id": ctx.request_id,
+            "bank": bank,
+            "filename": filename,
+            "stages": list(PIPELINE_STAGES),
+        })
+
+        deps = _build_deps(ctx)
+
+        from graph.graph import run_graph
+        final_state = run_graph(deps, state)
+
+        # Push extraction payload (available after extract + validate nodes).
+        if final_state.extraction is not None:
+            ctx.extraction_data = {
+                "payload": final_state.extraction.payload,
+                "model_id": final_state.extraction.model_id,
+                "schema_valid": final_state.extraction.schema_valid,
+            }
+            ctx.push("extraction", ctx.extraction_data)
+
+        # Push per-field judge verdict (available after the judge node).
+        if final_state.verdict is not None:
+            ctx.verdict_data = {
+                "comparisons": [
+                    _comparison_to_dict(c) for c in final_state.verdict.comparisons
+                ],
+                "judge_model_id": final_state.verdict.judge_model_id,
+                "summary": final_state.verdict.summary,
+            }
+            ctx.push("verdict", ctx.verdict_data)
+
+        # Push terminal outcome.
+        ctx.outcome = final_state.outcome.value if final_state.outcome else None
+        ctx.complete_data = {
+            "request_id": ctx.request_id,
+            "outcome": ctx.outcome,
+            "stage": final_state.stage.value,
+            "schema_valid": final_state.schema_valid,
+            "validation_errors": list(final_state.validation_errors),
+            "judge_skipped_reason": final_state.judge_skipped_reason,
+        }
+        ctx.push("complete", ctx.complete_data)
+
+    except Exception as exc:
+        ctx.error = str(exc)
+        ctx.push("error", {"message": str(exc), "request_id": ctx.request_id})
+    finally:
+        ctx.push_sentinel()
+
+
+# ---------------------------------------------------------------------------
+# FastAPI app — all third-party imports are function-local inside create_app
+# ---------------------------------------------------------------------------
 
 def create_app():
-    from fastapi import FastAPI  # type: ignore[import-not-found]
+    """Build and return the FastAPI application.
+
+    ``fastapi`` is imported function-local so the module is importable in a
+    stdlib-only environment (the contract-test gate imports helper functions
+    from this module without fastapi installed).
+    """
+    from pathlib import Path as _Path
+
+    from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
+    from fastapi.responses import JSONResponse, StreamingResponse
+    from fastapi.staticfiles import StaticFiles
 
     app = FastAPI(title="SaveSage Statement Agent")
+    static_dir = _Path(__file__).resolve().parent / "static"
 
+    # -- GET /health -----------------------------------------------------
     @app.get("/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
+    # -- POST /api/parse -------------------------------------------------
+    @app.post("/api/parse")
+    async def parse(file: UploadFile = File(...), bank: str = Form(...)):
+        try:
+            Bank(bank)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
+
+        pdf_bytes = await file.read()
+        if not pdf_bytes:
+            raise HTTPException(status_code=400, detail="empty file")
+
+        request_id = _new_request_id()
+        ctx = RequestContext(request_id)
+        _REQUESTS[request_id] = ctx
+
+        thread = threading.Thread(
+            target=_run_parse,
+            args=(ctx, pdf_bytes, file.filename or "statement.pdf", bank),
+            daemon=True,
+        )
+        thread.start()
+
+        return {"request_id": request_id}
+
+    # -- GET /api/parse/{request_id}/stream (SSE) -------------------------
+    @app.get("/api/parse/{request_id}/stream")
+    async def stream(request_id: str):
+        import asyncio
+
+        ctx = _REQUESTS.get(request_id)
+        if ctx is None:
+            return JSONResponse(
+                status_code=404,
+                content={"detail": f"unknown request_id: {request_id}"},
+            )
+
+        async def generate():
+            loop = asyncio.get_event_loop()
+            while True:
+                try:
+                    event = await loop.run_in_executor(
+                        None, _queue_get, ctx.events, 0.5,
+                    )
+                except queue.Empty:
+                    if ctx.done.is_set():
+                        break
+                    yield ": \n\n"  # SSE comment — keep-alive heartbeat
+                    continue
+                if event is None:  # sentinel — stream is done
+                    break
+                yield _sse_event(event["event"], event["data"])
+
+        return StreamingResponse(
+            generate(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+                "Connection": "keep-alive",
+            },
+        )
+
+    # -- POST /api/feedback/{request_id} ---------------------------------
+    @app.post("/api/feedback/{request_id}")
+    async def submit_feedback(request_id: str, body: dict = Body(...)):
+        try:
+            v = _validate_feedback_body(body)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+
+        from contracts.models import FieldFeedback
+
+        fb = FieldFeedback(
+            request_id=request_id,
+            field_path=v["field_path"],
+            original_value=v["original_value"],
+            corrected_value=v["corrected_value"] if not v["accepted"] else None,
+            accepted=v["accepted"],
+            actor=v["actor"],
+            timestamp=datetime.now(UTC),
+        )
+
+        # Persist to Lakebase (best-effort — telemetry/persistence must
+        # never break the customer UI).
+        _result_store, feedback_store = _get_stores()
+        if feedback_store is not None:
+            try:
+                feedback_store.append_feedback(fb)
+            except Exception:
+                pass
+
+        # Log to MLflow (best-effort).
+        sink = _get_trace_sink()
+        if sink is not None:
+            try:
+                sink.log_field_feedback(fb)
+            except Exception:
+                pass
+
+        # Store in-memory for /api/results fallback.
+        ctx = _REQUESTS.get(request_id)
+        if ctx is not None:
+            ctx.feedback.append({
+                "field_path": v["field_path"],
+                "disposition": v["disposition"],
+                "original_value": v["original_value"],
+                "corrected_value": v["corrected_value"],
+                "actor": v["actor"],
+                "timestamp": datetime.now(UTC).isoformat(),
+            })
+
+        return {
+            "status": "ok",
+            "request_id": request_id,
+            "field_path": v["field_path"],
+        }
+
+    # -- GET /api/results/{request_id} -----------------------------------
+    @app.get("/api/results/{request_id}")
+    async def results(request_id: str):
+        ctx = _REQUESTS.get(request_id)
+
+        extraction: dict[str, Any] | None = None
+        verdict: dict[str, Any] | None = None
+        feedback_list: list[dict[str, Any]] = []
+
+        # Try Lakebase first (durable persistence).
+        result_store, feedback_store = _get_stores()
+        if result_store is not None:
+            try:
+                stored = result_store.get_extraction(request_id)
+                if stored is not None:
+                    extraction = {
+                        "payload": stored.payload,
+                        "model_id": stored.model_id,
+                        "schema_valid": stored.schema_valid,
+                    }
+                stored_v = result_store.get_verdict(request_id)
+                if stored_v is not None:
+                    verdict = {
+                        "comparisons": [
+                            _comparison_to_dict(c) for c in stored_v.comparisons
+                        ],
+                        "judge_model_id": stored_v.judge_model_id,
+                        "summary": stored_v.summary,
+                    }
+            except Exception:
+                pass
+
+        if feedback_store is not None:
+            try:
+                for f in feedback_store.list_feedback(request_id):
+                    ts = f.timestamp
+                    feedback_list.append({
+                        "field_path": f.field_path,
+                        "accepted": f.accepted,
+                        "original_value": f.original_value,
+                        "corrected_value": f.corrected_value,
+                        "actor": f.actor,
+                        "timestamp": ts.isoformat() if hasattr(ts, "isoformat") else str(ts),
+                    })
+            except Exception:
+                pass
+
+        # Fall back to in-memory context (when Lakebase is unavailable).
+        if extraction is None and ctx is not None:
+            extraction = ctx.extraction_data
+        if verdict is None and ctx is not None:
+            verdict = ctx.verdict_data
+        if not feedback_list and ctx is not None:
+            feedback_list = list(ctx.feedback)
+
+        return {
+            "request_id": request_id,
+            "extraction": extraction,
+            "verdict": verdict,
+            "feedback": feedback_list,
+        }
+
+    # -- Static files (catch-all, mounted AFTER API routes) --------------
+    if static_dir.exists():
+        app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
+
     return app
 
 
-app = create_app()
+# Module-level app instance.  Guarded so a stdlib-only environment can still
+# import the helper functions above without FastAPI (or its optional
+# ``python-multipart`` form-data dependency) installed.
+try:
+    app = create_app()
+except (ImportError, RuntimeError):
+    app = None  # type: ignore[assignment]
