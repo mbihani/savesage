@@ -11,6 +11,10 @@ from .config_ws3 import LakebaseSettings, get_lakebase_settings
 from .sql import DDL
 
 
+class CdfCreateError(RuntimeError):
+    """The create request failed after a successful not-configured probe."""
+
+
 def _client(settings: LakebaseSettings) -> Any:
     from databricks.sdk import WorkspaceClient
     return WorkspaceClient(profile=settings.profile)
@@ -52,6 +56,26 @@ def resolve_runtime(client: Any, settings: LakebaseSettings) -> tuple[str, str, 
     if endpoint is None or not endpoint.status or not endpoint.status.hosts:
         raise RuntimeError(f"endpoint {settings.endpoint_id} unavailable: {[item.as_dict() for item in endpoints]}")
     return branch.name.rsplit("/", 1)[-1], endpoint.name, endpoint.status.hosts.host
+
+
+def resolve_database_resource(client: Any, settings: LakebaseSettings, branch: str) -> str:
+    """Map the SQL database name to its distinct REST resource ID."""
+    parent = f"projects/{settings.project_id}/branches/{branch}"
+    path = f"/api/2.0/postgres/{parent}/databases"
+    response = client.api_client.do("GET", path)
+    matches = [item for item in response.get("databases", [])
+               if item.get("status", {}).get("postgres_database") == settings.database]
+    if len(matches) != 1 or not matches[0].get("database_id"):
+        raise RuntimeError(
+            f"expected one REST database resource for SQL database {settings.database!r}; "
+            f"response: {response}")
+    database_id = matches[0]["database_id"]
+    print("DATABASE_RESOURCE", json.dumps({
+        "database_id": database_id,
+        "postgres_database": settings.database,
+        "resource_name": matches[0].get("name"),
+    }, sort_keys=True))
+    return database_id
 
 
 def _connect(client: Any, endpoint: str, host: str, settings: LakebaseSettings) -> Any:
@@ -99,39 +123,59 @@ def ensure_uc_schema(client: Any, settings: LakebaseSettings) -> None:
     print(action, json.dumps(schema.as_dict(), sort_keys=True))
 
 
-def cdf_path(settings: LakebaseSettings, branch: str) -> str:
+def cdf_path(settings: LakebaseSettings, branch: str, database_id: str) -> str:
     return (f"/api/2.0/postgres/projects/{settings.project_id}/branches/{branch}"
-            f"/databases/{settings.database}/cdf-configs")
+            f"/databases/{database_id}/cdf-configs")
 
 
-def ensure_cdf(client: Any, settings: LakebaseSettings, branch: str) -> dict[str, Any]:
-    path = cdf_path(settings, branch)
+def ensure_cdf(client: Any, settings: LakebaseSettings, branch: str,
+               database_id: str) -> dict[str, Any]:
+    path = cdf_path(settings, branch, database_id)
+    config_path = f"{path}/public"
     try:
-        response = client.api_client.do("GET", f"{path}/public")
+        response = client.api_client.do("GET", config_path)
         print("REUSE_CDF", json.dumps(response, sort_keys=True))
         return response
     except Exception as exc:
         if getattr(exc, "error_code", None) not in {"NOT_FOUND", "RESOURCE_DOES_NOT_EXIST"}:
+            print("CDF_PROBE_FAILED", json.dumps({
+                "path": config_path, "error_code": getattr(exc, "error_code", None),
+                "error": str(exc)}, sort_keys=True))
             raise
+        print("CDF_PROBE_NOT_FOUND", json.dumps({
+            "path": config_path, "error_code": getattr(exc, "error_code", None),
+            "error": str(exc)}, sort_keys=True))
     body = {"catalog": settings.catalog, "schema": settings.schema,
             "postgres_schema": "public"}
-    response = client.api_client.do("POST", path, query={"cdf_config_id": "public"}, body=body)
+    query = {"cdf_config_id": "public"}
+    print("CDF_CREATE_REQUEST", json.dumps({
+        "verb": "POST", "path": path, "query": query, "body": body}, sort_keys=True))
+    try:
+        response = client.api_client.do("POST", path, query=query, body=body)
+    except Exception as exc:
+        details = {"path": path, "error_code": getattr(exc, "error_code", None),
+                   "error": str(exc)}
+        print("CDF_CREATE_FAILED", json.dumps(details, sort_keys=True))
+        raise CdfCreateError(f"CDF create failed: {details}") from exc
     print("CREATE_CDF", json.dumps(response, sort_keys=True))
     return response
 
 
-def poll_cdf(client: Any, settings: LakebaseSettings, branch: str, timeout: int) -> dict[str, Any]:
-    path = f"{cdf_path(settings, branch)}/public/cdf-statuses"
+def poll_cdf(client: Any, settings: LakebaseSettings, branch: str,
+             database_id: str, timeout: int) -> dict[str, Any]:
+    path = f"{cdf_path(settings, branch, database_id)}/public/cdf-statuses"
     deadline = time.monotonic() + timeout
     while True:
         response = client.api_client.do("GET", path)
         print("CDF_STATUS", json.dumps(response, sort_keys=True))
         statuses = response.get("cdf_statuses", [])
-        states = {str(item.get("state", "")).upper() for item in statuses}
-        expected = {item.get("postgres_table") for item in statuses}
-        if {"statement_results", "field_feedback"}.issubset(expected) and states == {"CDF_STATE_STREAMING"}:
+        target_states = {item.get("postgres_table"): str(item.get("state", "")).upper()
+                         for item in statuses
+                         if item.get("postgres_table") in {"statement_results", "field_feedback"}}
+        if target_states == {"statement_results": "CDF_STATE_STREAMING",
+                             "field_feedback": "CDF_STATE_STREAMING"}:
             return response
-        if "CDF_STATE_TERMINATED" in states:
+        if "CDF_STATE_TERMINATED" in target_states.values():
             raise RuntimeError(f"CDF unhealthy: {response}")
         if time.monotonic() >= deadline:
             raise TimeoutError(f"CDF did not become healthy in {timeout}s; last response: {response}")
@@ -143,10 +187,11 @@ def provision(settings: LakebaseSettings, timeout: int) -> None:
     ensure_project(client, settings)
     branch, endpoint, host = resolve_runtime(client, settings)
     print("RUNTIME", json.dumps({"branch": branch, "endpoint": endpoint, "host": host}, sort_keys=True))
+    database_id = resolve_database_resource(client, settings, branch)
     ensure_uc_schema(client, settings)
     apply_ddl(client, endpoint, host, settings)
-    ensure_cdf(client, settings, branch)
-    poll_cdf(client, settings, branch, timeout)
+    ensure_cdf(client, settings, branch, database_id)
+    poll_cdf(client, settings, branch, database_id, timeout)
 
 
 def main() -> None:

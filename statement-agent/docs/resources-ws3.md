@@ -56,7 +56,7 @@ python3 - <<'PY'
 from databricks.sdk import WorkspaceClient
 import json
 w = WorkspaceClient(profile="fevm-stable")
-base = "/api/2.0/postgres/projects/savesage-statement-agent/branches/production/databases/databricks_postgres/cdf-configs/public"
+base = "/api/2.0/postgres/projects/savesage-statement-agent/branches/production/databases/databricks-postgres/cdf-configs/public"
 print(json.dumps(w.api_client.do("GET", base), indent=2, sort_keys=True))
 print(json.dumps(w.api_client.do("GET", base + "/cdf-statuses"), indent=2, sort_keys=True))
 PY
@@ -82,7 +82,7 @@ tables and views are retained by default for audit; remove them separately only
 when their retention owner approves.
 
 ```bash
-databricks api delete /api/2.0/postgres/projects/savesage-statement-agent/branches/production/databases/databricks_postgres/cdf-configs/public --profile fevm-stable
+databricks api delete /api/2.0/postgres/projects/savesage-statement-agent/branches/production/databases/databricks-postgres/cdf-configs/public --profile fevm-stable
 databricks api delete /api/2.0/postgres/projects/savesage-statement-agent --profile fevm-stable
 ```
 
@@ -90,13 +90,24 @@ databricks api delete /api/2.0/postgres/projects/savesage-statement-agent --prof
 
 Project `savesage-statement-agent` was created at 0.5-1 CU and reports PostgreSQL
 17; its default branch is `production`. The UC schema already existed and the
-idempotent source DDL completed repeatedly. CDF creation did **not** complete:
+idempotent source DDL completed repeatedly. CDF is streaming to:
+
+- `stable_classic_7ppxjq_catalog.savesage.lb_statement_results_history`
+- `stable_classic_7ppxjq_catalog.savesage.lb_field_feedback_history`
+
+The critical naming distinction is that `databricks_postgres` is the SQL
+database name, while `databricks-postgres` is its REST `database_id`. The
+provisioner discovers that mapping from `GET .../branches/{branch}/databases`
+instead of deriving or hardcoding it. The working create request is:
 
 ```text
-databricks.sdk.errors.platform.NotFound: CdfConfig not found: projects/savesage-statement-agent/branches/production/databases/databricks_postgres
+POST /api/2.0/postgres/projects/savesage-statement-agent/branches/production/databases/databricks-postgres/cdf-configs
+query: {"cdf_config_id":"public"}
+body: {"catalog":"stable_classic_7ppxjq_catalog","postgres_schema":"public","schema":"savesage"}
 ```
 
-That response came from `POST .../cdf-configs?cdf_config_id=public` with the
-required `catalog`, `schema`, and `postgres_schema` fields. Consequently the two
-`lb_*_history` tables, current-state views, and row-flow evidence were not
-created in this run.
+Synthetic request `synthetic-ws3-cdf-001` flowed into both history tables with
+`_pg_change_type = insert`. The source fixture uses only explicit synthetic
+labels and `0000`; it contains no statement, person, merchant, or real account data.
+Both current-state views from `db/current_state.sql` were then created
+successfully in the destination schema.
