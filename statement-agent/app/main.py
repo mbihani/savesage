@@ -68,10 +68,18 @@ _REQUESTS: dict[str, Any] = {}
 _stores: Optional[tuple[Any, Any]] = None
 _trace_sink: Any = None
 
+# Maximum number of traces the post-hoc judge will score in one evaluation.
+# Guards against a caller requesting an expensive sweep via the API.
+MAX_SAMPLE_SIZE = 50
+
 # Cache for the most recent judge evaluation result (populated by
 # ``POST /api/run-judge`` and returned by ``GET /api/judge-results``).
 # Process-scoped: a restart clears it, which is fine for a demo.
 _judge_result_cache: Optional[dict[str, Any]] = None
+
+# Guards concurrent judge evaluations — only one background evaluation at a time.
+_judge_running = False
+_judge_lock = threading.Lock()
 
 
 # ---------------------------------------------------------------------------
@@ -454,6 +462,37 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
         ctx.push_sentinel()
 
 
+def _run_judge_evaluation_bg(sample_size: int) -> None:
+    """Background-thread entry point for the post-hoc judge evaluation.
+
+    Runs ``run_judge_evaluation`` in a daemon thread (the HTTP handler returns
+    immediately with 202). The result is stored in ``_judge_result_cache``;
+    errors are captured there too so ``GET /api/judge-results`` can surface them
+    without leaking internal tracebacks to the client.
+    """
+    global _judge_result_cache, _judge_running
+    try:
+        from judge.scorer import run_judge_evaluation
+        result = run_judge_evaluation(sample_size=sample_size)
+        _judge_result_cache = result
+    except Exception as exc:
+        _judge_result_cache = {
+            "count_judged": 0,
+            "count_errors": 1,
+            "errors": [{"error": "evaluation failed"}],
+            "overall_strict": None,
+            "overall_narration_forgiven": None,
+            "per_field": {},
+            "per_bank": {},
+            "_status": "error",
+        }
+        _LOGGER = __import__("logging").getLogger("statement-agent.app")
+        _LOGGER.warning("judge evaluation failed: %s", exc)
+    finally:
+        with _judge_lock:
+            _judge_running = False
+
+
 # ---------------------------------------------------------------------------
 # FastAPI app — all third-party imports are function-local inside create_app
 # ---------------------------------------------------------------------------
@@ -662,21 +701,48 @@ def create_app():
     async def run_judge(body: dict = Body(default={})):
         """Trigger a post-hoc judge evaluation over sampled MLflow traces.
 
-        Accepts ``{"sample_size": N}`` (default 10). Runs synchronously since
-        the sample is small and the user clicks a button. Caches the result
-        for ``GET /api/judge-results``.
+        Accepts ``{"sample_size": N}`` (default 10, max ``MAX_SAMPLE_SIZE``).
+        Runs in a background thread so the HTTP response returns immediately
+        with 202; the client polls ``GET /api/judge-results`` for the result.
+        Returns 409 if an evaluation is already running.
         """
-        global _judge_result_cache
-        sample_size = int(body.get("sample_size", 10))
+        global _judge_running
+
+        # Parse and validate sample_size — wrap in try/except so a non-int
+        # value (e.g. "abc") returns 400, not a 500 Internal Server Error.
+        raw = body.get("sample_size", 10)
+        try:
+            sample_size = int(raw)
+        except (TypeError, ValueError):
+            raise HTTPException(
+                status_code=400,
+                detail=f"sample_size must be an integer, got {type(raw).__name__}",
+            )
         if sample_size < 1:
             raise HTTPException(status_code=400, detail="sample_size must be >= 1")
-        try:
-            from judge.scorer import run_judge_evaluation
-            result = run_judge_evaluation(sample_size=sample_size)
-            _judge_result_cache = result
-            return result
-        except Exception as exc:
-            raise HTTPException(status_code=500, detail=str(exc))
+        if sample_size > MAX_SAMPLE_SIZE:
+            raise HTTPException(
+                status_code=400,
+                detail=f"sample_size must be <= {MAX_SAMPLE_SIZE}",
+            )
+
+        # Only one evaluation at a time.
+        with _judge_lock:
+            if _judge_running:
+                raise HTTPException(status_code=409, detail="evaluation already running")
+            _judge_running = True
+
+        thread = threading.Thread(
+            target=_run_judge_evaluation_bg,
+            args=(sample_size,),
+            daemon=True,
+        )
+        thread.start()
+
+        return JSONResponse(
+            status_code=202,
+            content={"status": "started", "sample_size": sample_size},
+        )
 
     # -- GET /api/judge-results ------------------------------------------
     @app.get("/api/judge-results")
@@ -684,11 +750,15 @@ def create_app():
         """Return the most recent judge evaluation results.
 
         Serves from the process-level cache populated by ``POST /api/run-judge``.
-        Returns ``{"results": null}`` if no evaluation has been run yet.
+        Returns ``{"status": "running", "results": null}`` if an evaluation is
+        in progress, ``{"status": "idle", "results": null}`` if none has been
+        run yet, or ``{"status": "done", "results": {...}}`` with the cached result.
         """
+        if _judge_running:
+            return {"status": "running", "results": None}
         if _judge_result_cache is not None:
-            return {"results": _judge_result_cache}
-        return {"results": None}
+            return {"status": "done", "results": _judge_result_cache}
+        return {"status": "idle", "results": None}
 
     # -- Static files (catch-all, mounted AFTER API routes) --------------
     if static_dir.exists():

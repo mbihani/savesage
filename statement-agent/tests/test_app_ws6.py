@@ -780,6 +780,18 @@ class JudgeEndpointTest(unittest.TestCase):
         self.assertNotIn("judge =", source)
         self.assertNotIn("JudgeAdapter", source)
 
+    def test_max_sample_size_constant(self) -> None:
+        """MAX_SAMPLE_SIZE is defined and bounded (server-side guard)."""
+        from app.main import MAX_SAMPLE_SIZE
+        self.assertIsInstance(MAX_SAMPLE_SIZE, int)
+        self.assertGreater(MAX_SAMPLE_SIZE, 0)
+        self.assertLessEqual(MAX_SAMPLE_SIZE, 100)
+
+    def test_judge_bg_function_exists(self) -> None:
+        """The background evaluation runner exists and is callable."""
+        from app.main import _run_judge_evaluation_bg
+        self.assertTrue(callable(_run_judge_evaluation_bg))
+
 
 # ---------------------------------------------------------------------------
 # PDF artifact logging in persist_node

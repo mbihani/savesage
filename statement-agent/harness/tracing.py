@@ -125,6 +125,12 @@ class MLflowTraceSink(TraceSink):
         # Bounded LRU trace-id map (review B2). Prefer pop_trace_id() for explicit
         # handoff with the parse result; this map is the fallback.
         self._trace_ids: "OrderedDict[str, str]" = OrderedDict()
+        # Bounded LRU run-id map — one MLflow run per parse request. The run is
+        # started when the first trace event arrives (before the root span
+        # flushes) so that log_artifact() called from persist_node has an active
+        # run to log to. The run carries artifacts, metrics (when judged), and
+        # the ``judged`` tag.
+        self._run_ids: "OrderedDict[str, str]" = OrderedDict()
         self._mlflow_factory = mlflow_factory  # test seam: inject a fake/raising mlflow
         self._mlflow_client: Any = None
         self._configured = False
@@ -170,6 +176,43 @@ class MLflowTraceSink(TraceSink):
             best_effort("mlflow.configure", configure_tracing, self._config)
         self._configured = True
 
+    # --- run-id management (one MLflow run per parse request) ---
+    def _ensure_run(self, request_id: str) -> None:
+        """Start an MLflow run for this request if not already started.
+
+        Called on the FIRST trace event for a request (before the root span
+        flushes) so that ``log_artifact()`` from persist_node has an active run.
+        Best-effort: a failure here means no run (artifacts/metrics are skipped).
+        """
+        if request_id in self._run_ids:
+            return  # already started for this request
+        self._ensure_configured()
+
+        def _do() -> None:
+            mlf = self._mlflow()
+            run = mlf.start_run()
+            # start_run returns an ActiveRun; extract the run_id.
+            run_id = getattr(getattr(run, "info", None), "run_id", None)
+            if run_id is None:
+                run_id = str(getattr(run, "run_id", "")) or None
+            if run_id is not None:
+                self._set_run_id(request_id, run_id)
+
+        best_effort("mlflow.start_run", _do)
+
+    def _set_run_id(self, request_id: str, run_id: str) -> None:
+        self._run_ids[request_id] = run_id
+        while len(self._run_ids) > self._config.max_trace_ids:
+            self._run_ids.popitem(last=False)
+
+    def get_run_id(self, request_id: str) -> str | None:
+        """Return the MLflow run_id for a request, or None if not started."""
+        return best_effort("tracing.get_run_id", self._run_ids.get, request_id)
+
+    def pop_run_id(self, request_id: str) -> str | None:
+        """Return AND remove the run_id — preferred for explicit handoff."""
+        return best_effort("tracing.pop_run_id", self._run_ids.pop, request_id, None)
+
     # --- TraceSink ABC ---
     def record(self, event: TraceEvent) -> None:
         if not self._config.enabled:
@@ -178,6 +221,12 @@ class MLflowTraceSink(TraceSink):
         self._guard("tracing.record", self._record_impl, event)
 
     def _record_impl(self, event: TraceEvent) -> None:
+        # Start an MLflow run for this request on the FIRST trace event (before
+        # the root span flushes). This ensures log_artifact() called from
+        # persist_node (during the graph, before the root arrives) has an
+        # active run to log to. The run carries artifacts, judge metrics, and
+        # the ``judged`` tag. Best-effort: a failure here only means no run.
+        self._ensure_run(event.request_id)
         ops = self._builder.feed(event)
         if ops is None:
             return  # buffered (no root yet) or a late arrival after flush
@@ -288,6 +337,7 @@ class MLflowTraceSink(TraceSink):
         try:
             self._builder.abandon(request_id)
             self._trace_ids.pop(request_id, None)
+            self._run_ids.pop(request_id, None)
         except _CONTROL_EXCEPTIONS:
             raise
         except BaseException as exc:  # noqa: BLE001 - cleanup must never raise

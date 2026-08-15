@@ -782,11 +782,37 @@
         const [error, setError] = useState(null);
         const [loaded, setLoaded] = useState(false);
 
-        // Load cached results on mount.
+        // Poll /api/judge-results until status is no longer "running".
+        const pollResults = async () => {
+          try {
+            const data = await getJudgeResults();
+            if (data.status === "running") {
+              setTimeout(pollResults, 2000);
+            } else if (data.results) {
+              setResults(data.results);
+              if (data.results._status === "error") {
+                setError("evaluation failed");
+              }
+              setRunning(false);
+            } else {
+              setRunning(false);
+            }
+          } catch (e) {
+            setError(e.message);
+            setRunning(false);
+          }
+        };
+
+        // Load cached results on mount; resume polling if an eval is in progress.
         useEffect(() => {
           getJudgeResults()
             .then((data) => {
-              if (data.results) setResults(data.results);
+              if (data.status === "running") {
+                setRunning(true);
+                setTimeout(pollResults, 2000);
+              } else if (data.results) {
+                setResults(data.results);
+              }
               setLoaded(true);
             })
             .catch((e) => {
@@ -799,11 +825,11 @@
           setRunning(true);
           setError(null);
           try {
-            const data = await runJudge(sampleSize);
-            setResults(data);
+            // POST returns 202 {status: "started"} — poll for results.
+            await runJudge(sampleSize);
+            setTimeout(pollResults, 2000);
           } catch (e) {
             setError(e.message);
-          } finally {
             setRunning(false);
           }
         };
@@ -831,7 +857,7 @@
                 <input
                   type="number"
                   min="1"
-                  max="100"
+                  max="50"
                   value=${sampleSize}
                   onChange=${(e) => setSampleSize(parseInt(e.target.value) || 10)}
                 />

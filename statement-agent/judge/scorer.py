@@ -120,16 +120,22 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
         if value is not None:
             mlflow.log_metric(key=key, value=float(value), run_id=run_id)
 
-    # 7. Tag the run as judged so it is not re-sampled.
-    mlflow.set_tag(key="judged", value="true", run_id=run_id)
+    # 7. Tag the run. Only tag judged=true on OK status so JUDGE_ERROR traces
+    # can be retried in the next evaluation. JUDGE_ERROR gets judged=error so
+    # it's distinguishable but still retriable.
+    summary = json.loads(verdict.summary) if verdict.summary else {}
+    status = summary.get("status", "OK")
+    if status == "OK":
+        mlflow.set_tag(key="judged", value="true", run_id=run_id)
+    else:
+        mlflow.set_tag(key="judged", value="error", run_id=run_id)
 
     # 8. Build and return the per-trace result.
-    summary = json.loads(verdict.summary) if verdict.summary else {}
     return {
         "run_id": run_id,
         "request_id": meta["request_id"],
         "bank": meta["bank"],
-        "status": summary.get("status", "OK"),
+        "status": status,
         "strict_accuracy": metrics.get("judge.accuracy"),
         "narration_forgiven_accuracy": metrics.get("judge.accuracy_forgiven"),
         "comparisons": int(metrics.get("judge.comparisons", 0)),
@@ -147,20 +153,23 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
 
 
 def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
-    """Sample unjudged MLflow traces, score each, and return an aggregate summary.
+    """Sample unjudged MLflow runs, score each, and return an aggregate summary.
 
-    1. Query MLflow for recent runs where ``tags.judged != "true"``.
-    2. Pick the ``sample_size`` most recent (randomly to avoid always judging
+    1. Query MLflow for recent runs (ordered by start_time DESC).
+    2. Filter in Python: exclude runs where ``tags.judged == "true"`` (already
+       scored) — the MLflow inequality filter ``tags.judged != 'true'`` EXCLUDES
+       entries where the tag is absent entirely, which would hide new parses.
+    3. Pick the ``sample_size`` most recent randomly (to avoid always judging
        the same tail).
-    3. Call ``score_trace`` on each (errors are captured per-trace, not fatal).
-    4. Return an aggregate summary: overall strict, narration-forgiven, per-field
+    4. Call ``score_trace`` on each (errors are captured per-trace, not fatal).
+    5. Return an aggregate summary: overall strict, narration-forgiven, per-field
        breakdown, per-bank breakdown, count judged, errors.
 
     Returns ``{"count_judged": N, "errors": [...], "overall_strict": ..., ...}``.
     """
     import mlflow
 
-    # 1. Resolve the experiment and search for unjudged runs.
+    # 1. Resolve the experiment and search for recent runs.
     exp_id = _get_experiment_id(mlflow)
     if exp_id is None:
         return {
@@ -172,12 +181,18 @@ def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
             "per_bank": {},
         }
 
-    # Search for runs where judged is not "true" (or the tag is absent).
-    runs_df = mlflow.search_runs(
-        experiment_ids=[exp_id],
-        filter_string="tags.judged != 'true'",
-        max_results=100,
-    )
+    # Search ALL recent runs (no tag filter — MLflow's inequality filter
+    # excludes entries where the tag is absent, hiding new parses).
+    # Order by start_time DESC so we actually get the most recent.
+    try:
+        runs_df = mlflow.search_runs(
+            experiment_ids=[exp_id],
+            max_results=100,
+            order_by=["attributes.start_time DESC"],
+        )
+    except Exception:
+        # order_by may not be supported on all MLflow versions — fall back.
+        runs_df = mlflow.search_runs(experiment_ids=[exp_id], max_results=100)
 
     if runs_df.empty:
         return {
@@ -189,23 +204,59 @@ def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
             "per_bank": {},
         }
 
-    # 2. Pick the sample_size most recent randomly.
-    run_ids = runs_df["run_id"].tolist()
+    # 2. Filter in Python: only unjudged runs (no tag or judged != "true").
+    # A run tagged judged=error (JUDGE_ERROR) is retriable — include it.
+    run_ids_all = runs_df["run_id"].tolist()
+    tag_col = None
+    for col in ("tags.judged", "judged"):
+        if col in runs_df.columns:
+            tag_col = col
+            break
+    if tag_col is not None:
+        run_ids = [
+            rid for rid, val in zip(run_ids_all, runs_df[tag_col].tolist())
+            if val != "true"
+        ]
+    else:
+        # No judged column at all — all runs are unjudged.
+        run_ids = run_ids_all
+
+    if not run_ids:
+        return {
+            "count_judged": 0,
+            "errors": [],
+            "overall_strict": None,
+            "overall_narration_forgiven": None,
+            "per_field": {},
+            "per_bank": {},
+        }
+
+    # 3. Pick the sample_size most recent randomly.
     sample = random.sample(run_ids, min(sample_size, len(run_ids)))
 
-    # 3. Score each trace.
+    # 4. Score each trace.
     results = [score_trace(rid) for rid in sample]
 
-    # 4. Aggregate.
+    # 5. Aggregate.
     return _aggregate_results(results)
 
 
 def _aggregate_results(results: list[dict[str, Any]]) -> dict[str, Any]:
-    """Build the aggregate summary from per-trace results."""
+    """Build the aggregate summary from per-trace results.
+
+    Only ``status == "OK"`` traces are scored. ``JUDGE_ERROR`` (Opus returned
+    an unusable response) and ``ERROR`` (exception during scoring) are both
+    counted as errors — JUDGE_ERROR traces are tagged ``judged=error`` (not
+    ``judged=true``) so they can be retried in the next evaluation.
+    """
     scored = [r for r in results if r.get("status") == "OK"]
     errors = [
-        {"run_id": r["run_id"], "error": r.get("error", "unknown")}
-        for r in results if r.get("status") == "ERROR"
+        {
+            "run_id": r.get("run_id"),
+            "error": r.get("error") or f"JUDGE_ERROR: {r.get('status')}",
+            "status": r.get("status"),
+        }
+        for r in results if r.get("status") in ("ERROR", "JUDGE_ERROR")
     ]
 
     # Overall strict / narration-forgiven (average over scored traces).

@@ -79,15 +79,26 @@ class _FakeSeries:
 
 
 class _FakeRunsFrame:
-    """Fake pandas-like DataFrame for search_runs results."""
+    """Fake pandas-like DataFrame for search_runs results.
 
-    def __init__(self, run_ids: list[str]):
+    Supports the ``run_id`` column and an optional ``tags.judged`` column
+    so the Python-side tag filtering in ``run_judge_evaluation`` can be tested.
+    """
+
+    def __init__(self, run_ids: list[str], judged_tags: dict[str, str] | None = None):
         self._run_ids = run_ids
+        self._judged_tags = judged_tags or {}
         self.empty = len(run_ids) == 0
+        # Expose columns so the scorer's ``if col in runs_df.columns`` check works.
+        self.columns = ["run_id"]
+        if self._judged_tags:
+            self.columns.append("tags.judged")
 
     def __getitem__(self, key):
         if key == "run_id":
             return _FakeSeries(self._run_ids)
+        if key == "tags.judged":
+            return _FakeSeries([self._judged_tags.get(rid) for rid in self._run_ids])
         return _FakeSeries([])
 
 
@@ -110,11 +121,13 @@ class _FakeMLflowModule:
     def get_experiment_by_name(self, name):
         return self._experiment
 
-    def search_runs(self, experiment_ids=None, filter_string=None, max_results=100):
+    def search_runs(self, experiment_ids=None, filter_string=None,
+                    max_results=100, order_by=None, **kwargs):
         return self._search_runs_result
 
-    def set_search_runs_result(self, run_ids: list[str]):
-        self._search_runs_result = _FakeRunsFrame(run_ids)
+    def set_search_runs_result(self, run_ids: list[str],
+                               judged_tags: dict[str, str] | None = None):
+        self._search_runs_result = _FakeRunsFrame(run_ids, judged_tags)
 
 
 def _install_fake_mlflow():
@@ -271,6 +284,38 @@ class ScoreTraceTest(unittest.TestCase):
         self.assertEqual(per_field["rewards_pointsEarnedThisCycle"], 1.0)
         self.assertEqual(per_field["rewards_closingPoints"], 1.0)
 
+    def test_score_trace_judge_error_tags_error_not_true(self):
+        """A JUDGE_ERROR verdict is tagged judged=error (not judged=true) so it can be retried."""
+        from judge.scorer import score_trace
+
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json", json.dumps(_make_extraction_meta()).encode()
+        )
+
+        # A JUDGE_ERROR verdict — Opus returned an unusable response.
+        judge_error_verdict = JudgeVerdict(
+            request_id="req-test",
+            judge_model_id="databricks-claude-opus-5",
+            comparisons=(
+                FieldComparison(
+                    "cards[].cardMeta.cardDisplayName", "Platinum", "???",
+                    ComparisonOutcome.DISAGREE, FieldScope.SCALAR, card_index=0,
+                ),
+            ),
+            latency_ms=50.0,
+            summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = judge_error_verdict
+            result = score_trace("run-judge-err")
+
+        self.assertEqual(result["status"], "JUDGE_ERROR")
+        # Tagged judged=error, NOT judged=true — so it stays retriable.
+        self.assertIn(("judged", "error", "run-judge-err"), self.fake_mlflow.set_tags)
+        self.assertNotIn(("judged", "true", "run-judge-err"), self.fake_mlflow.set_tags)
+
 
 # ---------------------------------------------------------------------------
 # run_judge_evaluation tests
@@ -371,6 +416,45 @@ class RunJudgeEvaluationTest(unittest.TestCase):
         self.assertEqual(result["count_errors"], 1)
         self.assertEqual(len(result["errors"]), 1)
 
+    def test_tag_filtering_excludes_judged_true_includes_others(self):
+        """run_judge_evaluation searches all runs, then filters in Python:
+        includes runs with no tag and judged=error, excludes judged=true.
+        """
+        from judge.scorer import run_judge_evaluation
+
+        # 4 runs: no-tag, judged=true, judged=error, no-tag.
+        judged_tags = {
+            "run-notag-1": None,
+            "run-judged-true": "true",
+            "run-judged-err": "error",
+            "run-notag-2": None,
+        }
+        self.fake_mlflow.set_search_runs_result(
+            list(judged_tags.keys()), judged_tags
+        )
+
+        # Register artifacts (shared globally since the fake is global).
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4 fake")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json",
+            json.dumps(_make_extraction_meta(request_id="req-test")).encode(),
+        )
+
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = _make_verdict()
+            # sample_size=10 should cover all 3 unjudged runs (not the judged=true one).
+            result = run_judge_evaluation(sample_size=10)
+
+        # 3 unjudged runs scored (the judged=true run was excluded).
+        self.assertEqual(result["count_judged"], 3)
+
+        # The judged=true run was NOT re-scored (not in the tags).
+        re_tagged_true = [
+            (k, v, rid) for k, v, rid in self.fake_mlflow.set_tags
+            if rid == "run-judged-true"
+        ]
+        self.assertEqual(re_tagged_true, [])
+
 
 # ---------------------------------------------------------------------------
 # _aggregate_results tests
@@ -398,6 +482,22 @@ class AggregateResultsTest(unittest.TestCase):
         self.assertEqual(result["overall_narration_forgiven"], 0.9)
         self.assertEqual(result["per_bank"]["HDFC"]["count"], 1)
         self.assertEqual(result["per_field"]["rewards.closingPoints"]["accuracy"], 1.0)
+
+    def test_judge_error_counted_as_error(self):
+        """JUDGE_ERROR (Opus returned unusable response) is counted as an error."""
+        from judge.scorer import _aggregate_results
+        results = [
+            {"run_id": "r1", "status": "OK", "bank": "HDFC",
+             "strict_accuracy": 1.0, "narration_forgiven_accuracy": 1.0,
+             "per_field": {}},
+            {"run_id": "r2", "status": "JUDGE_ERROR"},
+        ]
+        result = _aggregate_results(results)
+        self.assertEqual(result["count_judged"], 1)
+        self.assertEqual(result["count_errors"], 1)
+        # The JUDGE_ERROR entry is in the errors list with its status.
+        self.assertEqual(result["errors"][0]["status"], "JUDGE_ERROR")
+        self.assertIn("JUDGE_ERROR", result["errors"][0]["error"])
 
 
 if __name__ == "__main__":
