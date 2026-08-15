@@ -37,6 +37,10 @@ class ResultStore(ABC):
     def get_extraction(self, request_id: str) -> ExtractionResult | None:
         raise NotImplementedError
 
+    @abstractmethod
+    def get_verdict(self, request_id: str) -> JudgeVerdict | None:
+        raise NotImplementedError
+
 
 class FeedbackStore(ABC):
     """Workstream 3: append and retrieve field-level client feedback."""

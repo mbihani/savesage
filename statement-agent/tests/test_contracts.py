@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 import inspect
 import unittest
 
-from contracts.models import ComparisonOutcome, FieldComparison, FieldScope
+from contracts.models import ComparisonOutcome, FieldComparison, FieldScope, MatchMethod
 from contracts.ports import ExtractionAdapter, FeedbackStore, JudgeAdapter, ResultStore, TraceSink
 from memory.session import MemoryStore
 
@@ -23,6 +23,7 @@ class ContractTest(unittest.TestCase):
             (ResultStore.save_extraction, (None, None)),
             (ResultStore.save_verdict, (None, None)),
             (ResultStore.get_extraction, (None, "request")),
+            (ResultStore.get_verdict, (None, "request")),
             (FeedbackStore.append_feedback, (None, None)),
             (FeedbackStore.list_feedback, (None, "request")),
             (TraceSink.record, (None, None)),
@@ -35,10 +36,32 @@ class ContractTest(unittest.TestCase):
                 method(*args)
 
     def test_only_seven_judged_paths_are_admitted(self) -> None:
-        valid = FieldComparison("transactions[].amount", 1.0, 1.0, ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW, "description_similarity_1to1")
+        valid = FieldComparison(
+            "transactions[].amount", 1.0, 1.0, ComparisonOutcome.AGREE,
+            FieldScope.TRANSACTION_ROW, MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+        )
         self.assertEqual(valid.outcome, ComparisonOutcome.AGREE)
         with self.assertRaises(ValueError):
-            FieldComparison("transactions[].direction", "DEBIT", "DEBIT", ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW, "description_similarity_1to1")
+            FieldComparison(
+                "transactions[].direction", "DEBIT", "DEBIT",
+                ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+            )
+
+    def test_transaction_comparison_rejects_direct_match(self) -> None:
+        with self.assertRaises(ValueError):
+            FieldComparison(
+                "transactions[].date", "01/01/2026", "01/01/2026",
+                ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DIRECT,
+            )
+
+    def test_scalar_comparison_defaults_to_direct_match(self) -> None:
+        comparison = FieldComparison(
+            "rewards.closingPoints", 100, 100,
+            ComparisonOutcome.AGREE, FieldScope.SCALAR,
+        )
+        self.assertIs(comparison.match_method, MatchMethod.DIRECT)
 
     def test_datetime_runtime_supports_utc(self) -> None:
         self.assertIsNotNone(datetime.now(UTC).tzinfo)

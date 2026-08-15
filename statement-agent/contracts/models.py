@@ -30,6 +30,11 @@ class FieldScope(str, Enum):
     TRANSACTION_ROW = "TRANSACTION_ROW"
 
 
+class MatchMethod(str, Enum):
+    DIRECT = "DIRECT"
+    DESCRIPTION_SIMILARITY_1TO1 = "DESCRIPTION_SIMILARITY_1TO1"
+
+
 class FeedbackDisposition(str, Enum):
     ACCEPT = "ACCEPT"
     CORRECT = "CORRECT"
@@ -85,9 +90,9 @@ class FieldComparison:
 
     Scalar comparisons use `scope=SCALAR`; card fields may identify a card with
     `card_index`. Transaction fields use `scope=TRANSACTION_ROW` and carry the
-    candidate/reference row indices. `match_method` must name the evidence used
-    for matching; transaction matching is description-similarity-only, strict
-    1:1, and order-insensitive.
+    candidate/reference row indices. `expected` is PDF ground truth read by the
+    Opus-5 judge; `actual` is the extraction value under test. Transaction
+    matching is description-similarity-only, strict 1:1, and order-insensitive.
     """
 
     field_path: str
@@ -95,7 +100,7 @@ class FieldComparison:
     actual: JsonValue
     outcome: ComparisonOutcome
     scope: FieldScope
-    match_method: str
+    match_method: MatchMethod = MatchMethod.DIRECT
     card_index: int | None = None
     expected_row_index: int | None = None
     actual_row_index: int | None = None
@@ -108,22 +113,33 @@ class FieldComparison:
         is_row = self.field_path in JUDGED_TRANSACTION_FIELDS
         if is_row != (self.scope is FieldScope.TRANSACTION_ROW):
             raise ValueError("field_path and scope disagree")
+        required_method = MatchMethod.DESCRIPTION_SIMILARITY_1TO1 if is_row else MatchMethod.DIRECT
+        if self.match_method is not required_method:
+            raise ValueError("match_method and scope disagree")
 
 
 @dataclass(frozen=True, slots=True)
 class JudgeVerdict:
+    """Judge output; `match_method` summarizes transaction-row matching."""
+
     request_id: str
     judge_model_id: str
     comparisons: tuple[FieldComparison, ...]
-    match_method: str
     latency_ms: float
+    match_method: MatchMethod = MatchMethod.DESCRIPTION_SIMILARITY_1TO1
     raw_response_id: str | None = None
     summary: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class FieldFeedback:
-    """Client acceptance/correction for one JSON-pointer-ish field path."""
+    """Client decision for one canonical concrete dot path.
+
+    Array indices are zero-based decimal integers. Examples:
+    `cards.0.cardMeta.cardDisplayName`, `transactions.14.amount`, and
+    `rewards.closingPoints`. Templates (`[]`), wildcards, JSON Pointer slashes,
+    negative indices, and leading-zero indices are invalid.
+    """
 
     request_id: str
     field_path: str
@@ -132,6 +148,12 @@ class FieldFeedback:
     accepted: bool
     actor: str
     timestamp: datetime
+
+    def __post_init__(self) -> None:
+        from .paths import is_valid_feedback_path
+
+        if not is_valid_feedback_path(self.field_path):
+            raise ValueError(f"invalid canonical feedback path: {self.field_path}")
 
     @property
     def disposition(self) -> FeedbackDisposition:
@@ -146,3 +168,5 @@ class TraceEvent:
     ended_at: datetime
     attributes: Mapping[str, JsonValue] = field(default_factory=dict)
     error: str | None = None
+    span_id: str | None = None
+    parent_span_id: str | None = None
