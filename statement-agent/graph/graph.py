@@ -1,7 +1,12 @@
 """LangGraph parse-graph builder.
 
-The graph is linear: ``route -> extract -> validate -> persist -> judge ->
-finalize``. LangGraph's :class:`StateGraph` is used with a typed state object.
+The graph is linear: ``route -> extract -> validate -> persist -> finalize``.
+The judge no longer runs inline on every parse — it is a post-hoc evaluation
+that samples MLflow traces asynchronously (see ``judge/scorer.py``). The
+``judge_node`` function stays in :mod:`graph.nodes` so the post-hoc scorer can
+reuse the same scoring logic, but it is NOT wired into the compiled graph.
+
+LangGraph's :class:`StateGraph` is used with a typed state object.
 ``langgraph`` is imported function-locally inside :func:`build_graph` so this
 module (and the whole package) imports cleanly with stdlib only -- the
 contract-test path never touches the builder, and the local environment (where
@@ -18,7 +23,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from graph.nodes import NodeDeps, finalize_node, extract_node, judge_node, persist_node, route_node, validate_node
+from graph.nodes import NodeDeps, finalize_node, extract_node, persist_node, route_node, validate_node
 from graph.state import GraphState
 
 
@@ -27,7 +32,6 @@ _NODES = (
     ("extract", extract_node),
     ("validate", validate_node),
     ("persist", persist_node),
-    ("judge", judge_node),
     ("finalize", finalize_node),
 )
 

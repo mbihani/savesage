@@ -70,13 +70,21 @@ class InMemoryFeedbackStore(FeedbackStore):
 
 
 class InMemoryTraceSink(TraceSink):
-    """Captures trace events in order; useful for assertions."""
+    """Captures trace events in order; useful for assertions.
+
+    Also captures artifacts logged via ``log_artifact`` so tests can assert
+    that the PDF was logged during persist.
+    """
 
     def __init__(self) -> None:
         self.events: list[TraceEvent] = []
+        self.artifacts: list[tuple[bytes, str]] = []
 
     def record(self, event: TraceEvent) -> None:
         self.events.append(event)
+
+    def log_artifact(self, data: bytes, path: str) -> None:
+        self.artifacts.append((data, path))
 
 
 class FakeExtractionAdapter(ExtractionAdapter):

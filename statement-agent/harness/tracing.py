@@ -373,6 +373,39 @@ class MLflowTraceSink(TraceSink):
         """
         return self._guard("tracing.judge_metrics", verdict_to_metrics, verdict) or {}
 
+    # --- artifact logging (PDF persistence on the trace) ---
+    def log_artifact(self, data: bytes, path: str) -> None:
+        """Log a binary artifact (e.g. the source PDF) on the current trace.
+
+        Writes ``data`` to a temporary file and calls ``mlflow.log_artifact``
+        so the post-hoc judge can download the PDF from the trace later.
+        Best-effort (review B1): a failure here only disables telemetry.
+        """
+        if not self._config.enabled:
+            return
+        self._guard("tracing.log_artifact", self._log_artifact_impl, data, path)
+
+    def _log_artifact_impl(self, data: bytes, path: str) -> None:
+        import tempfile
+        from pathlib import Path
+
+        self._ensure_configured()
+
+        def _do() -> None:
+            mlf = self._mlflow()
+            # log_artifact takes a local file path and uses the FILENAME as the
+            # artifact name. Write bytes to a temp dir with the correct name so
+            # the artifact is stored as "statement.pdf" (not a random temp name).
+            filename = Path(path).name
+            parent = str(Path(path).parent)
+            artifact_dir = parent if parent != "." else None
+            with tempfile.TemporaryDirectory() as tmpdir:
+                filepath = Path(tmpdir) / filename
+                filepath.write_bytes(data)
+                mlf.log_artifact(str(filepath), artifact_path=artifact_dir)
+
+        best_effort("mlflow.log_artifact", _do)
+
 
 def build_trace_sink(config: TracingConfig | None = None) -> MLflowTraceSink:
     """Construct the concrete TraceSink used by the agent.

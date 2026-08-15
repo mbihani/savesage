@@ -325,12 +325,31 @@
         return resp.json();
       }
 
+      async function runJudge(sampleSize) {
+        const resp = await fetch("/api/run-judge", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sample_size: sampleSize }),
+        });
+        if (!resp.ok) {
+          const e = await resp.json().catch(() => ({}));
+          throw new Error(e.detail || `HTTP ${resp.status}`);
+        }
+        return resp.json();
+      }
+
+      async function getJudgeResults() {
+        const resp = await fetch("/api/judge-results");
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        return resp.json();
+      }
+
       /* ===================================================================
        * Constants
        * =================================================================== */
 
       const BANKS = ["HDFC", "ICICI", "SBI", "AXIS"];
-      const STAGES = ["route", "extract", "validate", "persist", "judge", "finalize"];
+      const STAGES = ["route", "extract", "validate", "persist", "finalize"];
 
       const FIELD_LABELS = {
         "cards[].cardMeta.cardDisplayName": "Card Name",
@@ -462,24 +481,19 @@
         const [completed, setCompleted] = useState([]);
         const [error, setError] = useState(null);
         const [extraction, setExtraction] = useState(null);
-        const [verdict, setVerdict] = useState(null);
         const [extractionItems, setExtractionItems] = useState([]);
-        const [fieldVerdicts, setFieldVerdicts] = useState([]);
 
         // Refs to avoid stale-closure in the complete handler — the SSE
         // listeners are registered once (useEffect [requestId]) but need
         // the latest data when "complete" fires.
         const extractionRef = useRef(null);
-        const verdictRef = useRef(null);
         const extractionItemsRef = useRef([]);
-        const fieldVerdictsRef = useRef([]);
         const onCompleteRef = useRef(onComplete);
         onCompleteRef.current = onComplete;
 
         useEffect(() => {
           // Reset refs for a new request
           extractionItemsRef.current = [];
-          fieldVerdictsRef.current = [];
 
           let closed = false;
           const es = new EventSource(`/api/parse/${requestId}/stream`);
@@ -506,33 +520,12 @@
             setExtraction(d);
           });
 
-          // F1: individual field verdicts stream live as the judge
-          // produces them — each FieldComparison arrives as a separate
-          // event so the UI shows per-field verdicts immediately.
-          es.addEventListener("field_verdict", (e) => {
-            const d = JSON.parse(e.data);
-            fieldVerdictsRef.current = [...fieldVerdictsRef.current, d];
-            setFieldVerdicts([...fieldVerdictsRef.current]);
-          });
-
-          es.addEventListener("verdict", (e) => {
-            const d = JSON.parse(e.data);
-            verdictRef.current = d;
-            setVerdict(d);
-          });
-
           es.addEventListener("complete", (e) => {
             const d = JSON.parse(e.data);
             closed = true;
             es.close();
-            // Merge streaming verdicts into the verdict summary so
-            // ResultsView receives the full comparisons array.
-            const mergedVerdict = verdictRef.current
-              ? { ...verdictRef.current, comparisons: fieldVerdictsRef.current }
-              : { comparisons: fieldVerdictsRef.current };
             onCompleteRef.current({
               extraction: extractionRef.current,
-              verdict: mergedVerdict,
               complete: d,
             });
           });
@@ -606,24 +599,6 @@
                           ? `Points: ${item.data?.closingPoints ?? "—"}`
                           : ""}
                       </span>
-                    </div>
-                  `)}
-                </div>
-              `}
-              ${verdict && h`
-                <div class="alert alert-info" style=${{ marginTop: "0.5rem" }}>
-                  Judge verdict received: ${fieldVerdicts.length} field comparisons
-                </div>
-              `}
-              ${fieldVerdicts.length > 0 && h`
-                <div class="streaming-section">
-                  <div class="section-title" style=${{ fontSize: "0.9375rem" }}>
-                    Field Verdicts (${fieldVerdicts.length})
-                  </div>
-                  ${fieldVerdicts.map((v, i) => h`
-                    <div class="stream-row" key=${toCanonicalPath(v) + "-" + i}>
-                      <span class="field-label">${fieldLabel(v)}</span>
-                      <span class=${"verdict verdict-" + v.outcome}>${v.outcome}</span>
                     </div>
                   `)}
                 </div>
@@ -743,13 +718,8 @@
         `;
       }
 
-      function ResultsView({ requestId, verdict, extraction, complete }) {
-        const comparisons = verdict?.comparisons || [];
+      function ResultsView({ requestId, extraction, complete }) {
         const outcome = complete?.outcome || "UNKNOWN";
-
-        // Group comparisons by scope
-        const scalarFields = comparisons.filter((c) => c.scope === "SCALAR");
-        const txnFields = comparisons.filter((c) => c.scope === "TRANSACTION_ROW");
 
         const bannerClass =
           outcome === "SUCCESS" ? "SUCCESS" :
@@ -767,30 +737,22 @@
               </span>
               <span>
                 <strong>${outcome}</strong>
-                ${complete?.judge_skipped_reason
-                  ? ` — judge skipped: ${complete.judge_skipped_reason}`
-                  : ""}
                 ${complete?.validation_errors?.length
                   ? ` — ${complete.validation_errors.length} validation warning(s)`
                   : ""}
               </span>
             </div>
 
-            ${scalarFields.length > 0 && h`
-              <div class="section-title">Statement Fields</div>
-              ${scalarFields.map((c) => h`<${FieldRow} key=${toCanonicalPath(c)} comp=${c} requestId=${requestId} />`)}
-            `}
-
-            ${txnFields.length > 0 && h`
-              <div class="section-title">Transaction Fields</div>
-              ${txnFields.map((c) => h`<${FieldRow} key=${toCanonicalPath(c)} comp=${c} requestId=${requestId} />`)}
-            `}
-
-            ${comparisons.length === 0 && h`
-              <div class="card">
-                <p style=${{ color: "var(--text-muted)" }}>
-                  No judge verdict available. The judge may have been skipped
-                  (${complete?.judge_skipped_reason || "no reason provided"}).
+            ${extraction && h`
+              <div class="card" style=${{ marginTop: "1rem" }}>
+                <div class="section-title" style=${{ marginTop: 0 }}>Extraction Summary</div>
+                <p style=${{ color: "var(--text-muted)", fontSize: "0.875rem" }}>
+                  Model: ${extraction.model_id || "—"} · Schema ${extraction.schema_valid ? "valid" : "invalid"}
+                </p>
+                <p style=${{ color: "var(--text-muted)", fontSize: "0.8125rem", marginTop: "0.5rem" }}>
+                  The judge runs asynchronously as a post-hoc evaluation over
+                  sampled MLflow traces — use the Judge Evaluation tab to run
+                  and view judge scores.
                 </p>
               </div>
             `}
@@ -805,7 +767,163 @@
       }
 
       /* ===================================================================
-       * App — state machine: upload → processing → results
+       * JudgeEvaluationView — post-hoc judge panel (separate from per-parse)
+       * =================================================================== */
+
+      function pct(v) {
+        if (v === null || v === undefined) return "—";
+        return `${(v * 100).toFixed(1)}%`;
+      }
+
+      function JudgeEvaluationView() {
+        const [sampleSize, setSampleSize] = useState(10);
+        const [running, setRunning] = useState(false);
+        const [results, setResults] = useState(null);
+        const [error, setError] = useState(null);
+        const [loaded, setLoaded] = useState(false);
+
+        // Load cached results on mount.
+        useEffect(() => {
+          getJudgeResults()
+            .then((data) => {
+              if (data.results) setResults(data.results);
+              setLoaded(true);
+            })
+            .catch((e) => {
+              setError(e.message);
+              setLoaded(true);
+            });
+        }, []);
+
+        const handleRun = async () => {
+          setRunning(true);
+          setError(null);
+          try {
+            const data = await runJudge(sampleSize);
+            setResults(data);
+          } catch (e) {
+            setError(e.message);
+          } finally {
+            setRunning(false);
+          }
+        };
+
+        const r = results;
+        const fieldLabels = {
+          "cards[].cardMeta.cardDisplayName": "Card Name",
+          "cards[].cardMeta.lastFourDigit": "Last 4",
+          "rewards.pointsEarnedThisCycle": "Points Earned",
+          "rewards.closingPoints": "Closing Points",
+          "transactions[].date": "Date",
+          "transactions[].description": "Description",
+          "transactions[].amount": "Amount",
+        };
+
+        return h`
+          <div class="container">
+            <div class="header">
+              <h1>Judge Evaluation</h1>
+              <p>Post-hoc accuracy scoring over sampled MLflow traces using Opus 5.</p>
+            </div>
+            <div class="card">
+              <div class="field">
+                <label>Sample Size</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value=${sampleSize}
+                  onChange=${(e) => setSampleSize(parseInt(e.target.value) || 10)}
+                />
+              </div>
+              <button class="btn btn-primary" onClick=${handleRun} disabled=${running}>
+                ${running ? "Running Judge…" : "Run Judge"}
+              </button>
+              ${error && h`<div class="alert alert-error" style=${{ marginTop: "1rem" }}>${error}</div>`}
+            </div>
+
+            ${r && h`
+              <div class="card" style=${{ marginTop: "1rem" }}>
+                <div class="section-title" style=${{ marginTop: 0 }}>Summary</div>
+                <div style=${{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
+                  <div>
+                    <div class="field-val-label">Traces Judged</div>
+                    <div class="field-val" style=${{ fontSize: "1.25rem" }}>${r.count_judged ?? 0}</div>
+                  </div>
+                  <div>
+                    <div class="field-val-label">Errors</div>
+                    <div class="field-val" style=${{ fontSize: "1.25rem", color: r.count_errors ? "var(--disagree)" : "var(--agree)" }}>${r.count_errors ?? 0}</div>
+                  </div>
+                  <div>
+                    <div class="field-val-label">Overall Strict</div>
+                    <div class="field-val" style=${{ fontSize: "1.25rem" }}>${pct(r.overall_strict)}</div>
+                  </div>
+                  <div>
+                    <div class="field-val-label">Narration-Forgiven</div>
+                    <div class="field-val" style=${{ fontSize: "1.25rem" }}>${pct(r.overall_narration_forgiven)}</div>
+                  </div>
+                </div>
+              </div>
+            `}
+
+            ${r?.per_field && Object.keys(r.per_field).length > 0 && h`
+              <div class="card" style=${{ marginTop: "1rem" }}>
+                <div class="section-title" style=${{ marginTop: 0 }}>Per-Field Accuracy</div>
+                ${Object.entries(r.per_field).map(([field, info]) => h`
+                  <div class="stream-row" key=${field}>
+                    <span class="field-label">${fieldLabels[field] || field}</span>
+                    <span class="stream-val">${pct(info.accuracy)} (${info.count} traces)</span>
+                  </div>
+                `)}
+              </div>
+            `}
+
+            ${r?.per_bank && Object.keys(r.per_bank).length > 0 && h`
+              <div class="card" style=${{ marginTop: "1rem" }}>
+                <div class="section-title" style=${{ marginTop: 0 }}>Per-Bank Breakdown</div>
+                ${Object.entries(r.per_bank).map(([bank, info]) => h`
+                  <div class="stream-row" key=${bank}>
+                    <span class="field-label">${bank}</span>
+                    <span class="stream-val">
+                      Strict: ${pct(info.strict_accuracy)} · Forgiven: ${pct(info.narration_forgiven_accuracy)} · ${info.count} traces
+                    </span>
+                  </div>
+                `)}
+              </div>
+            `}
+
+            ${r?.errors && r.errors.length > 0 && h`
+              <div class="card" style=${{ marginTop: "1rem" }}>
+                <div class="section-title" style=${{ marginTop: 0, color: "var(--disagree)" }}>Errors</div>
+                ${r.errors.map((err, i) => h`
+                  <div class="stream-row" key=${"err-" + i} style=${{ background: "var(--disagree-soft)" }}>
+                    <span class="field-label">${err.run_id || "unknown"}</span>
+                    <span class="stream-val" style=${{ color: "var(--disagree)" }}>${err.error}</span>
+                  </div>
+                `)}
+              </div>
+            `}
+
+            ${!r && loaded && !running && h`
+              <div class="card" style=${{ marginTop: "1rem" }}>
+                <p style=${{ color: "var(--text-muted)" }}>
+                  No judge evaluation has been run yet. Click "Run Judge" to sample
+                  and score MLflow traces.
+                </p>
+              </div>
+            `}
+
+            <div style=${{ marginTop: "1.5rem" }}>
+              <button class="btn btn-primary" onClick=${() => window.location.reload()}>
+                Back to Upload
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      /* ===================================================================
+       * App — state machine: upload → processing → results + judge tab
        * =================================================================== */
 
       function App() {
@@ -825,14 +943,24 @@
 
         return h`
           <div>
-            ${view === "upload" && h`<${UploadView} onStart=${handleStart} />`}
+            ${view === "upload" && h`
+              <div>
+                <${UploadView} onStart=${handleStart} />
+                <div style=${{ textAlign: "center", marginTop: "1rem" }}>
+                  <button class="btn btn-sm" style=${{ background: "var(--neutral-soft)", color: "var(--text-muted)", border: "1px solid var(--border)" }}
+                    onClick=${() => setView("judge")}>
+                    🔍 Judge Evaluation
+                  </button>
+                </div>
+              </div>
+            `}
             ${view === "processing" && h`<${ProcessingView} requestId=${requestId} onComplete=${handleComplete} />`}
             ${view === "results" && h`<${ResultsView}
               requestId=${requestId}
-              verdict=${results?.verdict}
               extraction=${results?.extraction}
               complete=${results?.complete}
             />`}
+            ${view === "judge" && h`<${JudgeEvaluationView} />`}
           </div>
         `;
       }

@@ -1,0 +1,260 @@
+"""Post-hoc judge scorer: samples MLflow traces and scores them asynchronously.
+
+The judge no longer runs inline on every parse. Instead, after live processing,
+this module samples a few MLflow traces (each carrying the source PDF and the
+Luna extraction as artifacts), re-invokes Opus 5 to get the ground truth,
+compares it to the extraction via the existing scoring logic, logs per-field
+accuracy metrics back to the SAME trace, and tags it ``judged=true`` so it is
+not re-sampled.
+
+This module is stdlib-importable at the module level (third-party imports like
+``mlflow`` are function-local inside ``try/except``) so the test gate runs on
+this machine where pypi is blackholed.
+
+Reuses — does NOT rewrite — the existing scoring logic:
+* :class:`harness.judge_adapter.OpusJudgeAdapter.judge` (Opus call + comparisons)
+* :func:`harness.tracing_judge.verdict_to_metrics` (verdict → MLflow metrics)
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import random
+from pathlib import Path
+from typing import Any
+
+_LOGGER = logging.getLogger("statement-agent.scorer")
+
+# The seven judged fields, used for per-field metric reporting in the summary.
+JUDGED_FIELDS = (
+    "cards[].cardMeta.cardDisplayName",
+    "cards[].cardMeta.lastFourDigit",
+    "rewards.pointsEarnedThisCycle",
+    "rewards.closingPoints",
+    "transactions[].date",
+    "transactions[].description",
+    "transactions[].amount",
+)
+
+# The MLflow experiment path (resolved lazily from config so the module stays
+# stdlib-importable). Used by run_judge_evaluation to search for unjudged traces.
+_EXPERIMENT_PATH = "/Shared/savesage/statement-agent"
+
+
+def _get_experiment_id(mlf: Any) -> str | None:
+    """Resolve the MLflow experiment ID from the config path."""
+    try:
+        exp = mlf.get_experiment_by_name(_EXPERIMENT_PATH)
+        if exp is not None:
+            return exp.experiment_id
+    except Exception:
+        pass
+    return None
+
+
+def score_trace(run_id: str) -> dict[str, Any]:
+    """Score a single MLflow trace by re-running the judge on its artifacts.
+
+    Steps:
+    1. Download ``statement.pdf`` and ``extraction.json`` artifacts from the run.
+    2. Reconstruct a ``ParseRequest`` and ``ExtractionResult``.
+    3. Call ``OpusJudgeAdapter.judge()`` → ``JudgeVerdict`` (Opus + comparisons).
+    4. Compute metrics via ``verdict_to_metrics``.
+    5. Log metrics + tag ``judged=true`` on the SAME MLflow run.
+    6. Return a per-trace result dict.
+
+    Returns ``{"run_id": ..., "status": "OK"|"ERROR", ...}`` — never raises
+    (errors are captured in the ``status``/``error`` fields).
+    """
+    try:
+        return _score_trace_impl(run_id)
+    except Exception as exc:
+        _LOGGER.warning("score_trace failed for run %s: %s", run_id, exc)
+        return {"run_id": run_id, "status": "ERROR", "error": str(exc)}
+
+
+def _score_trace_impl(run_id: str) -> dict[str, Any]:
+    import mlflow
+
+    from contracts.models import Bank, ExtractionResult, ParseRequest
+    from harness.judge_adapter import OpusJudgeAdapter
+    from harness.tracing_judge import verdict_to_metrics
+
+    # 1. Download the PDF artifact.
+    pdf_local = mlflow.artifacts.download_artifacts(
+        run_id=run_id, artifact_path="statement.pdf"
+    )
+    pdf_bytes = Path(pdf_local).read_bytes()
+
+    # 2. Download the extraction metadata artifact.
+    extraction_local = mlflow.artifacts.download_artifacts(
+        run_id=run_id, artifact_path="extraction.json"
+    )
+    meta = json.loads(Path(extraction_local).read_text("utf-8"))
+
+    # 3. Reconstruct the ParseRequest and ExtractionResult.
+    request = ParseRequest(
+        pdf=pdf_bytes,
+        filename="statement.pdf",
+        bank=Bank(meta["bank"]),
+        request_id=meta["request_id"],
+    )
+    extraction = ExtractionResult(
+        request_id=meta["request_id"],
+        payload=meta["payload"],
+        model_id=meta.get("model_id", "unknown"),
+        latency_ms=0.0,
+        schema_valid=meta.get("schema_valid", False),
+    )
+
+    # 4. Call the judge (Opus + comparisons + aggregation).
+    adapter = OpusJudgeAdapter()
+    verdict = adapter.judge(request, extraction)
+
+    # 5. Compute metrics from the verdict.
+    metrics = verdict_to_metrics(verdict)
+
+    # 6. Log metrics back to the SAME MLflow run.
+    for key, value in metrics.items():
+        if value is not None:
+            mlflow.log_metric(key=key, value=float(value), run_id=run_id)
+
+    # 7. Tag the run as judged so it is not re-sampled.
+    mlflow.set_tag(key="judged", value="true", run_id=run_id)
+
+    # 8. Build and return the per-trace result.
+    summary = json.loads(verdict.summary) if verdict.summary else {}
+    return {
+        "run_id": run_id,
+        "request_id": meta["request_id"],
+        "bank": meta["bank"],
+        "status": summary.get("status", "OK"),
+        "strict_accuracy": metrics.get("judge.accuracy"),
+        "narration_forgiven_accuracy": metrics.get("judge.accuracy_forgiven"),
+        "comparisons": int(metrics.get("judge.comparisons", 0)),
+        "scored": int(metrics.get("judge.scored", 0)),
+        "correct": int(metrics.get("judge.correct", 0)),
+        "per_field": {
+            k.removeprefix("judge."): v
+            for k, v in metrics.items()
+            if k not in (
+                "judge.accuracy", "judge.accuracy_forgiven",
+                "judge.comparisons", "judge.scored", "judge.correct",
+            )
+        },
+    }
+
+
+def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
+    """Sample unjudged MLflow traces, score each, and return an aggregate summary.
+
+    1. Query MLflow for recent runs where ``tags.judged != "true"``.
+    2. Pick the ``sample_size`` most recent (randomly to avoid always judging
+       the same tail).
+    3. Call ``score_trace`` on each (errors are captured per-trace, not fatal).
+    4. Return an aggregate summary: overall strict, narration-forgiven, per-field
+       breakdown, per-bank breakdown, count judged, errors.
+
+    Returns ``{"count_judged": N, "errors": [...], "overall_strict": ..., ...}``.
+    """
+    import mlflow
+
+    # 1. Resolve the experiment and search for unjudged runs.
+    exp_id = _get_experiment_id(mlflow)
+    if exp_id is None:
+        return {
+            "count_judged": 0,
+            "errors": [{"error": f"experiment not found: {_EXPERIMENT_PATH}"}],
+            "overall_strict": None,
+            "overall_narration_forgiven": None,
+            "per_field": {},
+            "per_bank": {},
+        }
+
+    # Search for runs where judged is not "true" (or the tag is absent).
+    runs_df = mlflow.search_runs(
+        experiment_ids=[exp_id],
+        filter_string="tags.judged != 'true'",
+        max_results=100,
+    )
+
+    if runs_df.empty:
+        return {
+            "count_judged": 0,
+            "errors": [],
+            "overall_strict": None,
+            "overall_narration_forgiven": None,
+            "per_field": {},
+            "per_bank": {},
+        }
+
+    # 2. Pick the sample_size most recent randomly.
+    run_ids = runs_df["run_id"].tolist()
+    sample = random.sample(run_ids, min(sample_size, len(run_ids)))
+
+    # 3. Score each trace.
+    results = [score_trace(rid) for rid in sample]
+
+    # 4. Aggregate.
+    return _aggregate_results(results)
+
+
+def _aggregate_results(results: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build the aggregate summary from per-trace results."""
+    scored = [r for r in results if r.get("status") == "OK"]
+    errors = [
+        {"run_id": r["run_id"], "error": r.get("error", "unknown")}
+        for r in results if r.get("status") == "ERROR"
+    ]
+
+    # Overall strict / narration-forgiven (average over scored traces).
+    strict_vals = [r["strict_accuracy"] for r in scored if r.get("strict_accuracy") is not None]
+    forgiven_vals = [r["narration_forgiven_accuracy"] for r in scored if r.get("narration_forgiven_accuracy") is not None]
+
+    overall_strict = sum(strict_vals) / len(strict_vals) if strict_vals else None
+    overall_forgiven = sum(forgiven_vals) / len(forgiven_vals) if forgiven_vals else None
+
+    # Per-field accuracy (average across scored traces that have the field).
+    per_field: dict[str, dict[str, Any]] = {}
+    for field in JUDGED_FIELDS:
+        field_key = field.replace("[]", "").replace(".", "_")
+        vals = [
+            r["per_field"].get(field_key)
+            for r in scored
+            if r.get("per_field", {}).get(field_key) is not None
+        ]
+        if vals:
+            per_field[field] = {
+                "accuracy": sum(vals) / len(vals),
+                "count": len(vals),
+            }
+        else:
+            per_field[field] = {"accuracy": None, "count": 0}
+
+    # Per-bank breakdown.
+    per_bank: dict[str, dict[str, Any]] = {}
+    for r in scored:
+        bank = r.get("bank", "unknown")
+        if bank not in per_bank:
+            per_bank[bank] = {"count": 0, "strict_vals": [], "forgiven_vals": []}
+        per_bank[bank]["count"] += 1
+        if r.get("strict_accuracy") is not None:
+            per_bank[bank]["strict_vals"].append(r["strict_accuracy"])
+        if r.get("narration_forgiven_accuracy") is not None:
+            per_bank[bank]["forgiven_vals"].append(r["narration_forgiven_accuracy"])
+    for bank, data in per_bank.items():
+        sv = data.pop("strict_vals")
+        fv = data.pop("forgiven_vals")
+        data["strict_accuracy"] = sum(sv) / len(sv) if sv else None
+        data["narration_forgiven_accuracy"] = sum(fv) / len(fv) if fv else None
+
+    return {
+        "count_judged": len(scored),
+        "count_errors": len(errors),
+        "errors": errors,
+        "overall_strict": overall_strict,
+        "overall_narration_forgiven": overall_forgiven,
+        "per_field": per_field,
+        "per_bank": per_bank,
+    }
