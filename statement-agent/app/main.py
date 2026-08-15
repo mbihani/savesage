@@ -17,15 +17,13 @@ own third-party imports (langgraph, psycopg, mlflow, databricks-sdk) to
 function-local scopes — importing them never requires those packages.
 """
 
-from __future__ import annotations
-
 import json
 import os
 import queue
 import threading
 import uuid
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Optional
 
 from contracts.models import (
     Bank,
@@ -62,12 +60,12 @@ PIPELINE_STAGES: tuple[str, ...] = (
 # ``POST /api/parse`` and consumed by the SSE + results endpoints.  Entries
 # persist for the process lifetime; a long-lived Apps process would eventually
 # want TTL eviction, but for a demo this is sufficient.
-_REQUESTS: dict[str, RequestContext] = {}
+_REQUESTS: dict[str, Any] = {}
 
 # Module-level caches so we don't create a WorkspaceClient or MLflow sink
 # per request.  ``None`` means "not yet attempted"; a tuple/store means
 # "attempted" (including the failure sentinel).
-_stores: tuple[Any, Any] | None = None
+_stores: Optional[tuple[Any, Any]] = None
 _trace_sink: Any = None
 
 
@@ -87,15 +85,15 @@ class RequestContext:
 
     def __init__(self, request_id: str) -> None:
         self.request_id = request_id
-        self.events: queue.Queue[dict[str, Any] | None] = queue.Queue()
+        self.events: queue.Queue[Optional[dict[str, Any]]] = queue.Queue()
         self.done = threading.Event()
-        self.outcome: str | None = None
-        self.error: str | None = None
+        self.outcome: Optional[str] = None
+        self.error: Optional[str] = None
         self.started_at = datetime.now(UTC)
         # Result snapshots for /api/results (populated after the graph completes).
-        self.extraction_data: dict[str, Any] | None = None
-        self.verdict_data: dict[str, Any] | None = None
-        self.complete_data: dict[str, Any] | None = None
+        self.extraction_data: Optional[dict[str, Any]] = None
+        self.verdict_data: Optional[dict[str, Any]] = None
+        self.complete_data: Optional[dict[str, Any]] = None
         # In-memory feedback list (fallback when Lakebase feedback store is down).
         self.feedback: list[dict[str, Any]] = []
 
@@ -256,7 +254,7 @@ class _ProgressTraceSink(TraceSink):
     real (wrapped) sink receives the same event for MLflow telemetry.
     """
 
-    def __init__(self, wrapped: TraceSink | None, ctx: RequestContext) -> None:
+    def __init__(self, wrapped: Optional[TraceSink], ctx: RequestContext) -> None:
         self._wrapped = wrapped
         self._ctx = ctx
 
@@ -521,8 +519,8 @@ def create_app():
     async def results(request_id: str):
         ctx = _REQUESTS.get(request_id)
 
-        extraction: dict[str, Any] | None = None
-        verdict: dict[str, Any] | None = None
+        extraction: Optional[dict[str, Any]] = None
+        verdict: Optional[dict[str, Any]] = None
         feedback_list: list[dict[str, Any]] = []
 
         # Try Lakebase first (durable persistence).
@@ -588,7 +586,53 @@ def create_app():
 # Module-level app instance.  Guarded so a stdlib-only environment can still
 # import the helper functions above without FastAPI (or its optional
 # ``python-multipart`` form-data dependency) installed.
+#
+# When ``create_app()`` fails we install a minimal ASGI diagnostic app that
+# returns the exception traceback as JSON, so the deployed app's 500 response
+# contains the *reason* rather than a bare "Internal Server Error" from a
+# ``None`` ASGI object.  In a stdlib-only test environment the diagnostic
+# app is never used (the tests import the pure helpers directly).
 try:
     app = create_app()
-except (ImportError, RuntimeError):
-    app = None  # type: ignore[assignment]
+except Exception as _create_app_exc:  # noqa: BLE001 — diagnostic
+    import traceback as _tb
+
+    _create_app_traceback = _tb.format_exc()
+
+    async def _diagnostic_app(scope, receive, send):  # type: ignore[no-untyped-def]
+        """Minimal ASGI app that returns the create_app() exception as JSON.
+
+        Handles ``lifespan`` events so uvicorn doesn't hang during startup.
+        Returns HTTP 200 (not 500) so the Databricks proxy passes the body
+        through instead of replacing it with its own error page.
+        """
+        if scope["type"] == "lifespan":
+            # Respond to lifespan startup/shutdown so uvicorn proceeds.
+            while True:
+                msg = await receive()
+                if msg["type"] == "lifespan.startup":
+                    await send({"type": "lifespan.startup.complete"})
+                elif msg["type"] == "lifespan.shutdown":
+                    await send({"type": "lifespan.shutdown.complete"})
+                    return
+            return
+        if scope["type"] != "http":
+            return
+
+        body = json.dumps(
+            {
+                "error": "create_app() failed",
+                "exception": str(_create_app_exc),
+                "type": type(_create_app_exc).__name__,
+                "traceback": _create_app_traceback,
+            },
+            default=str,
+        ).encode()
+        await send({
+            "type": "http.response.start",
+            "status": 200,
+            "headers": [[b"content-type", b"application/json"]],
+        })
+        await send({"type": "http.response.body", "body": body})
+
+    app = _diagnostic_app
