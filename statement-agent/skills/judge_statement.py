@@ -5,4 +5,7 @@ from contracts.ports import JudgeAdapter
 
 
 def judge_statement(request: ParseRequest, result: ExtractionResult, adapter: JudgeAdapter) -> JudgeVerdict:
-    raise NotImplementedError("workstream 5 owns judging")
+    """Judge one extraction against an independent native-PDF reading."""
+    if request.request_id != result.request_id:
+        raise ValueError("request and extraction request_id differ")
+    return adapter.judge(request, result)
