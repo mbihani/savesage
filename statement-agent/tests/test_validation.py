@@ -153,18 +153,72 @@ class SchemaConformanceTest(unittest.TestCase):
         report = validate_payload(p)
         self.assertTrue(report.ok, report.all_errors)
 
-    def test_huge_int_mismatched_closing_points_error_message_no_overflow(self) -> None:
-        # Regression: formatting a huge int in the error message hit Python's
-        # int-to-str digit limit and raised ValueError. The error message must
-        # truncate so validate_payload never raises.
+    def test_huge_int_mismatched_closing_points_no_raise(self) -> None:
+        # With the magnitude threshold, the closing-points rule is SKIPPED for
+        # values > 10**18 (no real rewards points are that large). The rule does
+        # not fire; the point of this test is that validate_payload returns a
+        # report rather than raising OverflowError on the int arithmetic.
         p = _clone()
         p["rewards"]["openingPoints"] = 10**10000
         p["rewards"]["pointsEarnedThisCycle"] = 10**10000
         p["rewards"]["pointsRedeemedThisCycle"] = 0
         p["rewards"]["bonusPointsThisCycle"] = 0
-        p["rewards"]["closingPoints"] = 1  # mismatch -> error path
+        p["rewards"]["closingPoints"] = 1  # mismatch, but rule is skipped
         report = validate_payload(p)  # must not raise
         self.assertIsInstance(report, ValidationReport)
+        self.assertIsNone(report.internal_error)
+
+    def test_huge_int_plus_float_closing_points_no_raise(self) -> None:
+        # The reviewer's exact reproduction: huge int + float coerces the int
+        # to float and overflows. The magnitude threshold skips the rule before
+        # the arithmetic; the structural safety net is the backstop.
+        p = _clone()
+        p["rewards"]["openingPoints"] = 10**10000
+        p["rewards"]["pointsEarnedThisCycle"] = 1.0  # float, not int
+        p["rewards"]["pointsRedeemedThisCycle"] = 0
+        p["rewards"]["bonusPointsThisCycle"] = 0
+        p["rewards"]["closingPoints"] = 5
+        report = validate_payload(p)  # must not raise
+        self.assertIsInstance(report, ValidationReport)
+        self.assertIsNone(report.internal_error)
+
+    def test_huge_negative_int_plus_float_closing_points_no_raise(self) -> None:
+        p = _clone()
+        p["rewards"]["openingPoints"] = -(10**10000)
+        p["rewards"]["pointsEarnedThisCycle"] = 1.0
+        p["rewards"]["pointsRedeemedThisCycle"] = 0
+        p["rewards"]["bonusPointsThisCycle"] = 0
+        p["rewards"]["closingPoints"] = 5
+        report = validate_payload(p)
+        self.assertIsInstance(report, ValidationReport)
+        self.assertIsNone(report.internal_error)
+
+    def test_huge_int_both_sides_closing_points_no_raise(self) -> None:
+        p = _clone()
+        p["rewards"]["openingPoints"] = 10**10000
+        p["rewards"]["pointsEarnedThisCycle"] = 10**10000
+        p["rewards"]["pointsRedeemedThisCycle"] = 10**10000
+        p["rewards"]["bonusPointsThisCycle"] = 10**10000
+        p["rewards"]["closingPoints"] = 10**10000
+        report = validate_payload(p)
+        self.assertIsInstance(report, ValidationReport)
+        self.assertIsNone(report.internal_error)
+
+    def test_normal_closing_points_arithmetic_still_works(self) -> None:
+        # Prove the magnitude threshold did not break correct arithmetic on
+        # realistic values.
+        p = _clone()
+        p["rewards"]["openingPoints"] = 100
+        p["rewards"]["pointsEarnedThisCycle"] = 50
+        p["rewards"]["pointsRedeemedThisCycle"] = 20
+        p["rewards"]["bonusPointsThisCycle"] = 10
+        p["rewards"]["closingPoints"] = 140  # 100 + 50 + 10 - 20 = 140
+        report = validate_payload(p)
+        self.assertTrue(report.ok, report.all_errors)
+
+        # And a mismatch IS still caught on realistic values.
+        p["rewards"]["closingPoints"] = 999
+        report = validate_payload(p)
         self.assertFalse(report.ok)
         self.assertTrue(any("arithmetic violation" in e for e in report.rule_errors))
 
@@ -348,6 +402,52 @@ class ValidatePayloadTest(unittest.TestCase):
         for garbage in (None, [], 42, {"only": "partial"}, "string"):
             report = validate_payload(garbage)
             self.assertIsInstance(report, ValidationReport)
+
+    def test_internal_error_on_injected_failure(self) -> None:
+        # Prove the structural guarantee: if a helper raises unexpectedly,
+        # validate_payload converts it to a report with internal_error set,
+        # not a crash. This is what makes the guarantee STRUCTURAL rather than
+        # site-by-site.
+        import graph.validation as mod
+        original = mod.validate_schema_conformance
+        mod.validate_schema_conformance = lambda payload, schema=None: (_ for _ in ()).throw(
+            RuntimeError("synthetic internal failure")
+        )
+        try:
+            report = validate_payload(_clone())
+        finally:
+            mod.validate_schema_conformance = original
+        self.assertIsInstance(report, ValidationReport)
+        self.assertFalse(report.schema_valid)
+        self.assertFalse(report.ok)
+        self.assertIsNotNone(report.internal_error)
+        self.assertIn("RuntimeError", report.internal_error)
+        self.assertIn("synthetic internal failure", report.internal_error)
+
+    def test_internal_error_distinguishable_from_validation_failure(self) -> None:
+        # An ordinary validation failure has internal_error=None; an internal
+        # error has internal_error set. They must not be indistinguishable.
+        # Ordinary failure: missing required key.
+        p = _clone()
+        del p["rewards"]
+        ordinary = validate_payload(p)
+        self.assertIsNone(ordinary.internal_error)
+        self.assertFalse(ordinary.ok)
+
+        # Internal failure: injected exception.
+        import graph.validation as mod
+        original = mod.validate_schema_conformance
+        mod.validate_schema_conformance = lambda payload, schema=None: (_ for _ in ()).throw(
+            ValueError("boom")
+        )
+        try:
+            internal = validate_payload(_clone())
+        finally:
+            mod.validate_schema_conformance = original
+        self.assertIsNotNone(internal.internal_error)
+        self.assertFalse(internal.ok)
+        # The two are distinguishable: one has internal_error, the other doesn't.
+        self.assertNotEqual(bool(ordinary.internal_error), bool(internal.internal_error))
 
 
 if __name__ == "__main__":

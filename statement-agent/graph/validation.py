@@ -36,6 +36,14 @@ _schema_cache: dict[str, Any] | None = None
 _LAST_FOUR = re.compile(r"^\d{4}$")
 _DATE_DDMMYYYY = re.compile(r"^\d{2}/\d{2}/\d{4}$")
 
+# No real rewards points exceed 10**18. Values above this magnitude are either
+# a hostile/buggy endpoint response or a test probing the never-raises contract.
+# Skip the closing-points arithmetic for such values: native int+float
+# arithmetic would OverflowError on the int→float coercion (e.g.
+# 10**10000 + 1.0), and Decimal(str(v)) hits Python's int-to-str digit limit.
+# The structural safety net in validate_payload catches any remaining edge case.
+_MAX_REWARDS_MAGNITUDE = 10**18
+
 
 def load_gt_schema() -> dict[str, Any]:
     """Load and cache the vendored GT schema (a small static JSON file)."""
@@ -47,15 +55,25 @@ def load_gt_schema() -> dict[str, Any]:
 
 @dataclass(slots=True)
 class ValidationReport:
-    """Outcome of validating one extraction payload."""
+    """Outcome of validating one extraction payload.
+
+    ``internal_error`` is set when an UNEXPECTED exception escaped the validation
+    logic and was caught by the structural safety net in :func:`validate_payload`.
+    It is deliberately a DISTINCT signal from an ordinary validation failure
+    (schema_errors/rule_errors): an internal error means the validator itself
+    misbehaved (e.g. a numeric-coercion overflow in a future edit), not that the
+    payload is invalid. Telemetry and the UI can surface it separately so genuine
+    logic bugs are not silently masked as "bad payload".
+    """
 
     schema_valid: bool = False
     schema_errors: list[str] = field(default_factory=list)
     rule_errors: list[str] = field(default_factory=list)
+    internal_error: str | None = None
 
     @property
     def ok(self) -> bool:
-        return self.schema_valid and not self.rule_errors
+        return self.schema_valid and not self.rule_errors and self.internal_error is None
 
     @property
     def all_errors(self) -> list[str]:
@@ -167,11 +185,14 @@ def _short(v: Any) -> str:
 
     Python's int-to-str digit limit (4300 by default) makes repr(10**10000)
     raise; that would escape validate_payload and violate the never-raises
-    contract. Show ints by type, floats/other by repr.
+    contract. Show small ints by their actual value (useful for debugging);
+    mask only truly huge ones (< 100 digits is well below the limit).
     """
     if isinstance(v, bool):
         return repr(v)
     if isinstance(v, int):
+        if abs(v) < 10**100:
+            return repr(v)
         return "<int>"
     return repr(v)
 
@@ -228,6 +249,13 @@ def _check_closing_points(payload: dict[str, Any], errors: list[str]) -> None:
         return  # rule only applies when all five are present
     if not all(_is_number(v) for v in values):
         return  # schema conformance already flagged non-numbers
+    # Skip arithmetic for unrealistic magnitudes. No real rewards points exceed
+    # 10**18; values above that are hostile/buggy endpoint output. Native
+    # int+float arithmetic would OverflowError on the int→float coercion (e.g.
+    # 10**10000 + 1.0), and the structural safety net in validate_payload is the
+    # backstop for any case this guard does not cover.
+    if any(abs(v) > _MAX_REWARDS_MAGNITUDE for v in values):  # type: ignore[abs-too-big]
+        return
     opening, earned, redeemed, bonus, closing = values
     expected = opening + earned + bonus - redeemed  # type: ignore[operator]
     if closing != expected:
@@ -274,18 +302,47 @@ def validate_rules(payload: dict[str, Any]) -> list[str]:
 
 
 def validate_payload(payload: Any) -> ValidationReport:
-    """Full validation: schema conformance + GT rules. Never raises."""
-    schema_errors: list[str] = []
-    rule_errors: list[str] = []
-    schema_valid = False
-    if isinstance(payload, dict):
-        schema_errors = validate_schema_conformance(payload)
-        schema_valid = not schema_errors
-        if schema_valid:
-            rule_errors = validate_rules(payload)
-    else:
-        schema_errors = [f"$: expected object, got {type(payload).__name__}"]
-    return ValidationReport(schema_valid=schema_valid, schema_errors=schema_errors, rule_errors=rule_errors)
+    """Full validation: schema conformance + GT rules. Never raises.
+
+    STRUCTURAL GUARANTEE: the non-raising contract holds STRUCTURALLY, not by
+    exhaustive inspection of every coercion site. The entire body is wrapped so
+    that any unexpected exception (e.g. a numeric-coercion overflow introduced by
+    a future edit) is converted into a validation report with ``schema_valid=
+    False`` and a DISTINCT ``internal_error`` message, rather than propagating
+    and crashing the graph on a customer's parse. This is a SAFETY NET, not a
+    substitute for correct checking: an internal error is recorded separately
+    from an ordinary validation failure so genuine logic bugs are visible in
+    the report and in telemetry, not silently masked as "bad payload".
+
+    ``BaseException`` is deliberately NOT caught: ``KeyboardInterrupt`` and
+    ``SystemExit`` must propagate so a user can interrupt a run and the process
+    can be shut down cleanly.
+    """
+    try:
+        schema_errors: list[str] = []
+        rule_errors: list[str] = []
+        schema_valid = False
+        if isinstance(payload, dict):
+            schema_errors = validate_schema_conformance(payload)
+            schema_valid = not schema_errors
+            if schema_valid:
+                rule_errors = validate_rules(payload)
+        else:
+            schema_errors = [f"$: expected object, got {type(payload).__name__}"]
+        return ValidationReport(
+            schema_valid=schema_valid, schema_errors=schema_errors, rule_errors=rule_errors,
+        )
+    except Exception as exc:
+        # Unexpected internal failure. Record the type and message distinctly so
+        # it is visible (not indistinguishable from an ordinary invalid payload)
+        # and degrade gracefully: the graph persists a partial result instead of
+        # crashing. Do NOT catch BaseException (KeyboardInterrupt/SystemExit).
+        return ValidationReport(
+            schema_valid=False,
+            schema_errors=[],
+            rule_errors=[],
+            internal_error=f"unexpected {type(exc).__name__}: {exc}",
+        )
 
 
 def rule_names() -> tuple[str, ...]:

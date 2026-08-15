@@ -90,13 +90,51 @@ The schema conformance checker requires `math.isfinite(value)` for the `"number"
 type, and the GT rules' `_is_number` helper requires it too. A `NaN`
 `totalAmountDue` is reported `schema_valid=False`, not silently accepted.
 
+### Structural never-raises guarantee (round 4)
+
+`validate_payload`'s non-raising contract holds STRUCTURALLY, not by exhaustive
+inspection of every coercion site. The entire body is wrapped in a broad
+`try/except Exception` so that any unexpected exception (e.g. a numeric-coercion
+overflow introduced by a future edit) is converted into a `ValidationReport`
+with `schema_valid=False` and a DISTINCT `internal_error` message, rather than
+propagating and crashing the graph on a customer's parse.
+
+This is a SAFETY NET, not a substitute for correct checking. An internal error
+is recorded separately from an ordinary validation failure (`internal_error`
+field vs `schema_errors`/`rule_errors`) so genuine logic bugs are visible in
+telemetry and not silently masked as "bad payload".
+
+`BaseException` is deliberately NOT caught: `KeyboardInterrupt` and
+`SystemExit` must propagate so a user can interrupt a run and the process can
+be shut down cleanly.
+
+### Closing-points arithmetic magnitude guard
+
+The closing-points reconciliation (`closing == opening + earned + bonus -
+redeemed`) uses native Python arithmetic. Mixed `int + float` arithmetic
+coerces the int to float, which overflows for huge ints (e.g. `10**10000 +
+1.0`). The rule is SKIPPED when any of the five values has a magnitude above
+`10**18` — no real rewards points are that large. The structural safety net
+above is the backstop for any case this guard does not cover.
+
 ### Truncation and refusal (BLOCKING 3)
 
 `map_response` checks the first choice's `finish_reason` and any `message.refusal`
-before parsing. `finish_reason` not in `(None, "stop")` (e.g. `"length"` for
+before parsing. For a synchronous invocation of this endpoint there is no
+legitimate reason for `finish_reason` to be absent or `None`, so only an exact
+`"stop"` is a clean completion. Anything else (absent, `None`, `"length"` for
 truncation, `"content_filter"` for refusal) raises `ExtractionError`. A
 parseable-but-clipped JSON is treated as an extraction failure, not a success
 that silently drops transactions.
+
+**Deploy-time verification needed:** the earlier live Luna call's raw response
+was not preserved, so we cannot independently confirm that a real success
+response carries `finish_reason: "stop"`. Our fixtures assume it does, which is
+consistent with synchronous OpenAI-compatible responses — but if real responses
+ever omit it, our stricter rule would reject LEGITIMATE extractions, which is
+worse than the truncation bug we fixed. At first deploy on `fevm-stable`,
+capture one raw success response and check the field. If real responses omit
+`finish_reason`, relax to accept absent/`None` as clean.
 
 ### Single timeout source (BLOCKING 5)
 
