@@ -55,8 +55,22 @@ class FeedbackStore(ABC):
 
 
 class TraceSink(ABC):
-    """Workstream 4: record framework-neutral trace events in MLflow."""
+    """Workstream 4: record framework-neutral trace events in MLflow.
+
+    ``log_artifact`` has a default no-op implementation so existing concrete
+    sinks (e.g. the in-memory test fake) inherit it without breaking; the
+    MLflow-backed sink overrides it to persist the PDF alongside the trace so
+    the post-hoc judge can re-read the PDF later.
+    """
 
     @abstractmethod
     def record(self, event: TraceEvent) -> None:
         raise NotImplementedError
+
+    def log_artifact(self, data: bytes, path: str) -> None:
+        """Log a binary artifact (e.g. the source PDF) on the current trace.
+
+        Default no-op; the MLflow sink overrides this to call
+        ``mlflow.log_artifact``. Best-effort: must never raise.
+        """
+        pass

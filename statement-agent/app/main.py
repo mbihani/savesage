@@ -39,21 +39,21 @@ from contracts.ports import TraceSink
 # ---------------------------------------------------------------------------
 
 # Trace event names emitted by graph nodes → frontend stage labels.
-# ``persist_extraction`` and ``judge_skipped`` are internal trace names that
-# map to the user-facing ``persist`` and ``judge`` stages respectively.
+# ``persist_extraction`` is an internal trace name that maps to the
+# user-facing ``persist`` stage. The judge no longer runs inline (it is a
+# post-hoc evaluation over MLflow traces), so there is no ``judge`` stage.
 _STAGE_MAP: dict[str, str] = {
     "route": "route",
     "extract": "extract",
     "validate": "validate",
     "persist_extraction": "persist",
-    "judge": "judge",
-    "judge_skipped": "judge",
     "finalize": "finalize",
 }
 
-# The six pipeline stages the frontend renders, in order.
+# The five pipeline stages the frontend renders, in order. The judge no
+# longer runs inline — it is a post-hoc evaluation triggered separately.
 PIPELINE_STAGES: tuple[str, ...] = (
-    "route", "extract", "validate", "persist", "judge", "finalize",
+    "route", "extract", "validate", "persist", "finalize",
 )
 
 # In-memory request contexts, keyed by request_id.  Populated by
@@ -68,6 +68,19 @@ _REQUESTS: dict[str, Any] = {}
 _stores: Optional[tuple[Any, Any]] = None
 _trace_sink: Any = None
 
+# Maximum number of traces the post-hoc judge will score in one evaluation.
+# Guards against a caller requesting an expensive sweep via the API.
+MAX_SAMPLE_SIZE = 50
+
+# Cache for the most recent judge evaluation result (populated by
+# ``POST /api/run-judge`` and returned by ``GET /api/judge-results``).
+# Process-scoped: a restart clears it, which is fine for a demo.
+_judge_result_cache: Optional[dict[str, Any]] = None
+
+# Guards concurrent judge evaluations — only one background evaluation at a time.
+_judge_running = False
+_judge_lock = threading.Lock()
+
 
 # ---------------------------------------------------------------------------
 # RequestContext — thread-safe progress + result holder for one parse request
@@ -78,9 +91,10 @@ class RequestContext:
 
     The background graph thread pushes events into ``events`` (a stdlib
     ``queue.Queue``, thread-safe); the async SSE endpoint reads from it via
-    ``run_in_executor``.  After the graph completes, ``extraction_data`` and
-    ``verdict_data`` are available for the ``GET /api/results`` fallback when
-    Lakebase is unreachable.
+    ``run_in_executor``.  After the graph completes, ``extraction_data`` is
+    available for the ``GET /api/results`` fallback when Lakebase is
+    unreachable. The judge no longer runs inline, so there is no
+    ``verdict_data`` — judge results come from the post-hoc evaluation API.
     """
 
     def __init__(self, request_id: str) -> None:
@@ -92,7 +106,6 @@ class RequestContext:
         self.started_at = datetime.now(UTC)
         # Result snapshots for /api/results (populated after the graph completes).
         self.extraction_data: Optional[dict[str, Any]] = None
-        self.verdict_data: Optional[dict[str, Any]] = None
         self.complete_data: Optional[dict[str, Any]] = None
         # In-memory feedback list (fallback when Lakebase feedback store is down).
         self.feedback: list[dict[str, Any]] = []
@@ -278,9 +291,8 @@ class _ProgressTraceSink(TraceSink):
     ``extraction_item`` SSE events — the frontend renders each as it
     arrives rather than waiting for a batch at the end.
 
-    When the **judge** node completes, each :class:`FieldComparison` is
-    pushed as an individual ``field_verdict`` SSE event, so the frontend
-    can render per-field verdicts live as the judge produces them.
+    The judge no longer runs inline (it is a post-hoc evaluation), so there
+    are no ``field_verdict`` or ``verdict`` SSE events during a live parse.
     """
 
     def __init__(
@@ -305,12 +317,16 @@ class _ProgressTraceSink(TraceSink):
         if event.name == "extract" and not event.error:
             self._push_extraction_items()
 
-        # Stream individual field verdicts when the judge node finishes.
-        if event.name == "judge" and not event.error:
-            self._push_field_verdicts()
-
         if self._wrapped is not None:
             self._wrapped.record(event)
+
+    def log_artifact(self, data: bytes, path: str) -> None:
+        """Delegate artifact logging to the wrapped sink (best-effort)."""
+        if self._wrapped is not None:
+            try:
+                self._wrapped.log_artifact(data, path)
+            except Exception:
+                pass  # artifact logging must never break the SSE stream
 
     def _push_extraction_items(self) -> None:
         """Push one ``extraction_item`` SSE event per card / transaction / reward."""
@@ -351,42 +367,24 @@ class _ProgressTraceSink(TraceSink):
             "schema_valid": state.extraction.schema_valid,
         })
 
-    def _push_field_verdicts(self) -> None:
-        """Push one ``field_verdict`` SSE event per :class:`FieldComparison`."""
-        state = self._state
-        if state is None or getattr(state, "verdict", None) is None:
-            return
-        for comp in state.verdict.comparisons:
-            self._ctx.push("field_verdict", _comparison_to_dict(comp))
-        # Summary event (kept for judge_model_id / summary display)
-        self._ctx.push("verdict", {
-            "judge_model_id": state.verdict.judge_model_id,
-            "summary": state.verdict.summary,
-        })
-
 
 def _build_deps(ctx: RequestContext, state: Any = None) -> Any:
     """Build production :class:`NodeDeps` with real ports wired.
 
     Degrades gracefully: if a port cannot be constructed (Lakebase down,
-    MLflow unavailable, judge adapter fails), the graph skips that stage
-    rather than failing the entire parse.
+    MLflow unavailable), the graph skips that stage rather than failing the
+    entire parse. The judge no longer runs inline — it is a post-hoc
+    evaluation over MLflow traces (see ``judge/scorer.py``), so no judge
+    adapter is constructed here.
 
     ``state`` is the live :class:`GraphState` — passed to
-    :class:`_ProgressTraceSink` so it can push per-field SSE events
-    when the extract / judge nodes complete.
+    :class:`_ProgressTraceSink` so it can push per-item SSE events
+    when the extract node completes.
     """
     from graph.nodes import NodeDeps
     from harness.extraction_adapter import LunaExtractionAdapter
 
     extraction = LunaExtractionAdapter()
-
-    judge = None
-    try:
-        from harness.judge_adapter import OpusJudgeAdapter
-        judge = OpusJudgeAdapter()
-    except Exception:
-        pass  # judge is optional — graph skips the judge stage if unwired
 
     result_store, feedback_store = _get_stores()
     trace_sink = _ProgressTraceSink(_get_trace_sink(), ctx, state)
@@ -395,7 +393,6 @@ def _build_deps(ctx: RequestContext, state: Any = None) -> Any:
         extraction=extraction,
         result_store=result_store,
         trace_sink=trace_sink,
-        judge=judge,
         feedback_store=feedback_store,
     )
 
@@ -405,13 +402,13 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
 
     Pushes SSE events into ``ctx.events`` as each node completes (via the
     :class:`_ProgressTraceSink` that wraps the real MLflow sink).  The trace
-    sink pushes individual ``extraction_item`` and ``field_verdict`` events
-    when the extract / judge nodes complete — *during* the graph run, not
-    after — so the frontend renders per-field results live as they arrive.
+    sink pushes individual ``extraction_item`` events when the extract node
+    completes — *during* the graph run, not after — so the frontend renders
+    per-item results live as they arrive. The judge no longer runs inline.
 
-    After the graph returns, this function stores the extraction / verdict
-    snapshots on ``ctx`` for the ``GET /api/results`` fallback and pushes the
-    terminal ``complete`` (or ``error``) event.
+    After the graph returns, this function stores the extraction snapshot on
+    ``ctx`` for the ``GET /api/results`` fallback and pushes the terminal
+    ``complete`` (or ``error``) event.
     """
     try:
         from contracts.models import Bank as _Bank, ParseRequest as _PR
@@ -447,18 +444,6 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
                 "schema_valid": final_state.extraction.schema_valid,
             }
 
-        # Store verdict snapshot for /api/results fallback.
-        # The field_verdict + verdict SSE events were already pushed
-        # by _ProgressTraceSink when the judge node completed.
-        if final_state.verdict is not None:
-            ctx.verdict_data = {
-                "comparisons": [
-                    _comparison_to_dict(c) for c in final_state.verdict.comparisons
-                ],
-                "judge_model_id": final_state.verdict.judge_model_id,
-                "summary": final_state.verdict.summary,
-            }
-
         # Push terminal outcome.
         ctx.outcome = final_state.outcome.value if final_state.outcome else None
         ctx.complete_data = {
@@ -467,7 +452,6 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
             "stage": final_state.stage.value,
             "schema_valid": final_state.schema_valid,
             "validation_errors": list(final_state.validation_errors),
-            "judge_skipped_reason": final_state.judge_skipped_reason,
         }
         ctx.push("complete", ctx.complete_data)
 
@@ -476,6 +460,37 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
         ctx.push("error", {"message": str(exc), "request_id": ctx.request_id})
     finally:
         ctx.push_sentinel()
+
+
+def _run_judge_evaluation_bg(sample_size: int) -> None:
+    """Background-thread entry point for the post-hoc judge evaluation.
+
+    Runs ``run_judge_evaluation`` in a daemon thread (the HTTP handler returns
+    immediately with 202). The result is stored in ``_judge_result_cache``;
+    errors are captured there too so ``GET /api/judge-results`` can surface them
+    without leaking internal tracebacks to the client.
+    """
+    global _judge_result_cache, _judge_running
+    try:
+        from judge.scorer import run_judge_evaluation
+        result = run_judge_evaluation(sample_size=sample_size)
+        _judge_result_cache = result
+    except Exception as exc:
+        _judge_result_cache = {
+            "count_judged": 0,
+            "count_errors": 1,
+            "errors": [{"error": "evaluation failed"}],
+            "overall_strict": None,
+            "overall_narration_forgiven": None,
+            "per_field": {},
+            "per_bank": {},
+            "_status": "error",
+        }
+        _LOGGER = __import__("logging").getLogger("statement-agent.app")
+        _LOGGER.warning("judge evaluation failed: %s", exc)
+    finally:
+        with _judge_lock:
+            _judge_running = False
 
 
 # ---------------------------------------------------------------------------
@@ -671,8 +686,6 @@ def create_app():
         # Fall back to in-memory context (when Lakebase is unavailable).
         if extraction is None and ctx is not None:
             extraction = ctx.extraction_data
-        if verdict is None and ctx is not None:
-            verdict = ctx.verdict_data
         if not feedback_list and ctx is not None:
             feedback_list = list(ctx.feedback)
 
@@ -682,6 +695,70 @@ def create_app():
             "verdict": verdict,
             "feedback": feedback_list,
         }
+
+    # -- POST /api/run-judge ---------------------------------------------
+    @app.post("/api/run-judge")
+    async def run_judge(body: dict = Body(default={})):
+        """Trigger a post-hoc judge evaluation over sampled MLflow traces.
+
+        Accepts ``{"sample_size": N}`` (default 10, max ``MAX_SAMPLE_SIZE``).
+        Runs in a background thread so the HTTP response returns immediately
+        with 202; the client polls ``GET /api/judge-results`` for the result.
+        Returns 409 if an evaluation is already running.
+        """
+        global _judge_running
+
+        # Parse and validate sample_size — wrap in try/except so a non-int
+        # value (e.g. "abc") returns 400, not a 500 Internal Server Error.
+        raw = body.get("sample_size", 10)
+        try:
+            sample_size = int(raw)
+        except (TypeError, ValueError):
+            raise HTTPException(
+                status_code=400,
+                detail=f"sample_size must be an integer, got {type(raw).__name__}",
+            )
+        if sample_size < 1:
+            raise HTTPException(status_code=400, detail="sample_size must be >= 1")
+        if sample_size > MAX_SAMPLE_SIZE:
+            raise HTTPException(
+                status_code=400,
+                detail=f"sample_size must be <= {MAX_SAMPLE_SIZE}",
+            )
+
+        # Only one evaluation at a time.
+        with _judge_lock:
+            if _judge_running:
+                raise HTTPException(status_code=409, detail="evaluation already running")
+            _judge_running = True
+
+        thread = threading.Thread(
+            target=_run_judge_evaluation_bg,
+            args=(sample_size,),
+            daemon=True,
+        )
+        thread.start()
+
+        return JSONResponse(
+            status_code=202,
+            content={"status": "started", "sample_size": sample_size},
+        )
+
+    # -- GET /api/judge-results ------------------------------------------
+    @app.get("/api/judge-results")
+    async def judge_results():
+        """Return the most recent judge evaluation results.
+
+        Serves from the process-level cache populated by ``POST /api/run-judge``.
+        Returns ``{"status": "running", "results": null}`` if an evaluation is
+        in progress, ``{"status": "idle", "results": null}`` if none has been
+        run yet, or ``{"status": "done", "results": {...}}`` with the cached result.
+        """
+        if _judge_running:
+            return {"status": "running", "results": None}
+        if _judge_result_cache is not None:
+            return {"status": "done", "results": _judge_result_cache}
+        return {"status": "idle", "results": None}
 
     # -- Static files (catch-all, mounted AFTER API routes) --------------
     if static_dir.exists():

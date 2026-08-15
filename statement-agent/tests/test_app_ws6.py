@@ -390,7 +390,7 @@ class RequestContextTest(unittest.TestCase):
 
     def test_pipeline_stages_order(self) -> None:
         self.assertEqual(PIPELINE_STAGES, (
-            "route", "extract", "validate", "persist", "judge", "finalize",
+            "route", "extract", "validate", "persist", "finalize",
         ))
 
 
@@ -648,8 +648,11 @@ class ProgressTraceSinkTest(unittest.TestCase):
         rewards_items = [e for e in events if e["event"] == "extraction_item" and e["data"]["type"] == "rewards"]
         self.assertEqual(len(rewards_items), 1)
 
-    def test_field_verdicts_pushed_on_judge(self) -> None:
-        """F1: judge trace pushes individual field_verdict events."""
+    def test_no_field_verdicts_on_judge_event(self) -> None:
+        """The judge no longer runs inline, so a 'judge' trace event (if it
+        ever arrives from the post-hoc scorer) pushes only a progress event —
+        no field_verdict or verdict SSE events are emitted during a live parse.
+        """
         ctx = RequestContext("req-3")
 
         class _MockVerdict:
@@ -681,15 +684,11 @@ class ProgressTraceSinkTest(unittest.TestCase):
 
         events = self._drain(ctx)
         event_types = [e["event"] for e in events]
-        # 1 progress + 3 field_verdict + 1 verdict summary = 5
-        self.assertEqual(event_types.count("field_verdict"), 3)
-        self.assertIn("verdict", event_types)
-
-        # Verify each field_verdict has a feedback_path
-        fv_events = [e for e in events if e["event"] == "field_verdict"]
-        self.assertEqual(fv_events[0]["data"]["feedback_path"], "rewards.closingPoints")
-        self.assertEqual(fv_events[1]["data"]["feedback_path"], "cards.0.cardMeta.cardDisplayName")
-        self.assertEqual(fv_events[2]["data"]["feedback_path"], "transactions.0.amount")
+        # Only a progress event — no field_verdict or verdict events.
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["event"], "progress")
+        self.assertNotIn("field_verdict", event_types)
+        self.assertNotIn("verdict", event_types)
 
     def test_no_extraction_items_on_error(self) -> None:
         """When extract node errors, no extraction_item events are pushed."""
@@ -736,6 +735,157 @@ class ProgressTraceSinkTest(unittest.TestCase):
         # Two progress events, no extraction_item or field_verdict
         self.assertEqual(len(events), 2)
         self.assertTrue(all(e["event"] == "progress" for e in events))
+
+
+# ---------------------------------------------------------------------------
+# Judge evaluation endpoints (post-hoc scorer API)
+# ---------------------------------------------------------------------------
+
+class JudgeEndpointTest(unittest.TestCase):
+    """Test the /api/run-judge and /api/judge-results endpoint helpers.
+
+    These test the module-level cache and the import/call wiring. The actual
+    scorer logic is tested in tests/test_scorer.py.
+    """
+
+    def test_judge_result_cache_default_none(self) -> None:
+        """The module-level cache starts as None (no evaluation run yet)."""
+        import app.main as main_mod
+        # Save and restore the cache so the test is hermetic.
+        saved = main_mod._judge_result_cache
+        try:
+            main_mod._judge_result_cache = None
+            self.assertIsNone(main_mod._judge_result_cache)
+        finally:
+            main_mod._judge_result_cache = saved
+
+    def test_pipeline_stages_no_judge(self) -> None:
+        """The judge stage is NOT in the pipeline stages (it's post-hoc)."""
+        self.assertNotIn("judge", PIPELINE_STAGES)
+        self.assertEqual(len(PIPELINE_STAGES), 5)
+
+    def test_stage_map_no_judge(self) -> None:
+        """The stage map does NOT map judge or judge_skipped."""
+        from app.main import _STAGE_MAP
+        self.assertNotIn("judge", _STAGE_MAP)
+        self.assertNotIn("judge_skipped", _STAGE_MAP)
+
+    def test_build_deps_no_judge_adapter(self) -> None:
+        """_build_deps does NOT construct a judge adapter (it's post-hoc)."""
+        import inspect
+        from app.main import _build_deps
+        source = inspect.getsource(_build_deps)
+        self.assertNotIn("OpusJudgeAdapter", source)
+        self.assertNotIn("judge=", source)
+        self.assertNotIn("judge =", source)
+        self.assertNotIn("JudgeAdapter", source)
+
+    def test_max_sample_size_constant(self) -> None:
+        """MAX_SAMPLE_SIZE is defined and bounded (server-side guard)."""
+        from app.main import MAX_SAMPLE_SIZE
+        self.assertIsInstance(MAX_SAMPLE_SIZE, int)
+        self.assertGreater(MAX_SAMPLE_SIZE, 0)
+        self.assertLessEqual(MAX_SAMPLE_SIZE, 100)
+
+    def test_judge_bg_function_exists(self) -> None:
+        """The background evaluation runner exists and is callable."""
+        from app.main import _run_judge_evaluation_bg
+        self.assertTrue(callable(_run_judge_evaluation_bg))
+
+
+# ---------------------------------------------------------------------------
+# PDF artifact logging in persist_node
+# ---------------------------------------------------------------------------
+
+class PersistArtifactTest(unittest.TestCase):
+    """Test that persist_node logs the PDF + extraction as MLflow artifacts."""
+
+    def test_persist_logs_pdf_artifact(self) -> None:
+        """persist_node calls trace_sink.log_artifact with the PDF bytes."""
+        from graph.fakes import FakeExtractionAdapter, InMemoryResultStore, InMemoryTraceSink
+        from graph.nodes import NodeDeps, persist_node
+        from graph.state import GraphState
+        from contracts.models import Bank, ParseRequest
+
+        pdf_bytes = b"%PDF-1.4 synthetic test pdf"
+        request = ParseRequest(
+            pdf=pdf_bytes, filename="test.pdf",
+            bank=Bank.HDFC, request_id="req-art-1",
+        )
+        state = GraphState(request=request)
+        trace_sink = InMemoryTraceSink()
+        deps = NodeDeps(
+            extraction=FakeExtractionAdapter(),
+            result_store=InMemoryResultStore(),
+            trace_sink=trace_sink,
+        )
+        # Run extract → validate → persist to populate the extraction.
+        from graph.nodes import extract_node, validate_node
+        extract_node(state, deps)
+        validate_node(state, deps)
+        persist_node(state, deps)
+
+        # The trace sink should have received the PDF artifact.
+        self.assertTrue(len(trace_sink.artifacts) >= 1)
+        pdf_artifacts = [a for a in trace_sink.artifacts if a[1] == "statement.pdf"]
+        self.assertEqual(len(pdf_artifacts), 1)
+        self.assertEqual(pdf_artifacts[0][0], pdf_bytes)
+
+    def test_persist_logs_extraction_artifact(self) -> None:
+        """persist_node also logs the extraction.json artifact."""
+        from graph.fakes import FakeExtractionAdapter, InMemoryResultStore, InMemoryTraceSink
+        from graph.nodes import NodeDeps, persist_node
+        from graph.state import GraphState
+        from contracts.models import Bank, ParseRequest
+        import json
+
+        request = ParseRequest(
+            pdf=b"%PDF-1.4 test", filename="test.pdf",
+            bank=Bank.ICICI, request_id="req-art-2",
+        )
+        state = GraphState(request=request)
+        trace_sink = InMemoryTraceSink()
+        deps = NodeDeps(
+            extraction=FakeExtractionAdapter(),
+            result_store=InMemoryResultStore(),
+            trace_sink=trace_sink,
+        )
+        from graph.nodes import extract_node, validate_node
+        extract_node(state, deps)
+        validate_node(state, deps)
+        persist_node(state, deps)
+
+        # The trace sink should have the extraction.json artifact.
+        json_artifacts = [a for a in trace_sink.artifacts if a[1] == "extraction.json"]
+        self.assertEqual(len(json_artifacts), 1)
+        meta = json.loads(json_artifacts[0][0])
+        self.assertEqual(meta["bank"], "ICICI")
+        self.assertEqual(meta["request_id"], "req-art-2")
+        self.assertIn("payload", meta)
+
+    def test_persist_no_trace_sink_no_artifact(self) -> None:
+        """When no trace sink is wired, persist still succeeds (no artifact)."""
+        from graph.fakes import FakeExtractionAdapter, InMemoryResultStore
+        from graph.nodes import NodeDeps, persist_node
+        from graph.state import GraphState
+        from contracts.models import Bank, ParseRequest
+
+        request = ParseRequest(
+            pdf=b"%PDF-1.4 test", filename="test.pdf",
+            bank=Bank.HDFC, request_id="req-art-3",
+        )
+        state = GraphState(request=request)
+        deps = NodeDeps(
+            extraction=FakeExtractionAdapter(),
+            result_store=InMemoryResultStore(),
+            trace_sink=None,
+        )
+        from graph.nodes import extract_node, validate_node
+        extract_node(state, deps)
+        validate_node(state, deps)
+        persist_node(state, deps)
+        # Should not raise, stage should be PERSISTED.
+        self.assertEqual(state.stage.value, "PERSISTED")
 
 
 if __name__ == "__main__":

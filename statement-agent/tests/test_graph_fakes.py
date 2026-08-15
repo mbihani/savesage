@@ -246,6 +246,23 @@ class NodeUnitTest(unittest.TestCase):
         self.assertEqual(state.errors, [])
         self.assertGreater(len(state.trace_errors), 0)
 
+    def test_trace_generates_span_ids(self) -> None:
+        """_trace() generates span_id={request_id}:{name} and
+        parent_span_id={request_id}:parse on every child event so the
+        SpanTreeBuilder can link children to the parse root.
+        """
+        from graph.nodes import route_node
+        trace = InMemoryTraceSink()
+        deps = self._deps(trace=trace)
+        state = _state()
+        route_node(state, deps)
+        self.assertEqual(len(trace.events), 1)
+        evt = trace.events[0]
+        self.assertEqual(evt.span_id, f"{state.request_id}:route")
+        self.assertEqual(evt.parent_span_id, f"{state.request_id}:parse")
+        self.assertEqual(evt.name, "route")
+        self.assertIsNotNone(evt.span_id)
+
     def test_persistence_failure_yields_partial_not_success(self) -> None:
         # BLOCKING 4: a run that persisted nothing must never report SUCCESS.
         from graph.nodes import extract_node, finalize_node, judge_node, persist_node, route_node, validate_node

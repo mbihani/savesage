@@ -61,7 +61,14 @@ class NodeDeps:
 
 
 def _trace(deps: NodeDeps, state: GraphState, name: str, *, error: str | None = None) -> None:
-    """Record a trace event if a sink is wired (best-effort, never raises)."""
+    """Record a trace event if a sink is wired (best-effort, never raises).
+
+    Every child event gets a deterministic ``span_id`` (``{request_id}:{name}``)
+    and a ``parent_span_id`` linking it to the parse root (``{request_id}:parse``).
+    This allows :class:`harness.tracing.SpanTreeBuilder` to construct the span
+    tree correctly — the root ``"parse"`` event is emitted by :func:`graph.graph.
+    run_graph` after the pipeline completes.
+    """
     if deps.trace_sink is None:
         return
     now = datetime.now(UTC)
@@ -73,6 +80,8 @@ def _trace(deps: NodeDeps, state: GraphState, name: str, *, error: str | None = 
             ended_at=now,
             attributes=state.as_summary(),
             error=error,
+            span_id=f"{state.request_id}:{name}",
+            parent_span_id=f"{state.request_id}:parse",
         ))
     except Exception as exc:  # pragma: no cover - trace failures must not kill the graph
         # Trace failures are telemetry, not data: route them to trace_errors so a
@@ -136,7 +145,12 @@ def validate_node(state: GraphState, deps: NodeDeps) -> GraphState:
 
 
 def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
-    """Persist the extraction (and later the verdict) via the injected store."""
+    """Persist the extraction via the injected store and log the PDF artifact.
+
+    After saving the extraction, the source PDF is logged as an MLflow artifact
+    on the current trace (best-effort) so the post-hoc judge can re-read the PDF
+    later when scoring the trace. The artifact path is ``statement.pdf``.
+    """
     if state.outcome is Outcome.EXTRACTION_FAILED:
         return state
     if state.extraction is not None and deps.result_store is not None:
@@ -147,6 +161,28 @@ def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
         except Exception as exc:
             state.mark_failure(Stage.PERSISTED, f"persist: {exc}")
             _trace(deps, state, "persist_extraction", error=str(exc))
+    # Log the source PDF and the extraction as MLflow artifacts so the post-hoc
+    # judge can re-read them when scoring this trace. Best-effort: never raises.
+    if deps.trace_sink is not None:
+        try:
+            import json
+            from pathlib import Path
+            pdf = state.request.pdf.read_bytes() if isinstance(state.request.pdf, Path) else state.request.pdf
+            deps.trace_sink.log_artifact(pdf, "statement.pdf")
+            # Log the extraction payload + bank so the scorer can reconstruct
+            # a ParseRequest and ExtractionResult without the live store.
+            extraction_meta = {
+                "request_id": state.request_id,
+                "bank": state.request.bank.value,
+                "payload": state.extraction.payload,
+                "model_id": state.extraction.model_id,
+                "schema_valid": state.extraction.schema_valid,
+            }
+            deps.trace_sink.log_artifact(
+                json.dumps(extraction_meta).encode("utf-8"), "extraction.json",
+            )
+        except Exception:  # pragma: no cover - artifact logging must never break the parse
+            pass
     return state
 
 
