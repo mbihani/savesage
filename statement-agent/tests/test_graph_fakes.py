@@ -114,12 +114,65 @@ class NodeUnitTest(unittest.TestCase):
         self.assertEqual(state.stage, Stage.JUDGED)
         self.assertEqual(state.outcome, Outcome.SUCCESS)
         self.assertTrue(state.schema_valid)
-        self.assertIsNone(state.errors or None or None)  # no errors
+        # BLOCKING 2: the validated schema_valid must be propagated into the
+        # persisted extraction object, not just the state field.
+        self.assertTrue(state.extraction.schema_valid)
         self.assertEqual(state.errors, [])
+        self.assertIsNone(state.judge_skipped_reason)
         self.assertIsNotNone(state.verdict)
         self.assertIsNotNone(store.get_extraction("synthetic-req-001"))
         self.assertIsNotNone(store.get_verdict("synthetic-req-001"))
         self.assertGreater(len(trace.events), 0)
+
+    def test_persisted_object_carries_validated_schema_valid(self) -> None:
+        # BLOCKING 2 regression: the fake adapter leaves schema_valid=False (as
+        # the real adapter does); validate_node must propagate the validated
+        # value into the extraction BEFORE persist stores it.
+        from graph.nodes import extract_node, persist_node, route_node, validate_node
+        saved: list = []
+
+        class CapturingStore(InMemoryResultStore):
+            def save_extraction(self, result):
+                saved.append(result)
+                super().save_extraction(result)
+
+        store = CapturingStore()
+        deps = self._deps(extraction=FakeExtractionAdapter(), store=store)
+        state = _state(Bank.HDFC)
+        route_node(state, deps)
+        extract_node(state, deps)
+        # After extract, the adapter left schema_valid=False (mirrors real Luna).
+        self.assertFalse(state.extraction.schema_valid)
+        validate_node(state, deps)
+        persist_node(state, deps)
+        # The object handed to save_extraction must carry the validated True.
+        self.assertEqual(len(saved), 1)
+        self.assertTrue(saved[0].schema_valid)
+        self.assertTrue(state.extraction.schema_valid)
+
+    def test_persisted_object_carries_false_on_schema_invalid(self) -> None:
+        # The propagated value must be False when validation genuinely fails.
+        from graph.nodes import extract_node, persist_node, route_node, validate_node
+        saved: list = []
+
+        class CapturingStore(InMemoryResultStore):
+            def save_extraction(self, result):
+                saved.append(result)
+                super().save_extraction(result)
+
+        def add_unknown_key(payload):
+            payload["statementMeta"]["unexpectedExtra"] = "x"  # additionalProperties
+
+        store = CapturingStore()
+        deps = self._deps(
+            extraction=FakeExtractionAdapter(mutator=add_unknown_key), store=store)
+        state = _state()
+        route_node(state, deps)
+        extract_node(state, deps)
+        validate_node(state, deps)
+        persist_node(state, deps)
+        self.assertEqual(len(saved), 1)
+        self.assertFalse(saved[0].schema_valid)
 
     def test_extraction_failure_short_circuits_judge(self) -> None:
         from graph.nodes import extract_node, judge_node, route_node
@@ -152,7 +205,9 @@ class NodeUnitTest(unittest.TestCase):
         judge_node(state, deps)
         finalize_node(state, deps)
         self.assertEqual(state.outcome, Outcome.PARTIAL)
-        self.assertFalse(state.schema_valid is False and not state.validation_errors)
+        # Negative amount passes schema (it's a finite number) but fails the rule.
+        self.assertTrue(state.schema_valid)
+        self.assertTrue(state.extraction.schema_valid)
         self.assertGreater(len(state.validation_errors), 0)
         self.assertEqual(len(judge.calls), 1)  # judge DID run despite validation errors
 
@@ -187,6 +242,102 @@ class NodeUnitTest(unittest.TestCase):
         # must not raise
         route_node(state, deps)
         self.assertEqual(state.stage, Stage.ROUTED)
+        # Trace failures go to trace_errors, NOT errors, so they don't affect outcome.
+        self.assertEqual(state.errors, [])
+        self.assertGreater(len(state.trace_errors), 0)
+
+    def test_persistence_failure_yields_partial_not_success(self) -> None:
+        # BLOCKING 4: a run that persisted nothing must never report SUCCESS.
+        from graph.nodes import extract_node, finalize_node, judge_node, persist_node, route_node, validate_node
+
+        class FailingStore(InMemoryResultStore):
+            def save_extraction(self, result):
+                raise RuntimeError("database is down")
+
+        judge = FakeJudgeAdapter()
+        deps = self._deps(
+            extraction=FakeExtractionAdapter(), store=FailingStore(), judge=judge)
+        state = _state()
+        route_node(state, deps)
+        extract_node(state, deps)
+        validate_node(state, deps)
+        persist_node(state, deps)
+        judge_node(state, deps)
+        finalize_node(state, deps)
+        self.assertEqual(state.outcome, Outcome.PARTIAL)
+        self.assertTrue(state.has_stage_errors)
+        self.assertGreater(len(state.errors), 0)
+        self.assertIn("persist", state.errors[0])
+
+    def test_persistence_failure_with_no_judge_still_partial(self) -> None:
+        # Even with no judge wired, a persist failure must not be SUCCESS.
+        from graph.nodes import extract_node, finalize_node, persist_node, route_node, validate_node
+
+        class FailingStore(InMemoryResultStore):
+            def save_extraction(self, result):
+                raise IOError("disk full")
+
+        deps = self._deps(extraction=FakeExtractionAdapter(), store=FailingStore())
+        state = _state()
+        route_node(state, deps)
+        extract_node(state, deps)
+        validate_node(state, deps)
+        persist_node(state, deps)
+        finalize_node(state, deps)
+        self.assertEqual(state.outcome, Outcome.PARTIAL)
+
+    def test_judge_skipped_on_structurally_unusable_payload(self) -> None:
+        # NB2: a structurally unusable payload is NOT sent to the judge.
+        from graph.nodes import judge_node
+
+        judge = FakeJudgeAdapter()
+        deps = self._deps(extraction=FakeExtractionAdapter(), judge=judge)
+        state = _state()
+        # Build an extraction with a structurally unusable payload (cards not a list).
+        from contracts.models import ExtractionResult
+        state.extraction = ExtractionResult(
+            request_id=state.request_id, payload={"cards": "not a list", "transactions": []},
+            model_id="fake", latency_ms=0.0, schema_valid=False,
+        )
+        judge_node(state, deps)
+        self.assertIsNone(state.verdict)
+        self.assertEqual(judge.calls, [])  # judge never called
+        self.assertIsNotNone(state.judge_skipped_reason)
+        self.assertIn("structural", state.judge_skipped_reason)
+
+    def test_judge_runs_on_schema_invalid_but_structurally_usable(self) -> None:
+        # NB2: schema-invalid but structurally usable -> judge STILL runs.
+        from graph.nodes import judge_node
+
+        judge = FakeJudgeAdapter()
+        deps = self._deps(extraction=FakeExtractionAdapter(), judge=judge)
+        state = _state()
+        from contracts.models import ExtractionResult
+        # Schema-invalid (extra key) but cards/transactions ARE lists.
+        state.extraction = ExtractionResult(
+            request_id=state.request_id,
+            payload={"cards": [], "transactions": [], "unexpected": "x"},
+            model_id="fake", latency_ms=0.0, schema_valid=False,
+        )
+        judge_node(state, deps)
+        self.assertEqual(len(judge.calls), 1)
+        self.assertIsNone(state.judge_skipped_reason)
+
+    def test_judge_skipped_on_non_dict_payload(self) -> None:
+        from graph.nodes import judge_node
+
+        judge = FakeJudgeAdapter()
+        deps = self._deps(judge=judge)
+        state = _state()
+        from contracts.models import ExtractionResult
+        state.extraction = ExtractionResult(
+            request_id=state.request_id, payload=[1, 2, 3],
+            model_id="fake", latency_ms=0.0,
+        )
+        judge_node(state, deps)
+        self.assertIsNone(state.verdict)
+        self.assertEqual(judge.calls, [])
+        self.assertIsNotNone(state.judge_skipped_reason)
 
 
 if __name__ == "__main__":

@@ -14,10 +14,11 @@ builder wires up. That keeps this module on the stdlib test path.
 
 from __future__ import annotations
 
+from dataclasses import replace as dc_replace
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from contracts.models import TraceEvent
+from contracts.models import ExtractionResult, TraceEvent
 from contracts.ports import (
     ExtractionAdapter,
     FeedbackStore,
@@ -74,7 +75,9 @@ def _trace(deps: NodeDeps, state: GraphState, name: str, *, error: str | None = 
             error=error,
         ))
     except Exception as exc:  # pragma: no cover - trace failures must not kill the graph
-        state.errors.append(f"trace:{name}:{type(exc).__name__}")
+        # Trace failures are telemetry, not data: route them to trace_errors so a
+        # broken sink never turns a clean run PARTIAL.
+        state.trace_errors.append(f"trace:{name}:{type(exc).__name__}")
 
 
 def route_node(state: GraphState, deps: NodeDeps) -> GraphState:
@@ -105,12 +108,21 @@ def extract_node(state: GraphState, deps: NodeDeps) -> GraphState:
 
 
 def validate_node(state: GraphState, deps: NodeDeps) -> GraphState:
-    """Validate the payload; never raises (failures are collected, not thrown)."""
+    """Validate the payload; never raises (failures are collected, not thrown).
+
+    CRITICAL: the validated ``schema_valid`` is propagated into the frozen
+    ``ExtractionResult`` via ``dataclasses.replace`` so the object handed to
+    ``persist_node`` carries the validated value, not the adapter's initial
+    ``False``. Without this, every real Luna extraction would be persisted as
+    schema-invalid.
+    """
     if state.outcome is Outcome.EXTRACTION_FAILED or state.extraction is None:
         return state
     report = validate_payload(state.extraction.payload)
     state.schema_valid = report.schema_valid
     state.validation_errors = report.all_errors
+    # Rebuild the frozen dataclass so the persisted object reflects validation.
+    state.extraction = dc_replace(state.extraction, schema_valid=report.schema_valid)
     state.stage = Stage.VALIDATED
     _trace(deps, state, "validate", error=None if report.ok else "; ".join(report.all_errors))
     return state
@@ -131,22 +143,44 @@ def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
     return state
 
 
-def judge_node(state: GraphState, deps: NodeDeps) -> GraphState:
-    """Run the judge if one is wired and the extraction produced a payload.
+def _meets_judge_minimum_shape(extraction: ExtractionResult) -> bool:
+    """Minimum structural shape for the judge to be meaningful.
 
-    Decision (documented): a validation failure does NOT short-circuit the judge.
-    The judge compares extraction fields against PDF ground truth independently of
-    schema/rule conformance, and a partial-but-schema-invalid extraction is
-    exactly the kind of output that benefits most from judging -- you want to
-    know whether the model read the PDF correctly even when it shaped the answer
-    wrong. Only a hard EXTRACTION_FAILED outcome skips the judge (there is
-    nothing to judge).
+    A schema-invalid-but-structurally-usable payload (cards and transactions are
+    lists, payload is a dict) IS still judged -- the point is to distinguish
+    'invalid but judgeable' from 'structurally unusable'. A payload whose
+    cards/transactions are not lists would make a real judge (WS5) reject the
+    input or produce garbage, turning an intended PARTIAL into JUDGE_FAILED.
+    """
+    payload = extraction.payload
+    if not isinstance(payload, dict):
+        return False
+    return isinstance(payload.get("cards"), list) and isinstance(payload.get("transactions"), list)
+
+
+def judge_node(state: GraphState, deps: NodeDeps) -> GraphState:
+    """Run the judge if one is wired and the extraction is structurally judgeable.
+
+    Decision (documented in docs/agent-ws2.md): a validation failure does NOT
+    short-circuit the judge -- a schema-invalid-but-structurally-usable payload
+    is exactly the kind of output that benefits most from judging. But a
+    *structurally unusable* payload (no cards/transactions lists) is NOT sent to
+    the judge, because a real judge (WS5) may reject it, turning an intended
+    PARTIAL into JUDGE_FAILED. Only EXTRACTION_FAILED (nothing to judge) and a
+    structural-shape failure skip the judge.
     """
     if state.outcome is Outcome.EXTRACTION_FAILED:
         return state
     if deps.judge is None:
         return state  # no judge wired -> stage skipped, not a failure
     if state.extraction is None:
+        return state
+    if not _meets_judge_minimum_shape(state.extraction):
+        state.judge_skipped_reason = (
+            "payload does not meet minimum structural shape for judging "
+            "(cards/transactions must be lists)"
+        )
+        _trace(deps, state, "judge_skipped", error=state.judge_skipped_reason)
         return state
     try:
         state.verdict = deps.judge.judge(state.request, state.extraction)
@@ -162,11 +196,17 @@ def judge_node(state: GraphState, deps: NodeDeps) -> GraphState:
 
 
 def finalize_node(state: GraphState, deps: NodeDeps) -> GraphState:
-    """Set the terminal outcome if no terminal failure was recorded earlier."""
+    """Set the terminal outcome if no terminal failure was recorded earlier.
+
+    A run with ANY real stage error (e.g. persistence failure) or validation
+    errors is PARTIAL at best -- a user must never be told SUCCESS when their
+    statement was not saved. Trace failures do NOT count (they are telemetry).
+    """
     if state.outcome is not None:
         return state
-    # A clean extraction with validation errors is PARTIAL (still persisted + judged);
-    # a clean extraction with no errors is SUCCESS.
-    state.outcome = Outcome.PARTIAL if state.validation_errors else Outcome.SUCCESS
+    if state.validation_errors or state.has_stage_errors:
+        state.outcome = Outcome.PARTIAL
+    else:
+        state.outcome = Outcome.SUCCESS
     _trace(deps, state, "finalize")
     return state

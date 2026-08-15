@@ -35,8 +35,10 @@ class Stage(str, Enum):
 class Outcome(str, Enum):
     """Terminal disposition of one parse run.
 
-    SUCCESS means every stage completed. PARTIAL means the extraction succeeded
-    enough to persist and show, but validation flagged schema/rule violations.
+    SUCCESS means every stage completed cleanly. PARTIAL means the extraction
+    succeeded enough to persist and show, but validation flagged schema/rule
+    violations OR a real stage (e.g. persistence) failed without short-circuiting
+    -- the user is never told SUCCESS when the statement was not saved.
     EXTRACTION_FAILED and JUDGE_FAILED are hard failures of a single stage that
     short-circuit the rest of the pipeline.
     """
@@ -66,7 +68,12 @@ class GraphState:
     feedback: list[FieldFeedback] = field(default_factory=list)
     stage: Stage = Stage.INIT
     outcome: Outcome | None = None
+    # `errors` holds real stage failures (route/extract/persist/judge) that must
+    # influence the terminal outcome. Trace-recording failures go in
+    # `trace_errors` so a broken telemetry sink never turns a clean run PARTIAL.
     errors: list[str] = field(default_factory=list)
+    trace_errors: list[str] = field(default_factory=list)
+    judge_skipped_reason: str | None = None
 
     # ---- read-only views used by nodes and tests ------------------------
 
@@ -79,6 +86,11 @@ class GraphState:
         self.stage = stage
         self.errors.append(message)
 
+    @property
+    def has_stage_errors(self) -> bool:
+        """True if any real (non-trace) stage failed. Drives the finalize outcome."""
+        return bool(self.errors)
+
     def as_summary(self) -> dict[str, Any]:
         """Flat dict snapshot for tracing/logging; never the full payload."""
         return {
@@ -89,7 +101,9 @@ class GraphState:
             "schema_valid": self.schema_valid,
             "n_validation_errors": len(self.validation_errors),
             "n_errors": len(self.errors),
+            "n_trace_errors": len(self.trace_errors),
             "has_verdict": self.verdict is not None,
+            "judge_skipped_reason": self.judge_skipped_reason,
             "n_transactions": _txn_count(self.extraction),
         }
 

@@ -12,7 +12,9 @@ Design notes
   lifetime -- a long-running graph that reuses a stale token would 401 mid-batch.
 * **Transport** is stdlib ``urllib.request`` (pypi is blackholed on this
   machine, so ``requests``/``httpx`` cannot be installed locally). The retry
-  policy is :class:`harness.policy.RetryPolicy`; no second retry mechanism exists.
+  policy is :class:`harness.policy.RetryPolicy`; it is the SINGLE source of both
+  retry behaviour and the request timeout (``timeout_seconds``) -- no second
+  timeout or retry mechanism exists.
 * **Response mapping** (:func:`map_response`) is pure and stdlib-testable: it
   pulls the model's text out of the OpenAI chat-completions shape, parses the JSON
   (tolerating a ```json fenced block), and maps usage/id into an
@@ -84,14 +86,42 @@ def parse_json_strict(text: str) -> dict[str, Any]:
         raise
 
 
+def _check_completion(resp: dict[str, Any]) -> None:
+    """Raise :class:`ExtractionError` on truncation or refusal.
+
+    A response whose content is still parseable JSON but whose first choice has
+    ``finish_reason: "length"`` was clipped at ``max_tokens`` -- statements with
+    long transaction lists are exactly where this happens, and the clipped JSON
+    would silently drop transactions and then be judged as an extraction error.
+    ``finish_reason: "content_filter"`` and a non-empty ``message.refusal`` are
+    refusals. Only ``stop`` (and the legacy absent/None) are clean completions.
+    """
+    choices = resp.get("choices") or []
+    if not choices:
+        raise ExtractionError("response has no choices")
+    choice = choices[0]
+    finish_reason = choice.get("finish_reason")
+    if finish_reason not in (None, "stop"):
+        raise ExtractionError(
+            f"model did not finish cleanly: finish_reason={finish_reason!r} "
+            f"(truncation or content filter -- output may be incomplete)"
+        )
+    message = choice.get("message") or {}
+    refusal = message.get("refusal")
+    if refusal:
+        raise ExtractionError(f"model refused to respond: {str(refusal)[:200]}")
+
+
 def map_response(resp: dict[str, Any], request: ParseRequest, latency_ms: float) -> ExtractionResult:
     """Map a Luna chat-completions response to an :class:`ExtractionResult`.
 
     ``schema_valid`` is left ``False`` here; the validation node sets it once the
     declarative rules + JSON-Schema conformance have been checked. A response
-    with no parseable JSON raises :class:`ExtractionError` -- the graph records
-    that as an extraction failure rather than persisting an empty payload.
+    with no parseable JSON, a truncated completion (``finish_reason: "length"``),
+    or a refusal raises :class:`ExtractionError` -- the graph records that as an
+    extraction failure rather than persisting a clipped or empty payload.
     """
+    _check_completion(resp)
     raw_text = _extract_text(resp)
     if not raw_text:
         raise ExtractionError("model returned empty content")
@@ -149,7 +179,7 @@ class LunaExtractionAdapter(ExtractionAdapter):
             self._settings = get_settings()
         return self._settings
 
-    def _build_request(self, request: ParseRequest, prompt: str, schema: dict[str, Any]) -> tuple[urllib.request.Request, float]:
+    def _build_request(self, request: ParseRequest, prompt: str, schema: dict[str, Any]) -> urllib.request.Request:
         settings = self._settings_obj()
         url = settings.endpoint_url(settings.extraction_endpoint)
         pdf = _read_pdf(request)
@@ -161,7 +191,7 @@ class LunaExtractionAdapter(ExtractionAdapter):
             headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
             method="POST",
         )
-        return req, settings.request_timeout_seconds
+        return req
 
     def extract(self, request: ParseRequest) -> ExtractionResult:
         """Invoke Luna with the bank's prompt and the shared GT schema.
@@ -169,13 +199,15 @@ class LunaExtractionAdapter(ExtractionAdapter):
         Uses :func:`graph.routing.resolve_prompt` for the prompt (function-local
         import to keep this module importable in isolation tests that monkeypatch
         the prompt). The retry policy's ``max_attempts`` bounds the call; the
-        ``retry_statuses`` set decides what is retried.
+        ``retry_statuses`` set decides what is retried. The timeout is the
+        policy's ``timeout_seconds`` (single source -- no settings timeout).
         """
         from graph.routing import resolve_prompt  # function-local; see docstring
 
         prompt = resolve_prompt(request.bank)
         schema = _load_schema()
-        req, timeout = self._build_request(request, prompt, schema)
+        req = self._build_request(request, prompt, schema)
+        timeout = self._policy.timeout_seconds
 
         last_error = ""
         t0 = time.perf_counter()

@@ -22,6 +22,7 @@ structured partial result and the UI can show what failed.
 from __future__ import annotations
 
 import json
+import math
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -77,7 +78,11 @@ def _type_ok(value: Any, types: list[str]) -> bool:
             if isinstance(value, bool):
                 return True
         elif t == "number":
-            if isinstance(value, (int, float)) and not isinstance(value, bool):
+            # Reject non-finite numbers: json.loads accepts NaN/Infinity literals,
+            # and a NaN totalAmountDue would poison the Lakebase table and any
+            # downstream arithmetic. math.isfinite(False) is True, but bool is
+            # already excluded above.
+            if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value):
                 return True
         elif t == "string":
             if isinstance(value, str):
@@ -139,7 +144,8 @@ def validate_schema_conformance(payload: Any, schema: dict[str, Any] | None = No
 
 
 def _is_number(v: Any) -> bool:
-    return isinstance(v, (int, float)) and not isinstance(v, bool)
+    """True for a finite non-bool numeric value (NaN/inf are NOT numbers here)."""
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
 
 
 def _check_last_four(payload: dict[str, Any], errors: list[str]) -> None:
@@ -167,11 +173,19 @@ def _check_amount_direction(payload: dict[str, Any], errors: list[str]) -> None:
         if not isinstance(txn, dict):
             continue
         amount = txn.get("amount")
-        if _is_number(amount) and amount < 0:
-            errors.append(
-                f"transactions[{i}].amount: must be non-negative, got {amount!r} "
-                f"(direction carries debit/credit sign semantics)"
-            )
+        if amount is None:
+            continue
+        if _is_number(amount):
+            if amount < 0:
+                errors.append(
+                    f"transactions[{i}].amount: must be non-negative, got {amount!r} "
+                    f"(direction carries debit/credit sign semantics)"
+                )
+        elif isinstance(amount, (int, float)) and not isinstance(amount, bool):
+            # Present and numeric but non-finite (NaN/inf/-inf); schema conformance
+            # is the primary guard, but flag it here too so validate_rules alone
+            # never silently accepts one.
+            errors.append(f"transactions[{i}].amount: must be finite, got {amount!r}")
 
 
 def _check_closing_points(payload: dict[str, Any], errors: list[str]) -> None:

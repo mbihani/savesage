@@ -47,11 +47,44 @@ class GraphE2ETest(unittest.TestCase):
         state = self._run(deps, Bank.ICICI)
         self.assertEqual(state.outcome, Outcome.SUCCESS)
         self.assertTrue(state.schema_valid)
+        # BLOCKING 2: the persisted extraction carries the validated schema_valid.
+        self.assertTrue(state.extraction.schema_valid)
+        persisted = store.get_extraction("synthetic-req-001")
+        self.assertIsNotNone(persisted)
+        self.assertTrue(persisted.schema_valid)
         self.assertEqual(state.errors, [])
         self.assertIsNotNone(state.verdict)
-        self.assertIsNotNone(store.get_extraction("synthetic-req-001"))
         self.assertIsNotNone(store.get_verdict("synthetic-req-001"))
         self.assertGreater(len(trace.events), 0)
+
+    def test_persistence_failure_yields_partial(self) -> None:
+        # BLOCKING 4: a run that persisted nothing must never report SUCCESS.
+        class FailingStore(InMemoryResultStore):
+            def save_extraction(self, result):
+                raise RuntimeError("db down")
+        deps = NodeDeps(
+            extraction=FakeExtractionAdapter(),
+            result_store=FailingStore(),
+            judge=FakeJudgeAdapter(),
+        )
+        state = self._run(deps)
+        self.assertEqual(state.outcome, Outcome.PARTIAL)
+        self.assertTrue(state.has_stage_errors)
+
+    def test_judge_skipped_on_structurally_unusable_payload(self) -> None:
+        # NB2: structurally unusable payload -> judge skipped, not JUDGE_FAILED.
+        judge = FakeJudgeAdapter()
+        deps = NodeDeps(
+            extraction=FakeExtractionAdapter(
+                payload={"cards": "not a list", "transactions": "also not"},
+            ),
+            result_store=InMemoryResultStore(),
+            judge=judge,
+        )
+        state = self._run(deps)
+        self.assertIsNone(state.verdict)
+        self.assertEqual(judge.calls, [])
+        self.assertIsNotNone(state.judge_skipped_reason)
 
     def test_extraction_failure_terminal(self) -> None:
         deps = NodeDeps(

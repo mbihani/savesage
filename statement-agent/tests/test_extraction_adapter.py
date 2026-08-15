@@ -128,6 +128,48 @@ class MapResponseTest(unittest.TestCase):
         self.assertIsNone(result.raw_response_id)
 
 
+class CompletionCheckTest(unittest.TestCase):
+    """BLOCKING 3: truncation and refusal must raise, not silently succeed."""
+
+    def _resp(self, finish_reason="stop", content="{}", refusal=None) -> dict:
+        msg = {"content": content}
+        if refusal is not None:
+            msg["refusal"] = refusal
+        return {"id": "x", "model": "m",
+                "choices": [{"finish_reason": finish_reason, "message": msg}]}
+
+    def test_finish_reason_length_raises(self) -> None:
+        # A parseable-but-clipped JSON must still raise.
+        with self.assertRaises(ExtractionError) as cm:
+            map_response(self._resp(finish_reason="length", content='{"transactions": [1]'), _req(), 1.0)
+        self.assertIn("length", str(cm.exception))
+
+    def test_finish_reason_content_filter_raises(self) -> None:
+        with self.assertRaises(ExtractionError) as cm:
+            map_response(self._resp(finish_reason="content_filter"), _req(), 1.0)
+        self.assertIn("content_filter", str(cm.exception))
+
+    def test_refusal_raises(self) -> None:
+        with self.assertRaises(ExtractionError) as cm:
+            map_response(self._resp(refusal="I cannot process this"), _req(), 1.0)
+        self.assertIn("refused", str(cm.exception))
+
+    def test_finish_reason_stop_succeeds(self) -> None:
+        result = map_response(self._resp(finish_reason="stop", content="{}"), _req(), 1.0)
+        self.assertEqual(result.payload, {})
+
+    def test_no_choices_raises(self) -> None:
+        with self.assertRaises(ExtractionError) as cm:
+            map_response({"choices": []}, _req(), 1.0)
+        self.assertIn("no choices", str(cm.exception))
+
+    def test_missing_finish_reason_is_accepted(self) -> None:
+        # Legacy responses with no finish_reason are treated as clean.
+        resp = {"id": "x", "model": "m", "choices": [{"message": {"content": "{}"}}]}
+        result = map_response(resp, _req(), 1.0)
+        self.assertEqual(result.payload, {})
+
+
 def _fake_urlopen(payload_resp, status=200):
     """Build a fake urlopen callable returning `payload_resp` with `status`."""
     class _Ctx:
@@ -212,11 +254,30 @@ class LunaAdapterHttpTest(unittest.TestCase):
         self.assertEqual(len(calls), 2)
         self.assertNotEqual(calls[0], calls[1])
 
+    def test_timeout_comes_from_policy_not_settings(self) -> None:
+        # BLOCKING 5: the single timeout source is RetryPolicy.timeout_seconds.
+        urlopen = _fake_urlopen(_LUNA_RESPONSE)
+        policy = RetryPolicy(timeout_seconds=42.0, max_attempts=1)
+        adapter = self._adapter(urlopen, policy=policy)
+        adapter.extract(_req())
+        self.assertEqual(urlopen.call_args.kwargs.get("timeout"), 42.0)
+
+    def test_settings_request_timeout_is_not_used(self) -> None:
+        # _FakeSettings has no request_timeout_seconds; the adapter must not look
+        # for it. If it did, this test would raise AttributeError.
+        urlopen = _fake_urlopen(_LUNA_RESPONSE)
+        adapter = self._adapter(urlopen, RetryPolicy(timeout_seconds=7.0, max_attempts=1))
+        adapter.extract(_req())
+        self.assertEqual(urlopen.call_args.kwargs.get("timeout"), 7.0)
+
 
 class _FakeSettings:
-    """Minimal settings stub matching config.Settings' interface."""
+    """Minimal settings stub matching config.Settings' interface.
+
+    Deliberately has NO request_timeout_seconds: the adapter must source its
+    timeout from RetryPolicy.timeout_seconds, not from settings.
+    """
     extraction_endpoint = "databricks-gpt-5-6-luna"
-    request_timeout_seconds = 1.0
 
     def endpoint_url(self, endpoint):
         return f"https://synthetic-host/serving-endpoints/{endpoint}/invocations"

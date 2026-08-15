@@ -11,6 +11,7 @@ No third-party imports. Safe to import on the stdlib test path.
 
 from __future__ import annotations
 
+import copy
 from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Any
@@ -33,7 +34,6 @@ from contracts.ports import (
     ResultStore,
     TraceSink,
 )
-from graph.validation import validate_payload
 
 
 class InMemoryResultStore(ResultStore):
@@ -93,17 +93,22 @@ class FakeExtractionAdapter(ExtractionAdapter):
 
     def extract(self, request: ParseRequest) -> ExtractionResult:
         self.calls.append(request)
-        payload = dict(self._payload) if self._payload is not None else _synthetic_valid_payload()
+        # deepcopy so a mutator's nested mutation never contaminates the caller's
+        # template across calls (real endpoint responses are always fresh).
+        payload = copy.deepcopy(self._payload) if self._payload is not None else _synthetic_valid_payload()
         if self._mutator is not None:
             self._mutator(payload)
-        report = validate_payload(payload)
+        # Mirror the REAL adapter: schema_valid is left False here; the validate
+        # node propagates the validated value via dataclasses.replace. Setting it
+        # in the fake would hide the exact class of defect (BLOCKING 2) that fakes
+        # are supposed to catch.
         return ExtractionResult(
             request_id=request.request_id,
             payload=payload,
             model_id="fake-luna",
             latency_ms=0.0,
             raw_response_id="fake-resp-id",
-            schema_valid=report.ok,
+            schema_valid=False,
         )
 
 

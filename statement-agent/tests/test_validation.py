@@ -91,6 +91,33 @@ class SchemaConformanceTest(unittest.TestCase):
         errors = validate_schema_conformance(p)
         self.assertTrue(any("totalAmountDue" in e and "expected type" in e for e in errors), errors)
 
+    def test_nan_rejected_as_number(self) -> None:
+        # BLOCKING 1: json.loads accepts NaN literals; schema must reject them.
+        p = _clone()
+        p["statementLevelSummary"]["totalAmountDue"] = float("nan")
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("totalAmountDue" in e for e in errors), errors)
+        report = validate_payload(p)
+        self.assertFalse(report.schema_valid)
+
+    def test_inf_rejected_as_number(self) -> None:
+        p = _clone()
+        p["statementLevelSummary"]["totalCreditLimit"] = float("inf")
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("totalCreditLimit" in e for e in errors), errors)
+
+    def test_neg_inf_rejected_as_number(self) -> None:
+        p = _clone()
+        p["statementLevelSummary"]["availableCreditLimit"] = float("-inf")
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("availableCreditLimit" in e for e in errors), errors)
+
+    def test_nan_in_nested_number_rejected(self) -> None:
+        p = _clone()
+        p["cards"][0]["bigPicture"]["cardCreditLimit"] = float("nan")
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("cardCreditLimit" in e for e in errors), errors)
+
     def test_bool_is_not_number(self) -> None:
         # bool is a subclass of int; schema says "number" -- a bool must NOT pass.
         p = _clone()
@@ -157,6 +184,21 @@ class RuleValidationTest(unittest.TestCase):
         p = _clone()
         p["transactions"][0]["amount"] = 0
         self.assertEqual(validate_rules(p), [])
+
+    def test_nan_amount_flagged_by_rule(self) -> None:
+        # BLOCKING 1: non-finite amounts must not silently pass the GT rules.
+        for bad in (float("nan"), float("inf"), float("-inf")):
+            p = _clone()
+            p["transactions"][0]["amount"] = bad
+            errors = validate_rules(p)
+            self.assertTrue(any("finite" in e for e in errors), f"{bad!r}: {errors}")
+
+    def test_nan_closing_points_makes_schema_invalid(self) -> None:
+        # Schema conformance (the primary guard) rejects non-finite closing points.
+        p = _clone()
+        p["rewards"]["closingPoints"] = float("nan")
+        report = validate_payload(p)
+        self.assertFalse(report.schema_valid)
 
     def test_closing_points_arithmetic_must_hold(self) -> None:
         p = _clone()
