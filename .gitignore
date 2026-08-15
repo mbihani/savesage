@@ -14,6 +14,10 @@ __pycache__/
 # Score/adjudication files embed verbatim transaction descriptions (client PII)
 scores_*.json
 adjudication*.json
+
+# statement-agent local standard-library test artifacts (never deploy/commit)
+statement-agent/**/__pycache__/
+statement-agent/**/*.py[cod]
 glaring_misses.json
 diagnosis_*.json
 desc_defect_classes.json
