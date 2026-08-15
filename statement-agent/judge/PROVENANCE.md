@@ -5,6 +5,9 @@ The normalization and matching discipline was ported from repository commit
 bank scorers at the implementation base).
 
 - `hdfc/score_lib.py:29-110`: `norm_date`, `norm_num`, and `norm_desc`.
+- `hdfc/score_lib.py:95-100,200-220`: canonical `norm_key`, numeric tolerance,
+  and lenient canonical containment for `cardDisplayName`. The judge preserves
+  these behaviors for comparability with published baselines.
 - `hdfc/score_lib.py:238-307`: description similarity and strict greedy 1:1,
   order-insensitive transaction assignment, including the equal-similarity
   positional tie-break. `hdfc/score_lib.py:263` fixes the HDFC threshold at 0.55.

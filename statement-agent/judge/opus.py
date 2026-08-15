@@ -13,16 +13,33 @@ from harness.transports import judge_payload
 
 
 def extract_response_text(response: dict) -> str:
+    """Read Anthropic-native responses first, then gateway-normalized OpenAI ones."""
+    def content_text(content: object) -> str | None:
+        if isinstance(content, str):
+            return content
+        if isinstance(content, list):
+            return "".join(block.get("text", "") for block in content
+                           if isinstance(block, dict) and block.get("type") == "text")
+        return None
+
+    native_text = content_text(response.get("content"))
+    if native_text is not None:
+        return native_text
     choices = response.get("choices") or []
-    if not choices:
-        raise ValueError("Opus response has no choices")
-    content = (choices[0].get("message") or {}).get("content")
-    if isinstance(content, str):
-        return content
-    if isinstance(content, list):
-        return "".join(block.get("text", "") for block in content
-                       if isinstance(block, dict) and block.get("type") == "text")
+    if choices:
+        normalized_text = content_text((choices[0].get("message") or {}).get("content"))
+        if normalized_text is not None:
+            return normalized_text
     raise ValueError("Opus response has no text content")
+
+
+def completion_reason(response: dict) -> str | None:
+    """Return Anthropic stop_reason or normalized OpenAI finish_reason."""
+    reason = response.get("stop_reason")
+    if reason is not None:
+        return str(reason)
+    choices = response.get("choices") or []
+    return str(choices[0].get("finish_reason")) if choices and choices[0].get("finish_reason") is not None else None
 
 
 def parse_ground_truth(text: str) -> dict:

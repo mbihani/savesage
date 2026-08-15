@@ -59,6 +59,12 @@ def norm_desc(value: object) -> str | None:
     return re.sub(r"\s+", " ", text).lower() if text else None
 
 
+def norm_key(value: object) -> str | None:
+    """Case/space/punctuation-insensitive key used only for lenient card names."""
+    description = norm_desc(value)
+    return (re.sub(r"[^a-z0-9]+", "", description) or None) if description else None
+
+
 def norm_last_four(value: object) -> str | None:
     if value is None:
         return None

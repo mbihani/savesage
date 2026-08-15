@@ -1,10 +1,12 @@
 """Convert independent Opus ground truth and candidate extraction into comparisons."""
 
+from decimal import Decimal
+
 from contracts.models import (
     ComparisonOutcome, FieldComparison, FieldScope, MatchMethod, ParseRequest,
 )
 from judge.matching import THRESHOLDS, match_transactions
-from judge.normalization import norm_date, norm_desc, norm_last_four, norm_num
+from judge.normalization import norm_date, norm_desc, norm_key, norm_last_four, norm_num
 
 SCALAR_PATHS = (
     "cards[].cardMeta.cardDisplayName",
@@ -28,7 +30,28 @@ def _canonical(path: str, value: object):
         return norm_num(value)
     if path.endswith("lastFourDigit"):
         return norm_last_four(value)
+    if path == "cards[].cardMeta.cardDisplayName":
+        return norm_key(value)
     return norm_desc(value)
+
+
+def _numeric_equal(expected: object, actual: object) -> bool:
+    expected_number, actual_number = norm_num(expected), norm_num(actual)
+    if expected_number is None or actual_number is None:
+        return expected_number is None and actual_number is None
+    expected_decimal, actual_decimal = Decimal(str(expected_number)), Decimal(str(actual_number))
+    tolerance = max(Decimal("0.01"), abs(expected_decimal) * Decimal("0.000001"))
+    return abs(expected_decimal - actual_decimal) <= tolerance
+
+
+def _values_equal(path: str, expected: object, actual: object) -> bool:
+    if path.endswith(".amount") or path.startswith("rewards."):
+        return _numeric_equal(expected, actual)
+    expected_canonical, actual_canonical = _canonical(path, expected), _canonical(path, actual)
+    if path == "cards[].cardMeta.cardDisplayName":
+        return bool(expected_canonical and actual_canonical
+                    and (expected_canonical in actual_canonical or actual_canonical in expected_canonical))
+    return expected_canonical == actual_canonical
 
 
 def _outcome(path: str, expected: object, actual: object) -> ComparisonOutcome:
@@ -36,7 +59,7 @@ def _outcome(path: str, expected: object, actual: object) -> ComparisonOutcome:
         return ComparisonOutcome.ABSENT_IN_PDF
     if _null(actual):
         return ComparisonOutcome.DISAGREE
-    if _canonical(path, expected) != _canonical(path, actual):
+    if not _values_equal(path, expected, actual):
         return ComparisonOutcome.DISAGREE
     return ComparisonOutcome.AGREE if expected == actual else ComparisonOutcome.FORMAT_ONLY
 
@@ -96,4 +119,20 @@ def build_comparisons(request: ParseRequest, expected: dict, actual: dict) -> tu
                 ComparisonOutcome.UNMATCHED_ROW, FieldScope.TRANSACTION_ROW,
                 MatchMethod.DESCRIPTION_SIMILARITY_1TO1, actual_row_index=actual_index,
                 rationale="Extraction row had no description-similar PDF row"))
+    return tuple(comparisons)
+
+
+def judge_error_comparisons(rationale: str) -> tuple[FieldComparison, ...]:
+    """Seven unscored sentinels make judge failure explicit without blaming extraction."""
+    comparisons = [
+        FieldComparison(path, None, None, ComparisonOutcome.ABSENT_IN_PDF,
+                        FieldScope.SCALAR, MatchMethod.DIRECT, rationale=rationale)
+        for path in SCALAR_PATHS
+    ]
+    comparisons.extend(
+        FieldComparison(path, None, None, ComparisonOutcome.ABSENT_IN_PDF,
+                        FieldScope.TRANSACTION_ROW, MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                        rationale=rationale)
+        for path in TRANSACTION_PATHS
+    )
     return tuple(comparisons)
