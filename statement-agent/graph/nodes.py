@@ -61,7 +61,14 @@ class NodeDeps:
 
 
 def _trace(deps: NodeDeps, state: GraphState, name: str, *, error: str | None = None) -> None:
-    """Record a trace event if a sink is wired (best-effort, never raises)."""
+    """Record a trace event if a sink is wired (best-effort, never raises).
+
+    Every child event gets a deterministic ``span_id`` (``{request_id}:{name}``)
+    and a ``parent_span_id`` linking it to the parse root (``{request_id}:parse``).
+    This allows :class:`harness.tracing.SpanTreeBuilder` to construct the span
+    tree correctly — the root ``"parse"`` event is emitted by :func:`graph.graph.
+    run_graph` after the pipeline completes.
+    """
     if deps.trace_sink is None:
         return
     now = datetime.now(UTC)
@@ -73,6 +80,8 @@ def _trace(deps: NodeDeps, state: GraphState, name: str, *, error: str | None = 
             ended_at=now,
             attributes=state.as_summary(),
             error=error,
+            span_id=f"{state.request_id}:{name}",
+            parent_span_id=f"{state.request_id}:parse",
         ))
     except Exception as exc:  # pragma: no cover - trace failures must not kill the graph
         # Trace failures are telemetry, not data: route them to trace_errors so a

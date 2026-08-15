@@ -100,6 +100,57 @@ class GraphE2ETest(unittest.TestCase):
         persisted = store.get_extraction("synthetic-req-001")
         self.assertIsNotNone(persisted)
 
+    def test_parse_root_event_emitted(self) -> None:
+        """run_graph emits a root 'parse' TraceEvent (parent_span_id=None) in a
+        finally block after the pipeline completes — this is the root event the
+        SpanTreeBuilder flushes on to finalize the MLflow run (end_run).
+        """
+        store = InMemoryResultStore()
+        trace = InMemoryTraceSink()
+        deps = NodeDeps(
+            extraction=FakeExtractionAdapter(),
+            result_store=store,
+            trace_sink=trace,
+        )
+        state = self._run(deps, Bank.HDFC)
+
+        # The "parse" root event must be the LAST event (emitted by run_graph
+        # after the graph completes).
+        names = [e.name for e in trace.events]
+        self.assertIn("parse", names)
+        self.assertEqual(names[-1], "parse")
+        parse_evt = [e for e in trace.events if e.name == "parse"][0]
+        self.assertIsNone(parse_evt.parent_span_id)
+        self.assertEqual(parse_evt.span_id, f"{state.request_id}:parse")
+
+        # Child events must reference the parse root as parent.
+        child_events = [e for e in trace.events if e.name != "parse"]
+        for ce in child_events:
+            self.assertEqual(ce.parent_span_id, f"{state.request_id}:parse")
+            self.assertIsNotNone(ce.span_id)
+
+    def test_parse_root_event_emitted_on_exception(self) -> None:
+        """The root 'parse' event fires even when the graph raises — the finally
+        block ensures the MLflow run is finalized on crash, not just on success.
+        """
+        class FailingExtraction(FakeExtractionAdapter):
+            def extract(self, request):
+                raise RuntimeError("boom")
+
+        trace = InMemoryTraceSink()
+        deps = NodeDeps(
+            extraction=FailingExtraction(),
+            trace_sink=trace,
+        )
+        with self.assertRaises(Exception):
+            self._run(deps, Bank.HDFC)
+        # The parse root event was still emitted (finally block).
+        names = [e.name for e in trace.events]
+        self.assertIn("parse", names)
+        parse_evt = [e for e in trace.events if e.name == "parse"][0]
+        self.assertIsNone(parse_evt.parent_span_id)
+        self.assertIsNotNone(parse_evt.error)
+
 
 if __name__ == "__main__":
     unittest.main()

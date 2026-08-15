@@ -17,12 +17,21 @@ unconditional and ordered. A terminal ``outcome`` set by an earlier node
 short-circuits downstream nodes (they no-op on a terminal state). This avoids
 conditional edges entirely, which keeps the graph inspectable and the test
 fakes simple.
+
+Root span: :func:`run_graph` emits a root ``"parse"`` TraceEvent in a
+``finally`` block after the graph completes (or raises). This is the root
+event that :class:`harness.tracing.SpanTreeBuilder` flushes on — without it
+the span tree never flushes and the MLflow run is never finalized. Child
+events emitted by nodes via :func:`graph.nodes._trace` carry
+``parent_span_id=f"{request_id}:parse"`` so the builder links them correctly.
 """
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Any
 
+from contracts.models import TraceEvent
 from graph.nodes import NodeDeps, finalize_node, extract_node, persist_node, route_node, validate_node
 from graph.state import GraphState
 
@@ -69,11 +78,38 @@ def run_graph(deps: NodeDeps, state: GraphState) -> GraphState:
     the compiled graph, invokes it with `state`, and returns the (mutated) state.
     LangGraph returns a dict-like update; because our nodes mutate and return the
     same ``GraphState`` instance, the returned object IS the input state.
+
+    After the graph completes (or raises), a root ``"parse"`` TraceEvent is
+    emitted in a ``finally`` block. This is the root event that
+    :class:`harness.tracing.SpanTreeBuilder` flushes on — without it the span
+    tree never flushes, ``_end_run()`` is never called, and the MLflow run
+    stays ``RUNNING`` forever (resource leak). Child events emitted by nodes
+    via :func:`graph.nodes._trace` carry ``parent_span_id=f"{request_id}:parse"``
+    so the builder links them as children of this root.
     """
-    graph = build_graph(deps)
-    result = graph.invoke(state)
-    # langgraph may return the state object or a dict of updates; our nodes
-    # return the same mutable instance, so normalize.
-    if isinstance(result, GraphState):
-        return result
-    return state
+    start = datetime.now(UTC)
+    graph_error: str | None = None
+    try:
+        graph = build_graph(deps)
+        result = graph.invoke(state)
+        if isinstance(result, GraphState):
+            return result
+        return state
+    except Exception as exc:
+        graph_error = f"{type(exc).__name__}: {exc}"
+        raise
+    finally:
+        if deps.trace_sink is not None:
+            try:
+                deps.trace_sink.record(TraceEvent(
+                    request_id=state.request_id,
+                    name="parse",
+                    started_at=start,
+                    ended_at=datetime.now(UTC),
+                    attributes=state.as_summary(),
+                    error=graph_error,
+                    span_id=f"{state.request_id}:parse",
+                    parent_span_id=None,
+                ))
+            except Exception:
+                pass  # telemetry must never block the result or re-raise
