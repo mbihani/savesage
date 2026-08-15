@@ -77,7 +77,10 @@ class ValidationReport:
 
     @property
     def all_errors(self) -> list[str]:
-        return [*self.schema_errors, *self.rule_errors]
+        errs: list[str] = [*self.schema_errors, *self.rule_errors]
+        if self.internal_error is not None:
+            errs.append(f"internal_error: {self.internal_error}")
+        return errs
 
 
 # --------------------------------------------------------------------------- #

@@ -108,6 +108,14 @@ telemetry and not silently masked as "bad payload".
 `SystemExit` must propagate so a user can interrupt a run and the process can
 be shut down cleanly.
 
+The `internal_error` is included in `ValidationReport.all_errors` (with an
+`internal_error:` prefix), so it flows into `state.validation_errors` via
+`validate_node`. `finalize_node` checks `validation_errors` and produces
+`PARTIAL`, never `SUCCESS`, when an internal error occurred. As a belt-and-
+suspenders backstop, `validate_node` also records it as a stage error via
+`mark_failure` so `has_stage_errors` is True as a second independent path to
+`PARTIAL` — a validator crash must never be silently swallowed into SUCCESS.
+
 ### Closing-points arithmetic magnitude guard
 
 The closing-points reconciliation (`closing == opening + earned + bonus -

@@ -121,6 +121,13 @@ def validate_node(state: GraphState, deps: NodeDeps) -> GraphState:
     report = validate_payload(state.extraction.payload)
     state.schema_valid = report.schema_valid
     state.validation_errors = report.all_errors
+    # An internal validation error (validator bug, not a bad payload) must
+    # influence the terminal outcome. all_errors includes it (so it flows into
+    # validation_errors), but also record it as a stage error so finalize_node
+    # produces PARTIAL via has_stage_errors as a belt-and-suspenders backstop --
+    # a validator crash must NEVER be silently swallowed into SUCCESS.
+    if report.internal_error is not None:
+        state.mark_failure(Stage.VALIDATED, f"validate: {report.internal_error}")
     # Rebuild the frozen dataclass so the persisted object reflects validation.
     state.extraction = dc_replace(state.extraction, schema_valid=report.schema_valid)
     state.stage = Stage.VALIDATED
@@ -221,9 +228,11 @@ def judge_node(state: GraphState, deps: NodeDeps) -> GraphState:
 def finalize_node(state: GraphState, deps: NodeDeps) -> GraphState:
     """Set the terminal outcome if no terminal failure was recorded earlier.
 
-    A run with ANY real stage error (e.g. persistence failure) or validation
-    errors is PARTIAL at best -- a user must never be told SUCCESS when their
-    statement was not saved. Trace failures do NOT count (they are telemetry).
+    A run with ANY real stage error (e.g. persistence failure), validation
+    errors (schema/rule violations), OR an internal validation error is
+    PARTIAL at best -- a user must never be told SUCCESS when their statement
+    was not saved or when the validator itself misbehaved. Trace failures do
+    NOT count (they are telemetry).
     """
     if state.outcome is not None:
         return state

@@ -398,6 +398,42 @@ class NodeUnitTest(unittest.TestCase):
         self.assertEqual(judge.calls, [])
         self.assertIsNotNone(state.judge_skipped_reason)
 
+    def test_internal_validation_error_yields_partial_not_success(self) -> None:
+        # Round 4 follow-up: the structural safety net in validate_payload
+        # catches an internal error, but the graph must know about it.
+        # internal_error flows into validation_errors via all_errors, and
+        # validate_node also records it as a stage error, so finalize_node
+        # produces PARTIAL -- never SUCCESS.
+        from graph.nodes import extract_node, finalize_node, judge_node, persist_node, route_node, validate_node
+        store, _fb, _trace, _ext, judge = make_all_fakes()
+        deps = NodeDeps(extraction=FakeExtractionAdapter(), result_store=store, judge=judge)
+        state = _state()
+        route_node(state, deps)
+        extract_node(state, deps)
+        # Inject a validator that raises: the structural catch in
+        # validate_payload converts it to a report with internal_error set.
+        import graph.validation as mod
+        original = mod.validate_schema_conformance
+        mod.validate_schema_conformance = lambda payload, schema=None: (_ for _ in ()).throw(
+            RuntimeError("synthetic internal failure")
+        )
+        try:
+            validate_node(state, deps)
+        finally:
+            mod.validate_schema_conformance = original
+        persist_node(state, deps)
+        judge_node(state, deps)
+        finalize_node(state, deps)
+        self.assertEqual(state.outcome, Outcome.PARTIAL)
+        self.assertNotEqual(state.outcome, Outcome.SUCCESS)
+        # The internal error must be visible in validation_errors (via all_errors).
+        self.assertTrue(
+            any("internal_error" in e for e in state.validation_errors),
+            state.validation_errors,
+        )
+        # And as a stage error (belt-and-suspenders backstop).
+        self.assertTrue(state.has_stage_errors)
+
 
 if __name__ == "__main__":
     unittest.main()

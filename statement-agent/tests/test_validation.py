@@ -449,6 +449,24 @@ class ValidatePayloadTest(unittest.TestCase):
         # The two are distinguishable: one has internal_error, the other doesn't.
         self.assertNotEqual(bool(ordinary.internal_error), bool(internal.internal_error))
 
+    def test_all_errors_includes_internal_error(self) -> None:
+        # all_errors must include internal_error so it flows into
+        # state.validation_errors and influences the terminal outcome.
+        import graph.validation as mod
+        original = mod.validate_schema_conformance
+        mod.validate_schema_conformance = lambda payload, schema=None: (_ for _ in ()).throw(
+            RuntimeError("boom")
+        )
+        try:
+            report = validate_payload(_clone())
+        finally:
+            mod.validate_schema_conformance = original
+        self.assertIsNotNone(report.internal_error)
+        self.assertTrue(
+            any("internal_error" in e for e in report.all_errors),
+            report.all_errors,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
