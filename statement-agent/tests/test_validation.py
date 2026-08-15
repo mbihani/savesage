@@ -1,0 +1,472 @@
+"""Validation tests: JSON-Schema conformance + declarative GT rules (stdlib)."""
+
+import copy
+import unittest
+
+from graph.validation import (
+    ValidationReport,
+    load_gt_schema,
+    rule_names,
+    validate_payload,
+    validate_rules,
+    validate_schema_conformance,
+)
+from rules.validation import VALIDATION_RULES
+
+SYNTHETIC = {
+    "statementMeta": {
+        "issuerName": "SYNTHETIC BANK",
+        "statementDate": "01/04/2026",
+        "dueDate": "20/04/2026",
+        "statementPeriodStart": "01/03/2026",
+        "statementPeriodEnd": "31/03/2026",
+        "rawStatementId": "synthetic-001",
+    },
+    "statementLevelSummary": {
+        "totalAmountDue": 3.0,
+        "totalMinimumAmountDue": 1.0,
+        "totalCreditLimit": 100000.0,
+        "availableCreditLimit": 99997.0,
+    },
+    "cards": [{
+        "cardMeta": {
+            "cardDisplayName": "SYNTHETIC CARDHOLDER",
+            "productFamily": "SYNTHETIC",
+            "lastFourDigit": "0000",
+            "network": "VISA",
+            "isPrimaryCard": True,
+        },
+        "bigPicture": {"cardCreditLimit": 100000.0, "cardAvailableCreditLimit": 99997.0},
+    }],
+    "transactions": [
+        {"date": "05/03/2026", "description": "SYNTHETIC PURCHASE", "amount": 1.0,
+         "direction": "DEBIT", "txnType": "PURCHASE",
+         "rewardPointsOnThisTransaction": 1, "currency": "INR"},
+        {"date": "06/03/2026", "description": "SYNTHETIC PAYMENT", "amount": 2.0,
+         "direction": "CREDIT", "txnType": "PAYMENT",
+         "rewardPointsOnThisTransaction": 0, "currency": "INR"},
+    ],
+    "rewards": {
+        "programType": "SYNTHETIC",
+        "openingPoints": 0,
+        "pointsEarnedThisCycle": 1,
+        "pointsRedeemedThisCycle": 0,
+        "closingPoints": 1,
+        "pointsExpiringNext30Days": 0,
+        "pointsExpiringNext60Days": 0,
+        "bonusPointsThisCycle": 0,
+    },
+}
+
+
+def _clone() -> dict:
+    return copy.deepcopy(SYNTHETIC)
+
+
+class SchemaConformanceTest(unittest.TestCase):
+    def test_synthetic_payload_is_schema_valid(self) -> None:
+        self.assertEqual(validate_schema_conformance(_clone()), [])
+
+    def test_missing_required_top_level_key(self) -> None:
+        p = _clone()
+        del p["rewards"]
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("missing required key 'rewards'" in e for e in errors), errors)
+
+    def test_missing_required_nested_key(self) -> None:
+        p = _clone()
+        del p["statementMeta"]["statementDate"]
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("statementDate" in e for e in errors), errors)
+
+    def test_additional_property_rejected(self) -> None:
+        p = _clone()
+        p["statementMeta"]["unexpected"] = "x"
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("additional property not allowed" in e for e in errors), errors)
+
+    def test_wrong_type_for_number(self) -> None:
+        p = _clone()
+        p["statementLevelSummary"]["totalAmountDue"] = "3.0"
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("totalAmountDue" in e and "expected type" in e for e in errors), errors)
+
+    def test_nan_rejected_as_number(self) -> None:
+        # BLOCKING 1: json.loads accepts NaN literals; schema must reject them.
+        p = _clone()
+        p["statementLevelSummary"]["totalAmountDue"] = float("nan")
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("totalAmountDue" in e for e in errors), errors)
+        report = validate_payload(p)
+        self.assertFalse(report.schema_valid)
+
+    def test_inf_rejected_as_number(self) -> None:
+        p = _clone()
+        p["statementLevelSummary"]["totalCreditLimit"] = float("inf")
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("totalCreditLimit" in e for e in errors), errors)
+
+    def test_neg_inf_rejected_as_number(self) -> None:
+        p = _clone()
+        p["statementLevelSummary"]["availableCreditLimit"] = float("-inf")
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("availableCreditLimit" in e for e in errors), errors)
+
+    def test_nan_in_nested_number_rejected(self) -> None:
+        p = _clone()
+        p["cards"][0]["bigPicture"]["cardCreditLimit"] = float("nan")
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("cardCreditLimit" in e for e in errors), errors)
+
+    def test_huge_int_accepted_as_number(self) -> None:
+        # NEW-B1: math.isfinite coerces to float and overflows on huge ints.
+        # An int is finite by definition and must be accepted directly; the
+        # validator must return a report, not raise OverflowError.
+        p = _clone()
+        p["statementLevelSummary"]["totalAmountDue"] = 10**10000
+        errors = validate_schema_conformance(p)
+        self.assertEqual(errors, [])  # valid: int is a number
+
+    def test_huge_negative_int_accepted_as_number(self) -> None:
+        p = _clone()
+        p["statementLevelSummary"]["totalAmountDue"] = -(10**10000)
+        errors = validate_schema_conformance(p)
+        self.assertEqual(errors, [])
+
+    def test_validate_payload_never_raises_on_huge_int(self) -> None:
+        # The core guarantee: validate_payload returns a report, never raises.
+        p = _clone()
+        p["statementLevelSummary"]["totalAmountDue"] = 10**10000
+        p["statementLevelSummary"]["totalCreditLimit"] = -(10**10000)
+        p["cards"][0]["bigPicture"]["cardCreditLimit"] = 10**99999
+        report = validate_payload(p)
+        self.assertIsInstance(report, ValidationReport)
+
+    def test_huge_int_in_closing_points_no_overflow(self) -> None:
+        # The closing-points arithmetic must not overflow on huge ints either.
+        p = _clone()
+        p["rewards"]["openingPoints"] = 10**10000
+        p["rewards"]["pointsEarnedThisCycle"] = 10**10000
+        p["rewards"]["pointsRedeemedThisCycle"] = 0
+        p["rewards"]["bonusPointsThisCycle"] = 0
+        p["rewards"]["closingPoints"] = 2 * (10**10000)
+        report = validate_payload(p)
+        self.assertTrue(report.ok, report.all_errors)
+
+    def test_huge_int_mismatched_closing_points_no_raise(self) -> None:
+        # With the magnitude threshold, the closing-points rule is SKIPPED for
+        # values > 10**18 (no real rewards points are that large). The rule does
+        # not fire; the point of this test is that validate_payload returns a
+        # report rather than raising OverflowError on the int arithmetic.
+        p = _clone()
+        p["rewards"]["openingPoints"] = 10**10000
+        p["rewards"]["pointsEarnedThisCycle"] = 10**10000
+        p["rewards"]["pointsRedeemedThisCycle"] = 0
+        p["rewards"]["bonusPointsThisCycle"] = 0
+        p["rewards"]["closingPoints"] = 1  # mismatch, but rule is skipped
+        report = validate_payload(p)  # must not raise
+        self.assertIsInstance(report, ValidationReport)
+        self.assertIsNone(report.internal_error)
+
+    def test_huge_int_plus_float_closing_points_no_raise(self) -> None:
+        # The reviewer's exact reproduction: huge int + float coerces the int
+        # to float and overflows. The magnitude threshold skips the rule before
+        # the arithmetic; the structural safety net is the backstop.
+        p = _clone()
+        p["rewards"]["openingPoints"] = 10**10000
+        p["rewards"]["pointsEarnedThisCycle"] = 1.0  # float, not int
+        p["rewards"]["pointsRedeemedThisCycle"] = 0
+        p["rewards"]["bonusPointsThisCycle"] = 0
+        p["rewards"]["closingPoints"] = 5
+        report = validate_payload(p)  # must not raise
+        self.assertIsInstance(report, ValidationReport)
+        self.assertIsNone(report.internal_error)
+
+    def test_huge_negative_int_plus_float_closing_points_no_raise(self) -> None:
+        p = _clone()
+        p["rewards"]["openingPoints"] = -(10**10000)
+        p["rewards"]["pointsEarnedThisCycle"] = 1.0
+        p["rewards"]["pointsRedeemedThisCycle"] = 0
+        p["rewards"]["bonusPointsThisCycle"] = 0
+        p["rewards"]["closingPoints"] = 5
+        report = validate_payload(p)
+        self.assertIsInstance(report, ValidationReport)
+        self.assertIsNone(report.internal_error)
+
+    def test_huge_int_both_sides_closing_points_no_raise(self) -> None:
+        p = _clone()
+        p["rewards"]["openingPoints"] = 10**10000
+        p["rewards"]["pointsEarnedThisCycle"] = 10**10000
+        p["rewards"]["pointsRedeemedThisCycle"] = 10**10000
+        p["rewards"]["bonusPointsThisCycle"] = 10**10000
+        p["rewards"]["closingPoints"] = 10**10000
+        report = validate_payload(p)
+        self.assertIsInstance(report, ValidationReport)
+        self.assertIsNone(report.internal_error)
+
+    def test_normal_closing_points_arithmetic_still_works(self) -> None:
+        # Prove the magnitude threshold did not break correct arithmetic on
+        # realistic values.
+        p = _clone()
+        p["rewards"]["openingPoints"] = 100
+        p["rewards"]["pointsEarnedThisCycle"] = 50
+        p["rewards"]["pointsRedeemedThisCycle"] = 20
+        p["rewards"]["bonusPointsThisCycle"] = 10
+        p["rewards"]["closingPoints"] = 140  # 100 + 50 + 10 - 20 = 140
+        report = validate_payload(p)
+        self.assertTrue(report.ok, report.all_errors)
+
+        # And a mismatch IS still caught on realistic values.
+        p["rewards"]["closingPoints"] = 999
+        report = validate_payload(p)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("arithmetic violation" in e for e in report.rule_errors))
+
+    def test_huge_negative_int_amount_error_message_no_overflow(self) -> None:
+        # Regression: a huge negative int amount hits the < 0 error branch whose
+        # message stringified the amount -> ValueError on the digit limit.
+        p = _clone()
+        p["transactions"][0]["amount"] = -(10**10000)
+        report = validate_payload(p)  # must not raise
+        self.assertIsInstance(report, ValidationReport)
+        self.assertTrue(any("non-negative" in e for e in report.rule_errors))
+
+    def test_validate_payload_adversarial_never_raises(self) -> None:
+        # Exhaustive: every numeric position, every hostile value, returns a report.
+        # NOTE: the assertion message must not stringify a huge int (Python's
+        # int-to-str digit limit would raise) -- use type(v).__name__ instead.
+        for v in [10**10000, -(10**10000), 10**99999, float("nan"), float("inf"),
+                  float("-inf"), True, "str", None, [1], 0, -1, 3.14, 10**5000]:
+            for loc in [("statementLevelSummary", "totalAmountDue"),
+                        ("cards", 0, "bigPicture", "cardCreditLimit"),
+                        ("rewards", "closingPoints"), ("rewards", "openingPoints"),
+                        ("transactions", 0, "amount")]:
+                p = _clone()
+                cur = p
+                for k in loc[:-1]:
+                    cur = cur[k]
+                cur[loc[-1]] = v
+                report = validate_payload(p)
+                self.assertIsInstance(
+                    report, ValidationReport,
+                    f"{type(v).__name__} at {loc} did not return a report",
+                )
+
+    def test_bool_is_not_number(self) -> None:
+        # bool is a subclass of int; schema says "number" -- a bool must NOT pass.
+        p = _clone()
+        p["statementLevelSummary"]["totalAmountDue"] = True
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("totalAmountDue" in e for e in errors), errors)
+
+    def test_null_allowed_for_nullable_field(self) -> None:
+        p = _clone()
+        p["statementMeta"]["issuerName"] = None
+        p["cards"][0]["cardMeta"]["lastFourDigit"] = None
+        self.assertEqual(validate_schema_conformance(p), [])
+
+    def test_invalid_enum_direction(self) -> None:
+        p = _clone()
+        p["transactions"][0]["direction"] = "WIDGET"
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("direction" in e and "enum" in e for e in errors), errors)
+
+    def test_direction_enum_allows_null(self) -> None:
+        p = _clone()
+        p["transactions"][0]["direction"] = None
+        self.assertEqual(validate_schema_conformance(p), [])
+
+    def test_non_object_payload(self) -> None:
+        errors = validate_schema_conformance([1, 2, 3])
+        self.assertTrue(any("expected type" in e for e in errors), errors)
+
+    def test_card_array_item_checked(self) -> None:
+        p = _clone()
+        p["cards"][0]["cardMeta"]["isPrimaryCard"] = "yes"  # string, not boolean
+        errors = validate_schema_conformance(p)
+        self.assertTrue(any("isPrimaryCard" in e for e in errors), errors)
+
+    def test_loads_gt_schema(self) -> None:
+        schema = load_gt_schema()
+        self.assertEqual(schema["type"], "object")
+        self.assertIn("statementMeta", schema["properties"])
+
+
+class RuleValidationTest(unittest.TestCase):
+    def test_synthetic_payload_passes_all_rules(self) -> None:
+        self.assertEqual(validate_rules(_clone()), [])
+
+    def test_last_four_must_be_four_digits_or_null(self) -> None:
+        for bad in ("000", "00000", "abcd", 1234, True):
+            p = _clone()
+            p["cards"][0]["cardMeta"]["lastFourDigit"] = bad
+            errors = validate_rules(p)
+            self.assertTrue(any("lastFourDigit" in e for e in errors), f"{bad!r}: {errors}")
+
+    def test_last_four_null_is_allowed(self) -> None:
+        p = _clone()
+        p["cards"][0]["cardMeta"]["lastFourDigit"] = None
+        self.assertEqual(validate_rules(p), [])
+
+    def test_negative_amount_violates_amount_direction(self) -> None:
+        p = _clone()
+        p["transactions"][0]["amount"] = -1.0
+        errors = validate_rules(p)
+        self.assertTrue(any("amount" in e and "non-negative" in e for e in errors), errors)
+
+    def test_zero_amount_is_allowed(self) -> None:
+        p = _clone()
+        p["transactions"][0]["amount"] = 0
+        self.assertEqual(validate_rules(p), [])
+
+    def test_nan_amount_flagged_by_rule(self) -> None:
+        # BLOCKING 1: non-finite amounts must not silently pass the GT rules.
+        for bad in (float("nan"), float("inf"), float("-inf")):
+            p = _clone()
+            p["transactions"][0]["amount"] = bad
+            errors = validate_rules(p)
+            self.assertTrue(any("finite" in e for e in errors), f"{bad!r}: {errors}")
+
+    def test_nan_closing_points_makes_schema_invalid(self) -> None:
+        # Schema conformance (the primary guard) rejects non-finite closing points.
+        p = _clone()
+        p["rewards"]["closingPoints"] = float("nan")
+        report = validate_payload(p)
+        self.assertFalse(report.schema_valid)
+
+    def test_closing_points_arithmetic_must_hold(self) -> None:
+        p = _clone()
+        # 0 + 5 + 2 - 1 = 6, but set closing to 99
+        p["rewards"]["pointsEarnedThisCycle"] = 5
+        p["rewards"]["bonusPointsThisCycle"] = 2
+        p["rewards"]["pointsRedeemedThisCycle"] = 1
+        p["rewards"]["closingPoints"] = 99
+        errors = validate_rules(p)
+        self.assertTrue(any("closingPoints" in e and "arithmetic" in e for e in errors), errors)
+
+    def test_closing_points_arithmetic_skipped_when_any_absent(self) -> None:
+        p = _clone()
+        p["rewards"]["bonusPointsThisCycle"] = None  # one absent -> rule not applied
+        self.assertEqual(validate_rules(p), [])
+
+    def test_txn_date_must_be_ddmmyyyy_or_null(self) -> None:
+        for bad in ("2026-03-05", "5/3/26", "05-03-2026", 3052026, True):
+            p = _clone()
+            p["transactions"][0]["date"] = bad
+            errors = validate_rules(p)
+            self.assertTrue(any("date" in e for e in errors), f"{bad!r}: {errors}")
+
+    def test_txn_date_null_is_allowed(self) -> None:
+        p = _clone()
+        p["transactions"][0]["date"] = None
+        self.assertEqual(validate_rules(p), [])
+
+    def test_rule_names_match_declarative_rules(self) -> None:
+        # Parity: graph.validation must check exactly the rules in rules.validation.
+        self.assertEqual(rule_names(), tuple(r.name for r in VALIDATION_RULES))
+
+
+class ValidatePayloadTest(unittest.TestCase):
+    def test_valid_payload_returns_ok_report(self) -> None:
+        report = validate_payload(_clone())
+        self.assertIsInstance(report, ValidationReport)
+        self.assertTrue(report.ok)
+        self.assertTrue(report.schema_valid)
+        self.assertEqual(report.schema_errors, [])
+        self.assertEqual(report.rule_errors, [])
+
+    def test_schema_failure_does_not_run_rules(self) -> None:
+        # If the schema is invalid, rules are skipped (they assume a well-shaped dict).
+        p = _clone()
+        del p["rewards"]
+        report = validate_payload(p)
+        self.assertFalse(report.schema_valid)
+        self.assertEqual(report.rule_errors, [])
+
+    def test_partial_valid_schema_with_rule_error(self) -> None:
+        p = _clone()
+        p["transactions"][0]["amount"] = -5.0
+        report = validate_payload(p)
+        self.assertTrue(report.schema_valid)  # schema is fine
+        self.assertFalse(report.ok)  # but rules fail
+        self.assertEqual(report.schema_errors, [])
+        self.assertGreater(len(report.rule_errors), 0)
+
+    def test_non_dict_payload(self) -> None:
+        report = validate_payload("not a dict")
+        self.assertFalse(report.schema_valid)
+        self.assertFalse(report.ok)
+
+    def test_never_raises(self) -> None:
+        # Any garbage input must produce a report, not an exception.
+        for garbage in (None, [], 42, {"only": "partial"}, "string"):
+            report = validate_payload(garbage)
+            self.assertIsInstance(report, ValidationReport)
+
+    def test_internal_error_on_injected_failure(self) -> None:
+        # Prove the structural guarantee: if a helper raises unexpectedly,
+        # validate_payload converts it to a report with internal_error set,
+        # not a crash. This is what makes the guarantee STRUCTURAL rather than
+        # site-by-site.
+        import graph.validation as mod
+        original = mod.validate_schema_conformance
+        mod.validate_schema_conformance = lambda payload, schema=None: (_ for _ in ()).throw(
+            RuntimeError("synthetic internal failure")
+        )
+        try:
+            report = validate_payload(_clone())
+        finally:
+            mod.validate_schema_conformance = original
+        self.assertIsInstance(report, ValidationReport)
+        self.assertFalse(report.schema_valid)
+        self.assertFalse(report.ok)
+        self.assertIsNotNone(report.internal_error)
+        self.assertIn("RuntimeError", report.internal_error)
+        self.assertIn("synthetic internal failure", report.internal_error)
+
+    def test_internal_error_distinguishable_from_validation_failure(self) -> None:
+        # An ordinary validation failure has internal_error=None; an internal
+        # error has internal_error set. They must not be indistinguishable.
+        # Ordinary failure: missing required key.
+        p = _clone()
+        del p["rewards"]
+        ordinary = validate_payload(p)
+        self.assertIsNone(ordinary.internal_error)
+        self.assertFalse(ordinary.ok)
+
+        # Internal failure: injected exception.
+        import graph.validation as mod
+        original = mod.validate_schema_conformance
+        mod.validate_schema_conformance = lambda payload, schema=None: (_ for _ in ()).throw(
+            ValueError("boom")
+        )
+        try:
+            internal = validate_payload(_clone())
+        finally:
+            mod.validate_schema_conformance = original
+        self.assertIsNotNone(internal.internal_error)
+        self.assertFalse(internal.ok)
+        # The two are distinguishable: one has internal_error, the other doesn't.
+        self.assertNotEqual(bool(ordinary.internal_error), bool(internal.internal_error))
+
+    def test_all_errors_includes_internal_error(self) -> None:
+        # all_errors must include internal_error so it flows into
+        # state.validation_errors and influences the terminal outcome.
+        import graph.validation as mod
+        original = mod.validate_schema_conformance
+        mod.validate_schema_conformance = lambda payload, schema=None: (_ for _ in ()).throw(
+            RuntimeError("boom")
+        )
+        try:
+            report = validate_payload(_clone())
+        finally:
+            mod.validate_schema_conformance = original
+        self.assertIsNotNone(report.internal_error)
+        self.assertTrue(
+            any("internal_error" in e for e in report.all_errors),
+            report.all_errors,
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()
