@@ -129,9 +129,11 @@ class GraphE2ETest(unittest.TestCase):
             self.assertEqual(ce.parent_span_id, f"{state.request_id}:parse")
             self.assertIsNotNone(ce.span_id)
 
-    def test_parse_root_event_emitted_on_exception(self) -> None:
-        """The root 'parse' event fires even when the graph raises — the finally
-        block ensures the MLflow run is finalized on crash, not just on success.
+    def test_parse_root_event_emitted_on_node_failure(self) -> None:
+        """The root 'parse' event fires even when a node fails internally — the
+        node catches the exception and sets a failure outcome, the graph
+        completes normally, and the finally block still emits the root event
+        to finalize the MLflow run.
         """
         class FailingExtraction(FakeExtractionAdapter):
             def extract(self, request):
@@ -142,14 +144,16 @@ class GraphE2ETest(unittest.TestCase):
             extraction=FailingExtraction(),
             trace_sink=trace,
         )
-        with self.assertRaises(Exception):
-            self._run(deps, Bank.HDFC)
-        # The parse root event was still emitted (finally block).
+        state = self._run(deps, Bank.HDFC)
+        # The graph handled the failure internally — outcome is EXTRACTION_FAILED.
+        self.assertEqual(state.outcome, Outcome.EXTRACTION_FAILED)
+        # But the root parse event was STILL emitted by the finally block.
         names = [e.name for e in trace.events]
         self.assertIn("parse", names)
+        self.assertEqual(names[-1], "parse")
         parse_evt = [e for e in trace.events if e.name == "parse"][0]
         self.assertIsNone(parse_evt.parent_span_id)
-        self.assertIsNotNone(parse_evt.error)
+        self.assertEqual(parse_evt.span_id, f"{state.request_id}:parse")
 
 
 if __name__ == "__main__":
