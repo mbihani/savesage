@@ -3,19 +3,41 @@
 The parse pipeline emits completed :class:`TraceEvent` records — each carries
 ``started_at``/``ended_at`` plus optional ``span_id``/``parent_span_id`` that WS1
 added specifically so this module can express a nested span hierarchy. Events are
-recorded as each phase completes, so the outer *parse* span (``parent_span_id`` is
-None) is recorded LAST. This builder buffers per ``request_id`` and flushes the
-whole tree when its root arrives, producing a pre-order span-op list whose parent
-always precedes its children — exactly what MLflow's explicit span API needs.
+recorded as each phase completes, so the outer *parse* span is recorded LAST. This
+builder buffers per ``request_id`` and flushes the whole tree when the root
+arrives, producing a pre-order span-op list whose parent always precedes its
+children — exactly what MLflow's explicit span API needs.
+
+Root identification (review B3): the root is identified by an EXPLICIT invariant —
+a declared root stage name (default ``"parse"``) — NOT merely "first event lacking
+a parent". A phase event with a missing ``parent_span_id`` (a linkage bug) does NOT
+trigger a flush; it is buffered as an orphan and later evicted, so the real
+``parse`` root still flushes the complete tree.
+
+Malformed graphs (review B3): duplicate span ids, self-referential ids, and
+cycles are detected with a visited set; the tree build is ITERATIVE (not
+recursive) so a cycle cannot cause unbounded recursion. Orphaned/disconnected
+events (whose parent never arrived) are omitted from the tree and logged.
+
+Bounded memory (review B2): ``_buffer`` (pending), ``_flushed`` (completed), are
+bounded LRU structures; over-capacity pending requests are abandoned. The
+trace-id map in the sink is likewise bounded.
 """
 
-from collections import defaultdict
+import logging
+from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 import re
 from typing import Any, Mapping
 
 from contracts.models import TraceEvent
+
+# Consume the shared PII rules (rules/pii.py is WS1-frozen; we may not edit it).
+# PII_RULES are prose constraints; this module implements them mechanically. The
+# WS4-specific extensions (recursive redaction, key-substring matching) live here
+# and are documented as an extension of the shared rules, not a replacement.
+from rules.pii import PII_RULES  # noqa: F401 - imported to centralise; re-exported for tests
 
 from .tracing_keys import (
     SPAN_TYPE_CHAIN,
@@ -26,10 +48,16 @@ from .tracing_keys import (
     SPAN_TYPE_UNKNOWN,
 )
 
+_LOGGER = logging.getLogger("statement-agent.tracing")
+
+# Default root stage name. The parse pipeline's outer span is named "parse".
+ROOT_STAGE_DEFAULT = "parse"
+
 # Defensive PII scrubbing for span attributes. Keys containing any of these
-# substrings are replaced with "[REDACTED]" before reaching MLflow. Guided by
-# rules/pii.py: card numbers, cardholder names, full transaction descriptions,
-# raw PDF/payload bytes, and statement identifiers must never be traced.
+# substrings are replaced with "[REDACTED]" before reaching MLflow. This is a
+# mechanical implementation of rules/pii.py: card numbers, cardholder names, full
+# transaction descriptions, raw PDF/payload bytes, and statement identifiers must
+# never be traced. WS4 extension: this list is a superset of the prose rules.
 _PII_KEY_SUBSTRINGS = (
     "card_number",
     "cardnumber",
@@ -44,10 +72,13 @@ _PII_KEY_SUBSTRINGS = (
     "raw_text",
     "statement_id",
     "account_number",
+    "name",  # cardholder name / account holder name
 )
 # A loose card-number-shaped sequence (13-19 digits, optional spaces/dashes).
 _CARD_RE = re.compile(r"\b(?:\d[ -]?){13,19}\b")
 _MAX_STR = 200
+_REDACTED = "[REDACTED]"
+_REDACTED_CARD = "[REDACTED_CARD]"
 
 
 def to_ns(dt: datetime) -> int:
@@ -74,24 +105,38 @@ def span_type_for(name: str) -> str:
 
 
 def redact_telemetry_attributes(attrs: Mapping[str, Any]) -> dict[str, Any]:
-    """Defensive PII scrubber for span attributes.
+    """RECURSIVE PII scrubber for span attributes (review B4).
 
     Logs counts, hashes, field paths and booleans in preference to raw values
-    (per the workstream 4 PII brief). Drops/scrubs anything card-number-shaped and
-    any attribute whose key names PII; truncates long strings.
+    (per rules/pii.py). Redaction is RECURSIVE: a benign top-level key whose value
+    is a nested dict/list can carry cardholder names, transaction descriptions,
+    account numbers, or raw PDF text, so we recurse into every dict/list and scrub
+    card-number-shaped sequences in every string at every depth. Keys naming PII
+    are replaced with ``[REDACTED]`` at every level; long strings are truncated.
     """
-    out: dict[str, Any] = {}
-    for key, value in attrs.items():
-        lk = str(key).lower()
-        if any(sub in lk for sub in _PII_KEY_SUBSTRINGS):
-            out[key] = "[REDACTED]"
-            continue
-        if isinstance(value, str):
-            value = _CARD_RE.sub("[REDACTED_CARD]", value)
-            if len(value) > _MAX_STR:
-                value = value[:_MAX_STR] + "...[truncated]"
-        out[key] = value
-    return out
+    return _redact_value(dict(attrs))
+
+
+def _redact_value(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        out: dict[str, Any] = {}
+        for key, val in value.items():
+            lk = str(key).lower()
+            if any(sub in lk for sub in _PII_KEY_SUBSTRINGS):
+                out[key] = _REDACTED
+            else:
+                out[key] = _redact_value(val)
+        return out
+    if isinstance(value, list):
+        return [_redact_value(v) for v in value]
+    if isinstance(value, tuple):
+        return tuple(_redact_value(v) for v in value)
+    if isinstance(value, str):
+        value = _CARD_RE.sub(_REDACTED_CARD, value)
+        if len(value) > _MAX_STR:
+            value = value[:_MAX_STR] + "...[truncated]"
+        return value
+    return value
 
 
 @dataclass
@@ -104,55 +149,145 @@ class SpanOp:
 
 
 class SpanTreeBuilder:
-    """Buffer TraceEvents per request_id and flush an ordered span tree on root."""
+    """Buffer TraceEvents per request_id and flush an ordered span tree on root.
 
-    def __init__(self) -> None:
-        self._buffer: dict[str, list[TraceEvent]] = defaultdict(list)
-        self._flushed: set[str] = set()
+    All collections are BOUNDED (review B2): pending requests, completed request
+    ids, are capped; over-capacity pending requests are abandoned (logged).
+    """
+
+    def __init__(
+        self,
+        *,
+        root_stage: str = ROOT_STAGE_DEFAULT,
+        max_pending: int = 1024,
+        max_flushed: int = 2048,
+    ) -> None:
+        self._root_stage = root_stage
+        self._max_pending = max_pending
+        self._max_flushed = max_flushed
+        self._buffer: "OrderedDict[str, list[TraceEvent]]" = OrderedDict()
+        self._flushed: "OrderedDict[str, None]" = OrderedDict()
 
     def feed(self, event: TraceEvent) -> list[SpanOp] | None:
         """Buffer an event.
 
-        When the trace root (``parent_span_id`` is None) arrives, build and return
-        the pre-order span-op list for the whole tree (parent before children) and
-        mark the request flushed. Late arrivals after a flush return None; the
-        adapter logs them and drops them (MLflow cannot attach spans to an ended
-        trace). Non-root events return None while buffered.
+        When the declared root (``parent_span_id`` is None AND ``name`` is the
+        root stage) arrives, build and return the pre-order span-op list for the
+        whole tree (parent before children) and mark the request flushed. A phase
+        event with ``parent_span_id=None`` but a non-root name is an orphan: it is
+        buffered but does NOT trigger a flush (review B3). Late arrivals after a
+        flush return None. Non-root events return None while buffered.
         """
         rid = event.request_id
         if rid in self._flushed:
-            return None
-        self._buffer[rid].append(event)
-        if event.parent_span_id is None:
+            return None  # late arrival after flush — drop (trace already ended)
+        buf = self._buffer.setdefault(rid, [])
+        if not buf:
+            self._buffer[rid] = buf  # ensure key exists (setdefault did this)
+        buf.append(event)
+        # Evict oldest pending if over capacity (abandon — root will never come).
+        while len(self._buffer) > self._max_pending:
+            evicted_rid, _ = self._buffer.popitem(last=False)
+            _LOGGER.warning("tracing buffer full; abandoning pending request %s", evicted_rid)
+        # Flush only on the declared root (explicit invariant, review B3).
+        is_root = event.parent_span_id is None and event.name == self._root_stage
+        if is_root:
             tree = self._build(rid)
-            self._flushed.add(rid)
             self._buffer.pop(rid, None)
+            self._mark_flushed(rid)
             return tree
         return None
 
+    def _mark_flushed(self, rid: str) -> None:
+        self._flushed[rid] = None
+        while len(self._flushed) > self._max_flushed:
+            self._flushed.popitem(last=False)
+
+    def abandon(self, request_id: str) -> None:
+        """Explicitly drop a request whose root will never arrive (e.g. crashed parse)."""
+        self._buffer.pop(request_id, None)
+        self._flushed.pop(request_id, None)
+
     def _build(self, rid: str) -> list[SpanOp]:
         events = self._buffer.get(rid, [])
-        children_of: dict[str | None, list[TraceEvent]] = defaultdict(list)
+        if not events:
+            return []
+        # Index events by span_id; detect duplicates.
+        by_span_id: dict[str, TraceEvent] = {}
+        duplicate_ids: set[str] = set()
         for e in events:
-            children_of[e.parent_span_id].append(e)
-        roots = children_of.get(None, [])
+            if e.span_id is not None:
+                if e.span_id in by_span_id:
+                    duplicate_ids.add(e.span_id)
+                else:
+                    by_span_id[e.span_id] = e
+        # Find the root: the declared-root event.
+        roots = [e for e in events if e.parent_span_id is None and e.name == self._root_stage]
         if not roots:
-            return []  # malformed: no root recorded
+            _LOGGER.warning("no root event (stage=%s) for request %s; %d events orphaned",
+                            self._root_stage, rid, len(events))
+            return []
+        if len(roots) > 1:
+            _LOGGER.warning("multiple root events for request %s; using earliest", rid)
         root_event = min(roots, key=lambda x: x.started_at)
+
+        # Reject self-referential root.
+        if root_event.span_id is not None and root_event.span_id == root_event.parent_span_id:
+            _LOGGER.warning("self-referential root span_id for request %s", rid)
+            return []
+
+        # Group children by parent_span_id. Only events with a NON-None
+        # parent_span_id are children; parent_span_id=None means "root/orphan",
+        # NOT "my parent's span_id is None" (which would be ambiguous and can
+        # cause infinite loops when span_id is also None).
+        children_of: dict[str, list[TraceEvent]] = {}
+        for e in events:
+            if e is root_event:
+                continue
+            if e.parent_span_id is None:
+                continue  # orphan (linkage bug) — not a child of anything
+            # Duplicate span_id: keep the FIRST occurrence, drop the rest.
+            if e.span_id is not None and e.span_id in duplicate_ids and by_span_id.get(e.span_id) is not e:
+                _LOGGER.warning("duplicate span_id %s in request %s; dropping", e.span_id, rid)
+                continue
+            if e.span_id is not None and e.span_id == e.parent_span_id:
+                _LOGGER.warning("self-referential span_id %s in request %s; dropping", e.span_id, rid)
+                continue
+            children_of.setdefault(e.parent_span_id, []).append(e)
+
         root_op = SpanOp(event=root_event, is_root=True)
 
-        def add_children(op: SpanOp) -> None:
-            # A span with no span_id cannot be referenced by children.
-            if op.event.span_id is None:
-                return
-            kids = sorted(children_of.get(op.event.span_id, []), key=lambda x: x.started_at)
-            for child in kids:
-                cop = SpanOp(event=child, is_root=False)
-                op.children.append(cop)
-                add_children(cop)
+        # ITERATIVE child attachment with a visited set (cycle detection, review B3).
+        # Stack of (parent_op, child_event). We track visited span_ids so a cycle
+        # cannot loop forever.
+        visited: set[str] = set()
+        if root_event.span_id is not None:
+            visited.add(root_event.span_id)
+        stack: list[tuple[SpanOp, TraceEvent]] = [
+            (root_op, child)
+            for child in sorted(children_of.get(root_event.span_id, []), key=lambda x: x.started_at)
+        ] if root_event.span_id is not None else []
+        attached = 1
+        while stack:
+            parent_op, child_event = stack.pop()
+            cid = child_event.span_id
+            if cid is not None and cid in visited:
+                _LOGGER.warning("cycle detected at span_id %s in request %s; breaking", cid, rid)
+                continue
+            if cid is not None:
+                visited.add(cid)
+            cop = SpanOp(event=child_event, is_root=False)
+            parent_op.children.append(cop)
+            attached += 1
+            kids = sorted(children_of.get(cid, []), key=lambda x: x.started_at)
+            for k in kids:
+                stack.append((cop, k))
 
-        add_children(root_op)
+        if attached < len(events):
+            _LOGGER.warning("request %s: %d/%d events attached; %d orphaned (missing parent)",
+                            rid, attached, len(events), len(events) - attached)
 
+        # Pre-order walk (parent before children).
         flat: list[SpanOp] = []
 
         def walk(op: SpanOp) -> None:
@@ -165,4 +300,7 @@ class SpanTreeBuilder:
 
     # Test/debug helper: buffered-but-unflushed request ids (for assertions).
     def pending(self) -> set[str]:
-        return {rid for rid, evs in self._buffer.items() if evs and rid not in self._flushed}
+        return set(self._buffer)
+
+    def flushed_count(self) -> int:
+        return len(self._flushed)

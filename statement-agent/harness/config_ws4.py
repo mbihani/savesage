@@ -40,6 +40,17 @@ class TracingConfig:
     cost_rates_per_million: dict[str, dict[str, float]] = field(
         default_factory=lambda: {k: dict(v) for k, v in _DEFAULT_COST_RATES.items()}
     )
+    # HMAC key (raw bytes) for pseudonymising PII values and actors in telemetry.
+    # When empty, PII leaves (cardholder names, descriptions) and the actor are
+    # OMITTED entirely from telemetry (sent as None) rather than hashed with an
+    # unsalted digest (which is dictionary-reversible for low-entropy values).
+    # Set WS4_FEEDBACK_HMAC_KEY at deploy to a per-workspace secret to retain
+    # linkable pseudonyms. CONFIGURE(ws4-feedback-hmac-key)
+    feedback_hmac_key: bytes = b""  # CONFIGURE(ws4-feedback-hmac-key)
+    # Bounded-memory limits for long-lived Apps processes. CONFIGURE(ws4-max-*)
+    max_pending_requests: int = 1024  # CONFIGURE(ws4-max-pending) — buffered trees
+    max_trace_ids: int = 1024  # CONFIGURE(ws4-max-trace-ids) — LRU trace-id map
+    max_flushed: int = 2048  # CONFIGURE(ws4-max-flushed) — late-arrival guard
 
 
 def _env_bool(name: str, default: bool) -> bool:
@@ -51,6 +62,7 @@ def _env_bool(name: str, default: bool) -> bool:
 
 def get_tracing_config() -> TracingConfig:
     """Read a fresh environment snapshot on every call (mirrors config.get_settings)."""
+    hmac_raw = os.getenv("WS4_FEEDBACK_HMAC_KEY", "")
     return TracingConfig(
         enabled=_env_bool("WS4_TRACING_ENABLED", True),
         tracking_uri=os.getenv("WS4_TRACKING_URI", "databricks"),
@@ -59,6 +71,10 @@ def get_tracing_config() -> TracingConfig:
         autolog_langchain=_env_bool("WS4_AUTOLOG_LANGCHAIN", True),
         redact_pii_values=_env_bool("WS4_REDACT_PII", True),
         log_nonpii_values_raw=_env_bool("WS4_LOG_NONPII_RAW", True),
+        feedback_hmac_key=hmac_raw.encode() if hmac_raw else b"",
+        max_pending_requests=int(os.getenv("WS4_MAX_PENDING", "1024")),
+        max_trace_ids=int(os.getenv("WS4_MAX_TRACE_IDS", "1024")),
+        max_flushed=int(os.getenv("WS4_MAX_FLUSHED", "2048")),
     )
 
 
