@@ -37,9 +37,18 @@ is charged.
 
 ## Differences from the legacy scorers
 
-Card display names retain the legacy lenient canonical containment rule, and numeric
-values retain the legacy absolute/relative tolerance. The transaction matcher is
-intentionally more non-circular than the ICICI/SBI originals: equal description scores
-are broken by relative row position, never by date. Consequently small pairing and
-accuracy deltas from published ICICI/SBI baselines are possible and are not by
-themselves regressions.
+Card display names uniformly use HDFC's `norm_key`—which removes every
+non-alphanumeric character—followed by containment across all banks. ICICI and SBI's
+legacy scorers instead use punctuation-preserving `text` with `lenient_hit`. The
+judge is therefore marginally more lenient on punctuation-only ICICI/SBI card-name
+differences: this deviation can only over-report agreement, never under-report it.
+Real card display names in the evaluated Indian corpus contain no punctuation, so the
+divergent branch does not fire there. We deliberately accept this immaterial deviation
+instead of adding bank-specific comparison paths.
+
+The transaction matcher is also intentionally more non-circular than the ICICI/SBI
+legacy scorers. For equal description-similarity scores, this judge applies HDFC's
+relative-position tie-break instead of the ICICI/SBI date tie-break; date never enters
+pairing. These two documented deviations mean small card-name or transaction-pairing
+deltas from published ICICI/SBI baselines are possible and are not by themselves
+regressions. Numeric values retain the legacy absolute/relative tolerance.
