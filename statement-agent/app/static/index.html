@@ -4,11 +4,840 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SaveSage Statement Agent</title>
+    <style>
+      :root {
+        --bg: #f7f8fa;
+        --surface: #ffffff;
+        --border: #e2e6ec;
+        --text: #1a1f2e;
+        --text-muted: #68748d;
+        --accent: #4b6bfb;
+        --accent-soft: #eef1ff;
+        --agree: #16a34a;
+        --agree-soft: #e8f7ef;
+        --disagree: #dc2626;
+        --disagree-soft: #fde8e8;
+        --format: #d97706;
+        --format-soft: #fef3e0;
+        --neutral: #6b7280;
+        --neutral-soft: #f3f4f6;
+        --radius: 12px;
+        --shadow: 0 1px 3px rgba(0,0,0,0.08);
+        --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0f1117;
+          --surface: #1a1d27;
+          --border: #2a2f3c;
+          --text: #e8eaed;
+          --text-muted: #9ba3b4;
+          --accent: #7c8ffb;
+          --accent-soft: #1e2333;
+          --agree: #22c55e;
+          --agree-soft: #16291f;
+          --disagree: #f87171;
+          --disagree-soft: #2e1818;
+          --format: #fbbf24;
+          --format-soft: #2a2310;
+          --neutral: #9ca3af;
+          --neutral-soft: #1f222b;
+          --shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      .container {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 2rem 1.25rem;
+      }
+      .header {
+        margin-bottom: 2rem;
+      }
+      .header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .header p {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+      }
+      .card + .card { margin-top: 1rem; }
+
+      /* Form */
+      .field { margin-bottom: 1.25rem; }
+      .field label {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        margin-bottom: 0.375rem;
+      }
+      select, input[type="text"], input[type="number"] {
+        width: 100%;
+        padding: 0.625rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--text);
+        font-size: 0.9375rem;
+        transition: border-color 0.15s;
+      }
+      select:focus, input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+      }
+      .file-drop {
+        border: 2px dashed var(--border);
+        border-radius: 8px;
+        padding: 1.75rem 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.15s;
+      }
+      .file-drop:hover { border-color: var(--accent); background: var(--accent-soft); }
+      .file-drop.has-file { border-style: solid; border-color: var(--agree); }
+      .file-drop input { display: none; }
+      .file-drop .file-name { font-weight: 600; font-size: 0.875rem; }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.625rem 1.25rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.15s, background 0.15s;
+      }
+      .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .btn-primary { background: var(--accent); color: #fff; }
+      .btn-primary:hover:not(:disabled) { opacity: 0.9; }
+      .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
+      .btn-accept { background: var(--agree-soft); color: var(--agree); border: 1px solid var(--agree); }
+      .btn-correct { background: var(--disagree-soft); color: var(--disagree); border: 1px solid var(--disagree); }
+      .btn-accept:hover:not(:disabled) { background: var(--agree); color: #fff; }
+      .btn-correct:hover:not(:disabled) { background: var(--disagree); color: #fff; }
+
+      /* Pipeline progress */
+      .stages { display: flex; flex-direction: column; gap: 0.5rem; }
+      .stage-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        background: var(--neutral-soft);
+        font-size: 0.9375rem;
+        transition: background 0.2s;
+      }
+      .stage-item.done { background: var(--agree-soft); }
+      .stage-item.error { background: var(--disagree-soft); }
+      .stage-dot {
+        width: 22px; height: 22px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.75rem; font-weight: 700;
+        background: var(--border);
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .stage-item.done .stage-dot { background: var(--agree); color: #fff; }
+      .stage-item.error .stage-dot { background: var(--disagree); color: #fff; }
+
+      /* Verdict badges */
+      .verdict {
+        display: inline-block;
+        padding: 0.1875rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .verdict-AGREE { background: var(--agree-soft); color: var(--agree); }
+      .verdict-DISAGREE { background: var(--disagree-soft); color: var(--disagree); }
+      .verdict-FORMAT_ONLY { background: var(--format-soft); color: var(--format); }
+      .verdict-ABSENT_IN_PDF { background: var(--neutral-soft); color: var(--neutral); }
+      .verdict-UNMATCHED_ROW { background: var(--neutral-soft); color: var(--neutral); }
+
+      /* Results table */
+      .field-row {
+        padding: 1rem;
+        border-radius: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        margin-bottom: 0.75rem;
+      }
+      .field-row-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+      .field-label { font-weight: 600; font-size: 0.9375rem; }
+      .field-context { font-size: 0.75rem; color: var(--text-muted); }
+      .field-values {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+      .field-val-box {
+        padding: 0.625rem;
+        border-radius: 6px;
+        background: var(--bg);
+      }
+      .field-val-label {
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+      }
+      .field-val { font-family: var(--mono); font-size: 0.875rem; word-break: break-all; }
+      .field-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+      .correct-input {
+        display: flex; gap: 0.5rem; flex: 1; min-width: 200px;
+      }
+      .correct-input input { flex: 1; padding: 0.375rem 0.625rem; font-size: 0.8125rem; }
+      .feedback-note {
+        font-size: 0.75rem;
+        color: var(--agree);
+        font-weight: 600;
+        margin-top: 0.5rem;
+      }
+
+      /* Error/alert */
+      .alert {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        margin-top: 1rem;
+      }
+      .alert-error { background: var(--disagree-soft); color: var(--disagree); }
+      .alert-info { background: var(--accent-soft); color: var(--accent); }
+
+      /* Summary banner */
+      .summary-banner {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        border-radius: var(--radius);
+        margin-bottom: 1.5rem;
+        font-size: 0.9375rem;
+      }
+      .summary-banner.SUCCESS { background: var(--agree-soft); color: var(--agree); }
+      .summary-banner.PARTIAL { background: var(--format-soft); color: var(--format); }
+      .summary-banner.FAILURE { background: var(--disagree-soft); color: var(--disagree); }
+
+      .section-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        margin: 1.5rem 0 0.75rem;
+      }
+
+      /* Streaming items (live per-field results) */
+      .streaming-section { margin-top: 1rem; }
+      .stream-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        background: var(--bg);
+        margin-bottom: 0.375rem;
+        font-size: 0.8125rem;
+        animation: fadein 0.2s ease;
+      }
+      @keyframes fadein {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .stream-row .field-label { font-weight: 600; }
+      .stream-row .stream-val { font-family: var(--mono); color: var(--text-muted); font-size: 0.75rem; }
+
+      /* Responsive */
+      @media (max-width: 540px) {
+        .field-values { grid-template-columns: 1fr; }
+      }
+    </style>
   </head>
   <body>
-    <main>
-      <h1>SaveSage Statement Agent</h1>
-      <p>Workstream 6 owns this no-build frontend shell.</p>
-    </main>
+    <div id="root"></div>
+    <script type="module">
+      import React from "https://esm.sh/react@18.3.1";
+      import { createRoot } from "https://esm.sh/react-dom@18.3.1/client";
+      import htm from "https://esm.sh/htm@3.1.1";
+
+      const h = htm.bind(React.createElement);
+      const { useState, useEffect, useRef, useCallback } = React;
+
+      /* ===================================================================
+       * API helpers
+       * =================================================================== */
+
+      async function startParse(file, bank) {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("bank", bank);
+        const resp = await fetch("/api/parse", { method: "POST", body: fd });
+        if (!resp.ok) {
+          const e = await resp.json().catch(() => ({}));
+          throw new Error(e.detail || `HTTP ${resp.status}`);
+        }
+        return resp.json();
+      }
+
+      async function submitFeedback(requestId, payload) {
+        const resp = await fetch(`/api/feedback/${requestId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!resp.ok) {
+          const e = await resp.json().catch(() => ({}));
+          throw new Error(e.detail || `HTTP ${resp.status}`);
+        }
+        return resp.json();
+      }
+
+      /* ===================================================================
+       * Constants
+       * =================================================================== */
+
+      const BANKS = ["HDFC", "ICICI", "SBI", "AXIS"];
+      const STAGES = ["route", "extract", "validate", "persist", "judge", "finalize"];
+
+      const FIELD_LABELS = {
+        "cards[].cardMeta.cardDisplayName": "Card Name",
+        "cards[].cardMeta.lastFourDigit": "Last 4 Digits",
+        "rewards.pointsEarnedThisCycle": "Points Earned",
+        "rewards.closingPoints": "Closing Points",
+        "transactions[].date": "Date",
+        "transactions[].description": "Description",
+        "transactions[].amount": "Amount",
+      };
+
+      function fieldLabel(comp) {
+        const base = FIELD_LABELS[comp.field_path] || comp.field_path;
+        if (comp.scope === "TRANSACTION_ROW") {
+          const idx = comp.actual_row_index ?? comp.expected_row_index ?? 0;
+          return `${base} — Txn #${idx + 1}`;
+        }
+        if (comp.scope === "SCALAR" && comp.card_index != null) {
+          return `${base} — Card ${comp.card_index + 1}`;
+        }
+        return base;
+      }
+
+      function toCanonicalPath(comp) {
+        // Prefer the backend-supplied feedback_path (always valid, handles
+        // unmatched rows where actual_row_index is None by falling back to
+        // expected_row_index).  Only compute locally as a fallback.
+        if (comp.feedback_path) return comp.feedback_path;
+        const fp = comp.field_path;
+        if (fp.startsWith("cards[].")) {
+          return fp.replace("cards[]", `cards.${comp.card_index}`, 1);
+        }
+        if (fp.startsWith("transactions[].")) {
+          const idx = comp.actual_row_index ?? comp.expected_row_index ?? 0;
+          return fp.replace("transactions[]", `transactions.${idx}`, 1);
+        }
+        return fp;
+      }
+
+      function fmtVal(v) {
+        if (v === null || v === undefined) return "—";
+        if (typeof v === "number") return String(v);
+        return String(v);
+      }
+
+      /* ===================================================================
+       * UploadView
+       * =================================================================== */
+
+      function UploadView({ onStart }) {
+        const [bank, setBank] = useState("HDFC");
+        const [file, setFile] = useState(null);
+        const [error, setError] = useState(null);
+        const [loading, setLoading] = useState(false);
+        const inputRef = useRef(null);
+
+        const handleDrop = useCallback((e) => {
+          e.preventDefault();
+          if (e.dataTransfer.files.length) {
+            const f = e.dataTransfer.files[0];
+            if (f.type === "application/pdf" || f.name.endsWith(".pdf")) {
+              setFile(f);
+              setError(null);
+            } else {
+              setError("Please select a PDF file");
+            }
+          }
+        }, []);
+
+        const handleSubmit = async () => {
+          if (!file) return;
+          setLoading(true);
+          setError(null);
+          try {
+            const { request_id } = await startParse(file, bank);
+            onStart(request_id);
+          } catch (e) {
+            setError(e.message);
+            setLoading(false);
+          }
+        };
+
+        return h`
+          <div class="container">
+            <div class="header">
+              <h1>SaveSage Statement Agent</h1>
+              <p>Upload a credit-card statement PDF to extract and verify fields with an LLM judge.</p>
+            </div>
+            <div class="card">
+              <div class="field">
+                <label>Bank</label>
+                <select value=${bank} onChange=${(e) => setBank(e.target.value)}>
+                  ${BANKS.map((b) => h`<option key=${b} value=${b}>${b}</option>`)}
+                </select>
+              </div>
+              <div class="field">
+                <label>Statement PDF</label>
+                <div
+                  class=${"file-drop" + (file ? " has-file" : "")}
+                  onClick=${() => inputRef.current?.click()}
+                  onDragOver=${(e) => e.preventDefault()}
+                  onDrop=${handleDrop}
+                >
+                  <input
+                    ref=${inputRef}
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    onChange=${(e) => { if (e.target.files[0]) { setFile(e.target.files[0]); setError(null); } }}
+                  />
+                  ${file
+                    ? h`<span class="file-name">📄 ${file.name} (${(file.size / 1024).toFixed(0)} KB)</span>`
+                    : h`<span style=${{ color: "var(--text-muted)", fontSize: "0.875rem" }}>Click or drag a PDF here</span>`}
+                </div>
+              </div>
+              <button class="btn btn-primary" onClick=${handleSubmit} disabled=${!file || loading}>
+                ${loading ? "Uploading…" : "Parse Statement"}
+              </button>
+              ${error && h`<div class="alert alert-error">${error}</div>`}
+            </div>
+          </div>
+        `;
+      }
+
+      /* ===================================================================
+       * ProcessingView — live SSE progress
+       * =================================================================== */
+
+      function ProcessingView({ requestId, onComplete }) {
+        const [completed, setCompleted] = useState([]);
+        const [error, setError] = useState(null);
+        const [extraction, setExtraction] = useState(null);
+        const [verdict, setVerdict] = useState(null);
+        const [extractionItems, setExtractionItems] = useState([]);
+        const [fieldVerdicts, setFieldVerdicts] = useState([]);
+
+        // Refs to avoid stale-closure in the complete handler — the SSE
+        // listeners are registered once (useEffect [requestId]) but need
+        // the latest data when "complete" fires.
+        const extractionRef = useRef(null);
+        const verdictRef = useRef(null);
+        const extractionItemsRef = useRef([]);
+        const fieldVerdictsRef = useRef([]);
+        const onCompleteRef = useRef(onComplete);
+        onCompleteRef.current = onComplete;
+
+        useEffect(() => {
+          // Reset refs for a new request
+          extractionItemsRef.current = [];
+          fieldVerdictsRef.current = [];
+
+          let closed = false;
+          const es = new EventSource(`/api/parse/${requestId}/stream`);
+
+          es.addEventListener("progress", (e) => {
+            const d = JSON.parse(e.data);
+            setCompleted((prev) =>
+              prev.includes(d.stage) ? prev : [...prev, d.stage]
+            );
+          });
+
+          // F1: individual extraction items stream live as the extract
+          // node produces them — cards, transactions, rewards each arrive
+          // as separate events so the UI renders them immediately.
+          es.addEventListener("extraction_item", (e) => {
+            const d = JSON.parse(e.data);
+            extractionItemsRef.current = [...extractionItemsRef.current, d];
+            setExtractionItems([...extractionItemsRef.current]);
+          });
+
+          es.addEventListener("extraction", (e) => {
+            const d = JSON.parse(e.data);
+            extractionRef.current = d;
+            setExtraction(d);
+          });
+
+          // F1: individual field verdicts stream live as the judge
+          // produces them — each FieldComparison arrives as a separate
+          // event so the UI shows per-field verdicts immediately.
+          es.addEventListener("field_verdict", (e) => {
+            const d = JSON.parse(e.data);
+            fieldVerdictsRef.current = [...fieldVerdictsRef.current, d];
+            setFieldVerdicts([...fieldVerdictsRef.current]);
+          });
+
+          es.addEventListener("verdict", (e) => {
+            const d = JSON.parse(e.data);
+            verdictRef.current = d;
+            setVerdict(d);
+          });
+
+          es.addEventListener("complete", (e) => {
+            const d = JSON.parse(e.data);
+            closed = true;
+            es.close();
+            // Merge streaming verdicts into the verdict summary so
+            // ResultsView receives the full comparisons array.
+            const mergedVerdict = verdictRef.current
+              ? { ...verdictRef.current, comparisons: fieldVerdictsRef.current }
+              : { comparisons: fieldVerdictsRef.current };
+            onCompleteRef.current({
+              extraction: extractionRef.current,
+              verdict: mergedVerdict,
+              complete: d,
+            });
+          });
+
+          // Our server sends `event: error\ndata: {...}`; the EventSource
+          // API dispatches both that and native connection errors to the
+          // "error" listener.  e.data distinguishes: present = server-sent,
+          // absent = connection lost.
+          es.addEventListener("error", (e) => {
+            if (closed || es.readyState === EventSource.CLOSED) return;
+            closed = true;
+            if (e.data) {
+              try {
+                const d = JSON.parse(e.data);
+                setError(d.message || "Parse failed");
+              } catch {
+                setError("Parse failed");
+              }
+            } else {
+              setError("Connection lost");
+            }
+            es.close();
+          });
+
+          return () => { closed = true; es.close(); };
+        }, [requestId]);
+
+        return h`
+          <div class="container">
+            <div class="header">
+              <h1>Processing Statement</h1>
+              <p>Request ID: <code>${requestId}</code></p>
+            </div>
+            <div class="card">
+              <div class="stages">
+                ${STAGES.map((stage) => {
+                  const isDone = completed.includes(stage);
+                  return h`
+                    <div class=${"stage-item " + (isDone ? "done" : "")}>
+                      <div class="stage-dot">${isDone ? "✓" : "○"}</div>
+                      <span>${stage}</span>
+                    </div>
+                  `;
+                })}
+              </div>
+              ${extraction && h`
+                <div class="alert alert-info" style=${{ marginTop: "1rem" }}>
+                  Extraction received: ${extraction.model_id}, schema ${extraction.schema_valid ? "valid" : "invalid"}
+                </div>
+              `}
+              ${extractionItems.length > 0 && h`
+                <div class="streaming-section">
+                  <div class="section-title" style=${{ fontSize: "0.9375rem" }}>
+                    Extracted Items (${extractionItems.length})
+                  </div>
+                  ${extractionItems.map((item) => h`
+                    <div class="stream-row" key=${item.type + "-" + item.index}>
+                      <span class="field-label">
+                        ${item.type === "card" ? `Card ${item.index + 1}` : ""}
+                        ${item.type === "transaction" ? `Transaction ${item.index + 1}` : ""}
+                        ${item.type === "rewards" ? "Rewards" : ""}
+                      </span>
+                      <span class="stream-val">
+                        ${item.type === "card" && item.data?.cardMeta
+                          ? `${item.data.cardMeta.cardDisplayName || ""} ${item.data.cardMeta.lastFourDigit || ""}`
+                          : ""}
+                        ${item.type === "transaction"
+                          ? `${item.data?.date || ""} ${item.data?.description || ""} ${item.data?.amount ?? ""}`
+                          : ""}
+                        ${item.type === "rewards"
+                          ? `Points: ${item.data?.closingPoints ?? "—"}`
+                          : ""}
+                      </span>
+                    </div>
+                  `)}
+                </div>
+              `}
+              ${verdict && h`
+                <div class="alert alert-info" style=${{ marginTop: "0.5rem" }}>
+                  Judge verdict received: ${fieldVerdicts.length} field comparisons
+                </div>
+              `}
+              ${fieldVerdicts.length > 0 && h`
+                <div class="streaming-section">
+                  <div class="section-title" style=${{ fontSize: "0.9375rem" }}>
+                    Field Verdicts (${fieldVerdicts.length})
+                  </div>
+                  ${fieldVerdicts.map((v, i) => h`
+                    <div class="stream-row" key=${toCanonicalPath(v) + "-" + i}>
+                      <span class="field-label">${fieldLabel(v)}</span>
+                      <span class=${"verdict verdict-" + v.outcome}>${v.outcome}</span>
+                    </div>
+                  `)}
+                </div>
+              `}
+              ${error && h`
+                <div class="alert alert-error" style=${{ marginTop: "1rem" }}>
+                  ${error}
+                  <br />
+                  <button class="btn btn-sm btn-primary" style=${{ marginTop: "0.5rem" }}
+                    onClick=${() => window.location.reload()}>
+                    Try Again
+                  </button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }
+
+      /* ===================================================================
+       * ResultsView — per-field verdicts + feedback
+       * =================================================================== */
+
+      function FieldRow({ comp, requestId, originalValue }) {
+        const [showCorrect, setShowCorrect] = useState(false);
+        const [corrected, setCorrected] = useState("");
+        const [submitted, setSubmitted] = useState(null);
+        const [error, setError] = useState(null);
+
+        const canonical = toCanonicalPath(comp);
+        const feedbackPath = comp.feedback_path;
+        const outcome = comp.outcome;
+
+        const handleAccept = async () => {
+          setError(null);
+          try {
+            await submitFeedback(requestId, {
+              field_path: feedbackPath,
+              disposition: "ACCEPT",
+              original_value: comp.actual,
+            });
+            setSubmitted("accept");
+          } catch (e) {
+            setError(e.message);
+          }
+        };
+
+        const handleCorrect = async () => {
+          setError(null);
+          if (!corrected.trim()) return;
+          try {
+            await submitFeedback(requestId, {
+              field_path: feedbackPath,
+              disposition: "CORRECT",
+              original_value: comp.actual,
+              corrected_value: corrected,
+            });
+            setSubmitted("correct");
+            setShowCorrect(false);
+          } catch (e) {
+            setError(e.message);
+          }
+        };
+
+        return h`
+          <div class="field-row">
+            <div class="field-row-head">
+              <div>
+                <span class="field-label">${fieldLabel(comp)}</span>
+                ${comp.rationale && h`<div class="field-context">${comp.rationale}</div>`}
+              </div>
+              <span class=${"verdict verdict-" + outcome}>${outcome}</span>
+            </div>
+            <div class="field-values">
+              <div class="field-val-box">
+                <div class="field-val-label">Expected (PDF)</div>
+                <div class="field-val">${fmtVal(comp.expected)}</div>
+              </div>
+              <div class="field-val-box">
+                <div class="field-val-label">Extracted</div>
+                <div class="field-val">${fmtVal(comp.actual)}</div>
+              </div>
+            </div>
+            ${submitted
+              ? h`<div class="feedback-note">
+                  ${submitted === "accept" ? "✓ Accepted as correct" : "✓ Correction submitted"}
+                </div>`
+              : feedbackPath
+                ? h`<div class="field-actions">
+                    <button class="btn btn-sm btn-accept" onClick=${handleAccept}>
+                      ✓ Accept
+                    </button>
+                    <button class="btn btn-sm btn-correct" onClick=${() => setShowCorrect(!showCorrect)}>
+                      ✎ Correct
+                    </button>
+                  </div>
+                  ${showCorrect && h`
+                    <div class="correct-input" style=${{ marginTop: "0.5rem" }}>
+                      <input
+                        type="text"
+                        placeholder="Corrected value"
+                        value=${corrected}
+                        onChange=${(e) => setCorrected(e.target.value)}
+                        onKeyDown=${(e) => { if (e.key === "Enter") handleCorrect(); }}
+                      />
+                      <button class="btn btn-sm btn-primary" onClick=${handleCorrect} disabled=${!corrected.trim()}>
+                        Submit
+                      </button>
+                    </div>
+                  `}
+                  ${error && h`<div class="alert alert-error" style=${{ marginTop: "0.5rem" }}>${error}</div>`}`
+                : h`<div class="feedback-note" style=${{ color: "var(--text-muted)" }}>
+                    Feedback unavailable (no valid path)
+                  </div>`
+            }
+          </div>
+        `;
+      }
+
+      function ResultsView({ requestId, verdict, extraction, complete }) {
+        const comparisons = verdict?.comparisons || [];
+        const outcome = complete?.outcome || "UNKNOWN";
+
+        // Group comparisons by scope
+        const scalarFields = comparisons.filter((c) => c.scope === "SCALAR");
+        const txnFields = comparisons.filter((c) => c.scope === "TRANSACTION_ROW");
+
+        const bannerClass =
+          outcome === "SUCCESS" ? "SUCCESS" :
+          outcome === "PARTIAL" ? "PARTIAL" : "FAILURE";
+
+        return h`
+          <div class="container">
+            <div class="header">
+              <h1>Extraction Results</h1>
+              <p>Request ID: <code>${requestId}</code></p>
+            </div>
+            <div class=${"summary-banner " + bannerClass}>
+              <span style=${{ fontSize: "1.25rem" }}>
+                ${outcome === "SUCCESS" ? "✓" : outcome === "PARTIAL" ? "⚠" : "✗"}
+              </span>
+              <span>
+                <strong>${outcome}</strong>
+                ${complete?.judge_skipped_reason
+                  ? ` — judge skipped: ${complete.judge_skipped_reason}`
+                  : ""}
+                ${complete?.validation_errors?.length
+                  ? ` — ${complete.validation_errors.length} validation warning(s)`
+                  : ""}
+              </span>
+            </div>
+
+            ${scalarFields.length > 0 && h`
+              <div class="section-title">Statement Fields</div>
+              ${scalarFields.map((c) => h`<${FieldRow} key=${toCanonicalPath(c)} comp=${c} requestId=${requestId} />`)}
+            `}
+
+            ${txnFields.length > 0 && h`
+              <div class="section-title">Transaction Fields</div>
+              ${txnFields.map((c) => h`<${FieldRow} key=${toCanonicalPath(c)} comp=${c} requestId=${requestId} />`)}
+            `}
+
+            ${comparisons.length === 0 && h`
+              <div class="card">
+                <p style=${{ color: "var(--text-muted)" }}>
+                  No judge verdict available. The judge may have been skipped
+                  (${complete?.judge_skipped_reason || "no reason provided"}).
+                </p>
+              </div>
+            `}
+
+            <div style=${{ marginTop: "1.5rem" }}>
+              <button class="btn btn-primary" onClick=${() => window.location.reload()}>
+                Parse Another Statement
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      /* ===================================================================
+       * App — state machine: upload → processing → results
+       * =================================================================== */
+
+      function App() {
+        const [view, setView] = useState("upload");
+        const [requestId, setRequestId] = useState(null);
+        const [results, setResults] = useState(null);
+
+        const handleStart = (reqId) => {
+          setRequestId(reqId);
+          setView("processing");
+        };
+
+        const handleComplete = (data) => {
+          setResults(data);
+          setView("results");
+        };
+
+        return h`
+          <div>
+            ${view === "upload" && h`<${UploadView} onStart=${handleStart} />`}
+            ${view === "processing" && h`<${ProcessingView} requestId=${requestId} onComplete=${handleComplete} />`}
+            ${view === "results" && h`<${ResultsView}
+              requestId=${requestId}
+              verdict=${results?.verdict}
+              extraction=${results?.extraction}
+              complete=${results?.complete}
+            />`}
+          </div>
+        `;
+      }
+
+      createRoot(document.getElementById("root")).render(h`<${App} />`);
+    </script>
   </body>
 </html>

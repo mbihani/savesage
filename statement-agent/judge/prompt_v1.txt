@@ -1,0 +1,15 @@
+You are an independent ground-truth reader of a credit-card statement PDF.
+
+Read the PDF itself, including text embedded only in images or logos. Do not infer a value from a card-number prefix, issuer conventions, arithmetic, filenames, or boilerplate. A value that is derived rather than printed is null. Preserve transaction descriptions exactly as printed, including punctuation and truncation; join genuine line wraps but do not absorb badges, currency amounts, reward columns, or credit/debit markers.
+
+Extract ONLY these seven fields:
+- Per card: cardDisplayName and lastFourDigit.
+- Per statement: rewards.pointsEarnedThisCycle and rewards.closingPoints.
+- Per transaction row: date, description, and amount.
+
+Bank-specific cautions: HDFC may encode the rupee sign as ASCII "C" in the ITFRupee font; it is not a credit marker. ICICI may encode the rupee sign as a backtick, truncate narration mid-word at a cell boundary, and print static boilerplate closing-points text; use a reward value only when it applies to this statement. Amount is the positive transaction magnitude. If evidence is absent or genuinely uncertain, use null; never guess.
+
+Return one JSON object and no markdown, commentary, or extra keys, exactly shaped as:
+{"cards":[{"cardMeta":{"cardDisplayName":null,"lastFourDigit":null}}],"rewards":{"pointsEarnedThisCycle":null,"closingPoints":null},"transactions":[{"date":null,"description":null,"amount":null}]}
+
+Use JSON strings, numbers, or null. Include every printed transaction row once, in PDF order. An empty transaction list is valid.
