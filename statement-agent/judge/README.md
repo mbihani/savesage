@@ -35,6 +35,37 @@ cells as correct so narration truncation or layout artifacts do not obscure fina
 date/amount quality. Both exclude `ABSENT_IN_PDF` from the denominator; `UNMATCHED_ROW`
 is charged.
 
+## Where judge results show up in MLflow
+
+Judge results land in the experiment two complementary ways:
+
+1. **Per-trace metrics** (`judge/scorer.py::score_trace`). Each judged parse
+   run gets `judge.accuracy`, `judge.accuracy_forgiven`, and the per-field
+   accuracies logged back to that SAME run via
+   `MlflowClient.log_metric(run_id, ...)`, plus a `judged=true` tag. Good for
+   drilling into one parse, but scattered across individual runs — there is no
+   single place to see all judge results together.
+
+2. **Aggregated Evaluation Run** (`judge/evaluator.py::run_mlflow_evaluation`).
+   After scoring the sampled traces, `run_judge_evaluation` additionally calls
+   `mlflow.models.evaluate` (the non-deprecated successor to `mlflow.evaluate`
+   as of MLflow 3.0) to create ONE evaluation run named `judge-evaluation`,
+   tagged `eval_run=true`. It carries a per-row `eval_results_table` artifact
+   (one row per judged trace: `run_id`, `bank`, strict/forgiven accuracy, the
+   seven per-field accuracies) plus aggregate metrics from two **custom
+   scorers** (`mlflow.models.make_metric`): `judge.mean_strict_accuracy` and
+   `judge.mean_narration_forgiven`. This run renders in the experiment's
+   **Evaluations** tab — the aggregated cross-trace view the per-run metrics
+   cannot provide.
+
+A custom scorer here is just a Python function passed to `make_metric`: it
+receives the input columns as pandas Series (e.g. `predictions` →
+`strict_accuracy`, `narration_forgiven_accuracy` → that column) and returns a
+`MetricValue` with per-row `scores` and an `aggregate_results` dict. MLflow
+writes the per-row scores into the eval table and the aggregate into the run's
+metrics. The evaluation run is best-effort: if mlflow is unavailable it is
+skipped and the per-trace metrics + JSON summary still return.
+
 ## Differences from the legacy scorers
 
 Card display names uniformly use HDFC's `norm_key`—which removes every

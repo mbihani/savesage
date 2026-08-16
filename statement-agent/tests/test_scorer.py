@@ -377,6 +377,8 @@ class RunJudgeEvaluationTest(unittest.TestCase):
         self.assertEqual(result["count_judged"], 0)
         self.assertEqual(result["errors"], [])
         self.assertIsNone(result["overall_strict"])
+        # Empty-result early return still carries the eval_run_id key.
+        self.assertIsNone(result["eval_run_id"])
 
     def test_experiment_not_found_returns_error(self):
         """When the experiment doesn't exist, returns an error summary."""
@@ -423,6 +425,13 @@ class RunJudgeEvaluationTest(unittest.TestCase):
         # All 3 runs tagged as judged.
         judged_runs = {rid for k, v, rid in self.fake_mlflow.set_tags if k == "judged"}
         self.assertEqual(judged_runs, {"run-1", "run-2", "run-3"})
+
+        # The summary carries an eval_run_id key.  With the fake mlflow (no
+        # mlflow.models.evaluate), run_mlflow_evaluation degrades gracefully
+        # to None — the per-trace results still return.  The real-mlflow
+        # end-to-end behaviour is covered by tests/test_evaluator.py.
+        self.assertIn("eval_run_id", result)
+        self.assertIsNone(result["eval_run_id"])
 
     def test_handles_errors_gracefully(self):
         """A failing score_trace is captured as an error, not a crash."""

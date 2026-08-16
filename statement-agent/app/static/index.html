@@ -1033,6 +1033,13 @@
                     <div class="field-val" style=${{ fontSize: "1.25rem" }}>${pct(r.overall_narration_forgiven)}</div>
                   </div>
                 </div>
+                ${r.eval_run_id && h`
+                  <div style=${{ marginTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                    Aggregated as MLflow Evaluate run
+                    <code style=${{ fontSize: "0.8rem" }}>${r.eval_run_id.slice(0, 8)}…</code>
+                    — visible in the experiment's "Evaluations" tab.
+                  </div>
+                `}
               </div>
             `}
 
