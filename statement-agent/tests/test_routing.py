@@ -47,7 +47,7 @@ class PromptVersionTest(unittest.TestCase):
 
     def test_version_format_is_bank_colon_8hex(self) -> None:
         for bank in Bank:
-            version = get_prompt_version(bank)
+            version = get_prompt_version(resolve_prompt(bank), bank)
             bank_name, sep, digest = version.partition(":")
             self.assertTrue(sep, f"{bank.value}: missing ':' separator in {version!r}")
             self.assertEqual(bank_name, bank.value)
@@ -58,26 +58,21 @@ class PromptVersionTest(unittest.TestCase):
     def test_version_stable_across_calls(self) -> None:
         # Same prompt text -> same version id (stable, not random).
         for bank in Bank:
-            self.assertEqual(get_prompt_version(bank), get_prompt_version(bank))
+            text = resolve_prompt(bank)
+            self.assertEqual(get_prompt_version(text, bank), get_prompt_version(text, bank))
 
     def test_version_differs_across_banks(self) -> None:
         # Each bank has a distinct prompt -> distinct version ids.
-        versions = {bank: get_prompt_version(bank) for bank in Bank}
+        versions = {bank: get_prompt_version(resolve_prompt(bank), bank) for bank in Bank}
         self.assertEqual(len(set(versions)), len(Bank))
 
     def test_version_changes_when_prompt_text_changes(self) -> None:
-        # The version is derived from the prompt TEXT, so a changed prompt
-        # yields a changed version. Monkeypatch resolve_prompt (the global
-        # get_prompt_version calls) to return different text.
-        import graph.routing as routing
-
-        original = routing.resolve_prompt
-        before = get_prompt_version(Bank.HDFC)
-        routing.resolve_prompt = lambda bank: "DIFFERENT PROMPT TEXT"  # type: ignore[assignment]
-        try:
-            after = get_prompt_version(Bank.HDFC)
-        finally:
-            routing.resolve_prompt = original  # type: ignore[assignment]
+        # The version is derived from the prompt TEXT passed in, so a changed
+        # prompt yields a changed version. ``get_prompt_version`` takes the
+        # text directly (it no longer re-resolves from disk), so feeding it
+        # different text is the direct way to exercise this.
+        before = get_prompt_version("ORIGINAL PROMPT TEXT", Bank.HDFC)
+        after = get_prompt_version("DIFFERENT PROMPT TEXT", Bank.HDFC)
         self.assertNotEqual(before, after)
         self.assertTrue(after.startswith("HDFC:"))
 
@@ -89,7 +84,7 @@ class PromptVersionTest(unittest.TestCase):
         for bank in Bank:
             text = resolve_prompt(bank)
             expected_digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:8]
-            self.assertEqual(get_prompt_version(bank), f"{bank.value}:{expected_digest}")
+            self.assertEqual(get_prompt_version(text, bank), f"{bank.value}:{expected_digest}")
 
 
 class GraphStateTest(unittest.TestCase):

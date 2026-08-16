@@ -20,7 +20,7 @@ from graph.fakes import (
 )
 from graph.graph import run_graph
 from graph.nodes import NodeDeps
-from graph.routing import RoutingError, get_prompt_version
+from graph.routing import RoutingError, get_prompt_version, resolve_prompt
 from graph.state import GraphState
 from harness.config_ws4 import TracingConfig
 from harness.tracing import MLflowTraceSink
@@ -436,11 +436,13 @@ class PromptVisibilityTest(unittest.TestCase):
 
     def test_prompt_version_consistent_across_spans_run_param_and_tag(self):
         # The same prompt_version flows to: route span attrs, extract span
-        # attrs, the run param, and the run tag -- and matches the helper.
+        # attrs, the run param, and the run tag -- and matches the helper. The
+        # helper takes the resolved prompt TEXT (as route_node now does), so the
+        # version hashes exactly what was traced.
         fake, _ = _run_graph_with_sink(_RecordingMLflow(), bank=Bank.HDFC)
         route_span = next(s for s in fake.spans if s.name == "route")
         extract_span = next(s for s in fake.spans if s.name == "extract")
-        expected = get_prompt_version(Bank.HDFC)
+        expected = get_prompt_version(resolve_prompt(Bank.HDFC), Bank.HDFC)
         self.assertEqual(route_span.attributes["prompt_version"], expected)
         self.assertEqual(extract_span.attributes["prompt_version"], expected)
         self.assertEqual(route_span.outputs["prompt_version"], expected)

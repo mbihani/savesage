@@ -157,7 +157,11 @@ def route_node(state: GraphState, deps: NodeDeps) -> GraphState:
         state.prompt = resolve_prompt(state.request.bank)
         # Stable version id for the resolved prompt; stored on state so the
         # extract span and the MLflow run can be tagged without recomputing.
-        state.prompt_version = get_prompt_version(state.request.bank)
+        # Pass the ALREADY-RESOLVED ``state.prompt`` (not the bank) so the
+        # version hashes exactly the text that was traced/sent -- resolving the
+        # prompt twice (once for the trace text, once for the version) would
+        # re-read the file and could disagree if it was edited between reads.
+        state.prompt_version = get_prompt_version(state.prompt, state.request.bank)
         state.stage = Stage.ROUTED
         _trace(deps, state, "route",
                # ``prompt_version`` is a span attribute so the route span records
