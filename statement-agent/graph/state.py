@@ -61,6 +61,10 @@ class GraphState:
 
     request: ParseRequest
     prompt: str | None = None
+    # Stable version id ("<BANK>:<sha256[:8]>") for the resolved prompt; set by
+    # route_node alongside ``prompt`` so the extract span and MLflow run can be
+    # tagged with the exact prompt version without recomputing the hash.
+    prompt_version: str | None = None
     extraction: ExtractionResult | None = None
     schema_valid: bool = False
     validation_errors: list[str] = field(default_factory=list)

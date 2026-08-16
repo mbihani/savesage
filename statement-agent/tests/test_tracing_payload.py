@@ -20,7 +20,7 @@ from graph.fakes import (
 )
 from graph.graph import run_graph
 from graph.nodes import NodeDeps
-from graph.routing import RoutingError
+from graph.routing import RoutingError, get_prompt_version
 from graph.state import GraphState
 from harness.config_ws4 import TracingConfig
 from harness.tracing import MLflowTraceSink
@@ -67,6 +67,7 @@ class _RecordingMLflow:
         self.spans: list[_RecordingSpan] = []
         self.params: dict[str, object] = {}
         self.metrics: dict[str, float] = {}
+        self.tags: dict[str, object] = {}
         self._trace_id = "tr-test-001"
         self.end_run_calls = 0
 
@@ -97,6 +98,9 @@ class _RecordingMLflow:
 
     def log_metric(self, key, value):
         self.metrics[key] = value
+
+    def set_tag(self, key, value):
+        self.tags[key] = value
 
     def log_artifact(self, path, artifact_path=None):
         pass
@@ -393,6 +397,65 @@ class SpanErrorPathTest(unittest.TestCase):
         # Error is recorded on the span.
         self.assertIsNotNone(span.recorded_exception)
         self.assertEqual(span.end_status, "ERROR")
+
+
+class PromptVisibilityTest(unittest.TestCase):
+    """The extract span must show the actual LLM prompt, and the prompt
+    version must be logged on the route/extract spans and the MLflow run."""
+
+    def test_extract_span_inputs_include_resolved_prompt(self):
+        fake, _ = _run_graph_with_sink(_RecordingMLflow())
+        span = next(s for s in fake.spans if s.name == "extract")
+        self.assertIn("prompt", span.inputs)
+        prompt = span.inputs["prompt"]
+        # Template text, not customer PII: it must be VISIBLE. The default
+        # 200-char cap would show only the title line; the larger "prompt" cap
+        # keeps the substantive instructions visible.
+        self.assertIsInstance(prompt, str)
+        self.assertGreater(len(prompt), 200)
+
+    def test_extract_prompt_is_capped_not_logged_in_full(self):
+        # The HDFC prompt is ~27 KB; it is capped (not logged in full) to keep
+        # traces bounded, but the cap is large enough to be useful.
+        fake, _ = _run_graph_with_sink(_RecordingMLflow(), bank=Bank.HDFC)
+        span = next(s for s in fake.spans if s.name == "extract")
+        prompt = span.inputs["prompt"]
+        self.assertLess(len(prompt), 5000)
+        self.assertTrue(prompt.endswith("...[truncated]"))
+
+    def test_route_span_outputs_and_attrs_carry_prompt_version(self):
+        fake, _ = _run_graph_with_sink(_RecordingMLflow())
+        span = next(s for s in fake.spans if s.name == "route")
+        self.assertIn("prompt_version", span.outputs)
+        self.assertIn("prompt_version", span.attributes)
+
+    def test_extract_span_attrs_carry_prompt_version(self):
+        fake, _ = _run_graph_with_sink(_RecordingMLflow())
+        span = next(s for s in fake.spans if s.name == "extract")
+        self.assertIn("prompt_version", span.attributes)
+
+    def test_prompt_version_consistent_across_spans_run_param_and_tag(self):
+        # The same prompt_version flows to: route span attrs, extract span
+        # attrs, the run param, and the run tag -- and matches the helper.
+        fake, _ = _run_graph_with_sink(_RecordingMLflow(), bank=Bank.HDFC)
+        route_span = next(s for s in fake.spans if s.name == "route")
+        extract_span = next(s for s in fake.spans if s.name == "extract")
+        expected = get_prompt_version(Bank.HDFC)
+        self.assertEqual(route_span.attributes["prompt_version"], expected)
+        self.assertEqual(extract_span.attributes["prompt_version"], expected)
+        self.assertEqual(route_span.outputs["prompt_version"], expected)
+        self.assertEqual(fake.params.get("prompt_version"), expected)
+        self.assertEqual(fake.tags.get("prompt_version"), expected)
+
+    def test_prompt_version_omitted_when_route_fails(self):
+        # A routing failure leaves no prompt_version; the run param/tag are
+        # skipped (not logged as None).
+        fake = _RecordingMLflow()
+        with patch("graph.nodes.resolve_prompt",
+                   side_effect=RoutingError("no prompt for bank")):
+            _run_graph_with_sink(fake)
+        self.assertNotIn("prompt_version", fake.params)
+        self.assertNotIn("prompt_version", fake.tags)
 
 
 if __name__ == "__main__":

@@ -350,9 +350,11 @@ class MLflowTraceSink(TraceSink):
         """Log params and metrics on the current MLflow run (best-effort).
 
         Called after the span flush and before ``_end_run`` so the run is still
-        active.  Params: bank, model_id, outcome.  Metrics: latency_ms,
-        input/output/total tokens, transaction count.  Individual mlflow calls
-        are best-effort; a failure logs a warning and continues.
+        active.  Params: bank, model_id, outcome, prompt_version.  Metrics:
+        latency_ms, input/output/total tokens, transaction count.  The prompt
+        version is also set as a run TAG so it shows as a column in the
+        experiments table.  Individual mlflow calls are best-effort; a failure
+        logs a warning and continues.
         """
         if not ops:
             return
@@ -362,6 +364,13 @@ class MLflowTraceSink(TraceSink):
         # "persist_extraction" is not confused with "extract".
         extract_evt = next(
             (op.event for op in ops if op.event.name == "extract"),
+            None,
+        )
+        # The route event carries the resolved prompt_version in its attributes
+        # (set by route_node via extra_attrs).  It identifies the exact prompt
+        # text used for this run, so the run can be grouped/filtered by prompt.
+        route_evt = next(
+            (op.event for op in ops if op.event.name == "route"),
             None,
         )
 
@@ -374,6 +383,24 @@ class MLflowTraceSink(TraceSink):
             outcome = root.attributes.get("outcome")
             if outcome:
                 best_effort("mlflow.log_param.outcome", mlf.log_param, "outcome", outcome)
+            # Prompt version from the route event.  Logged as BOTH a param
+            # (filterable) and a tag (visible as a column in the experiments
+            # table).  set_tag uses the active run (no run_id kwarg).
+            prompt_version = route_evt.attributes.get("prompt_version") if route_evt else None
+            if prompt_version:
+                best_effort(
+                    "mlflow.log_param.prompt_version", mlf.log_param,
+                    "prompt_version", prompt_version,
+                )
+                # set_tag is wrapped in a lambda (unlike log_param above) so the
+                # attribute access happens INSIDE best-effort: some mlflow fakes
+                # predate set_tag, and an eager ``mlf.set_tag`` reference would
+                # raise AttributeError before best-effort could catch it, aborting
+                # the rest of _do (model_id, metrics) for that run.
+                best_effort(
+                    "mlflow.set_tag.prompt_version",
+                    lambda pv=prompt_version: mlf.set_tag("prompt_version", pv),
+                )
             # Model, usage, and latency from the extract event.
             if extract_evt is not None:
                 model_id = extract_evt.attributes.get("model_id")

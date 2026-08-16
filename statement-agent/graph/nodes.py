@@ -27,7 +27,7 @@ from contracts.ports import (
     ResultStore,
     TraceSink,
 )
-from graph.routing import resolve_prompt
+from graph.routing import get_prompt_version, resolve_prompt
 from graph.state import GraphState, Outcome, Stage
 from graph.validation import validate_payload
 
@@ -155,10 +155,18 @@ def route_node(state: GraphState, deps: NodeDeps) -> GraphState:
     """Resolve the bank to its prompt. Never raises; a routing failure is terminal."""
     try:
         state.prompt = resolve_prompt(state.request.bank)
+        # Stable version id for the resolved prompt; stored on state so the
+        # extract span and the MLflow run can be tagged without recomputing.
+        state.prompt_version = get_prompt_version(state.request.bank)
         state.stage = Stage.ROUTED
         _trace(deps, state, "route",
+               # ``prompt_version`` is a span attribute so the route span records
+               # WHICH prompt was selected (the run param/tag below also uses it).
+               extra_attrs={"prompt_version": state.prompt_version},
                inputs={"bank": state.request.bank.value},
-               outputs={"bank": state.request.bank.value, "prompt_resolved": True})
+               outputs={"bank": state.request.bank.value,
+                        "prompt_resolved": True,
+                        "prompt_version": state.prompt_version})
     except Exception as exc:
         state.mark_failure(Stage.ROUTED, f"route: {exc}")
         state.outcome = Outcome.EXTRACTION_FAILED
@@ -175,14 +183,24 @@ def extract_node(state: GraphState, deps: NodeDeps) -> GraphState:
     try:
         state.extraction = deps.extraction.extract(state.request)
         state.stage = Stage.EXTRACTED
+        # ``prompt`` is the actual resolved prompt text sent to Luna. It is
+        # template text (not customer data), so it is safe to trace; the PII
+        # scrubber applies a LARGER truncation cap to the "prompt" key than to
+        # ordinary strings so the prompt is actually VISIBLE in the trace view
+        # (the default 200-char cap would show only the prompt's title line).
+        extract_attrs = _extract_telemetry(state)
+        if state.prompt_version is not None:
+            extract_attrs["prompt_version"] = state.prompt_version
         _trace(deps, state, "extract",
-               extra_attrs=_extract_telemetry(state),
+               extra_attrs=extract_attrs,
                inputs={"bank": state.request.bank.value,
-                       "model_id": state.extraction.model_id},
+                       "model_id": state.extraction.model_id,
+                       "prompt": state.prompt},
                outputs={"extraction": state.extraction.payload,
                         "model_id": state.extraction.model_id,
                         "schema_valid": state.extraction.schema_valid,
-                        "latency_ms": state.extraction.latency_ms})
+                        "latency_ms": state.extraction.latency_ms,
+                        "raw_response_id": state.extraction.raw_response_id})
     except Exception as exc:
         state.mark_failure(Stage.EXTRACTED, f"extract: {exc}")
         state.outcome = Outcome.EXTRACTION_FAILED

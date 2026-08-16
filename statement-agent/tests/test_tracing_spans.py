@@ -248,6 +248,31 @@ class RedactTelemetryTest(unittest.TestCase):
         self.assertLess(len(out["x"]), 500)
         self.assertTrue(str(out["x"]).endswith("...[truncated]"))
 
+    def test_prompt_key_uses_larger_truncation_cap(self):
+        # The "prompt" key carries bank template text (not PII) that must be
+        # VISIBLE in the trace. It gets a larger truncation cap than the default
+        # 200 so the prompt's instructions are not clipped to just the title line.
+        out = redact_telemetry_attributes({"prompt": "P" * 5000})
+        # NOT clipped to the default 200; substantially more survives.
+        self.assertGreater(len(out["prompt"]), 500)
+        # Still bounded (the larger cap, not the full 5000).
+        self.assertLess(len(out["prompt"]), 5000)
+        self.assertTrue(str(out["prompt"]).endswith("...[truncated]"))
+
+    def test_default_cap_still_applies_to_non_prompt_keys(self):
+        # Regression guard: only the "prompt" key gets the larger cap; an
+        # ordinary key with a long string is still truncated to the default.
+        out = redact_telemetry_attributes({"note": "x" * 5000})
+        self.assertLess(len(out["note"]), 500)
+        self.assertTrue(str(out["note"]).endswith("...[truncated]"))
+
+    def test_prompt_card_numbers_still_scrubbed(self):
+        # The larger cap does not bypass card-number scrubbing: a prompt that
+        # contains a card-number-shaped sequence still has it redacted.
+        out = redact_telemetry_attributes({"prompt": "card 4111111111111111 end"})
+        self.assertNotIn("4111111111111111", str(out["prompt"]))
+        self.assertIn("[REDACTED_CARD]", str(out["prompt"]))
+
 
 class ToNsTest(unittest.TestCase):
     def test_tz_aware_datetime_to_nanoseconds(self):
