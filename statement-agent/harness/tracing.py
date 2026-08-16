@@ -100,14 +100,31 @@ def configure_tracing(config: TracingConfig, mlflow_module: Any = None) -> None:
                 cfg_path,
             )
     best_effort("mlflow.set_tracking_uri", mlf.set_tracking_uri, config.tracking_uri)
-    experiment_path = resolve_experiment_path(config)
-    if experiment_path:
-        best_effort("mlflow.set_experiment", mlf.set_experiment, experiment_path)
+    # Prefer the experiment ID injected by the bound Databricks App resource
+    # (``MLFLOW_EXPERIMENT_ID``) over the configured path. The ID is more robust:
+    # it survives experiment recreation and cross-workspace deploys, and mlflow
+    # picks it up automatically as the active experiment for new runs/traces.
+    # ``mlflow.set_experiment`` takes a NAME/path, NOT an ID -- calling it with
+    # the numeric ID would try to *create* an experiment named "967014443183055",
+    # so when the ID is set we rely on the env var and skip ``set_experiment``.
+    experiment_id = os.getenv("MLFLOW_EXPERIMENT_ID", "")
+    if experiment_id:
+        _LOGGER.info(
+            "tracing: using MLFLOW_EXPERIMENT_ID=%s (bound resource)", experiment_id,
+        )
+    else:
+        experiment_path = resolve_experiment_path(config)
+        if experiment_path:
+            best_effort("mlflow.set_experiment", mlf.set_experiment, experiment_path)
+        _LOGGER.info(
+            "tracing: experiment=%s (path; no MLFLOW_EXPERIMENT_ID set)",
+            experiment_path or "(default)",
+        )
     best_effort("mlflow.tracing.enable", mlf.tracing.enable)
     _LOGGER.info(
-        "tracing configured: uri=%s experiment=%s profile_env=%s",
+        "tracing configured: uri=%s experiment_id_env=%s profile_env=%s",
         config.tracking_uri,
-        experiment_path or "(default)",
+        experiment_id or "(unset)",
         os.environ.get("DATABRICKS_CONFIG_PROFILE", "(unset)"),
     )
 
@@ -163,7 +180,14 @@ class MLflowTraceSink(TraceSink):
         self._mlflow_factory = mlflow_factory  # test seam: inject a fake/raising mlflow
         self._mlflow_client: Any = None
         self._configured = False
-        self._disabled = False  # set by _guard on a hard non-control failure
+        self._disabled = False  # set by _guard after repeated consecutive hard failures
+        # Circuit-breaker state: a SINGLE hard failure must not permanently kill
+        # tracing (the first request may race with configuration). We retry every
+        # request and only disable after this many CONSECUTIVE failures -- a
+        # persistent bug still trips the breaker to bound log spam, but a
+        # transient one-off recovers on the next healthy request.
+        self._consecutive_failures = 0
+        self._failure_threshold = 10
 
     # --- airtight outer boundary (review B1) ---
     def _guard(self, action: str, fn: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
@@ -172,18 +196,35 @@ class MLflowTraceSink(TraceSink):
         Catches ``BaseException`` (so payload/RecursionError/MemoryError bugs
         cannot break the parse), RE-RAISES control exceptions (KeyboardInterrupt /
         SystemExit / GeneratorExit — operator intent, never swallowed), and
-        DISABLES telemetry after a hard non-control failure so a recurring bug
-        fast-fails on subsequent requests.
+        treats hard failures as RETRYABLE: a single failure does NOT disable
+        telemetry (the first request may race with configuration). Only after
+        ``_failure_threshold`` CONSECUTIVE failures does the circuit open and
+        disable telemetry, bounding log spam from a persistent bug. Any
+        successful call resets the counter so the breaker self-heals.
         """
         if self._disabled:
             return None
         try:
-            return fn(*args, **kwargs)
+            result = fn(*args, **kwargs)
+            # Success: reset the consecutive-failure counter (circuit closes).
+            if self._consecutive_failures:
+                self._consecutive_failures = 0
+            return result
         except _CONTROL_EXCEPTIONS:
             raise
         except BaseException as exc:  # noqa: BLE001 - telemetry must never break parse
-            self._disabled = True
-            _LOGGER.warning("telemetry DISABLED after hard failure [%s]: %s", action, exc)
+            self._consecutive_failures += 1
+            if self._consecutive_failures >= self._failure_threshold:
+                self._disabled = True
+                _LOGGER.warning(
+                    "telemetry DISABLED after %d consecutive hard failures [%s]: %s",
+                    self._consecutive_failures, action, exc,
+                )
+            else:
+                _LOGGER.warning(
+                    "telemetry hard failure [%s] (#%d, will retry next request): %s",
+                    action, self._consecutive_failures, exc,
+                )
             return None
 
     # --- mlflow access (function-local import or injected factory) ---
@@ -199,11 +240,23 @@ class MLflowTraceSink(TraceSink):
             return
         # Route through the factory when injected so tests stay hermetic; the
         # default path imports real mlflow function-local inside configure_tracing.
-        if self._mlflow_factory is not None:
-            best_effort("mlflow.configure", configure_tracing, self._config, self._mlflow())
-        else:
-            best_effort("mlflow.configure", configure_tracing, self._config)
-        self._configured = True
+        # If configuration fails (e.g. mlflow not yet importable on the first
+        # request, a startup race) we do NOT mark configured -- the next trace
+        # event retries. Previously a single swallowed-but-flagged failure set
+        # ``_configured = True`` unconditionally, so a transient first-request
+        # race permanently broke tracing for every subsequent request.
+        try:
+            if self._mlflow_factory is not None:
+                configure_tracing(self._config, self._mlflow())
+            else:
+                configure_tracing(self._config)
+            self._configured = True
+        except _CONTROL_EXCEPTIONS:
+            raise
+        except BaseException as exc:  # noqa: BLE001 - config failure is retried, not fatal
+            _LOGGER.warning(
+                "tracing configuration failed (will retry on next request): %s", exc,
+            )
 
     # --- run-id management (one MLflow run per parse request) ---
     def _ensure_run(self, request_id: str) -> None:
