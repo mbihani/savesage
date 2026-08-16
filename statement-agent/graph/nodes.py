@@ -229,12 +229,14 @@ def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
     """
     if state.outcome is Outcome.EXTRACTION_FAILED:
         return state
+    persisted = False
     persist_error: str | None = None
     if state.extraction is not None:
         if deps.result_store is not None:
             try:
                 deps.result_store.save_extraction(state.extraction)
                 state.stage = Stage.PERSISTED
+                persisted = True
             except Exception as exc:
                 state.mark_failure(Stage.PERSISTED, f"persist: {exc}")
                 persist_error = str(exc)
@@ -242,10 +244,13 @@ def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
         # a failure. The stage is left at its prior value (the data was not
         # actually persisted) -- but the persist span is STILL traced so the span
         # tree is complete and the post-hoc judge sees every pipeline stage.
+        # ``persisted`` is an explicit boolean: it stays False when the store is
+        # absent (save was skipped) AND when save raises, so the trace never
+        # falsely reports a successful persist.
         _trace(deps, state, "persist_extraction",
                error=persist_error,
                inputs={"request_id": state.request_id},
-               outputs={"persisted": persist_error is None})
+               outputs={"persisted": persisted})
     # Log the source PDF and the extraction as MLflow artifacts so the post-hoc
     # judge can re-read them when scoring this trace. Best-effort: never raises.
     if deps.trace_sink is not None:

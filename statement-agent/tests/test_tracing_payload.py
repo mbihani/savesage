@@ -9,11 +9,18 @@ name, transaction descriptions) must be redacted by the recursive scrubber.
 
 from datetime import UTC, datetime
 import unittest
+from unittest.mock import patch
 
 from contracts.models import Bank, TraceEvent
-from graph.fakes import FakeExtractionAdapter, InMemoryResultStore, make_synthetic_request
+from graph.fakes import (
+    FakeExtractionAdapter,
+    FailingExtractionAdapter,
+    InMemoryResultStore,
+    make_synthetic_request,
+)
 from graph.graph import run_graph
 from graph.nodes import NodeDeps
+from graph.routing import RoutingError
 from graph.state import GraphState
 from harness.config_ws4 import TracingConfig
 from harness.tracing import MLflowTraceSink
@@ -31,6 +38,7 @@ class _RecordingSpan:
         self.outputs = None
         self.ended = False
         self.end_status = None
+        self.recorded_exception = None
 
     def set_attributes(self, attrs):
         self.attributes.update(attrs)
@@ -45,7 +53,7 @@ class _RecordingSpan:
         self.outputs = outputs
 
     def record_exception(self, exc):
-        pass
+        self.recorded_exception = exc
 
     def end(self, outputs=None, attributes=None, status=None, end_time_ns=None):
         self.ended = True
@@ -106,16 +114,26 @@ def _config():
     )
 
 
-def _run_graph_with_sink(fake_mlflow):
-    """Run the full parse pipeline through the MLflowTraceSink."""
+# Sentinel so ``store=None`` (no store wired) is distinguishable from "use the
+# default in-memory store" when calling ``_run_graph_with_sink``.
+_DEFAULT_STORE = object()
+
+
+def _run_graph_with_sink(fake_mlflow, *, extraction=None, store=_DEFAULT_STORE,
+                         bank=Bank.HDFC):
+    """Run the full parse pipeline through the MLflowTraceSink.
+
+    Keyword args let error-path tests inject a failing extraction adapter, a
+    store that raises on save, or no store at all (``store=None``) without
+    disturbing the happy-path callers that pass only ``fake_mlflow``.
+    """
     sink = MLflowTraceSink(_config(), mlflow_factory=lambda: fake_mlflow)
-    store = InMemoryResultStore()
     deps = NodeDeps(
-        extraction=FakeExtractionAdapter(),
-        result_store=store,
+        extraction=extraction if extraction is not None else FakeExtractionAdapter(),
+        result_store=InMemoryResultStore() if store is _DEFAULT_STORE else store,
         trace_sink=sink,
     )
-    state = GraphState(request=make_synthetic_request(Bank.HDFC))
+    state = GraphState(request=make_synthetic_request(bank))
     run_graph(deps, state)
     return fake_mlflow, state
 
@@ -251,9 +269,11 @@ class SpanPIIRedactionTest(unittest.TestCase):
         meta = extraction["statementMeta"]
         # "issuerName" → lowercased "issuername" contains "name" → [REDACTED]
         self.assertEqual(meta["issuerName"], "[REDACTED]")
-        # Non-PII fields survive (rawStatementId lowercased "rawstatementid"
-        # does NOT contain "statement_id" — no underscore — so it is NOT redacted).
-        self.assertEqual(meta["rawStatementId"], "synthetic-001")
+        # "rawStatementId" → lowercased "rawstatementid" contains "statementid"
+        # (a PII key substring) → [REDACTED].  Statement identifiers must never
+        # be traced (rules/pii.py).  The underscore-free variant is needed
+        # because camelCase keys lose the underscore on lowercasing.
+        self.assertEqual(meta["rawStatementId"], "[REDACTED]")
         self.assertEqual(meta["statementDate"], "01/04/2026")
 
 
@@ -295,6 +315,84 @@ class EmptySpansWhenNoPayloadTest(unittest.TestCase):
         self.assertIsNone(span.outputs)
         # But attributes were still set.
         self.assertEqual(span.attributes.get("bank"), "HDFC")
+
+
+class _FailingResultStore(InMemoryResultStore):
+    """ResultStore that always raises on save_extraction (persist-failure test)."""
+
+    def save_extraction(self, result):
+        raise RuntimeError("persist failure: lakebase unavailable")
+
+
+class SpanErrorPathTest(unittest.TestCase):
+    """Error-path spans must still carry inputs and report status/outputs honestly.
+
+    Covers three failure modes (code-review finding LOW): a route failure, an
+    extract failure, and a persist failure.  In every case the span's ``inputs``
+    must survive so the trace view shows WHAT was being attempted, and the
+    ``persisted`` flag must be an honest boolean (False when the store is absent
+    or save raises — never the old ``persist_error is None`` shortcut that was
+    True even when nothing was actually saved).
+    """
+
+    def test_route_failure_span_still_carries_inputs(self):
+        fake = _RecordingMLflow()
+        with patch("graph.nodes.resolve_prompt",
+                   side_effect=RoutingError("no prompt for bank")):
+            _run_graph_with_sink(fake)
+        route_spans = [s for s in fake.spans if s.name == "route"]
+        self.assertEqual(len(route_spans), 1)
+        span = route_spans[0]
+        # Inputs are still carried even on failure.
+        self.assertIsNotNone(span.inputs)
+        self.assertEqual(span.inputs["bank"], "HDFC")
+        # No outputs on the error path (the trace call omits outputs on failure).
+        self.assertIsNone(span.outputs)
+        # Error is recorded on the span.
+        self.assertIsNotNone(span.recorded_exception)
+        self.assertEqual(span.end_status, "ERROR")
+
+    def test_extract_failure_span_carries_inputs_and_error(self):
+        fake = _RecordingMLflow()
+        _run_graph_with_sink(fake, extraction=FailingExtractionAdapter())
+        extract_spans = [s for s in fake.spans if s.name == "extract"]
+        self.assertEqual(len(extract_spans), 1)
+        span = extract_spans[0]
+        # Inputs are still carried even on failure.
+        self.assertIsNotNone(span.inputs)
+        self.assertEqual(span.inputs["bank"], "HDFC")
+        # No outputs on the error path.
+        self.assertIsNone(span.outputs)
+        # Error is recorded on the span.
+        self.assertIsNotNone(span.recorded_exception)
+        self.assertEqual(span.end_status, "ERROR")
+
+    def test_persist_store_unavailable_reports_not_persisted(self):
+        fake = _RecordingMLflow()
+        _run_graph_with_sink(fake, store=None)
+        persist_spans = [s for s in fake.spans if s.name == "persist_extraction"]
+        self.assertEqual(len(persist_spans), 1)
+        span = persist_spans[0]
+        self.assertIsNotNone(span.outputs)
+        # Store was not wired → save was skipped → persisted must be False,
+        # not the old True (persist_error is None was True even when skipped).
+        self.assertFalse(span.outputs["persisted"])
+        # Skipping is not a failure: no error recorded.
+        self.assertIsNone(span.recorded_exception)
+        self.assertEqual(span.end_status, "OK")
+
+    def test_persist_save_failure_reports_not_persisted(self):
+        fake = _RecordingMLflow()
+        _run_graph_with_sink(fake, store=_FailingResultStore())
+        persist_spans = [s for s in fake.spans if s.name == "persist_extraction"]
+        self.assertEqual(len(persist_spans), 1)
+        span = persist_spans[0]
+        self.assertIsNotNone(span.outputs)
+        # Save raised → persisted must be False.
+        self.assertFalse(span.outputs["persisted"])
+        # Error is recorded on the span.
+        self.assertIsNotNone(span.recorded_exception)
+        self.assertEqual(span.end_status, "ERROR")
 
 
 if __name__ == "__main__":

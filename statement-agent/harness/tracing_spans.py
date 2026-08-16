@@ -76,7 +76,10 @@ _PII_KEY_SUBSTRINGS = (
     "raw_response",
     "raw_text",
     "statement_id",
+    "statementid",  # camelCase: statementId / rawStatementId → no underscore
+    "rawstatementid",  # explicit (also caught by "statementid")
     "account_number",
+    "accountnumber",  # camelCase: accountNumber → no underscore
     "name",  # cardholder name / account holder name
 )
 # A loose card-number-shaped sequence (13-19 digits, optional spaces/dashes).
