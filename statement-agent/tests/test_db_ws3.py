@@ -11,6 +11,7 @@ from db.mapping import (feedback_from_row, feedback_values, promoted_columns,
 from db.sql import DDL, UPSERT_EXTRACTION_SQL, current_state_view_sql
 from db.config_ws3 import LakebaseSettings
 from db.provision import CdfCreateError, ensure_cdf, resolve_database_resource
+from db.stores import init_tables
 
 
 class LakebaseSqlTests(unittest.TestCase):
@@ -32,6 +33,36 @@ class LakebaseSqlTests(unittest.TestCase):
     def test_current_view_rejects_identifier_injection(self):
         with self.assertRaises(ValueError):
             current_state_view_sql("history; DROP TABLE x", ("request_id",))
+
+    def test_init_tables_executes_all_ddl_in_one_connection(self):
+        executed = []
+
+        class Resource:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def cursor(self):
+                return self
+
+            def execute(self, statement):
+                executed.append(statement)
+
+        connections = []
+
+        def connect():
+            resource = Resource()
+            connections.append(resource)
+            return resource
+
+        init_tables(connect)
+        self.assertEqual(len(connections), 1)
+        self.assertTrue(any("CREATE TABLE IF NOT EXISTS statement_results" in s
+                            for s in executed))
+        self.assertTrue(any("CREATE TABLE IF NOT EXISTS field_feedback" in s
+                            for s in executed))
 
 
 class LakebaseMappingTests(unittest.TestCase):

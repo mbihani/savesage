@@ -10,7 +10,17 @@ from .connection import ConnectionFactory
 from .mapping import (extraction_from_row, feedback_from_row, feedback_values,
                       promoted_columns, verdict_from_dict, verdict_to_dict)
 from .sql import (GET_EXTRACTION_SQL, GET_VERDICT_SQL, INSERT_FEEDBACK_SQL,
-                  LIST_FEEDBACK_SQL, UPSERT_EXTRACTION_SQL, UPSERT_VERDICT_SQL)
+                  LIST_FEEDBACK_SQL, UPSERT_EXTRACTION_SQL, UPSERT_VERDICT_SQL,
+                  DDL)
+
+
+def init_tables(connect: ConnectionFactory) -> None:
+    """Create the persistence tables and indexes before stores are exposed."""
+    statements = (part.strip() for part in DDL.split(";") if part.strip())
+    with connect() as connection:
+        with connection.cursor() as cursor:
+            for statement in statements:
+                cursor.execute(statement)
 
 
 class _Store:
