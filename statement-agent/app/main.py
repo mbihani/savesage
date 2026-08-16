@@ -961,7 +961,24 @@ def create_app():
             args=(sample_size,),
             daemon=True,
         )
-        thread.start()
+        # Hand slot ownership to the runner ONLY after a successful start().
+        # If start() raises (RuntimeError / resource exhaustion / thread
+        # limit), release the slot ourselves so a subsequent judge request
+        # (batch OR single-trace) is NOT 409'd permanently until app restart
+        # — the runner's finally never runs when the thread never starts,
+        # so there is NO double-release (a runner that never started does
+        # not release). Mirrors the single-trace path below.
+        try:
+            thread.start()
+        except Exception:
+            _release_judge_slot()
+            _LOGGER.warning(
+                "failed to start batch judge thread", exc_info=True,
+            )
+            raise HTTPException(
+                status_code=503,
+                detail="failed to start judge; please retry",
+            )
 
         return JSONResponse(
             status_code=202,

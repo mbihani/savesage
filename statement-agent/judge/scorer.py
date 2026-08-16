@@ -224,10 +224,15 @@ def _ensure_mlflow_configured(mlf: Any) -> None:
     _mlflow_configured = True
 
 
-# Cap on the ``rationale`` string logged to MLflow — it may echo PDF text,
-# so a length cap is a defensive PII guard (mirrors the span-attribute
-# ``_MAX_STR`` cap in harness.tracing_spans).
-_RATIONALE_MAX_LEN = 200
+# The ``rationale`` field is OMITTED from the log_dict payload (not just
+# truncated): it is Opus free-text that can echo card names / transaction
+# descriptions from the PDF, and a length cap alone still leaks the first 200
+# chars in cleartext — including on JUDGE_ERROR paths. The outcome +
+# similarity already convey the verdict signal in the artifact; the
+# free-text rationale is not needed there and is the one remaining PII
+# vector. It is retained in the Lakebase verdict_payload (same protected
+# Postgres boundary as extraction_payload).
+_RATIONALE_OMITTED = True
 
 
 def _redact_comparisons(comparisons: Any) -> list[dict[str, Any]]:
@@ -246,17 +251,18 @@ def _redact_comparisons(comparisons: Any) -> list[dict[str, Any]]:
       documented trade-off — hashing them destroys analytics value).
     * any other leaf -> omitted (or HMAC if a key is configured).
 
-    The ``rationale`` string is defensively capped (it may echo PDF text).
-    The ``field_path`` and row indices are NOT PII and are carried verbatim.
+    The ``rationale`` string is OMITTED entirely (not just truncated): it is
+    Opus free-text that can echo cardholder names / transaction descriptions
+    from the PDF, and a length cap still leaks the first N chars in
+    cleartext — including on JUDGE_ERROR paths. The ``outcome`` and
+    ``similarity`` already convey the verdict signal in the artifact. The
+    ``field_path`` and row indices are NOT PII and are carried verbatim.
     """
     from harness.tracing_feedback import redact_feedback_value
 
     hmac_key = _resolve_feedback_hmac_key()
     out: list[dict[str, Any]] = []
     for c in comparisons:
-        rat = c.rationale
-        if rat is not None and len(str(rat)) > _RATIONALE_MAX_LEN:
-            rat = str(rat)[:_RATIONALE_MAX_LEN] + "…"
         out.append({
             "field_path": c.field_path,
             "expected": redact_feedback_value(c.field_path, c.expected, hmac_key=hmac_key),
@@ -266,7 +272,7 @@ def _redact_comparisons(comparisons: Any) -> list[dict[str, Any]]:
             "expected_row_index": c.expected_row_index,
             "actual_row_index": c.actual_row_index,
             "similarity": c.similarity,
-            "rationale": rat,
+            # rationale OMITTED — see module docstring (PII vector).
         })
     return out
 
@@ -426,7 +432,8 @@ def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
     # harness.tracing_feedback.redact_feedback_value — keyed HMAC (or omit
     # when no HMAC key) for ``cardDisplayName``/``description``; retain
     # ``lastFourDigit`` and the non-PII numerics (amount/date/points) raw.
-    # The ``rationale`` string is defensively capped (it may echo PDF text).
+    # The ``rationale`` string is OMITTED entirely (it is Opus free-text that
+    # may echo cardholder names / transaction descriptions from the PDF).
     # NOTE: Lakebase verdict_payload is NOT redacted here — it lives behind
     # the same protected Postgres boundary as the already-stored
     # extraction_payload, consistent with codex's posture confirmation.

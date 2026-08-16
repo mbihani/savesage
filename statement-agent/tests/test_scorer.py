@@ -740,7 +740,7 @@ class VerdictPersistTest(unittest.TestCase):
         Without an HMAC key configured (the default), PII leaves are OMITTED
         (None) — never a reversible unsalted digest. lastFourDigit, amount,
         date, and rewards points are retained raw (not individually
-        identifying; documented trade-off). The rationale is capped.
+        identifying; documented trade-off). The rationale is OMITTED.
         """
         from judge.scorer import score_trace
         self._register_artifacts()
@@ -863,19 +863,25 @@ class VerdictPersistTest(unittest.TestCase):
             by_path["cards[].cardMeta.lastFourDigit"]["expected"], "1234",
         )
 
-    def test_log_dict_rationale_capped(self):
-        """The rationale string is capped (it may echo PDF text)."""
+    def test_log_dict_rationale_omitted(self):
+        """Fix #1 (round 2): the ``rationale`` key is OMITTED entirely from
+        the log_dict payload (not just truncated) — it is Opus free-text that
+        can echo cardholder names / transaction descriptions from the PDF, and
+        a length cap still leaks the first N chars in cleartext. The outcome
+        + similarity already convey the verdict signal in the artifact.
+        """
         from judge.scorer import score_trace
         self._register_artifacts()
         store = _FakeResultStore()
-        long_rationale = "X" * 500
+        # A rationale containing a known cleartext PII string.
+        pii_rationale = "cardholder name is John Doe, txn: UPI-Amazon Pay"
         verdict = JudgeVerdict(
             request_id="req-test", judge_model_id="databricks-claude-opus-5",
             comparisons=(
                 FieldComparison(
                     "rewards.closingPoints", 500, 500,
                     ComparisonOutcome.AGREE, FieldScope.SCALAR,
-                    rationale=long_rationale,
+                    rationale=pii_rationale,
                 ),
             ),
             latency_ms=50.0, summary=json.dumps({"status": "OK"}),
@@ -886,9 +892,42 @@ class VerdictPersistTest(unittest.TestCase):
 
         body = [(rid, d) for rid, d, _ in self.fake_mlflow.logged_dicts
                 if rid == "run-123"][0][1]
-        rat = body[0]["rationale"]
-        self.assertLessEqual(len(rat), 201)  # 200 + ellipsis
-        self.assertTrue(rat.endswith("…"))
+        # The rationale key is ABSENT from every comparison row.
+        for row in body:
+            self.assertNotIn("rationale", row)
+        # The known cleartext PII rationale does NOT appear anywhere in the
+        # serialized log_dict payload.
+        self.assertNotIn("John Doe", json.dumps(body))
+        self.assertNotIn("UPI-Amazon", json.dumps(body))
+
+    def test_log_dict_rationale_omitted_on_judge_error(self):
+        """The rationale is omitted even on JUDGE_ERROR paths — the judge-error
+        sentinels carry a rationale echoing the Opus failure, which can still
+        contain echoed PDF text. The log_dict artifact must never carry it."""
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore()
+        judge_error_verdict = JudgeVerdict(
+            request_id="req-test", judge_model_id="databricks-claude-opus-5",
+            comparisons=(
+                FieldComparison(
+                    "cards[].cardMeta.cardDisplayName", None, None,
+                    ComparisonOutcome.ABSENT_IN_PDF, FieldScope.SCALAR,
+                    rationale="judge response unusable: saw card 'Platinum'",
+                ),
+            ),
+            latency_ms=50.0, summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = judge_error_verdict
+            score_trace("run-123", result_store=store)
+
+        body = [(rid, d) for rid, d, _ in self.fake_mlflow.logged_dicts
+                if rid == "run-123"][0][1]
+        for row in body:
+            self.assertNotIn("rationale", row)
+        self.assertNotIn("Platinum", json.dumps(body))
+        self.assertNotIn("unusable", json.dumps(body))
 
 
 # ---------------------------------------------------------------------------

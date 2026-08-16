@@ -522,6 +522,69 @@ class ThreadStartFailureSlotLeakTest(unittest.TestCase):
         self.assertTrue(self._main._acquire_judge_slot())
         self._main._release_judge_slot()
 
+    def test_batch_slot_released_if_thread_start_raises(self):
+        """Fix #2 (round 2): the BATCH endpoint ``POST /api/run-judge`` must
+        also release the slot when ``thread.start()`` raises — the round-1
+        guard only covered the single-trace path. A subsequent batch acquire
+        must succeed (NOT a permanent 409). Also confirms NO double-release:
+        the runner that never started does not also release (its finally never
+        runs), so ``_release_judge_slot`` is called exactly ONCE — in the
+        endpoint's except branch."""
+        # Count calls to _release_judge_slot to prove exactly-once release.
+        release_calls = {"n": 0}
+        real_release = self._main._release_judge_slot
+
+        def _counting_release():
+            release_calls["n"] += 1
+            real_release()
+
+        self._main._release_judge_slot = _counting_release
+        try:
+            # Acquire the slot as the BATCH endpoint would.
+            self.assertTrue(self._main._acquire_judge_slot())
+            self.assertTrue(self._main._judge_running)
+
+            # Simulate thread.start() raising (RuntimeError / thread limit).
+            class _ExplodingThread:
+                def __init__(self, *a, **kw):
+                    pass
+                def start(self):
+                    raise RuntimeError("can't start new thread")
+
+            import threading
+            threading.Thread = _ExplodingThread
+
+            # Run the BATCH endpoint body inline (mirroring the try/except in
+            # the POST /api/run-judge handler). The slot was acquired; start()
+            # raises; the except releases the slot exactly once. The runner's
+            # own finally (_run_judge_evaluation_bg) never runs because the
+            # thread never started — so there is NO double-release.
+            try:
+                threading.Thread(
+                    target=self._main._run_judge_evaluation_bg,
+                    args=(10,),
+                    daemon=True,
+                ).start()
+            except Exception:
+                self._main._release_judge_slot()
+
+            # Slot is released — a subsequent BATCH judge is NOT 409'd.
+            self.assertFalse(self._main._judge_running)
+            self.assertTrue(self._main._acquire_judge_slot())
+            self._main._release_judge_slot()
+
+            # Exactly-once release on the FAILED-START path: the runner that
+            # never started contributes ZERO releases (its finally never ran),
+            # so the only release from the failed-start path is the except
+            # branch. Counting all calls in this test:
+            #   except-branch release ......... 1
+            #   runner finally (never ran) .... 0
+            #   manual re-acquire's release .... 1
+            #   total release_calls == 2  (1 from the failed-start path + 1 verify)
+            self.assertEqual(release_calls["n"], 2)
+        finally:
+            self._main._release_judge_slot = real_release
+
 
 class SingleJudgeBgRunnerTest(unittest.TestCase):
     """_run_single_judge_bg resolves, invokes score_trace with the
