@@ -1,10 +1,18 @@
 """Routing + graph-state transition tests (stdlib-only, no langgraph)."""
 
+import re
 import unittest
 
 from contracts.models import Bank, ParseRequest
-from graph.routing import resolve_prompt, resolve_prompt_for_all_banks, RoutingError
+from graph.routing import (
+    get_prompt_version,
+    resolve_prompt,
+    resolve_prompt_for_all_banks,
+    RoutingError,
+)
 from graph.state import GraphState, Outcome, Stage
+
+_HEX8 = re.compile(r"^[0-9a-f]{8}$")
 
 
 class RoutingTest(unittest.TestCase):
@@ -32,6 +40,56 @@ class RoutingTest(unittest.TestCase):
         # Bank(...), so simulate a broken routing table by passing a non-Bank.
         with self.assertRaises((KeyError, RoutingError, TypeError)):
             resolve_prompt("NOT_A_BANK")  # type: ignore[arg-type]
+
+
+class PromptVersionTest(unittest.TestCase):
+    """``get_prompt_version`` tags a run with the exact prompt text used."""
+
+    def test_version_format_is_bank_colon_8hex(self) -> None:
+        for bank in Bank:
+            version = get_prompt_version(bank)
+            bank_name, sep, digest = version.partition(":")
+            self.assertTrue(sep, f"{bank.value}: missing ':' separator in {version!r}")
+            self.assertEqual(bank_name, bank.value)
+            self.assertIsNotNone(
+                _HEX8.match(digest), f"{bank.value}: digest {digest!r} is not 8 hex chars",
+            )
+
+    def test_version_stable_across_calls(self) -> None:
+        # Same prompt text -> same version id (stable, not random).
+        for bank in Bank:
+            self.assertEqual(get_prompt_version(bank), get_prompt_version(bank))
+
+    def test_version_differs_across_banks(self) -> None:
+        # Each bank has a distinct prompt -> distinct version ids.
+        versions = {bank: get_prompt_version(bank) for bank in Bank}
+        self.assertEqual(len(set(versions)), len(Bank))
+
+    def test_version_changes_when_prompt_text_changes(self) -> None:
+        # The version is derived from the prompt TEXT, so a changed prompt
+        # yields a changed version. Monkeypatch resolve_prompt (the global
+        # get_prompt_version calls) to return different text.
+        import graph.routing as routing
+
+        original = routing.resolve_prompt
+        before = get_prompt_version(Bank.HDFC)
+        routing.resolve_prompt = lambda bank: "DIFFERENT PROMPT TEXT"  # type: ignore[assignment]
+        try:
+            after = get_prompt_version(Bank.HDFC)
+        finally:
+            routing.resolve_prompt = original  # type: ignore[assignment]
+        self.assertNotEqual(before, after)
+        self.assertTrue(after.startswith("HDFC:"))
+
+    def test_version_hash_matches_prompt_sha256_prefix(self) -> None:
+        # The 8-char digest is the first 8 hex of the resolved prompt's SHA-256,
+        # so the version is a faithful (if short) fingerprint of the prompt.
+        import hashlib
+
+        for bank in Bank:
+            text = resolve_prompt(bank)
+            expected_digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:8]
+            self.assertEqual(get_prompt_version(bank), f"{bank.value}:{expected_digest}")
 
 
 class GraphStateTest(unittest.TestCase):

@@ -84,7 +84,17 @@ _PII_KEY_SUBSTRINGS = (
 )
 # A loose card-number-shaped sequence (13-19 digits, optional spaces/dashes).
 _CARD_RE = re.compile(r"\b(?:\d[ -]?){13,19}\b")
+# Default cap for arbitrary string values reaching MLflow. 200 keeps traces
+# small and limits how much of any one field is exposed.
 _MAX_STR = 200
+# Larger cap for known template-text values that are intentionally traced in
+# full so they are VISIBLE in the trace view. The bank prompts are 8-27 KB of
+# instruction text (no customer PII); the default 200-char cap would show only
+# the title line and hide the actual instructions sent to Luna. 4000 captures
+# the substantive content while staying bounded per span.
+_MAX_STR_PROMPT = 4000
+# Keys whose string values get the larger cap (template text, not payloads).
+_LONG_VALUE_KEYS = frozenset({"prompt"})
 _REDACTED = "[REDACTED]"
 _REDACTED_CARD = "[REDACTED_CARD]"
 
@@ -121,11 +131,15 @@ def redact_telemetry_attributes(attrs: Mapping[str, Any]) -> dict[str, Any]:
     account numbers, or raw PDF text, so we recurse into every dict/list and scrub
     card-number-shaped sequences in every string at every depth. Keys naming PII
     are replaced with ``[REDACTED]`` at every level; long strings are truncated.
+
+    Keys in :data:`_LONG_VALUE_KEYS` (e.g. ``"prompt"``) use a larger truncation
+    cap so intentionally-traced template text stays VISIBLE -- the default cap
+    would show only the prompt's title line and hide the instructions sent to Luna.
     """
-    return _redact_value(dict(attrs))
+    return _redact_value(dict(attrs), max_str=_MAX_STR)
 
 
-def _redact_value(value: Any) -> Any:
+def _redact_value(value: Any, *, max_str: int = _MAX_STR) -> Any:
     if isinstance(value, Mapping):
         out: dict[str, Any] = {}
         for key, val in value.items():
@@ -133,16 +147,19 @@ def _redact_value(value: Any) -> Any:
             if any(sub in lk for sub in _PII_KEY_SUBSTRINGS):
                 out[key] = _REDACTED
             else:
-                out[key] = _redact_value(val)
+                # A long-value key raises the cap for its subtree so template
+                # text (the prompt) is traced substantially, not clipped to 200.
+                child_max = _MAX_STR_PROMPT if lk in _LONG_VALUE_KEYS else max_str
+                out[key] = _redact_value(val, max_str=child_max)
         return out
     if isinstance(value, list):
-        return [_redact_value(v) for v in value]
+        return [_redact_value(v, max_str=max_str) for v in value]
     if isinstance(value, tuple):
-        return tuple(_redact_value(v) for v in value)
+        return tuple(_redact_value(v, max_str=max_str) for v in value)
     if isinstance(value, str):
         value = _CARD_RE.sub(_REDACTED_CARD, value)
-        if len(value) > _MAX_STR:
-            value = value[:_MAX_STR] + "...[truncated]"
+        if len(value) > max_str:
+            value = value[:max_str] + "...[truncated]"
         return value
     return value
 
