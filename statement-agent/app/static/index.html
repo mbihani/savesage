@@ -721,9 +721,19 @@
           outcome === "PARTIAL" ? "PARTIAL" : "FAILURE";
 
         const payload = extraction?.payload;
-        const cards = (payload?.cards || []).filter(Boolean);
+        // Guard Array.isArray — a malformed extraction can put a non-array
+        // here (the backend guards isinstance(..., list) in _push_extraction_items
+        // and _judgeable_sections; without this guard .filter throws and, with no
+        // error boundary, white-screens the results UI). Carry the ORIGINAL payload
+        // index through the filter so canonical feedback paths point at the right
+        // card/transaction row even when null entries are dropped.
+        const cards = (Array.isArray(payload?.cards) ? payload.cards : [])
+          .map((card, i) => ({ card, i }))
+          .filter((e) => Boolean(e.card));
         const rewards = payload?.rewards;
-        const transactions = (payload?.transactions || []).filter(Boolean);
+        const transactions = (Array.isArray(payload?.transactions) ? payload.transactions : [])
+          .map((txn, i) => ({ txn, i }))
+          .filter((e) => Boolean(e.txn));
 
         const thStyle = {
           padding: "0.5rem 0.625rem", textAlign: "left",
@@ -771,9 +781,9 @@
 
             ${cards.length > 0 && h`
               <div class="section-title">Cards (${cards.length})</div>
-              ${cards.map((card, i) => h`
+              ${cards.map(({ card, i }, n) => h`
                 <div class="card" key=${"card-" + i}>
-                  <div class="section-title" style=${{ marginTop: 0, fontSize: "1rem" }}>Card ${i + 1}</div>
+                  <div class="section-title" style=${{ marginTop: 0, fontSize: "1rem" }}>Card ${n + 1}</div>
                   <${FieldRow}
                     requestId=${requestId}
                     fieldPath=${`cards.${i}.cardMeta.cardDisplayName`}
@@ -822,9 +832,9 @@
                       </tr>
                     </thead>
                     <tbody>
-                      ${transactions.map((txn, i) => h`
+                      ${transactions.map(({ txn, i }, n) => h`
                         <tr key=${"txn-" + i} style=${{ borderBottom: "1px solid var(--border)" }}>
-                          <td style=${{ ...tdStyle, color: "var(--text-muted)", whiteSpace: "nowrap" }}>${i + 1}</td>
+                          <td style=${{ ...tdStyle, color: "var(--text-muted)", whiteSpace: "nowrap" }}>${n + 1}</td>
                           <td style=${tdStyle}>
                             <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.date`} value=${txn?.date} />
                           </td>
