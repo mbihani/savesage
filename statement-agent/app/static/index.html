@@ -477,9 +477,14 @@
           });
 
           es.addEventListener("extraction", (e) => {
-            const d = JSON.parse(e.data);
-            extractionRef.current = d;
-            setExtraction(d);
+            try {
+              const d = JSON.parse(e.data);
+              extractionRef.current = d;
+              setExtraction(d);
+            } catch (err) {
+              // Truncated/malformed SSE frame — the HTTP fetch in
+              // handleComplete will recover the full payload.
+            }
           });
 
           es.addEventListener("complete", (e) => {
@@ -1054,7 +1059,9 @@
           // from ctx.extraction_data (in-memory) or Lakebase, with the same
           // {payload, model_id, schema_valid} shape as the SSE event.
           try {
-            const resp = await fetch(`/api/results/${requestId}`);
+            const resp = await fetch(`/api/results/${requestId}`, {
+              signal: AbortSignal.timeout(5000),
+            });
             if (resp.ok) {
               const apiResults = await resp.json();
               if (apiResults.extraction) {
