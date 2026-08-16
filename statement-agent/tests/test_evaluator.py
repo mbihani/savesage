@@ -401,11 +401,17 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
         """genai.evaluate drives the scorer once per trace, Opus is called
         exactly once (not 7×), per-field assessments land on the trace, and
         the verdict is persisted to Lakebase."""
-        from judge.evaluator import run_genai_evaluation
+        from judge.evaluator import (
+            FIELD_ASSESSMENT_NAMES,
+            OVERALL_FORGIVEN_NAME,
+            OVERALL_STRICT_NAME,
+            run_genai_evaluation,
+        )
 
         run_id = self._create_parse_run_with_artifacts("1")
         request_id = f"req-{'1':>012s}"[:16]
         trace = self._create_trace_for_run(run_id, request_id)
+        trace_id = trace.info.trace_id
 
         # Fake Lakebase store to capture save_verdict.
         saved_verdicts: list = []
@@ -445,6 +451,32 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
         self.assertEqual(results[0]["status"], "OK")
         self.assertEqual(results[0]["run_id"], run_id)
         self.assertEqual(results[0]["bank"], "HDFC")
+
+        # The 7 per-field + 2 overall assessments were ACTUALLY attached to
+        # a trace in the experiment (read back via Trace.search_assessments —
+        # the local file store supports the assessment API in mlflow 3.10.1).
+        # NOTE: for the local FileStore, genai.evaluate CLONES the parse trace
+        # (FileStore doesn't support trace↔run linking) and logs assessments
+        # to the CLONE — so we search ALL traces, not just the original.
+        import mlflow as _mlflow
+
+        traces = _mlflow.search_traces(
+            experiment_ids=[self._exp_id], max_results=20, return_type="list",
+        )
+        all_assessments: list = []
+        for t in traces:
+            all_assessments.extend(t.search_assessments())
+        # 7 per-field + 2 overall = 9 assessments.
+        self.assertEqual(len(all_assessments), 9)
+        assessment_names = {a.name for a in all_assessments}
+        # All 7 per-field names present.
+        self.assertEqual(
+            assessment_names & set(FIELD_ASSESSMENT_NAMES.values()),
+            set(FIELD_ASSESSMENT_NAMES.values()),
+        )
+        # Both overall names present.
+        self.assertIn(OVERALL_STRICT_NAME, assessment_names)
+        self.assertIn(OVERALL_FORGIVEN_NAME, assessment_names)
 
     def test_empty_traces_returns_none(self):
         """When no traces are passed, run_genai_evaluation returns None."""

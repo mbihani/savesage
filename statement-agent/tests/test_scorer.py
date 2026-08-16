@@ -304,6 +304,10 @@ class _FakeGenaiModule:
         self.evaluate_calls: int = 0
         self.scorers_passed: list = []
         self.assessments: list = []  # all Feedback objects returned
+        # When set, raise RuntimeError AFTER processing this many rows —
+        # simulates a partial genai.evaluate failure (some scorers
+        # complete, then the run raises).  None = no mid-run failure.
+        self.fail_after_n_rows: int | None = None
 
     def evaluate(self, data, scorers, predict_fn=None, model_id=None, **kw):
         # ASSERT scorers were passed (the key contract — one scorer, not zero).
@@ -311,7 +315,16 @@ class _FakeGenaiModule:
         self.evaluate_calls += 1
         self.scorers_passed = list(scorers)
         # Drive the scorer once per row, collecting returned Feedbacks.
-        for row in data:
+        for i, row in enumerate(data):
+            # Simulate a partial failure: after fail_after_n_rows scorers
+            # complete, raise mid-run.  The completed results are already in
+            # the scorer's results_collector (the side-channel); the caller
+            # must skip those run_ids in the fallback.
+            if (self.fail_after_n_rows is not None
+                    and i >= self.fail_after_n_rows):
+                raise RuntimeError(
+                    f"genai.evaluate failed mid-run after {i} scorer(s)"
+                )
             trace = row.get("trace")
             for scorer in scorers:
                 result = scorer.run(trace=trace)
@@ -1793,6 +1806,47 @@ class RunGenaiEvaluationTest(unittest.TestCase):
         # Each source run is tagged judged=true.
         for rid in run_ids:
             self.assertIn(("judged", "true", rid), self.fake_mlflow.set_tags)
+
+    def test_partial_genai_failure_does_not_rescore_completed_traces(self):
+        """BLOCKING regression guard: if genai.evaluate completes N scorers
+        then RAISES mid-run, the completed traces are NOT re-scored by the
+        score_trace fallback.  Without the fix, the fallback re-scores EVERY
+        traced run — double-calling Opus and duplicating save_verdict/metric
+        writes for the completed subset.
+
+        Setup: 3 traced runs.  genai.evaluate processes 2 rows (Opus +
+        save_verdict + metrics for each), then raises on the 3rd.  The 3rd
+        run was never scored by genai.  Expected: the fallback scores ONLY
+        the 3rd run — 3 total Opus calls + 3 total save_verdict (NOT 6).
+        """
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        self._setup_three_traced_runs(store)  # 3 traced runs
+        verdict = _make_verdict()
+
+        # genai.evaluate completes 2 scorers then raises on the 3rd row.
+        self.fake_mlflow.genai.fail_after_n_rows = 2
+        try:
+            with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+                MockAdapter.return_value.judge.return_value = verdict
+                result = run_judge_evaluation(sample_size=3, result_store=store)
+        finally:
+            self.fake_mlflow.genai.fail_after_n_rows = None
+
+        # 3 traces → exactly 3 Opus calls total (2 from genai + 1 from
+        # fallback).  NOT 5 (2 genai + 3 fallback) — the 2 completed
+        # traces must NOT be re-scored.
+        self.assertEqual(MockAdapter.return_value.judge.call_count, 3)
+        # 3 save_verdict total (2 from genai + 1 from fallback).  NOT 5 —
+        # no duplicate save_verdict for the completed traces.
+        self.assertEqual(len(store.saved), 3)
+        # All 3 runs are scored (2 by genai + 1 by fallback).
+        self.assertEqual(result["count_judged"], 3)
+        self.assertEqual(result["count_errors"], 0)
+        # eval_run_id is None — partial genai failure (no eval run to log
+        # supplementary metrics to).
+        self.assertIsNone(result["eval_run_id"])
 
 
 if __name__ == "__main__":

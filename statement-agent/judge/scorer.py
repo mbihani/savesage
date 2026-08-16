@@ -834,11 +834,25 @@ def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dic
             trace_objs, result_store, experiment_id=exp_id,
         )
         if eval_info is not None:
+            # genai.evaluate ran (fully OR partially).  Extend with the
+            # per-trace result dicts the scorer collected via the side-channel.
             results.extend(eval_info["results"])
-            eval_run_id = eval_info["eval_run_id"]
+            eval_run_id = eval_info.get("eval_run_id")  # None if partial
+            # run_ids the genai scorer already touched (OK or ERROR) — each
+            # already called Opus once inside _judge_and_persist.  SKIP them
+            # in the score_trace fallback so they are NOT re-scored:
+            # re-scoring a completed trace would call Opus a SECOND time and
+            # DUPLICATE the save_verdict + metric writes.  Only the traced
+            # runs the scorer did NOT reach fall back to score_trace.
+            scored_run_ids = {
+                r["run_id"] for r in eval_info["results"] if r.get("run_id")
+            }
+            fallback_run_ids = [
+                rid for rid, _ in traced if rid not in scored_run_ids
+            ] + fallback_run_ids
         else:
-            # genai.evaluate failed — fall back to score_trace for the traced
-            # runs so they are still scored (per-run metrics + save_verdict).
+            # genai.evaluate could not start (no traces / import failure) —
+            # fall back to score_trace for all traced runs.
             fallback_run_ids = [rid for rid, _ in traced] + fallback_run_ids
 
     # 6. Fallback path (no trace, or genai.evaluate failed): score_trace per

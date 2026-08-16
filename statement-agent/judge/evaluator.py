@@ -329,14 +329,26 @@ def run_genai_evaluation(
     (which ``genai.evaluate`` reuses — its ``_start_run_or_reuse_active_run``
     yields the active run id), and evaluates.  Returns
     ``{"eval_run_id": ..., "results": [...]}`` where ``results`` is the
-    side-channel of per-trace result dicts the scorer collected.  Best-effort:
-    on failure returns ``None`` and the caller falls back to per-trace
-    :func:`score_trace`.
+    side-channel of per-trace result dicts the scorer collected.
+
+    PARTIAL-FAILURE PRESERVES COMPLETED RESULTS — never returns ``None`` when
+    ``traces`` is non-empty.  If ``genai.evaluate`` raises AFTER one or more
+    per-trace scorers already completed (each already called Opus once + wrote
+    ``save_verdict`` + metrics), the completed ``results`` are returned with
+    ``"partial": True`` and ``eval_run_id=None``.  The caller uses those to
+    SKIP the completed run_ids in the ``score_trace`` fallback — preventing a
+    second Opus call and duplicate ``save_verdict``/metric writes for the
+    completed subset.  Returns ``None`` only when ``traces`` is empty.
     """
     if not traces:
         _LOGGER.info("skipping genai.evaluate run: no traces to evaluate")
         return None
 
+    # Declared OUTSIDE the try so it survives a partial failure: if
+    # genai.evaluate raises mid-run, the scorer calls already recorded here
+    # are returned to the caller so it can skip those run_ids in the
+    # score_trace fallback (no double Opus, no double save_verdict).
+    results_collector: list[dict[str, Any]] = []
     try:
         import mlflow
 
@@ -346,13 +358,12 @@ def run_genai_evaluation(
         if experiment_id is None:
             experiment_id = _get_experiment_id(mlflow)
 
-        results_collector: list[dict[str, Any]] = []
         scorer = make_judge_scorer(result_store, results_collector)
 
         # genai.evaluate reuses the active run — start one ourselves so we
         # control the experiment + run_name, then genai.evaluate logs into it.
         # If start_run is unavailable the AttributeError propagates into the
-        # surrounding except (best-effort None return).
+        # surrounding except (best-effort partial return).
         with mlflow.start_run(
             experiment_id=experiment_id, run_name="judge-evaluation"
         ) as run:
@@ -365,4 +376,15 @@ def run_genai_evaluation(
         return {"eval_run_id": eval_run_id, "results": results_collector}
     except Exception as exc:  # noqa: BLE001 - best-effort, never fatal
         _LOGGER.warning("genai.evaluate run failed: %s", exc, exc_info=True)
-        return None
+        # Preserve the run_ids the scorer already completed (each already
+        # called Opus once + wrote save_verdict + metrics) so the caller does
+        # NOT re-score them via the score_trace fallback — that would
+        # double-call Opus and double-write save_verdict/metrics for the
+        # completed subset.  ``partial=True`` signals the genai run did not
+        # finish; ``eval_run_id=None`` so the caller skips supplementary
+        # metric logging to a half-formed run.
+        return {
+            "eval_run_id": None,
+            "results": results_collector,
+            "partial": True,
+        }
