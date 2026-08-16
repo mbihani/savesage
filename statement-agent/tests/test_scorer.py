@@ -120,6 +120,9 @@ class _FakeMlflowClient:
     def set_tag(self, run_id, key, value):
         self._parent.set_tags.append((key, value, run_id))
 
+    def log_dict(self, run_id, dictionary, artifact_file_path=None):
+        self._parent.logged_dicts.append((run_id, dictionary, artifact_file_path))
+
 
 class _FakeTrackingModule:
     """Fake mlflow.tracking submodule so 'from mlflow.tracking import MlflowClient' works."""
@@ -135,6 +138,7 @@ class _FakeMLflowModule:
         self.artifacts = _FakeArtifacts()
         self.logged_metrics: list[tuple] = []  # (key, value, run_id)
         self.set_tags: list[tuple] = []  # (key, value, run_id)
+        self.logged_dicts: list[tuple] = []  # (run_id, dictionary, artifact_file_path)
         self._experiment = _FakeExperiment()
         self._search_runs_result = _FakeRunsFrame([])
         self.tracking = _FakeTrackingModule(self)
@@ -172,6 +176,22 @@ def _install_fake_mlflow():
 def _uninstall_fake_mlflow():
     sys.modules.pop("mlflow", None)
     sys.modules.pop("mlflow.tracking", None)
+
+
+# ---------------------------------------------------------------------------
+# Fake ResultStore — records save_verdict calls; optionally raises to test
+# the best-effort guarantee that a Lakebase write failure never aborts the run.
+# ---------------------------------------------------------------------------
+
+class _FakeResultStore:
+    def __init__(self, raise_on_save: bool = False):
+        self.saved: list = []
+        self.raise_on_save = raise_on_save
+
+    def save_verdict(self, verdict) -> None:
+        if self.raise_on_save:
+            raise RuntimeError("lakebase write failed")
+        self.saved.append(verdict)
 
 
 # ---------------------------------------------------------------------------
@@ -585,6 +605,133 @@ class AggregateResultsTest(unittest.TestCase):
         # The JUDGE_ERROR entry is in the errors list with its status.
         self.assertEqual(result["errors"][0]["status"], "JUDGE_ERROR")
         self.assertIn("JUDGE_ERROR", result["errors"][0]["error"])
+
+
+# ---------------------------------------------------------------------------
+# Verdict persistence to Lakebase (inline-on-Results-view wiring)
+# ---------------------------------------------------------------------------
+
+class VerdictPersistTest(unittest.TestCase):
+    """The scorer persists each OK verdict to Lakebase keyed by request_id so
+    ``GET /api/results`` can surface expected/actual/outcome inline.
+
+    (a) save_verdict is called on OK (request_id-keyed) and NOT on JUDGE_ERROR.
+    (b) a save_verdict that raises is caught — the judge run and the aggregate
+        still complete (best-effort guarantee).
+    """
+
+    def setUp(self):
+        self.fake_mlflow = _install_fake_mlflow()
+        # Reset the module-level result-store cache so a prior test's lazy
+        # build (which returns None without env vars) doesn't leak in.
+        import judge.scorer as scorer_mod
+        scorer_mod._result_store_init_done = False
+        scorer_mod._result_store = None
+
+    def tearDown(self):
+        _uninstall_fake_mlflow()
+
+    def _register_artifacts(self, meta=None):
+        meta = meta or _make_extraction_meta()
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4 fake")
+        self.fake_mlflow.artifacts.register("extraction.json", json.dumps(meta).encode())
+        return meta
+
+    def test_save_verdict_called_on_ok_keyed_by_request_id(self):
+        """On an OK verdict, save_verdict receives a verdict whose request_id
+        matches the extraction meta — so /api/results keyed by the same
+        request_id finds it."""
+        from judge.scorer import score_trace
+        meta = self._register_artifacts()
+        store = _FakeResultStore()
+        verdict = _make_verdict(request_id=meta["request_id"])
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            result = score_trace("run-123", result_store=store)
+
+        self.assertEqual(result["status"], "OK")
+        self.assertEqual(len(store.saved), 1)
+        # The persisted verdict is keyed by request_id (the store upserts on
+        # verdict.request_id); it must equal the extraction's request_id so
+        # /api/results/{request_id} reads it from the same row.
+        self.assertEqual(store.saved[0].request_id, meta["request_id"])
+
+    def test_save_verdict_not_called_on_judge_error(self):
+        """A JUDGE_ERROR verdict is not persisted — it carries no usable
+        ground truth (Opus failed to read the PDF)."""
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore()
+        judge_error_verdict = JudgeVerdict(
+            request_id="req-test", judge_model_id="databricks-claude-opus-5",
+            comparisons=(FieldComparison(
+                "cards[].cardMeta.cardDisplayName", "Platinum", "???",
+                ComparisonOutcome.DISAGREE, FieldScope.SCALAR, card_index=0,
+            ),),
+            latency_ms=50.0, summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = judge_error_verdict
+            result = score_trace("run-err", result_store=store)
+
+        self.assertEqual(result["status"], "JUDGE_ERROR")
+        self.assertEqual(store.saved, [])
+
+    def test_save_verdict_failure_does_not_crash_score_trace(self):
+        """A save_verdict that raises is caught; the trace still completes OK
+        and its metrics are returned (best-effort guarantee)."""
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore(raise_on_save=True)
+        verdict = _make_verdict(request_id="req-test")
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            result = score_trace("run-123", result_store=store)
+
+        self.assertEqual(result["status"], "OK")
+        self.assertEqual(result["strict_accuracy"], 1.0)
+        # Metrics were still logged to MLflow despite the Lakebase failure.
+        run_metrics = [(k, v) for k, v, rid in self.fake_mlflow.logged_metrics
+                       if rid == "run-123"]
+        self.assertIn(("judge.accuracy", 1.0), run_metrics)
+
+    def test_save_verdict_failure_does_not_crash_aggregate(self):
+        """A raising save_verdict must not abort run_judge_evaluation; the
+        aggregate still returns with the trace counted as judged."""
+        from judge.scorer import run_judge_evaluation
+        self.fake_mlflow.set_search_runs_result(["run-1"])
+        meta = _make_extraction_meta(request_id="req-1")
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4 fake")
+        self.fake_mlflow.artifacts.register("extraction.json", json.dumps(meta).encode())
+        store = _FakeResultStore(raise_on_save=True)
+        verdict = _make_verdict(request_id="req-1")
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            result = run_judge_evaluation(sample_size=1, result_store=store)
+
+        self.assertEqual(result["count_judged"], 1)
+        self.assertEqual(result["count_errors"], 0)
+
+    def test_comparisons_logged_to_mlflow_on_ok(self):
+        """The per-field expected/actual/outcome comparisons are logged as a
+        JSON artifact on the run (secondary, best-effort trace visibility)."""
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore()
+        verdict = _make_verdict(request_id="req-test")
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            score_trace("run-123", result_store=store)
+
+        # log_dict captured: (run_id, dictionary, artifact_file_path)
+        logged = [(rid, d, p) for rid, d, p in self.fake_mlflow.logged_dicts
+                  if rid == "run-123"]
+        self.assertEqual(len(logged), 1)
+        _, body, path = logged[0]
+        self.assertEqual(path, "verdict_comparisons.json")
+        self.assertEqual(len(body), len(verdict.comparisons))
+        self.assertEqual(body[0]["field_path"], "cards[].cardMeta.cardDisplayName")
+        self.assertEqual(body[0]["outcome"], "AGREE")
 
 
 if __name__ == "__main__":

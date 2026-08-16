@@ -49,6 +49,70 @@ _EXPERIMENT_PATH = "/Shared/savesage/statement-agent"
 # Module-level flag so _ensure_mlflow_configured runs once per process.
 _mlflow_configured = False
 
+# Module-level cache for the Lakebase ``ResultStore`` used to persist verdicts
+# inline so ``GET /api/results`` can surface the per-field expected/actual/
+# outcome on the per-parse Results view. Built lazily and best-effort: a
+# ``None`` store simply skips the inline persist — the judge metrics still
+# flow to MLflow. Tests inject a fake store via the ``result_store`` param of
+# :func:`score_trace` so this builder is never called on the test path.
+_result_store: Any = None
+_result_store_init_done = False
+
+
+def _build_result_store() -> Any:
+    """Build a Lakebase-backed ``ResultStore`` for verdict persistence.
+
+    Mirrors :func:`app.main._build_lakebase_stores` but only the result store.
+    Raises on failure (missing env / connection error); callers catch and
+    degrade to ``None``. ``databricks-sdk`` and ``psycopg`` are imported
+    function-local inside the dependency modules, so importing this function
+    does not require them — only *calling* it does.
+    """
+    required = ("ENDPOINT_NAME", "PGHOST", "PGUSER", "PGDATABASE")
+    missing = [name for name in required if not os.environ.get(name)]
+    if missing:
+        raise RuntimeError(
+            "Lakebase database resource did not inject required environment "
+            f"variables: {', '.join(missing)}"
+        )
+    from databricks.sdk import WorkspaceClient
+    from db.connection import OAuthConnectionFactory
+    from db.stores import LakebaseResultStore, init_tables
+    client = WorkspaceClient()
+    connect = OAuthConnectionFactory(
+        client,
+        os.environ["ENDPOINT_NAME"],
+        os.environ["PGHOST"],
+        os.environ["PGDATABASE"],
+        os.environ["PGUSER"],
+        port=int(os.environ.get("PGPORT", "5432")),
+        sslmode=os.environ.get("PGSSLMODE", "require"),
+    )
+    init_tables(connect)
+    return LakebaseResultStore(connect)
+
+
+def _get_result_store() -> Any:
+    """Return a cached Lakebase ``ResultStore`` or ``None`` if unavailable.
+
+    Lazily initialised on first call. Failures are logged and cached as
+    ``None`` so a transient outage does not retry on every trace (the same
+    pattern as :func:`app.main._get_stores`).
+    """
+    global _result_store, _result_store_init_done
+    if _result_store_init_done:
+        return _result_store
+    _result_store_init_done = True
+    try:
+        _result_store = _build_result_store()
+    except Exception:
+        _LOGGER.warning(
+            "Lakebase result store unavailable; verdicts will not be "
+            "persisted inline", exc_info=True,
+        )
+        _result_store = None
+    return _result_store
+
 
 def _get_experiment_id(mlf: Any) -> str | None:
     """Resolve the MLflow experiment ID from the bound resource env var or config path.
@@ -111,7 +175,7 @@ def _ensure_mlflow_configured(mlf: Any) -> None:
     _mlflow_configured = True
 
 
-def score_trace(run_id: str) -> dict[str, Any]:
+def score_trace(run_id: str, result_store: Any = None) -> dict[str, Any]:
     """Score a single MLflow trace by re-running the judge on its artifacts.
 
     Steps:
@@ -120,13 +184,19 @@ def score_trace(run_id: str) -> dict[str, Any]:
     3. Call ``OpusJudgeAdapter.judge()`` → ``JudgeVerdict`` (Opus + comparisons).
     4. Compute metrics via ``verdict_to_metrics``.
     5. Log metrics + tag ``judged=true`` on the SAME MLflow run.
-    6. Return a per-trace result dict.
+    6. Persist the verdict to Lakebase (best-effort) so ``GET /api/results``
+       can surface the per-field expected/actual/outcome inline.
+    7. Return a per-trace result dict.
+
+    ``result_store`` is an optional :class:`contracts.ports.ResultStore`. When
+    ``None`` the scorer builds its own lazily (best-effort; ``None`` if the
+    Lakebase env is absent). Tests inject a fake to assert save behaviour.
 
     Returns ``{"run_id": ..., "status": "OK"|"ERROR", ...}`` — never raises
     (errors are captured in the ``status``/``error`` fields).
     """
     try:
-        return _score_trace_impl(run_id)
+        return _score_trace_impl(run_id, result_store)
     except Exception as exc:
         _LOGGER.warning(
             "score_trace failed for run %s: %s", run_id, exc, exc_info=True
@@ -147,7 +217,7 @@ def _sanitize_error(exc: Exception) -> str:
     return exc_name
 
 
-def _score_trace_impl(run_id: str) -> dict[str, Any]:
+def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
     import mlflow
     from mlflow.tracking import MlflowClient
 
@@ -202,7 +272,8 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
 
     # 7. Tag the run. Only tag judged=true on OK status so JUDGE_ERROR traces
     # can be retried in the next evaluation. JUDGE_ERROR gets judged=error so
-    # it's distinguishable but still retriable.
+    # it's distinguishable but still retriable. The status is parsed once here
+    # and reused for the Lakebase persist decision below.
     summary = json.loads(verdict.summary) if verdict.summary else {}
     status = summary.get("status", "OK")
     if status == "OK":
@@ -210,7 +281,48 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
     else:
         client.set_tag(run_id, "judged", "error")
 
-    # 8. Build and return the per-trace result.
+    # 8. Persist the verdict to Lakebase so ``GET /api/results`` can surface
+    # the per-field expected/actual/outcome inline on the per-parse Results
+    # view. Best-effort by contract: a Lakebase write failure is logged and
+    # MUST NOT abort the judge run or the aggregate — the MLflow metrics
+    # above are already recorded. Only written on OK status: a JUDGE_ERROR
+    # verdict carries no usable ground truth (Opus failed to read the PDF),
+    # so persisting it would surface misleading expected values.
+    # The verdict's ``request_id`` is set by the adapter from
+    # ``request.request_id`` (== ``meta['request_id']``), so the upsert keys
+    # the verdict into the same ``statement_results`` row as the extraction.
+    if status == "OK":
+        store = result_store if result_store is not None else _get_result_store()
+        if store is not None:
+            try:
+                store.save_verdict(verdict)
+            except Exception:
+                _LOGGER.warning(
+                    "save_verdict failed for request %s; inline verdict "
+                    "not persisted", verdict.request_id, exc_info=True,
+                )
+
+    # 9. Best-effort: log the per-field expected/actual/outcome comparisons as
+    # a JSON artifact on the run for trace visibility. Guarded like the
+    # metrics — must never fail the run. Uses ``log_dict`` (plain JSON, no
+    # pandas dependency) rather than ``log_table``; ``set_tag`` is avoided
+    # (tag size limits).
+    try:
+        client.log_dict(run_id, [
+            {"field_path": c.field_path, "expected": c.expected,
+             "actual": c.actual, "outcome": c.outcome.value,
+             "card_index": c.card_index,
+             "expected_row_index": c.expected_row_index,
+             "actual_row_index": c.actual_row_index,
+             "similarity": c.similarity, "rationale": c.rationale}
+            for c in verdict.comparisons
+        ], "verdict_comparisons.json")
+    except Exception:
+        _LOGGER.warning(
+            "log_dict of verdict comparisons failed for %s", run_id, exc_info=True,
+        )
+
+    # 10. Build and return the per-trace result.
     return {
         "run_id": run_id,
         "request_id": meta["request_id"],
@@ -232,7 +344,7 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
     }
 
 
-def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
+def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dict[str, Any]:
     """Sample unjudged MLflow runs, score each, and return an aggregate summary.
 
     1. Query MLflow for recent runs (ordered by start_time DESC).
@@ -331,8 +443,9 @@ def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
     # 3. Pick the sample_size most recent randomly.
     sample = random.sample(run_ids, min(sample_size, len(run_ids)))
 
-    # 4. Score each trace.
-    results = [score_trace(rid) for rid in sample]
+    # 4. Score each trace.  The optional ``result_store`` threads through to
+    # :func:`score_trace` so each OK verdict is persisted inline (best-effort).
+    results = [score_trace(rid, result_store=result_store) for rid in sample]
 
     # 5. Aggregate.
     summary = _aggregate_results(results)

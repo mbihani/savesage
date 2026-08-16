@@ -540,7 +540,12 @@ def _run_judge_evaluation_bg(sample_size: int) -> None:
     global _judge_result_cache, _judge_running
     try:
         from judge.scorer import run_judge_evaluation
-        result = run_judge_evaluation(sample_size=sample_size)
+        # Thread the app's cached Lakebase result store into the scorer so each
+        # OK verdict is persisted inline (best-effort) and surfaces on the
+        # per-parse Results view. _get_stores()[0] is the result store or None
+        # when Lakebase is unavailable; None lets the scorer build its own.
+        result_store = _get_stores()[0]
+        result = run_judge_evaluation(sample_size=sample_size, result_store=result_store)
         _judge_result_cache = result
     except Exception as exc:
         _LOGGER = __import__("logging").getLogger("statement-agent.app")
