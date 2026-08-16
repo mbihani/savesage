@@ -335,10 +335,65 @@ class MLflowTraceSink(TraceSink):
             return  # malformed tree (logged in _build)
         self._ensure_configured()
         self._flush(ops, event.request_id)
+        # Log useful params (bank, model_id, outcome) and metrics (latency_ms,
+        # token counts, transaction count) on the MLflow run while it is still
+        # active (before _end_run). Best-effort: a failure here only skips
+        # params/metrics, the run and spans are already created.
+        if event.request_id in self._run_ids:
+            best_effort("mlflow.run_params_metrics", self._log_run_params_metrics, ops)
         # The root span has flushed — all child spans are ended, and artifacts
         # were logged during the graph run (before the root arrived). Finalize
         # the MLflow run (RUNNING → ENDED) and free the run_id slot.
         self._end_run(event.request_id)
+
+    def _log_run_params_metrics(self, ops: list[SpanOp]) -> None:
+        """Log params and metrics on the current MLflow run (best-effort).
+
+        Called after the span flush and before ``_end_run`` so the run is still
+        active.  Params: bank, model_id, outcome.  Metrics: latency_ms,
+        input/output/total tokens, transaction count.  Individual mlflow calls
+        are best-effort; a failure logs a warning and continues.
+        """
+        if not ops:
+            return
+        root = ops[0].event
+        # The extract event carries model_id, latency_ms, and token_usage in
+        # its attributes (added by _extract_telemetry).  Match by exact name so
+        # "persist_extraction" is not confused with "extract".
+        extract_evt = next(
+            (op.event for op in ops if op.event.name == "extract"),
+            None,
+        )
+
+        def _do() -> None:
+            mlf = self._mlflow()
+            # Params from root attributes (non-PII: bank, outcome).
+            bank = root.attributes.get("bank")
+            if bank:
+                best_effort("mlflow.log_param.bank", mlf.log_param, "bank", bank)
+            outcome = root.attributes.get("outcome")
+            if outcome:
+                best_effort("mlflow.log_param.outcome", mlf.log_param, "outcome", outcome)
+            # Model, usage, and latency from the extract event.
+            if extract_evt is not None:
+                model_id = extract_evt.attributes.get("model_id")
+                if model_id:
+                    best_effort("mlflow.log_param.model_id", mlf.log_param, "model_id", model_id)
+                tu = extract_evt.attributes.get("token_usage")
+                if isinstance(tu, dict):
+                    for key in ("input_tokens", "output_tokens", "total_tokens"):
+                        val = tu.get(key)
+                        if isinstance(val, (int, float)):
+                            best_effort(f"mlflow.log_metric.{key}", mlf.log_metric, key, val)
+                latency = extract_evt.attributes.get("latency_ms")
+                if isinstance(latency, (int, float)):
+                    best_effort("mlflow.log_metric.latency_ms", mlf.log_metric, "latency_ms", latency)
+            # Transaction count from root attributes.
+            n_txn = root.attributes.get("n_transactions")
+            if isinstance(n_txn, (int, float)):
+                best_effort("mlflow.log_metric.n_transactions", mlf.log_metric, "n_transactions", n_txn)
+
+        best_effort("mlflow.run_params_metrics_do", _do)
 
     def _flush(self, ops: list[SpanOp], request_id: str) -> None:
         _LOGGER.debug("tracing flush: %d spans for %s", len(ops), request_id)
@@ -412,6 +467,27 @@ class MLflowTraceSink(TraceSink):
                 "mlflow.span.cost",
                 lambda l=live, c=cost: l.set_attribute(SPAN_ATTR_LLM_COST, c),
             )
+        # Span inputs/outputs — the actual payload data.  Without these the
+        # trace view shows only metadata attributes (counts, model_id, booleans)
+        # and looks "empty".  The same recursive PII scrubber used for attributes
+        # is applied so nested PII keys (cardholder name, transaction description,
+        # statement id, etc.) are redacted while structure and non-PII values
+        # remain visible.  Top-level keys matching PII substrings (e.g.
+        # "filename") are fully redacted by design.
+        if event.inputs is not None:
+            redacted_in = redact_telemetry_attributes(event.inputs)
+            if redacted_in:
+                best_effort(
+                    "mlflow.span.set_inputs",
+                    lambda l=live, i=redacted_in: l.set_inputs(i),
+                )
+        if event.outputs is not None:
+            redacted_out = redact_telemetry_attributes(event.outputs)
+            if redacted_out:
+                best_effort(
+                    "mlflow.span.set_outputs",
+                    lambda l=live, o=redacted_out: l.set_outputs(o),
+                )
 
     # --- trace-id lookup (bounded LRU, review B2) ---
     def _set_trace_id(self, request_id: str, trace_id: str) -> None:

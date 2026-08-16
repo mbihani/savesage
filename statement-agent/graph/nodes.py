@@ -67,6 +67,8 @@ def _trace(
     *,
     error: str | None = None,
     extra_attrs: dict[str, Any] | None = None,
+    inputs: dict[str, Any] | None = None,
+    outputs: dict[str, Any] | None = None,
 ) -> None:
     """Record a trace event if a sink is wired (best-effort, never raises).
 
@@ -80,6 +82,12 @@ def _trace(
     (e.g. the extract span carries ``model_id``/``token_usage`` so MLflow can
     attribute model + cost on the LLM span — ``state.as_summary()`` is a
     payload-free snapshot that omits them).
+
+    ``inputs`` / ``outputs`` carry the actual payload data for this span.  The
+    MLflow sink passes them to ``span.set_inputs()`` / ``span.set_outputs()``
+    (after PII redaction) so the trace view shows the real extraction data —
+    bank, model, the GT_SCHEMA payload, validation result — not just metadata
+    counts.  Without these the spans are created but look empty.
     """
     if deps.trace_sink is None:
         return
@@ -97,6 +105,8 @@ def _trace(
             error=error,
             span_id=f"{state.request_id}:{name}",
             parent_span_id=f"{state.request_id}:parse",
+            inputs=inputs,
+            outputs=outputs,
         ))
     except Exception as exc:  # pragma: no cover - trace failures must not kill the graph
         # Trace failures are telemetry, not data: route them to trace_errors so a
@@ -114,7 +124,10 @@ def _extract_telemetry(state: GraphState) -> dict[str, Any]:
     """
     if state.extraction is None:
         return {}
-    attrs: dict[str, Any] = {"model_id": state.extraction.model_id}
+    attrs: dict[str, Any] = {
+        "model_id": state.extraction.model_id,
+        "latency_ms": state.extraction.latency_ms,
+    }
     tu = state.extraction.token_usage
     if tu is not None:
         # Plain dict (not the dataclass) so redact_telemetry_attributes recurses
@@ -139,10 +152,15 @@ def route_node(state: GraphState, deps: NodeDeps) -> GraphState:
     try:
         state.prompt = resolve_prompt(state.request.bank)
         state.stage = Stage.ROUTED
-        _trace(deps, state, "route")
+        _trace(deps, state, "route",
+               inputs={"bank": state.request.bank.value},
+               outputs={"bank": state.request.bank.value, "prompt_resolved": True})
     except Exception as exc:
         state.mark_failure(Stage.ROUTED, f"route: {exc}")
         state.outcome = Outcome.EXTRACTION_FAILED
+        _trace(deps, state, "route",
+               inputs={"bank": state.request.bank.value},
+               error=str(exc))
     return state
 
 
@@ -153,11 +171,20 @@ def extract_node(state: GraphState, deps: NodeDeps) -> GraphState:
     try:
         state.extraction = deps.extraction.extract(state.request)
         state.stage = Stage.EXTRACTED
-        _trace(deps, state, "extract", extra_attrs=_extract_telemetry(state))
+        _trace(deps, state, "extract",
+               extra_attrs=_extract_telemetry(state),
+               inputs={"bank": state.request.bank.value,
+                       "model_id": state.extraction.model_id},
+               outputs={"extraction": state.extraction.payload,
+                        "model_id": state.extraction.model_id,
+                        "schema_valid": state.extraction.schema_valid,
+                        "latency_ms": state.extraction.latency_ms})
     except Exception as exc:
         state.mark_failure(Stage.EXTRACTED, f"extract: {exc}")
         state.outcome = Outcome.EXTRACTION_FAILED
-        _trace(deps, state, "extract", error=str(exc))
+        _trace(deps, state, "extract",
+               inputs={"bank": state.request.bank.value},
+               error=str(exc))
     return state
 
 
@@ -185,7 +212,11 @@ def validate_node(state: GraphState, deps: NodeDeps) -> GraphState:
     # Rebuild the frozen dataclass so the persisted object reflects validation.
     state.extraction = dc_replace(state.extraction, schema_valid=report.schema_valid)
     state.stage = Stage.VALIDATED
-    _trace(deps, state, "validate", error=None if report.ok else "; ".join(report.all_errors))
+    _trace(deps, state, "validate",
+           error=None if report.ok else "; ".join(report.all_errors),
+           inputs={"extraction": state.extraction.payload},
+           outputs={"schema_valid": report.schema_valid,
+                    "validation_errors": report.all_errors})
     return state
 
 
@@ -211,7 +242,10 @@ def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
         # a failure. The stage is left at its prior value (the data was not
         # actually persisted) -- but the persist span is STILL traced so the span
         # tree is complete and the post-hoc judge sees every pipeline stage.
-        _trace(deps, state, "persist_extraction", error=persist_error)
+        _trace(deps, state, "persist_extraction",
+               error=persist_error,
+               inputs={"request_id": state.request_id},
+               outputs={"persisted": persist_error is None})
     # Log the source PDF and the extraction as MLflow artifacts so the post-hoc
     # judge can re-read them when scoring this trace. Best-effort: never raises.
     if deps.trace_sink is not None:
@@ -304,11 +338,17 @@ def judge_node(state: GraphState, deps: NodeDeps) -> GraphState:
         state.stage = Stage.JUDGED
         if deps.result_store is not None:
             deps.result_store.save_verdict(state.verdict)
-        _trace(deps, state, "judge")
+        _trace(deps, state, "judge",
+               inputs={"request_id": state.request_id},
+               outputs={"judge_model_id": state.verdict.judge_model_id,
+                        "n_comparisons": len(state.verdict.comparisons),
+                        "verdict_summary": state.verdict.summary})
     except Exception as exc:
         state.mark_failure(Stage.JUDGED, f"judge: {exc}")
         state.outcome = Outcome.JUDGE_FAILED
-        _trace(deps, state, "judge", error=str(exc))
+        _trace(deps, state, "judge",
+               inputs={"request_id": state.request_id},
+               error=str(exc))
     return state
 
 
@@ -327,5 +367,8 @@ def finalize_node(state: GraphState, deps: NodeDeps) -> GraphState:
         state.outcome = Outcome.PARTIAL
     else:
         state.outcome = Outcome.SUCCESS
-    _trace(deps, state, "finalize")
+    _trace(deps, state, "finalize",
+           outputs={"outcome": state.outcome.value,
+                    "extraction": state.extraction.payload if state.extraction else None,
+                    "schema_valid": state.schema_valid})
     return state
