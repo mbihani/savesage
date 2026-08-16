@@ -67,6 +67,9 @@ _MAX_REQUESTS = 50  # FIFO cap — each entry holds ~1-10 MB of PDF bytes
 # per request.  ``None`` means "not yet attempted"; a tuple/store means
 # "attempted" (including the failure sentinel).
 _stores: Optional[tuple[Any, Any]] = None
+# Last error from a Lakebase store-init attempt, surfaced via the /health
+# endpoint for diagnostics.  ``None`` means "no attempt has failed".
+_last_store_error: Optional[str] = None
 _trace_sink: Any = None
 _LOGGER = logging.getLogger("statement-agent.app")
 
@@ -78,8 +81,13 @@ MAX_SAMPLE_SIZE = 50
 # or MLflow) inside an ``async`` route handler before giving up and falling
 # back to in-memory storage.  Bounds the blocking call so a hung connection
 # can never freeze the single uvicorn event loop — which is what made the
-# Apps proxy return 502 on feedback submit.
-_PERSIST_TIMEOUT = 5.0
+# Apps proxy return 502 on feedback submit.  The initial Lakebase cold-start
+# requires WorkspaceClient init + generate_database_credential API call +
+# psycopg.connect with SSL + DDL (advisory lock + CREATE TABLE IF NOT EXISTS
+# x2 + CREATE INDEX + ALTER TABLE x2); 5 s was too tight and silently timed
+# out, so all results fell back to in-memory storage and never persisted.
+# 15 s gives the cold-start room while still bounding a genuinely hung call.
+_PERSIST_TIMEOUT = 15.0
 
 # Cache for the most recent judge evaluation result (populated by
 # ``POST /api/run-judge`` and returned by ``GET /api/judge-results``).
@@ -308,7 +316,9 @@ def _get_stores() -> tuple[Any, Any]:
         return _stores
     try:
         _stores = _build_lakebase_stores()
-    except Exception:
+    except Exception as exc:
+        global _last_store_error
+        _last_store_error = f"{type(exc).__name__}: {exc}"
         _LOGGER.exception("Lakebase store initialization failed")
         return (None, None)
     return _stores
@@ -573,8 +583,25 @@ def create_app():
 
     # -- GET /health -----------------------------------------------------
     @app.get("/health")
-    def health() -> dict[str, str]:
-        return {"status": "ok"}
+    def health() -> dict[str, Any]:
+        import os
+        env_status = {
+            name: "set" if os.environ.get(name) else "MISSING"
+            for name in ("ENDPOINT_NAME", "PGHOST", "PGUSER", "PGDATABASE",
+                         "PGPORT", "PGSSLMODE")
+        }
+        psycopg_ok = True
+        try:
+            import psycopg  # noqa: F401
+        except ImportError:
+            psycopg_ok = False
+        return {
+            "status": "ok",
+            "stores_initialized": _stores is not None,
+            "last_store_error": _last_store_error,
+            "env_vars": env_status,
+            "psycopg_available": psycopg_ok,
+        }
 
     # -- POST /api/parse -------------------------------------------------
     @app.post("/api/parse")
