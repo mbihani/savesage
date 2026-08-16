@@ -446,11 +446,14 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
                 "schema_valid": final_state.extraction.schema_valid,
             }
 
-        # Push terminal outcome.  The extraction payload is embedded IN the
-        # complete event so the frontend doesn't depend on a separate SSE
-        # ``extraction`` event (which can be truncated for large statements) or
-        # a follow-up HTTP fetch to ``/api/results`` (which can fail).  The
-        # HTTP fetch remains as a last-resort fallback in the frontend.
+        # Push terminal outcome.  The ``complete`` event is kept SMALL — it
+        # carries only scalar status fields, never the extraction payload.
+        # A large payload here would risk truncating the SSE frame before
+        # the terminating blank line, causing the browser to silently drop
+        # the event entirely (no dispatch, no fallback).  The frontend fetches
+        # the full extraction via ``GET /api/results/{request_id}`` on the
+        # ``complete`` event; the ``extraction`` SSE event is a fast-path
+        # optimisation only.
         ctx.outcome = final_state.outcome.value if final_state.outcome else None
         ctx.complete_data = {
             "request_id": ctx.request_id,
@@ -458,7 +461,6 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
             "stage": final_state.stage.value,
             "schema_valid": final_state.schema_valid,
             "validation_errors": list(final_state.validation_errors),
-            "extraction": ctx.extraction_data,
         }
         ctx.push("complete", ctx.complete_data)
 

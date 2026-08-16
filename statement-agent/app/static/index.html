@@ -492,18 +492,19 @@
             try {
               d = JSON.parse(e.data);
             } catch (err) {
-              // Truncated/malformed complete frame — fall back to
-              // extractionRef + an HTTP fetch in handleComplete.
+              // Truncated/malformed complete frame — the complete event is
+              // small (no extraction payload), so this is unlikely, but
+              // handleComplete's HTTP fetch will recover regardless.
               d = {};
             }
             closed = true;
             es.close();
-            // The complete event carries the extraction payload inline
-            // (complete.extraction), so we prefer it over the potentially
-            // truncated extraction SSE event.  handleComplete further
-            // falls back to an HTTP fetch if both are absent.
+            // Pass whatever the extraction SSE event captured (may be null
+            // if that event was truncated).  handleComplete ALWAYS fetches
+            // /api/results as the authoritative source; extractionRef is a
+            // fast-path fallback only.
             onCompleteRef.current({
-              extraction: d.extraction || extractionRef.current,
+              extraction: extractionRef.current,
               complete: d,
             });
           });
@@ -1064,21 +1065,12 @@
         };
 
         const handleComplete = async (data) => {
-          // The complete SSE event carries the extraction payload inline
-          // (data.extraction), so prefer it — no HTTP round-trip needed.
-          // Fall back to an HTTP fetch to /api/results only if the SSE
-          // payload is absent (e.g. the complete frame was truncated).
-          if (data.extraction) {
-            setResults({
-              extraction: data.extraction,
-              complete: data.complete,
-            });
-            setView("results");
-            return;
-          }
-          // HTTP fallback: /api/results returns the payload from
-          // ctx.extraction_data (in-memory) or Lakebase, with the same
-          // {payload, model_id, schema_valid} shape as the SSE event.
+          // ALWAYS fetch the full extraction via HTTP first — the complete
+          // SSE event is intentionally small (no payload) so it can't be
+          // truncated, and /api/results is the authoritative source (in-
+          // memory ctx.extraction_data or Lakebase).  The extraction SSE
+          // event (data.extraction) is a fast-path fallback if the fetch
+          // fails or returns no extraction.
           try {
             const resp = await fetch(`/api/results/${requestId}`, {
               signal: AbortSignal.timeout(5000),
@@ -1095,8 +1087,21 @@
               }
             }
           } catch (e) {
-            // Fall through to SSE data
+            // Fall through to SSE-captured extraction
           }
+          // Fast-path fallback: use the extraction captured by the
+          // extraction SSE event (may be null if that event was truncated).
+          if (data.extraction) {
+            setResults({
+              extraction: data.extraction,
+              complete: data.complete,
+            });
+            setView("results");
+            return;
+          }
+          // Neither source produced extraction data — show the results
+          // view with whatever we have; ResultsView renders an empty
+          // state when extraction is null.
           setResults(data);
           setView("results");
         };
