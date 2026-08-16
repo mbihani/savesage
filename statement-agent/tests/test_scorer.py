@@ -105,6 +105,52 @@ class _FakeRunsFrame:
         return _FakeSeries([])
 
 
+class _FakePagedList(list):
+    """Fake ``PagedList`` — a list subclass with a ``.token`` continuation.
+
+    Models ``MlflowClient.search_traces`` which returns a
+    ``PagedList[Trace]`` whose ``.token`` is the next-page token (falsy/None
+    when exhausted).  The production code reads it via ``getattr(traces,
+    "token", None)`` and breaks the loop when it is falsy.
+    """
+
+    def __init__(self, items=(), token=None):
+        super().__init__(items)
+        self.token = token
+
+
+class _FakeDataFrameRow:
+    """Fake pandas ``Series`` — supports ``.get('trace_metadata')``.
+
+    Models the row shape returned by ``DataFrame.iterrows()`` in the pandas
+    path of ``_iter_trace_metadata`` (production ``mlflow.search_traces``
+    returns a DataFrame whose ``trace_metadata`` column holds the
+    ``info.request_metadata`` dict per row).
+    """
+
+    def __init__(self, trace_metadata: dict | None):
+        self._tm = trace_metadata
+
+    def get(self, key, default=None):
+        if key == "trace_metadata":
+            return self._tm
+        return default
+
+
+class _FakeDataFrame:
+    """Fake pandas ``DataFrame`` — supports ``iterrows()`` yielding rows with
+    a ``trace_metadata`` column.  Models the production return shape of the
+    module-level ``mlflow.search_traces`` (used to exercise the DataFrame
+    branch of ``_iter_trace_metadata`` in a regression test)."""
+
+    def __init__(self, rows: list[dict | None]):
+        self._rows = [_FakeDataFrameRow(tm) for tm in rows]
+
+    def iterrows(self):
+        for i, row in enumerate(self._rows):
+            yield i, row
+
+
 # The run-tag fast-path filter resolve_run_id builds; the fake search_runs
 # honours it so the resolution is actually exercised (the old fake ignored
 # filter_string, making the resolve test vacuous).
@@ -147,6 +193,12 @@ class _FakeMlflowClient:
     positional argument (unlike the module-level mlflow.log_metric which takes
     it as a keyword).  This fake translates the client API to the same
     (key, value, run_id) tuples the test assertions already check.
+
+    ``search_traces`` models the paginated ``MlflowClient.search_traces``
+    (returns a ``PagedList[Trace]`` with a ``.token`` continuation).  The
+    parent's ``_traces`` list is sliced into pages of ``max_results`` using
+    the ``page_token`` as a stringified start index, so multi-page scans are
+    genuinely exercised (not returned in one shot).
     """
 
     def __init__(self, parent: "_FakeMLflowModule"):
@@ -160,6 +212,20 @@ class _FakeMlflowClient:
 
     def log_dict(self, run_id, dictionary, artifact_file_path=None):
         self._parent.logged_dicts.append((run_id, dictionary, artifact_file_path))
+
+    def search_traces(self, experiment_ids=None, filter_string=None,
+                      max_results=100, order_by=None, page_token=None,
+                      run_id=None, include_spans=True, model_id=None,
+                      **kwargs):
+        self._parent._trace_search_calls += 1
+        if self._parent._trace_search_raises:
+            raise RuntimeError("trace search error")
+        traces = list(self._parent._traces)
+        start = int(page_token) if page_token else 0
+        page = traces[start:start + max_results]
+        next_start = start + len(page)
+        token = str(next_start) if next_start < len(traces) else None
+        return _FakePagedList(page, token)
 
 
 class _FakeTrackingModule:
@@ -187,6 +253,12 @@ class _FakeMLflowModule:
         self._request_id_runs: dict[str, str] = {}
         # Trace-like objects (see _make_fake_trace) for the trace-based fallback.
         self._traces: list = []
+        # How many times MlflowClient.search_traces was called (paginated
+        # scan).  Tests assert on this to prove pagination is followed and
+        # the global bound terminates the loop.
+        self._trace_search_calls: int = 0
+        # When True, _FakeMlflowClient.search_traces raises (failure test).
+        self._trace_search_raises: bool = False
 
     def set_tracking_uri(self, uri):
         """No-op — the scorer calls this to ensure databricks tracking."""
@@ -233,6 +305,10 @@ class _FakeMLflowModule:
     def set_traces(self, traces: list) -> None:
         """Register trace-like objects for the trace-based fallback."""
         self._traces = list(traces)
+
+    def set_trace_search_raises(self, raises: bool = True) -> None:
+        """Make _FakeMlflowClient.search_traces raise on the next call(s)."""
+        self._trace_search_raises = raises
 
 
 def _install_fake_mlflow():
@@ -1110,6 +1186,64 @@ class ResolveRunIdTest(unittest.TestCase):
         # The fast path was attempted (and raised) before the fallback.
         self.assertTrue(self.fake_mlflow.search_runs.called)
 
+    # --- pagination (the BLOCKING fix: no hard age cliff) ---
+
+    def test_resolves_via_trace_on_later_page(self):
+        """THE BLOCKING FIX: the matching trace is NOT on the first page.
+        The paginated scan must follow the continuation token to page 2 and
+        find it there. This FAILS if the scan is reverted to a single capped
+        ``search_traces`` call (the match at index 200 would be missed by a
+        single ``max_results=200`` page)."""
+        from judge.scorer import resolve_run_id, _TRACE_PAGE_SIZE
+        # 200 decoy traces (no match) + the target at index 200.
+        decoys = [
+            _make_fake_trace(f"req-deadbeef{i:04x}", f"run-decoy-{i}")
+            for i in range(_TRACE_PAGE_SIZE)
+        ]
+        target = _make_fake_trace("req-aabbccddeeff", "run-target")
+        self.fake_mlflow.set_traces(decoys + [target])
+        run_id = resolve_run_id("req-aabbccddeeff")
+        self.assertEqual(run_id, "run-target")
+        # Pagination was followed: page 1 (decoys) + page 2 (target).
+        self.assertGreaterEqual(self.fake_mlflow._trace_search_calls, 2)
+
+    def test_trace_scan_exhaustion_returns_none(self):
+        """When no trace matches across multiple pages, the scan exhausts all
+        pages and returns None cleanly (→ 404, never raises). Multi-page so
+        the continuation-token break is genuinely exercised."""
+        from judge.scorer import resolve_run_id, _TRACE_PAGE_SIZE
+        # More traces than one page, none matching the target.
+        n = _TRACE_PAGE_SIZE + 50
+        self.fake_mlflow.set_traces([
+            _make_fake_trace(f"req-deadbeef{i:04x}", f"run-decoy-{i}")
+            for i in range(n)
+        ])
+        run_id = resolve_run_id("req-aabbccddeeff")
+        self.assertIsNone(run_id)
+        # All pages were fetched (not just the first).
+        self.assertGreaterEqual(self.fake_mlflow._trace_search_calls, 2)
+
+    def test_trace_scan_global_bound_terminates(self):
+        """The global ``_MAX_TRACES_SCAN`` bound stops the loop before
+        scanning an unbounded number of traces — a genuinely-absent
+        request_id can't loop forever. Uses small patched constants so the
+        test is fast and deterministic."""
+        from judge.scorer import resolve_run_id
+        import judge.scorer as scorer_mod
+        # Patch to small values: page_size=2, max_scan=5. With 10 decoy
+        # traces and no match, the loop processes 3 pages (6 traces) then
+        # hits the bound (6 >= 5) and stops — it does NOT scan all 10.
+        with patch.object(scorer_mod, "_TRACE_PAGE_SIZE", 2), \
+             patch.object(scorer_mod, "_MAX_TRACES_SCAN", 5):
+            self.fake_mlflow.set_traces([
+                _make_fake_trace(f"req-deadbeef{i:04x}", f"run-d-{i}")
+                for i in range(10)
+            ])
+            run_id = resolve_run_id("req-aabbccddeeff")
+        self.assertIsNone(run_id)
+        # Stopped at the bound after 3 pages (2+2+2=6 > 5), NOT 5 pages.
+        self.assertEqual(self.fake_mlflow._trace_search_calls, 3)
+
     # --- negative paths ---
 
     def test_returns_none_when_no_run_and_no_trace(self):
@@ -1128,15 +1262,15 @@ class ResolveRunIdTest(unittest.TestCase):
         """A request_id not matching the canonical req-<12hex> form is rejected
         before any MLflow search (→ 404/400, no filter injection risk)."""
         from judge.scorer import resolve_run_id
-        # Replace search_runs/search_traces with Mocks that would record a
-        # call — assert NEITHER is called for a malformed id (the regex
-        # guard short-circuits before either search).
+        # Replace search_runs with a Mock that would record a call — assert
+        # it is NOT called for a malformed id (the regex guard short-circuits
+        # before the fast path). The trace path uses MlflowClient.search_traces;
+        # assert its call counter stays at 0 too.
         self.fake_mlflow.search_runs = Mock(return_value=_FakeRunsFrame([]))
-        self.fake_mlflow.search_traces = Mock(return_value=[])
         run_id = resolve_run_id("req-123")
         self.assertIsNone(run_id)
         self.fake_mlflow.search_runs.assert_not_called()
-        self.fake_mlflow.search_traces.assert_not_called()
+        self.assertEqual(self.fake_mlflow._trace_search_calls, 0)
 
     def test_rejects_filter_injection_attempt(self):
         """A request_id crafted to alter the MLflow filter (e.g. a quote) is
@@ -1144,7 +1278,6 @@ class ResolveRunIdTest(unittest.TestCase):
         filter_string."""
         from judge.scorer import resolve_run_id
         self.fake_mlflow.search_runs = Mock(return_value=_FakeRunsFrame([]))
-        self.fake_mlflow.search_traces = Mock(return_value=[])
         for malicious in (
             "req-' OR '1'='1",      # SQL-style injection
             "req-abc' OR tags.x='y", # MLflow filter injection
@@ -1153,7 +1286,7 @@ class ResolveRunIdTest(unittest.TestCase):
         ):
             self.assertIsNone(resolve_run_id(malicious))
         self.fake_mlflow.search_runs.assert_not_called()
-        self.fake_mlflow.search_traces.assert_not_called()
+        self.assertEqual(self.fake_mlflow._trace_search_calls, 0)
 
     def test_returns_none_when_experiment_not_found(self):
         """When the experiment is unreachable, returns None (→ 404, never 500)."""
@@ -1169,11 +1302,45 @@ class ResolveRunIdTest(unittest.TestCase):
         self.fake_mlflow.search_runs = Mock(
             side_effect=RuntimeError("run search error")
         )
-        self.fake_mlflow.search_traces = Mock(
-            side_effect=RuntimeError("trace search error")
-        )
+        self.fake_mlflow.set_trace_search_raises(True)
         run_id = resolve_run_id("req-aabbccddeeff")
         self.assertIsNone(run_id)
+
+    # --- DataFrame path of _iter_trace_metadata (non-blocking: closes a
+    #     regression gap — the pandas branch was previously untested) ---
+
+    def test_iter_trace_metadata_dataframe_path(self):
+        """The pandas ``DataFrame`` branch of ``_iter_trace_metadata``
+        (``iterrows`` + ``row.get('trace_metadata')``) is exercised directly
+        so a future column-name or Series-.get regression is caught. Codex
+        confirmed the column IS named ``trace_metadata`` and rows are pandas
+        Series in both mlflow 3.2.0 and 3.10.1; this fake models that shape.
+        The production paginated path uses ``PagedList[Trace]`` (the
+        Trace-object branch), but the DataFrame branch is kept for
+        defensive coverage of the module-level API shape."""
+        from judge.scorer import _iter_trace_metadata
+        df = _FakeDataFrame([
+            {
+                "mlflow.traceInputs": json.dumps(
+                    {"request_id": "req-aabbccddeeff", "bank": "HDFC"}
+                ),
+                "mlflow.sourceRun": "run-1",
+            },
+            {
+                "mlflow.traceInputs": json.dumps(
+                    {"request_id": "req-deadbeefdead", "bank": "ICICI"}
+                ),
+                "mlflow.sourceRun": "run-2",
+            },
+            None,  # a trace with no trace_metadata (e.g. a judge-eval trace)
+        ])
+        metas = list(_iter_trace_metadata(df))
+        self.assertEqual(len(metas), 2)  # the None row is skipped
+        self.assertEqual(metas[0]["mlflow.sourceRun"], "run-1")
+        self.assertEqual(metas[1]["mlflow.sourceRun"], "run-2")
+        # Verify the traceInputs JSON is parseable and carries request_id.
+        inp0 = json.loads(metas[0]["mlflow.traceInputs"])
+        self.assertEqual(inp0["request_id"], "req-aabbccddeeff")
 
 
 if __name__ == "__main__":

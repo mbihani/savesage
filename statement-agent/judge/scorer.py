@@ -46,11 +46,17 @@ JUDGED_FIELDS = (
 # survives experiment recreation and cross-workspace deploys.
 _EXPERIMENT_PATH = "/Shared/savesage/statement-agent"
 
-# How many recent traces the trace-based fallback in resolve_run_id scans.
-# The on-demand judge targets a freshly-parsed statement, so a generous
-# recent window reliably contains it; the run-tag fast path handles the
-# rare tagged run in O(1) via an indexed filter.
-_TRACE_SCAN_LIMIT = 200
+# Per-page size for the paginated trace scan in resolve_run_id's fallback.
+# The on-demand judge button is on the Results view, which loads ANY
+# persisted/historical parse from Lakebase — not only freshly-parsed ones
+# — so the fallback must page through traces (not cap at a fixed window)
+# to avoid recreating the 404 for older parses.
+_TRACE_PAGE_SIZE = 200
+
+# Global bound on the total traces the paginated scan will process, so a
+# genuinely-absent request_id can't loop forever.  Far above the realistic
+# parse corpus; hitting it returns None cleanly (→ 404, never raises).
+_MAX_TRACES_SCAN = 2000
 
 # Module-level flag so _ensure_mlflow_configured runs once per process.
 _mlflow_configured = False
@@ -134,17 +140,24 @@ def resolve_run_id(request_id: str) -> str | None:
        is racy under ``start_span_no_context`` — so the tag lands on only a
        small minority of parse runs in practice (verified live: ~2/44).
 
-    2. **Trace-based fallback** (reliable): ``mlflow.search_traces`` returns
-       the parse TRACE, which ALWAYS carries ``request_id`` in its
+    2. **Trace-based fallback** (reliable, paginated): ``MlflowClient.
+       search_traces`` pages through the experiment's traces until one
+       whose root-span inputs carry ``request_id`` is found, and returns
+       its ``mlflow.sourceRun``. The parse TRACE carries ``request_id`` in
        ``trace_metadata['mlflow.traceInputs']`` (the serialised root-span
        inputs — ``{"request_id": "req-…", "bank": …}``) and the backing
        run in ``trace_metadata['mlflow.sourceRun']``. The trace is the
        canonical entity for a parse (the run is a side effect for artifact
        storage); ``request_id`` is set on the root span's inputs by the
-       graph, so it is present on every parse trace regardless of whether
+       graph, so it is present on the parse trace regardless of whether
        the run tag landed. We return ``mlflow.sourceRun`` — the same run
        :func:`score_trace` downloads ``statement.pdf`` / ``extraction.json``
-       from.
+       from. The scan is paginated via the Client API's ``page_token``
+       (the module-level ``mlflow.search_traces`` has no continuation
+       token and is capped at a single page, which would recreate the 404
+       for any parse whose trace is older than the newest page). Bounded
+       by ``_MAX_TRACES_SCAN`` total traces so a genuinely-absent
+       request_id can't loop forever.
 
     Defense-in-depth: validates ``request_id`` against the canonical
     ``req-<12hex>`` form before interpolating it into any MLflow filter,
@@ -176,8 +189,9 @@ def resolve_run_id(request_id: str) -> str | None:
     if run_id is not None:
         return run_id
 
-    # 2. Trace-based fallback (reliable — traceInputs always carries request_id).
-    return _resolve_run_id_via_traces(mlflow, exp_id, request_id)
+    # 2. Trace-based fallback (reliable, paginated — traceInputs carries
+    #    request_id on every parse trace regardless of run-tag landing).
+    return _resolve_run_id_via_traces(exp_id, request_id)
 
 
 def _resolve_run_id_via_run_tag(mlf: Any, exp_id: str, request_id: str) -> str | None:
@@ -210,38 +224,82 @@ def _resolve_run_id_via_run_tag(mlf: Any, exp_id: str, request_id: str) -> str |
         return None
 
 
-def _resolve_run_id_via_traces(mlf: Any, exp_id: str, request_id: str) -> str | None:
-    """Trace-based fallback: scan recent traces for one whose root-span
-    inputs carry ``request_id`` and return its backing ``mlflow.sourceRun``.
+def _resolve_run_id_via_traces(exp_id: str, request_id: str) -> str | None:
+    """Paginated trace scan: page through the experiment's traces until one
+    whose root-span inputs carry ``request_id`` is found, return its
+    ``mlflow.sourceRun``.
+
+    Uses ``MlflowClient.search_traces`` (not the module-level ``mlflow.
+    search_traces``) because ONLY the Client API exposes a ``page_token``
+    for true pagination — the module-level call has no continuation and is
+    capped at a single page, which would recreate the 404 for any parse
+    whose trace is older than the newest page (the bug we are fixing).
+    Each page returns a ``PagedList[Trace]`` whose ``.token`` is the
+    continuation (falsy/None when exhausted).
 
     The parse TRACE reliably carries ``request_id`` in
     ``trace_metadata['mlflow.traceInputs']`` (serialised root-span inputs)
     even when the run-level ``request_id`` tag did not land. The backing
     run (``mlflow.sourceRun``) is the same run :func:`score_trace` downloads
-    artifacts from. Returns ``None`` if no matching trace is found.
-    Never raises — a search failure returns ``None`` (→ clean 404).
+    artifacts from.
+
+    Bounded by ``_MAX_TRACES_SCAN`` total traces so a genuinely-absent
+    request_id can't loop forever. Returns ``None`` if no matching trace
+    is found (→ clean 404). Never raises — a search failure returns None.
     """
+    from mlflow.tracking import MlflowClient
+
     try:
-        traces = mlf.search_traces(
-            experiment_ids=[exp_id], max_results=_TRACE_SCAN_LIMIT,
-        )
+        client = MlflowClient()
     except Exception:  # noqa: BLE001 - never fatal; surface as "not found"
         _LOGGER.warning(
-            "resolve_run_id trace search failed for %s", request_id, exc_info=True,
+            "resolve_run_id could not build MlflowClient for %s",
+            request_id, exc_info=True,
         )
         return None
-    for tmeta in _iter_trace_metadata(traces):
-        inputs_json = (tmeta or {}).get("mlflow.traceInputs")
-        if not inputs_json:
-            continue
+
+    page_token: str | None = None
+    total_scanned = 0
+    while True:
         try:
-            inp = json.loads(inputs_json)
-        except Exception:  # noqa: BLE001 - malformed preview, skip
-            continue
-        if isinstance(inp, dict) and inp.get("request_id") == request_id:
-            run_id = (tmeta or {}).get("mlflow.sourceRun")
-            if run_id:
-                return run_id
+            traces = client.search_traces(
+                experiment_ids=[exp_id],
+                max_results=_TRACE_PAGE_SIZE,
+                page_token=page_token,
+            )
+        except Exception:  # noqa: BLE001 - never fatal; surface as "not found"
+            _LOGGER.warning(
+                "resolve_run_id trace search failed for %s",
+                request_id, exc_info=True,
+            )
+            return None
+        for tmeta in _iter_trace_metadata(traces):
+            total_scanned += 1
+            inputs_json = (tmeta or {}).get("mlflow.traceInputs")
+            if not inputs_json:
+                # traceInputs is best-effort (span.set_inputs is swallowed on
+                # failure), so a trace could theoretically persist without it.
+                # The run-tag fast path or a re-parse covers this case —
+                # accepted residual, not expanded here.
+                continue
+            try:
+                inp = json.loads(inputs_json)
+            except Exception:  # noqa: BLE001 - malformed preview, skip
+                continue
+            if isinstance(inp, dict) and inp.get("request_id") == request_id:
+                run_id = (tmeta or {}).get("mlflow.sourceRun")
+                if run_id:
+                    return run_id
+        # Next page (PagedList.token is falsy/None when exhausted).
+        page_token = getattr(traces, "token", None)
+        if not page_token:
+            break
+        if total_scanned >= _MAX_TRACES_SCAN:
+            _LOGGER.info(
+                "resolve_run_id trace scan hit global bound (%d) for %s; "
+                "stopping before exhaustion", _MAX_TRACES_SCAN, request_id,
+            )
+            break
     return None
 
 
