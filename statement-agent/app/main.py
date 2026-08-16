@@ -77,6 +77,18 @@ _LOGGER = logging.getLogger("statement-agent.app")
 # Guards against a caller requesting an expensive sweep via the API.
 MAX_SAMPLE_SIZE = 50
 
+# Canonical request_id format — ``req-`` prefix + 12 hex chars (see
+# ``_new_request_id``). Used to validate the single-trace judge path param
+# BEFORE building an MLflow filter_string from it, so a crafted/quoted value
+# cannot alter the filter or select the wrong run.
+import re as _re
+_REQUEST_ID_RE = _re.compile(r"^req-[0-9a-f]{12}$")
+
+
+def _is_valid_request_id(request_id: str) -> bool:
+    """Return True iff ``request_id`` matches the canonical ``req-<12hex>`` form."""
+    return bool(_REQUEST_ID_RE.match(request_id or ""))
+
 # Max seconds to wait for a best-effort persistence/telemetry call (Lakebase
 # or MLflow) inside an ``async`` route handler before giving up and falling
 # back to in-memory storage.  Bounds the blocking call so a hung connection
@@ -999,6 +1011,15 @@ def create_app():
           * 409 — a judge run (batch or single) is already in progress.
           * 500 — never (errors land in the status endpoint).
         """
+        # Validate the request_id format BEFORE building an MLflow filter_string
+        # from it — a crafted/quoted value could alter the filter (tags.request_id
+        # = '<value>') or select the wrong run. Reject malformed ids with 400
+        # before touching the concurrency lock.
+        if not _is_valid_request_id(request_id):
+            raise HTTPException(
+                status_code=400,
+                detail="request_id must be the canonical 'req-<12hex>' form",
+            )
         # Concurrency guard — shared slot with the batch sampler. Reserve
         # BEFORE resolving so a concurrent batch request sees the busy flag.
         # Released in _run_single_judge_bg's finally (or here on 404 failure).
@@ -1039,7 +1060,27 @@ def create_app():
             args=(request_id, run_id),
             daemon=True,
         )
-        thread.start()
+        # Hand slot ownership to the runner ONLY after a successful start().
+        # If start() raises (RuntimeError / resource exhaustion / thread limit),
+        # release the slot ourselves so a subsequent judge request is NOT 409'd
+        # permanently until app restart — the runner's finally never runs when
+        # the thread never starts.
+        try:
+            thread.start()
+        except Exception:
+            _release_judge_slot()
+            _single_judge_status[request_id] = {
+                "status": "error", "request_id": request_id,
+                "error": "failed to start judge thread",
+            }
+            _LOGGER.warning(
+                "failed to start single-judge thread for %s",
+                request_id, exc_info=True,
+            )
+            raise HTTPException(
+                status_code=503,
+                detail="failed to start judge; please retry",
+            )
 
         return JSONResponse(
             status_code=202,

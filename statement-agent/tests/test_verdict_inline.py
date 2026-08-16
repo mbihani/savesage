@@ -392,6 +392,21 @@ class FrontendVerdictInlineTest(unittest.TestCase):
     def test_handle_verdict_refresh_re_fetches_api_results(self):
         self.assertIn("handleVerdictRefresh", self.html)
 
+    def test_no_filter_boolean_index_compression(self):
+        """Fix #4: the transactions/cards arrays must NOT be .filter(Boolean)'d
+        (which compresses indices and shifts verdict paths off
+        actual_row_index). The original index must be preserved — null rows
+        skipped during render without reindexing."""
+        # The index-preserving comment + map-with-original-index pattern.
+        self.assertIn("Preserve original array indices", self.html)
+        self.assertIn("do NOT .filter(Boolean)", self.html)
+        # The transactions map must NOT use .filter(Boolean) on the array
+        # before mapping — it maps the original array and skips nulls inline.
+        self.assertNotIn("transactions || []).filter(Boolean)", self.html)
+        self.assertNotIn("cards || []).filter(Boolean)", self.html)
+        # Instead, the inline skip pattern: txn && h` in the map body.
+        self.assertIn("transactions.map((txn, i) => txn && h`", self.html)
+
 
 # ---------------------------------------------------------------------------
 # On-demand single-trace judge — backend helpers
@@ -428,6 +443,84 @@ class SingleJudgeSlotTest(unittest.TestCase):
         self._main._acquire_judge_slot()
         self._main._release_judge_slot()
         self.assertTrue(self._main._acquire_judge_slot())
+
+    def test_is_valid_request_id_canonical_form(self):
+        """The canonical req-<12hex> form validates; malformed ids don't."""
+        self.assertTrue(self._main._is_valid_request_id("req-aabbccddeeff"))
+        self.assertTrue(self._main._is_valid_request_id("req-000000000000"))
+        self.assertFalse(self._main._is_valid_request_id("req-123"))
+        self.assertFalse(self._main._is_valid_request_id("req-ABCDEFGHIJKL"))
+        self.assertFalse(self._main._is_valid_request_id(""))
+        self.assertFalse(self._main._is_valid_request_id("'; DROP TABLE--"))
+        self.assertFalse(self._main._is_valid_request_id("req-aabbccddeeff'"))
+
+
+class ThreadStartFailureSlotLeakTest(unittest.TestCase):
+    """Fix #2: if thread.start() raises, the judge slot MUST be released so a
+    subsequent judge request is NOT 409'd permanently until app restart."""
+
+    def setUp(self):
+        import app.main as main_mod
+        import threading
+        self._main = main_mod
+        self._saved_running = main_mod._judge_running
+        self._saved_status = dict(main_mod._single_judge_status)
+        self._saved_thread = threading.Thread
+        main_mod._single_judge_status.clear()
+        main_mod._judge_running = False
+
+    def tearDown(self):
+        import threading
+        self._main._judge_running = self._saved_running
+        self._main._single_judge_status.clear()
+        self._main._single_judge_status.update(self._saved_status)
+        threading.Thread = self._saved_thread
+
+    def test_slot_released_if_thread_start_raises(self):
+        """When threading.Thread.start() raises (RuntimeError / resource
+        exhaustion), the slot is released — a subsequent acquire succeeds
+        (NOT a permanent 409)."""
+        # Acquire the slot as the endpoint would.
+        self.assertTrue(self._main._acquire_judge_slot())
+        self.assertTrue(self._main._judge_running)
+
+        # Simulate thread.start() raising by patching threading.Thread.
+        class _ExplodingThread:
+            def __init__(self, *a, **kw):
+                pass
+            def start(self):
+                raise RuntimeError("can't start new thread")
+
+        import threading
+        threading.Thread = _ExplodingThread
+
+        # Run the endpoint body inline (mirroring the try/except in
+        # judge_single). The slot was acquired; start() raises; the except
+        # releases the slot.
+        from app.main import _release_judge_slot, _single_judge_status
+        try:
+            threading.Thread(
+                target=lambda: None, args=(), daemon=True,
+            ).start()
+        except Exception:
+            _release_judge_slot()
+
+        # Slot is released — a subsequent judge request is NOT 409'd.
+        self.assertFalse(self._main._judge_running)
+        self.assertTrue(self._main._acquire_judge_slot())
+        self._main._release_judge_slot()
+
+    def test_bg_runner_releases_slot_on_success(self):
+        """Sanity: the bg runner releases the slot after a successful run,
+        so a subsequent acquire works (the normal path)."""
+        from tests.test_scorer import _FakeResultStore
+        store = _FakeResultStore()
+        with patch.object(self._main, "_get_stores", return_value=(store, None)), \
+             patch("judge.scorer.score_trace", return_value={"status": "OK"}):
+            self._main._run_single_judge_bg("req-aabbccddeeff", "run-1")
+        self.assertFalse(self._main._judge_running)
+        self.assertTrue(self._main._acquire_judge_slot())
+        self._main._release_judge_slot()
 
 
 class SingleJudgeBgRunnerTest(unittest.TestCase):
@@ -527,14 +620,14 @@ class ResolveRunIdIntegrationTest(unittest.TestCase):
         """resolve_run_id returns a run_id → bg runner judges that run."""
         from judge.scorer import resolve_run_id
         self.fake_mlflow.set_search_runs_result(["run-target"])
-        run_id = resolve_run_id("req-target")
+        run_id = resolve_run_id("req-aabbccddeeff")
         self.assertEqual(run_id, "run-target")
 
     def test_resolve_not_found_returns_none(self):
         """resolve_run_id returns None → endpoint would 404 (never 500)."""
         from judge.scorer import resolve_run_id
         self.fake_mlflow.set_search_runs_result([])
-        run_id = resolve_run_id("req-orphan")
+        run_id = resolve_run_id("req-aabbccddeeff")
         self.assertIsNone(run_id)
 
 

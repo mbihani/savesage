@@ -865,9 +865,15 @@
           outcome === "PARTIAL" ? "PARTIAL" : "FAILURE";
 
         const payload = extraction?.payload;
-        const cards = (payload?.cards || []).filter(Boolean);
+        // Preserve original array indices — do NOT .filter(Boolean) the cards
+        // or transactions arrays. A malformed payload with null entries would
+        // compress indices and shift verdict/feedback paths off the actual
+        // array index (cards.<i>.cardMeta.*, transactions.<i>.*) the judge and
+        // feedback paths key on. Instead keep the original index in the map
+        // and skip null rows during render.
+        const cards = (payload?.cards || []);
         const rewards = payload?.rewards;
-        const transactions = (payload?.transactions || []).filter(Boolean);
+        const transactions = (payload?.transactions || []);
 
         // On-demand single-trace judge — renders inline verdicts immediately.
         const judge = useSingleJudge(requestId, onVerdictRefresh);
@@ -962,9 +968,9 @@
               </div>
             `}
 
-            ${cards.length > 0 && h`
-              <div class="section-title">Cards (${cards.length})</div>
-              ${cards.map((card, i) => h`
+            ${cards.some(Boolean) && h`
+              <div class="section-title">Cards (${cards.filter(Boolean).length})</div>
+              ${cards.map((card, i) => card && h`
                 <div class="card" key=${"card-" + i}>
                   <div class="section-title" style=${{ marginTop: 0, fontSize: "1rem" }}>Card ${i + 1}</div>
                   <${FieldRow}
@@ -1005,8 +1011,8 @@
               </div>
             `}
 
-            ${transactions.length > 0 && h`
-              <div class="section-title">Transactions (${transactions.length})</div>
+            ${transactions.some(Boolean) && h`
+              <div class="section-title">Transactions (${transactions.filter(Boolean).length})</div>
               <div class="card" style=${{ padding: 0, overflow: "hidden" }}>
                 <div style=${{ overflowX: "auto" }}>
                   <table style=${{ width: "100%", borderCollapse: "collapse", fontSize: "0.8125rem" }}>
@@ -1019,7 +1025,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      ${transactions.map((txn, i) => h`
+                      ${transactions.map((txn, i) => txn && h`
                         <tr key=${"txn-" + i} style=${{ borderBottom: "1px solid var(--border)" }}>
                           <td style=${{ ...tdStyle, color: "var(--text-muted)", whiteSpace: "nowrap" }}>${i + 1}</td>
                           <td style=${tdStyle}>

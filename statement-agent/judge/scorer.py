@@ -123,11 +123,24 @@ def resolve_run_id(request_id: str) -> str | None:
     Uses an MLflow tag-equality filter — efficient (indexed) vs. downloading
     ``extraction.json`` for every recent run.
 
+    Defense-in-depth: validates ``request_id`` against the canonical
+    ``req-<12hex>`` form before interpolating it into the MLflow filter_string,
+    so a crafted/quoted value can never alter the filter or select the wrong
+    run. Returns ``None`` for a malformed id (the endpoint maps that to 400
+    upstream, but this guard protects any other caller).
+
     Returns the ``run_id`` or ``None`` if no run is found (the trace may
     predate the ``request_id`` tag, has aged out of the experiment, or the
     experiment is unreachable). Never raises — callers use the ``None``
     result to return a clean 404.
     """
+    import re
+
+    # Validate BEFORE building the filter — never interpolate an untrusted
+    # value into an MLflow filter_string.
+    if not re.match(r"^req-[0-9a-f]{12}$", request_id or ""):
+        return None
+
     import mlflow
 
     _ensure_mlflow_configured(mlflow)
@@ -209,6 +222,67 @@ def _ensure_mlflow_configured(mlf: Any) -> None:
     else:
         os.environ.pop("DATABRICKS_CONFIG_PROFILE", None)
     _mlflow_configured = True
+
+
+# Cap on the ``rationale`` string logged to MLflow — it may echo PDF text,
+# so a length cap is a defensive PII guard (mirrors the span-attribute
+# ``_MAX_STR`` cap in harness.tracing_spans).
+_RATIONALE_MAX_LEN = 200
+
+
+def _redact_comparisons(comparisons: Any) -> list[dict[str, Any]]:
+    """Build a PII-redacted JSON payload for the ``verdict_comparisons.json``
+    MLflow artifact.
+
+    Reuses :func:`harness.tracing_feedback.redact_feedback_value` — the SAME
+    field-aware policy as feedback telemetry — so the leaf-driven rules stay
+    consistent across both paths:
+
+    * ``cardDisplayName`` / ``description`` (client PII) -> keyed HMAC, or
+      omitted (None) when no HMAC key is configured (never a reversible
+      unsalted digest).
+    * ``lastFourDigit`` / ``amount`` / ``date`` / ``pointsEarnedThisCycle``
+      / ``closingPoints`` -> retained raw (not individually identifying;
+      documented trade-off — hashing them destroys analytics value).
+    * any other leaf -> omitted (or HMAC if a key is configured).
+
+    The ``rationale`` string is defensively capped (it may echo PDF text).
+    The ``field_path`` and row indices are NOT PII and are carried verbatim.
+    """
+    from harness.tracing_feedback import redact_feedback_value
+
+    hmac_key = _resolve_feedback_hmac_key()
+    out: list[dict[str, Any]] = []
+    for c in comparisons:
+        rat = c.rationale
+        if rat is not None and len(str(rat)) > _RATIONALE_MAX_LEN:
+            rat = str(rat)[:_RATIONALE_MAX_LEN] + "…"
+        out.append({
+            "field_path": c.field_path,
+            "expected": redact_feedback_value(c.field_path, c.expected, hmac_key=hmac_key),
+            "actual": redact_feedback_value(c.field_path, c.actual, hmac_key=hmac_key),
+            "outcome": c.outcome.value,
+            "card_index": c.card_index,
+            "expected_row_index": c.expected_row_index,
+            "actual_row_index": c.actual_row_index,
+            "similarity": c.similarity,
+            "rationale": rat,
+        })
+    return out
+
+
+def _resolve_feedback_hmac_key() -> bytes:
+    """Resolve the feedback HMAC key from the tracing config (best-effort).
+
+    Returns ``b""`` when unset — in which case PII leaves are OMITTED (None)
+    rather than risk a reversible unsalted digest (the documented policy in
+    harness.tracing_feedback). Never raises.
+    """
+    try:
+        from harness.config_ws4 import get_tracing_config
+        return get_tracing_config().feedback_hmac_key
+    except Exception:  # noqa: BLE001 - telemetry-only; never fatal
+        return b""
 
 
 def score_trace(run_id: str, result_store: Any = None) -> dict[str, Any]:
@@ -343,16 +417,22 @@ def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
     # metrics — must never fail the run. Uses ``log_dict`` (plain JSON, no
     # pandas dependency) rather than ``log_table``; ``set_tag`` is avoided
     # (tag size limits).
+    #
+    # PII REDACTION (review fix): the raw ``expected``/``actual`` values
+    # bypass MLflowTraceSink's recursive span-attribute redaction (which only
+    # applies to span attrs/inputs/outputs). Real card display names and
+    # transaction descriptions are client PII and MUST NOT reach the MLflow
+    # artifact in cleartext. We reuse the EXACT field-aware policy from
+    # harness.tracing_feedback.redact_feedback_value — keyed HMAC (or omit
+    # when no HMAC key) for ``cardDisplayName``/``description``; retain
+    # ``lastFourDigit`` and the non-PII numerics (amount/date/points) raw.
+    # The ``rationale`` string is defensively capped (it may echo PDF text).
+    # NOTE: Lakebase verdict_payload is NOT redacted here — it lives behind
+    # the same protected Postgres boundary as the already-stored
+    # extraction_payload, consistent with codex's posture confirmation.
     try:
-        client.log_dict(run_id, [
-            {"field_path": c.field_path, "expected": c.expected,
-             "actual": c.actual, "outcome": c.outcome.value,
-             "card_index": c.card_index,
-             "expected_row_index": c.expected_row_index,
-             "actual_row_index": c.actual_row_index,
-             "similarity": c.similarity, "rationale": c.rationale}
-            for c in verdict.comparisons
-        ], "verdict_comparisons.json")
+        client.log_dict(run_id, _redact_comparisons(verdict.comparisons),
+                        "verdict_comparisons.json")
     except Exception:
         _LOGGER.warning(
             "log_dict of verdict comparisons failed for %s", run_id, exc_info=True,
