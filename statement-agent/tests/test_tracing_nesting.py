@@ -31,6 +31,12 @@ class _FakeLiveSpan:
     def set_attribute(self, k, v):
         self.attributes[k] = v
 
+    def set_inputs(self, inputs):
+        self.inputs = inputs
+
+    def set_outputs(self, outputs):
+        self.outputs = outputs
+
     def record_exception(self, exc):
         self.exc = exc
 
@@ -70,6 +76,12 @@ class _RecordingMLflow:
 
     def end_run(self):
         self.end_run_calls += 1
+
+    def log_param(self, key, value):
+        pass
+
+    def log_metric(self, key, value):
+        pass
 
     def start_span_no_context(self, *, name, span_type, parent_span=None, start_time_ns=None):
         self._counter += 1

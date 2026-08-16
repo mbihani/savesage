@@ -31,6 +31,8 @@ class _FakeLiveSpan:
 
     def set_attributes(self, a): pass
     def set_attribute(self, k, v): pass
+    def set_inputs(self, i): pass
+    def set_outputs(self, o): pass
     def record_exception(self, e): pass
     def end(self, **kw): pass
 
@@ -50,6 +52,8 @@ class _FakeMLflow:
             info = _FakeRunInfo()
         return _FakeRun()
     def end_run(self): pass
+    def log_param(self, key, value): pass
+    def log_metric(self, key, value): pass
 
 
 class BoundedMemoryTest(unittest.TestCase):

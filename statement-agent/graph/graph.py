@@ -115,6 +115,26 @@ def run_graph(deps: NodeDeps, state: GraphState) -> GraphState:
     finally:
         if deps.trace_sink is not None:
             try:
+                # Root span inputs: request identity (bank visible; filename
+                # redacted by the PII scrubber since "filename" is a PII key).
+                root_inputs = {
+                    "request_id": state.request_id,
+                    "bank": state.request.bank.value,
+                    "filename": state.request.filename,
+                }
+                # Root span outputs: the full extraction payload when available,
+                # or the error/outcome when the graph failed before extracting.
+                if state.extraction is not None:
+                    root_outputs = {
+                        "extraction": state.extraction.payload,
+                        "outcome": state.outcome.value if state.outcome else None,
+                        "schema_valid": state.schema_valid,
+                    }
+                else:
+                    root_outputs = {
+                        "outcome": state.outcome.value if state.outcome else None,
+                        "error": graph_error,
+                    }
                 deps.trace_sink.record(TraceEvent(
                     request_id=state.request_id,
                     name="parse",
@@ -124,6 +144,8 @@ def run_graph(deps: NodeDeps, state: GraphState) -> GraphState:
                     error=graph_error,
                     span_id=f"{state.request_id}:parse",
                     parent_span_id=None,
+                    inputs=root_inputs,
+                    outputs=root_outputs,
                 ))
             except Exception:
                 pass  # telemetry must never block the result or re-raise
