@@ -170,3 +170,12 @@ class TraceEvent:
     error: str | None = None
     span_id: str | None = None
     parent_span_id: str | None = None
+    # Payload data for span inputs/outputs.  When non-None these are passed to
+    # ``span.set_inputs()`` / ``span.set_outputs()`` by the MLflow sink so the
+    # trace view shows the actual extraction data, not just metadata attributes.
+    # The recursive PII scrubber (``redact_telemetry_attributes``) is applied
+    # before they reach MLflow, so nested PII keys (cardholder name, transaction
+    # description, etc.) are redacted while the structure and non-PII values
+    # remain visible.
+    inputs: dict[str, Any] | None = None
+    outputs: dict[str, Any] | None = None
