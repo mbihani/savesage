@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from contextlib import redirect_stdout
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -12,9 +13,47 @@ from db.sql import DDL, UPSERT_EXTRACTION_SQL, current_state_view_sql
 from db.config_ws3 import LakebaseSettings
 from db.provision import CdfCreateError, ensure_cdf, resolve_database_resource
 from db.stores import init_tables
+from db.connection import OAuthConnectionFactory
 
 
 class LakebaseSqlTests(unittest.TestCase):
+    def test_connection_factory_uses_autoscaling_postgres_api(self):
+        class Credential:
+            token = "fresh-token"
+
+        class Postgres:
+            def __init__(self):
+                self.calls = []
+
+            def generate_database_credential(self, endpoint):
+                self.calls.append(endpoint)
+                return Credential()
+
+        class Client:
+            postgres = Postgres()
+
+        connect_calls = []
+
+        class Psycopg:
+            @staticmethod
+            def connect(**kwargs):
+                connect_calls.append(kwargs)
+                return object()
+
+        endpoint = "projects/p/branches/production/endpoints/primary"
+        factory = OAuthConnectionFactory(
+            Client(), endpoint, "lakebase.example", "postgres", "app-sp"
+        )
+        with patch.dict("sys.modules", {"psycopg": Psycopg}):
+            factory()
+
+        self.assertEqual(Client.postgres.calls, [endpoint])
+        self.assertEqual(connect_calls[0]["password"], "fresh-token")
+
+    def test_connection_factory_rejects_empty_host(self):
+        with self.assertRaisesRegex(RuntimeError, "must not be null or empty"):
+            OAuthConnectionFactory(object(), "endpoint", "  ", "db", "user")
+
     def test_ddl_has_separate_tables_and_replica_identity(self):
         self.assertIn("CREATE TABLE IF NOT EXISTS statement_results", DDL)
         self.assertIn("CREATE TABLE IF NOT EXISTS field_feedback", DDL)
@@ -50,6 +89,9 @@ class LakebaseSqlTests(unittest.TestCase):
             def execute(self, statement):
                 executed.append(statement)
 
+            def fetchone(self):
+                return (None, None)
+
         connections = []
 
         def connect():
@@ -63,6 +105,29 @@ class LakebaseSqlTests(unittest.TestCase):
                             for s in executed))
         self.assertTrue(any("CREATE TABLE IF NOT EXISTS field_feedback" in s
                             for s in executed))
+
+    def test_init_tables_skips_ddl_when_tables_exist(self):
+        executed = []
+
+        class Resource:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def cursor(self):
+                return self
+
+            def execute(self, statement):
+                executed.append(statement)
+
+            def fetchone(self):
+                return ("statement_results", "field_feedback")
+
+        init_tables(Resource)
+        self.assertEqual(len(executed), 1)
+        self.assertIn("to_regclass", executed[0])
 
 
 class LakebaseMappingTests(unittest.TestCase):

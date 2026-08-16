@@ -15,10 +15,16 @@ from .sql import (GET_EXTRACTION_SQL, GET_VERDICT_SQL, INSERT_FEEDBACK_SQL,
 
 
 def init_tables(connect: ConnectionFactory) -> None:
-    """Create the persistence tables and indexes before stores are exposed."""
+    """Create persistence tables only when the deployed tables are absent."""
     statements = (part.strip() for part in DDL.split(";") if part.strip())
     with connect() as connection:
         with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT to_regclass('public.statement_results'), "
+                "to_regclass('public.field_feedback')"
+            )
+            if all(cursor.fetchone()):
+                return
             for statement in statements:
                 cursor.execute(statement)
 

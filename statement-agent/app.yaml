@@ -9,14 +9,10 @@ env:
   # --- Workstream 3: Lakebase connection ---
   # pg_version=17 Lakebase projects are NOT registered in the Databricks
   # Database Instances API, so the app ``database`` resource binding cannot
-  # inject PGHOST/PGUSER/PGPORT/PGDATABASE.  The app instead derives the host
-  # from the Lakebase endpoint status API (w.postgres.get_endpoint) and the
-  # user from the WorkspaceClient identity; see ``_build_lakebase_stores`` in
-  # app/main.py.  PGHOST/PGDATABASE/PGPORT are set here as explicit fallback
-  # values (PGHOST is informational — the API-derived host takes precedence
-  # at connect time; PGDATABASE/PGPORT are the real fallbacks).  ENDPOINT_NAME
-  # is consumed by the OAuthConnectionFactory to request a fresh
-  # per-connection credential token.
+  # inject PGHOST/PGUSER/PGPORT/PGDATABASE.  These explicit connection values
+  # avoid an unnecessary endpoint lookup. The user comes from the
+  # WorkspaceClient identity. ENDPOINT_NAME scopes the fresh per-connection
+  # credential generated through the pinned SDK's autoscaling Postgres API.
   - name: ENDPOINT_NAME
     value: projects/savesage-statement-agent/branches/production/endpoints/primary
   - name: PGHOST
