@@ -9,8 +9,9 @@ loads the prompt text and validates it is non-empty, keeping file I/O in one
 place so the graph node and the skill share a single code path.
 
 :func:`get_prompt_version` returns a short, stable version id (``<BANK>:<sha256[:8]>``)
-for a bank's prompt so each MLflow run/trace can be tagged with the exact prompt
-version that produced it -- the version changes whenever the prompt text changes.
+for the prompt TEXT passed to it (the caller hands in exactly what was traced/sent)
+so each MLflow run/trace can be tagged with the exact prompt version that produced
+it -- the version changes whenever the prompt text changes.
 """
 
 import hashlib
@@ -44,16 +45,20 @@ def resolve_prompt(bank: Bank) -> str:
     return text
 
 
-def get_prompt_version(bank: Bank) -> str:
-    """Return a short, stable version id for ``bank``'s prompt.
+def get_prompt_version(prompt_text: str, bank: Bank) -> str:
+    """Return a short, stable version id for ``prompt_text``.
 
-    The id is ``<BANK>:<sha256[:8]>`` -- the bank enum value plus the first 8 hex
-    chars of the resolved prompt's SHA-256. It changes whenever the prompt text
-    changes (so two runs with different prompts get different ids) but is stable
-    across runs that use the same prompt. Used to tag MLflow runs/spans with the
-    exact prompt version that produced an extraction.
+    The id is ``<BANK>:<sha256[:8]>`` -- ``bank``'s enum value plus the first 8
+    hex chars of the SHA-256 of ``prompt_text``. The caller passes the EXACT
+    prompt text that was traced/sent to the model (not the bank alone) so the
+    version hashes what was actually used: this avoids the resolve-then-version
+    race where :func:`resolve_prompt` is called twice (once for the trace text,
+    once for the version) and the prompt file is edited between the two reads,
+    leaving the traced text and the version silently disagreeing. ``bank`` is
+    kept only to prefix the id. The version changes whenever the prompt text
+    changes but is stable across runs that use the same text. Used to tag MLflow
+    runs/spans with the exact prompt version that produced an extraction.
     """
-    prompt_text = resolve_prompt(bank)
     digest = hashlib.sha256(prompt_text.encode("utf-8")).hexdigest()[:8]
     return f"{bank.value}:{digest}"
 
