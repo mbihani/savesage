@@ -215,6 +215,56 @@ class EnvCostOverrideTest(unittest.TestCase):
             cfg = get_tracing_config()
         self.assertEqual(cfg.cost_rates_per_million[_LUNA], {"input": 0.2, "output": 7.0})
 
+    def test_huge_integer_rate_does_not_raise(self) -> None:
+        # A 401-digit JSON integer overflows float() (OverflowError, NOT
+        # ValueError). Without OverflowError in the caught set this propagates
+        # and breaks the never-raises contract. The rate must be skipped (model
+        # keeps its default) and get_tracing_config() must return normally.
+        # json.dumps serializes 10**400 as a bare integer literal (no quotes),
+        # and json.loads parses it back as a Python int (arbitrary precision).
+        override = json.dumps({_LUNA_MODEL: {"input": 10 ** 400}})
+        with patch.dict(os.environ, {"WS4_COST_RATES_JSON": override}):
+            cfg = get_tracing_config()  # must not raise
+        # input kept its default (0.2); output was never overridden (1.2).
+        self.assertEqual(cfg.cost_rates_per_million[_LUNA_MODEL],
+                         {"input": 0.2, "output": 1.2})
+
+    def test_infinity_rate_is_skipped(self) -> None:
+        # json.loads accepts the Infinity token (Python extension) → float("inf").
+        # A non-finite rate is skipped so the model keeps its default.
+        override = json.dumps({_LUNA_MODEL: {"input": float("inf"), "output": float("-inf")}})
+        with patch.dict(os.environ, {"WS4_COST_RATES_JSON": override}):
+            cfg = get_tracing_config()  # must not raise
+        self.assertEqual(cfg.cost_rates_per_million[_LUNA_MODEL],
+                         {"input": 0.2, "output": 1.2})
+
+    def test_nan_rate_is_skipped(self) -> None:
+        # json.loads accepts the NaN token → float("nan"). Non-finite → skipped.
+        override = json.dumps({_LUNA_MODEL: {"input": float("nan"), "output": float("nan")}})
+        with patch.dict(os.environ, {"WS4_COST_RATES_JSON": override}):
+            cfg = get_tracing_config()  # must not raise
+        self.assertEqual(cfg.cost_rates_per_million[_LUNA_MODEL],
+                         {"input": 0.2, "output": 1.2})
+
+    def test_negative_rate_is_skipped(self) -> None:
+        # A negative rate would produce a negative (invalid) cost on the trace.
+        # It is skipped so the model keeps its default.
+        override = json.dumps({_LUNA_MODEL: {"input": -5.0, "output": -0.01}})
+        with patch.dict(os.environ, {"WS4_COST_RATES_JSON": override}):
+            cfg = get_tracing_config()
+        self.assertEqual(cfg.cost_rates_per_million[_LUNA_MODEL],
+                         {"input": 0.2, "output": 1.2})
+
+    def test_valid_rate_applied_alongside_nonfinite_rate(self) -> None:
+        # Per-rate granularity: a valid input rate is applied while a non-finite
+        # output rate is skipped (inherits the default). Proves a bad rate for
+        # one key does not poison the other.
+        override = json.dumps({_LUNA_MODEL: {"input": 9.0, "output": float("inf")}})
+        with patch.dict(os.environ, {"WS4_COST_RATES_JSON": override}):
+            cfg = get_tracing_config()
+        self.assertEqual(cfg.cost_rates_per_million[_LUNA_MODEL],
+                         {"input": 9.0, "output": 1.2})
+
     def test_config_does_not_mutate_module_defaults(self) -> None:
         # The merged table must be a copy; an override must not leak into the
         # module-level _DEFAULT_COST_RATES (which other tests/calls rely on).
