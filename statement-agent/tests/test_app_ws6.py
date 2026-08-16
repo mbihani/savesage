@@ -436,10 +436,16 @@ class AppYamlTest(unittest.TestCase):
                 self.assertIn(var, names)
 
     def test_lakebase_env_vars(self) -> None:
-        """WS3 env vars for the Lakebase connection."""
+        """WS3 env vars for the Lakebase connection.
+
+        PGHOST/PGDATABASE/PGPORT are hardcoded fallback values (the
+        pg_version=17 database resource binding cannot inject them); the
+        API-derived host/user take precedence at connect time.
+        """
         names = set(self._env_names())
-        self.assertIn("ENDPOINT_NAME", names)
-        self.assertIn("PGSSLMODE", names)
+        for var in ("ENDPOINT_NAME", "PGSSLMODE", "PGHOST", "PGDATABASE", "PGPORT"):
+            with self.subTest(var=var):
+                self.assertIn(var, names)
 
     def test_mlflow_env_vars(self) -> None:
         """WS4 env vars for MLflow tracing."""
@@ -450,27 +456,34 @@ class AppYamlTest(unittest.TestCase):
     def test_mlflow_experiment_resource(self) -> None:
         if self.parsed is not None:
             resources = {r["name"]: r for r in self.parsed.get("resources", [])}
-            self.assertIn("savesage-statement-agent-mlflow", resources)
-            exp = resources["savesage-statement-agent-mlflow"]
+            self.assertIn("savesage-mlflow", resources)
+            # Databricks resource names are capped at 30 chars.
+            self.assertLessEqual(len("savesage-mlflow"), 30)
+            exp = resources["savesage-mlflow"]
             self.assertIn("experiment", exp)
             self.assertEqual(exp["experiment"]["permission"], "CAN_EDIT")
             self.assertTrue(exp["experiment"]["experiment_id"])
         else:
+            self.assertIn("savesage-mlflow", self.text)
             self.assertIn("experiment", self.text)
             self.assertIn("CAN_EDIT", self.text)
 
-    def test_lakebase_database_resource(self) -> None:
+    def test_lakebase_no_database_resource(self) -> None:
+        """The Lakebase database resource binding is removed.
+
+        pg_version=17 Lakebase projects are not registered in the Databricks
+        Database Instances API, so the binding cannot inject connection env
+        vars; parameters are derived at runtime instead (see
+        ``_build_lakebase_stores``).  The fallback values live as env vars.
+        """
         if self.parsed is not None:
             resources = {r["name"]: r for r in self.parsed.get("resources", [])}
-            self.assertIn("savesage-lakebase", resources)
-            db = resources["savesage-lakebase"]
-            self.assertIn("database", db)
-            self.assertEqual(db["database"]["permission"], "CAN_CONNECT_AND_CREATE")
-            self.assertTrue(db["database"]["instance_name"])
-            self.assertTrue(db["database"]["database_name"])
+            self.assertNotIn("savesage-lakebase", resources)
+            self.assertFalse(
+                any("database" in r for r in resources.values()),
+                "no database resource binding should remain")
         else:
-            self.assertIn("database", self.text)
-            self.assertIn("CAN_CONNECT_AND_CREATE", self.text)
+            self.assertNotIn("CAN_CONNECT_AND_CREATE", self.text)
 
     def test_command_uses_uvicorn(self) -> None:
         if self.parsed is not None:
