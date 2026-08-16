@@ -90,11 +90,12 @@ def main() -> None:
     result = run_judge_evaluation(sample_size=sample_size)
 
     _LOGGER.info(
-        "judge evaluation complete: %d judged, %d errors, strict=%s, forgiven=%s",
+        "judge evaluation complete: %d judged, %d errors, strict=%s, forgiven=%s, eval_run=%s",
         result.get("count_judged", 0),
         result.get("count_errors", 0),
         result.get("overall_strict"),
         result.get("overall_narration_forgiven"),
+        result.get("eval_run_id"),
     )
     # Print the JSON summary so the job log captures it.
     import json

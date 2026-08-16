@@ -543,6 +543,7 @@ def _run_judge_evaluation_bg(sample_size: int) -> None:
             "overall_narration_forgiven": None,
             "per_field": {},
             "per_bank": {},
+            "eval_run_id": None,
             "_status": "error",
         }
     finally:

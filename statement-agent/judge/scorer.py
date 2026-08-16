@@ -273,6 +273,7 @@ def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
             "overall_narration_forgiven": None,
             "per_field": {},
             "per_bank": {},
+            "eval_run_id": None,
         }
 
     # Search ALL recent runs (no tag filter — MLflow's inequality filter
@@ -296,6 +297,7 @@ def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
             "overall_narration_forgiven": None,
             "per_field": {},
             "per_bank": {},
+            "eval_run_id": None,
         }
 
     # 2. Filter in Python: only unjudged runs (no tag or judged != "true").
@@ -323,6 +325,7 @@ def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
             "overall_narration_forgiven": None,
             "per_field": {},
             "per_bank": {},
+            "eval_run_id": None,
         }
 
     # 3. Pick the sample_size most recent randomly.
@@ -332,7 +335,20 @@ def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
     results = [score_trace(rid) for rid in sample]
 
     # 5. Aggregate.
-    return _aggregate_results(results)
+    summary = _aggregate_results(results)
+
+    # 6. Additionally create an aggregated MLflow Evaluate run (best-effort)
+    # so all judge results appear in one place in the experiments "Evaluations"
+    # tab — the per-run metrics logged by ``score_trace`` are scattered across
+    # individual parse runs; this evaluation run aggregates them into a
+    # single per-row table + aggregate metrics.  Best-effort: failure is
+    # logged and ``eval_run_id`` is left ``None`` so the summary still returns.
+    from judge.evaluator import run_mlflow_evaluation
+
+    eval_info = run_mlflow_evaluation(results, summary, experiment_id=exp_id)
+    summary["eval_run_id"] = eval_info["eval_run_id"] if eval_info else None
+
+    return summary
 
 
 def _aggregate_results(results: list[dict[str, Any]]) -> dict[str, Any]:
