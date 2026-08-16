@@ -419,6 +419,24 @@ class MLflowTraceSink(TraceSink):
                         val = tu.get(key)
                         if isinstance(val, (int, float)):
                             best_effort(f"mlflow.log_metric.{key}", mlf.log_metric, key, val)
+                # Per-statement parse cost as a RUN METRIC so it appears as a
+                # column in the MLflow experiment Runs table. The span attribute
+                # ``mlflow.llm.cost`` (set in _apply_attributes) is only visible in
+                # the trace detail view, not the Runs table. Same formula as
+                # _apply_attributes: cost_attributes returns explicit 0.0 for a
+                # zero-rate model (logged, not skipped) and None when there is no
+                # usage (skipped so nothing raises). Best-effort like every
+                # mlflow call — a raising/absent client never breaks a parse.
+                cost = cost_attributes(tu, model_id or "", self._config.cost_rates_per_million)
+                if isinstance(cost, dict):
+                    for mkey, ckey in (
+                        ("cost_usd", "total_cost"),
+                        ("input_cost_usd", "input_cost"),
+                        ("output_cost_usd", "output_cost"),
+                    ):
+                        cval = cost.get(ckey)
+                        if isinstance(cval, (int, float)):
+                            best_effort(f"mlflow.log_metric.{mkey}", mlf.log_metric, mkey, cval)
                 latency = extract_evt.attributes.get("latency_ms")
                 if isinstance(latency, (int, float)):
                     best_effort("mlflow.log_metric.latency_ms", mlf.log_metric, "latency_ms", latency)
