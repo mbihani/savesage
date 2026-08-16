@@ -11,6 +11,7 @@ This module is stdlib-only (no mlflow import) so it stays on the contract-test p
 
 import json
 import logging
+import math
 import os
 from dataclasses import dataclass, field
 
@@ -112,9 +113,12 @@ def _merged_cost_rates() -> dict[str, dict[str, float]]:
     returns the defaults unchanged; invalid JSON or a non-dict value is warned
     about (never raised) and the defaults are used. Each override is shallow-merged
     per model, so an override may set one rate and inherit the other. Per-rate
-    values are coerced to float; a non-numeric rate is skipped (not stored) so a
-    bad override can never crash ``cost_attributes`` at trace time. A model id
-    that is new (absent from the defaults) is added; one present is updated.
+    values are coerced to float; a rate that is non-numeric, overflows float (a
+    huge JSON integer), non-finite (NaN, +/-Infinity), or negative is skipped
+    (not stored) so the model inherits its default/other rate — a bad
+    ``WS4_COST_RATES_JSON`` must never crash startup or a ``cost_attributes``
+    call at trace time. A model id that is new (absent from the defaults) is
+    added; one present is updated.
     """
     rates = {k: dict(v) for k, v in _DEFAULT_COST_RATES.items()}
     raw = os.getenv("WS4_COST_RATES_JSON", "")
@@ -138,10 +142,25 @@ def _merged_cost_rates() -> dict[str, dict[str, float]]:
         merged = dict(rates.get(model_id, {}))
         for key in ("input", "output"):
             if key in override:
+                # Coerce to float; a bad rate is skipped (not stored) so the model
+                # inherits its default/other rate — a bad WS4_COST_RATES_JSON must
+                # never crash startup or a trace-time cost_attributes call.
                 try:
-                    merged[key] = float(override[key])
-                except (ValueError, TypeError):
-                    pass
+                    val = float(override[key])
+                except (ValueError, TypeError, OverflowError):
+                    # OverflowError: a huge JSON integer (e.g. 10**400) overflows
+                    # float() but is NOT a ValueError (Python promotes it past the
+                    # int->float conversion). Without it the override raises and
+                    # breaks the never-raises contract.
+                    continue
+                # Reject non-finite (NaN, +/-Infinity) and negative rates — they
+                # would produce a nonsensical or invalid cost on the trace. Skip
+                # (do not store) so the model inherits its default/other rate.
+                # (float(True)==1.0 and bool is an int subclass, but a JSON boolean
+                # is an unlikely rate; float() already guards the type, and
+                # isfinite+>=0 guards the value.)
+                if math.isfinite(val) and val >= 0:
+                    merged[key] = val
         rates[model_id] = merged
     return rates
 
