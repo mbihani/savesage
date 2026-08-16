@@ -60,7 +60,14 @@ class NodeDeps:
         self.feedback_store = feedback_store
 
 
-def _trace(deps: NodeDeps, state: GraphState, name: str, *, error: str | None = None) -> None:
+def _trace(
+    deps: NodeDeps,
+    state: GraphState,
+    name: str,
+    *,
+    error: str | None = None,
+    extra_attrs: dict[str, Any] | None = None,
+) -> None:
     """Record a trace event if a sink is wired (best-effort, never raises).
 
     Every child event gets a deterministic ``span_id`` (``{request_id}:{name}``)
@@ -68,17 +75,25 @@ def _trace(deps: NodeDeps, state: GraphState, name: str, *, error: str | None = 
     This allows :class:`harness.tracing.SpanTreeBuilder` to construct the span
     tree correctly — the root ``"parse"`` event is emitted by :func:`graph.graph.
     run_graph` after the pipeline completes.
+
+    ``extra_attrs`` are merged into the summary attributes for this event only
+    (e.g. the extract span carries ``model_id``/``token_usage`` so MLflow can
+    attribute model + cost on the LLM span — ``state.as_summary()`` is a
+    payload-free snapshot that omits them).
     """
     if deps.trace_sink is None:
         return
     now = datetime.now(UTC)
+    attrs = state.as_summary()
+    if extra_attrs:
+        attrs = {**attrs, **extra_attrs}
     try:
         deps.trace_sink.record(TraceEvent(
             request_id=state.request_id,
             name=name,
             started_at=now,
             ended_at=now,
-            attributes=state.as_summary(),
+            attributes=attrs,
             error=error,
             span_id=f"{state.request_id}:{name}",
             parent_span_id=f"{state.request_id}:parse",
@@ -87,6 +102,36 @@ def _trace(deps: NodeDeps, state: GraphState, name: str, *, error: str | None = 
         # Trace failures are telemetry, not data: route them to trace_errors so a
         # broken sink never turns a clean run PARTIAL.
         state.trace_errors.append(f"trace:{name}:{type(exc).__name__}")
+
+
+def _extract_telemetry(state: GraphState) -> dict[str, Any]:
+    """Model/usage attrs for the extract span, sourced from the ExtractionResult.
+
+    ``as_summary()`` is a payload-free snapshot (no model_id/usage), so without
+    these extras the LLM span would carry no model or token-count attributes and
+    MLflow could not attribute cost. The endpoint (AI-Gateway serving endpoint
+    name) gates the ``mlflow.model.provider`` attribute.
+    """
+    if state.extraction is None:
+        return {}
+    attrs: dict[str, Any] = {"model_id": state.extraction.model_id}
+    tu = state.extraction.token_usage
+    if tu is not None:
+        # Plain dict (not the dataclass) so redact_telemetry_attributes recurses
+        # into it and MLflow can serialise it; usage_attributes/cost_attributes
+        # both accept a Mapping.
+        attrs["token_usage"] = {
+            "input_tokens": tu.input_tokens,
+            "output_tokens": tu.output_tokens,
+            "total_tokens": tu.total_tokens,
+        }
+    try:
+        from config import get_settings  # function-local; nodes.py stays stdlib-importable
+
+        attrs["endpoint"] = get_settings().extraction_endpoint
+    except Exception:  # noqa: BLE001 - endpoint is optional (gates provider attr only)
+        pass
+    return attrs
 
 
 def route_node(state: GraphState, deps: NodeDeps) -> GraphState:
@@ -108,7 +153,7 @@ def extract_node(state: GraphState, deps: NodeDeps) -> GraphState:
     try:
         state.extraction = deps.extraction.extract(state.request)
         state.stage = Stage.EXTRACTED
-        _trace(deps, state, "extract")
+        _trace(deps, state, "extract", extra_attrs=_extract_telemetry(state))
     except Exception as exc:
         state.mark_failure(Stage.EXTRACTED, f"extract: {exc}")
         state.outcome = Outcome.EXTRACTION_FAILED
@@ -153,14 +198,20 @@ def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
     """
     if state.outcome is Outcome.EXTRACTION_FAILED:
         return state
-    if state.extraction is not None and deps.result_store is not None:
-        try:
-            deps.result_store.save_extraction(state.extraction)
-            state.stage = Stage.PERSISTED
-            _trace(deps, state, "persist_extraction")
-        except Exception as exc:
-            state.mark_failure(Stage.PERSISTED, f"persist: {exc}")
-            _trace(deps, state, "persist_extraction", error=str(exc))
+    persist_error: str | None = None
+    if state.extraction is not None:
+        if deps.result_store is not None:
+            try:
+                deps.result_store.save_extraction(state.extraction)
+                state.stage = Stage.PERSISTED
+            except Exception as exc:
+                state.mark_failure(Stage.PERSISTED, f"persist: {exc}")
+                persist_error = str(exc)
+        # No store wired (e.g. Lakebase unavailable): persistence is SKIPPED, not
+        # a failure. The stage is left at its prior value (the data was not
+        # actually persisted) -- but the persist span is STILL traced so the span
+        # tree is complete and the post-hoc judge sees every pipeline stage.
+        _trace(deps, state, "persist_extraction", error=persist_error)
     # Log the source PDF and the extraction as MLflow artifacts so the post-hoc
     # judge can re-read them when scoring this trace. Best-effort: never raises.
     if deps.trace_sink is not None:

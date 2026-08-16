@@ -84,7 +84,11 @@ class PayloadConstructionFailureTest(unittest.TestCase):
         sink.record(event)
 
     def test_hard_failure_disables_telemetry_for_subsequent_calls(self):
+        # The circuit breaker disables only after _failure_threshold CONSECUTIVE
+        # failures. Set the threshold to 1 here to exercise the disable path
+        # directly (the default threshold of 10 would not trip on one failure).
         sink = MLflowTraceSink(_config(), mlflow_factory=lambda: None)
+        sink._failure_threshold = 1
         fb = FieldFeedback(
             "req-1", "cards.0.cardMeta.cardDisplayName",
             _ExplodingValue(), _ExplodingValue(), False, "synthetic-actor",
@@ -100,6 +104,29 @@ class PayloadConstructionFailureTest(unittest.TestCase):
             "synthetic-actor", datetime.now(UTC),
         )
         sink.log_field_feedback(good_fb, trace_id="tr-fake")
+
+    def test_single_hard_failure_does_not_disable_and_retries(self):
+        # With the DEFAULT threshold, a one-off hard failure must NOT disable
+        # telemetry -- the next request retries. This is the fix for the "first
+        # request races with configuration" case where a transient failure would
+        # otherwise permanently break tracing.
+        sink = MLflowTraceSink(_config(), mlflow_factory=lambda: None)
+        fb = FieldFeedback(
+            "req-1", "cards.0.cardMeta.cardDisplayName",
+            _ExplodingValue(), _ExplodingValue(), False, "synthetic-actor",
+            datetime.now(UTC),
+        )
+        sink.log_field_feedback(fb, trace_id="tr-fake")
+        self.assertFalse(sink._disabled)
+        self.assertEqual(sink._consecutive_failures, 1)
+        # A subsequent GOOD call must not raise and must reset the counter.
+        good_fb = FieldFeedback(
+            "req-1", "cards.0.cardMeta.lastFourDigit", "1234", "4321", False,
+            "synthetic-actor", datetime.now(UTC),
+        )
+        sink.log_field_feedback(good_fb, trace_id="tr-fake")
+        self.assertFalse(sink._disabled)
+        self.assertEqual(sink._consecutive_failures, 0)
 
     def test_control_exceptions_propagate_not_swallowed(self):
         sink = MLflowTraceSink(_config(), mlflow_factory=lambda: None)
@@ -129,6 +156,7 @@ class PayloadConstructionFailureTest(unittest.TestCase):
         # judge_metrics() computes payload from the verdict; if the verdict's
         # comparisons field raises on iteration, _guard must catch it.
         sink = MLflowTraceSink(_config(), mlflow_factory=lambda: None)
+        sink._failure_threshold = 1  # trip the breaker on a single failure
 
         class _ExplodingIterable:
             def __iter__(self):
@@ -138,7 +166,7 @@ class PayloadConstructionFailureTest(unittest.TestCase):
         result = sink.judge_metrics(v)
         # Must return empty dict (or None coerced to {}), never propagate.
         self.assertEqual(result, {})
-        # Hard failure disables telemetry.
+        # Hard failure disables telemetry (threshold=1).
         self.assertTrue(sink._disabled)
 
     def test_judge_metrics_with_good_verdict_returns_metrics(self):
