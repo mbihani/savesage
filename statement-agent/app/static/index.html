@@ -217,6 +217,18 @@
       .verdict-ABSENT_IN_PDF { background: var(--neutral-soft); color: var(--neutral); }
       .verdict-UNMATCHED_ROW { background: var(--neutral-soft); color: var(--neutral); }
 
+      /* Inline judge action spinner */
+      .judge-spinner {
+        display: inline-block;
+        width: 0.875rem; height: 0.875rem;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        vertical-align: middle;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
       /* Results table */
       .field-row {
         padding: 1rem;
@@ -682,7 +694,7 @@
       }
 
       /* Full-card feedback row — used for card fields and reward scalars. */
-      function FieldRow({ requestId, fieldPath, label, value }) {
+      function FieldRow({ requestId, fieldPath, label, value, verdict }) {
         const fb = useFeedback(requestId, fieldPath, value);
 
         return h`
@@ -694,6 +706,16 @@
               <div class="field-val-label">Extracted Value</div>
               <div class="field-val">${fmtVal(value)}</div>
             </div>
+            ${verdict && h`
+              <div style=${{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.5rem", flexWrap: "wrap" }}>
+                <span class=${"verdict verdict-" + verdict.outcome}>${verdict.outcome.replace(/_/g, " ")}</span>
+                ${verdict.outcome !== "AGREE" && verdict.outcome !== "UNMATCHED_ROW" && h`
+                  <span style=${{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                    Ground truth: <strong style=${{ color: "var(--text)" }}>${fmtVal(verdict.expected)}</strong>
+                  </span>
+                `}
+              </div>
+            `}
             ${fb.submitted
               ? h`<div class="feedback-note">
                   ${fb.submitted === "accept" ? "✓ Accepted as correct" : "✓ Correction submitted"}
@@ -727,7 +749,7 @@
       }
 
       /* Compact inline feedback cell — used inside the transactions table. */
-      function TxnCell({ requestId, fieldPath, value }) {
+      function TxnCell({ requestId, fieldPath, value, verdict }) {
         const fb = useFeedback(requestId, fieldPath, value);
 
         return h`
@@ -761,21 +783,141 @@
                     <button class="btn btn-sm btn-correct" style=${{ padding: "0.125rem 0.375rem", fontSize: "0.6875rem" }} onClick=${() => fb.setShowCorrect(true)}>✎</button>
                   </div>`
             }
+            ${verdict && h`
+              <div style=${{ display: "flex", alignItems: "center", gap: "0.25rem", flexWrap: "wrap" }}>
+                <span class=${"verdict verdict-" + verdict.outcome} style=${{ fontSize: "0.625rem", padding: "0.0625rem 0.3rem" }}>${verdict.outcome.replace(/_/g, " ")}</span>
+                ${verdict.outcome !== "AGREE" && verdict.outcome !== "UNMATCHED_ROW" && h`
+                  <span style=${{ fontSize: "0.6875rem", color: "var(--text-muted)" }}>GT: ${fmtVal(verdict.expected)}</span>
+                `}
+              </div>
+            `}
             ${fb.error && h`<div style=${{ fontSize: "0.6875rem", color: "var(--disagree)" }}>${fb.error}</div>`}
           </div>
         `;
       }
 
-      function ResultsView({ requestId, extraction, complete }) {
+      /* On-demand single-trace judge hook — POST, poll status, re-fetch verdict.
+       * Used by ResultsView to render inline per-field badges immediately. */
+      function useSingleJudge(requestId, onVerdictRefresh) {
+        const [judging, setJudging] = useState(false);
+        const [error, setError] = useState(null);
+        const pollRef = useRef(null);
+
+        const start = async () => {
+          setJudging(true);
+          setError(null);
+          try {
+            const resp = await fetch(`/api/results/${requestId}/judge`, { method: "POST" });
+            if (resp.status === 404) {
+              setError("no trace found for this statement");
+              setJudging(false);
+              return;
+            }
+            if (resp.status === 409) {
+              setError("a judge run is already in progress");
+              setJudging(false);
+              return;
+            }
+            if (!resp.ok) {
+              setError("judge request failed");
+              setJudging(false);
+              return;
+            }
+            // Poll the status endpoint until done/error.
+            const poll = async () => {
+              try {
+                const sr = await fetch(`/api/results/${requestId}/judge`);
+                const sd = await sr.json();
+                if (sd.status === "running") {
+                  pollRef.current = setTimeout(poll, 2000);
+                } else if (sd.status === "done") {
+                  setJudging(false);
+                  await onVerdictRefresh();
+                } else if (sd.status === "error") {
+                  setError(sd.error || "judge failed");
+                  setJudging(false);
+                } else {
+                  setJudging(false);
+                }
+              } catch (e) {
+                setError(e.message);
+                setJudging(false);
+              }
+            };
+            pollRef.current = setTimeout(poll, 1000);
+          } catch (e) {
+            setError(e.message);
+            setJudging(false);
+          }
+        };
+
+        useEffect(() => {
+          return () => { if (pollRef.current) clearTimeout(pollRef.current); };
+        }, []);
+
+        return { judging, error, start };
+      }
+
+      function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh }) {
         const outcome = complete?.outcome || "UNKNOWN";
         const bannerClass =
           outcome === "SUCCESS" ? "SUCCESS" :
           outcome === "PARTIAL" ? "PARTIAL" : "FAILURE";
 
         const payload = extraction?.payload;
-        const cards = (payload?.cards || []).filter(Boolean);
+        // Preserve original array indices — do NOT .filter(Boolean) the cards
+        // or transactions arrays. A malformed payload with null entries would
+        // compress indices and shift verdict/feedback paths off the actual
+        // array index (cards.<i>.cardMeta.*, transactions.<i>.*) the judge and
+        // feedback paths key on. Instead keep the original index in the map
+        // and skip null rows during render.
+        const cards = (payload?.cards || []);
         const rewards = payload?.rewards;
-        const transactions = (payload?.transactions || []).filter(Boolean);
+        const transactions = (payload?.transactions || []);
+
+        // On-demand single-trace judge — renders inline verdicts immediately.
+        const judge = useSingleJudge(requestId, onVerdictRefresh);
+
+        // Build a per-field verdict lookup from the post-hoc judge's
+        // comparisons so each rendered field can show its judge badge inline.
+        // The API returns comparisons via _comparison_to_dict, which emits a
+        // canonical ``feedback_path`` (e.g. ``cards.0.cardMeta.cardDisplayName``,
+        // ``transactions.3.amount``) keyed by actual_row_index for matched
+        // rows. We key the lookup by that exact path.
+        //
+        // UNMATCHED_ROW comes in two flavours (both outcome=UNMATCHED_ROW):
+        //  (1) actual_row_index=null  — Opus saw a PDF row Luna did NOT extract
+        //      (no rendered row to attach to) → grouped into unmatchedPdfRows.
+        //  (2) actual_row_index set   — Luna extracted a row Opus did NOT see
+        //      in the PDF → maps to the rendered Luna row, shown inline.
+        // So only actual_row_index=null UNMATCHED_ROW comparisons are split out
+        // into the "seen in PDF, not extracted" section; the rest key into
+        // verdictByPath by their feedback_path.
+        const comparisons = verdict?.comparisons || [];
+        const verdictByPath = {};
+        const unmatchedPdfComparisons = [];
+        for (const c of comparisons) {
+          if (c.outcome === "UNMATCHED_ROW" && c.actual_row_index === null) {
+            unmatchedPdfComparisons.push(c);
+          } else if (c.feedback_path) {
+            verdictByPath[c.feedback_path] = c;
+          }
+        }
+        // Group the "seen in PDF, not extracted" comparisons (3 per row:
+        // date/description/amount) by expected_row_index into one row each.
+        const unmatchedPdfRows = [];
+        const unmatchedByRow = {};
+        for (const c of unmatchedPdfComparisons) {
+          const key = c.expected_row_index;
+          if (key === null || key === undefined) continue;
+          if (!unmatchedByRow[key]) {
+            unmatchedByRow[key] = { rowIndex: key, date: null, description: null, amount: null };
+            unmatchedPdfRows.push(unmatchedByRow[key]);
+          }
+          const leaf = c.field_path.split(".").pop();
+          unmatchedByRow[key][leaf] = c.expected;
+        }
+        unmatchedPdfRows.sort((a, b) => a.rowIndex - b.rowIndex);
 
         const thStyle = {
           padding: "0.5rem 0.625rem", textAlign: "left",
@@ -826,9 +968,9 @@
               </div>
             `}
 
-            ${cards.length > 0 && h`
-              <div class="section-title">Cards (${cards.length})</div>
-              ${cards.map((card, i) => h`
+            ${cards.some(Boolean) && h`
+              <div class="section-title">Cards (${cards.filter(Boolean).length})</div>
+              ${cards.map((card, i) => card && h`
                 <div class="card" key=${"card-" + i}>
                   <div class="section-title" style=${{ marginTop: 0, fontSize: "1rem" }}>Card ${i + 1}</div>
                   <${FieldRow}
@@ -836,12 +978,14 @@
                     fieldPath=${`cards.${i}.cardMeta.cardDisplayName`}
                     label="Card Name"
                     value=${card?.cardMeta?.cardDisplayName}
+                    verdict=${verdictByPath[`cards.${i}.cardMeta.cardDisplayName`]}
                   />
                   <${FieldRow}
                     requestId=${requestId}
                     fieldPath=${`cards.${i}.cardMeta.lastFourDigit`}
                     label="Last 4 Digits"
                     value=${card?.cardMeta?.lastFourDigit}
+                    verdict=${verdictByPath[`cards.${i}.cardMeta.lastFourDigit`]}
                   />
                 </div>
               `)}
@@ -855,18 +999,20 @@
                   fieldPath="rewards.pointsEarnedThisCycle"
                   label="Points Earned This Cycle"
                   value=${rewards.pointsEarnedThisCycle}
+                  verdict=${verdictByPath["rewards.pointsEarnedThisCycle"]}
                 />
                 <${FieldRow}
                   requestId=${requestId}
                   fieldPath="rewards.closingPoints"
                   label="Closing Points"
                   value=${rewards.closingPoints}
+                  verdict=${verdictByPath["rewards.closingPoints"]}
                 />
               </div>
             `}
 
-            ${transactions.length > 0 && h`
-              <div class="section-title">Transactions (${transactions.length})</div>
+            ${transactions.some(Boolean) && h`
+              <div class="section-title">Transactions (${transactions.filter(Boolean).length})</div>
               <div class="card" style=${{ padding: 0, overflow: "hidden" }}>
                 <div style=${{ overflowX: "auto" }}>
                   <table style=${{ width: "100%", borderCollapse: "collapse", fontSize: "0.8125rem" }}>
@@ -879,17 +1025,17 @@
                       </tr>
                     </thead>
                     <tbody>
-                      ${transactions.map((txn, i) => h`
+                      ${transactions.map((txn, i) => txn && h`
                         <tr key=${"txn-" + i} style=${{ borderBottom: "1px solid var(--border)" }}>
                           <td style=${{ ...tdStyle, color: "var(--text-muted)", whiteSpace: "nowrap" }}>${i + 1}</td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.date`} value=${txn?.date} />
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.date`} value=${txn?.date} verdict=${verdictByPath[`transactions.${i}.date`]} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.description`} value=${txn?.description} />
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.description`} value=${txn?.description} verdict=${verdictByPath[`transactions.${i}.description`]} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.amount`} value=${txn?.amount} />
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.amount`} value=${txn?.amount} verdict=${verdictByPath[`transactions.${i}.amount`]} />
                           </td>
                         </tr>
                       `)}
@@ -899,7 +1045,58 @@
               </div>
             `}
 
-            <div style=${{ marginTop: "1.5rem" }}>
+            ${unmatchedPdfRows.length > 0 && h`
+              <div class="card" style=${{ marginTop: "1rem" }}>
+                <div class="section-title" style=${{ marginTop: 0 }}>Seen in PDF, not extracted (${unmatchedPdfRows.length})</div>
+                <p style=${{ color: "var(--text-muted)", fontSize: "0.8125rem", marginTop: "0.25rem" }}>
+                  Transaction rows the Opus-5 ground-truth reader found in the PDF that Luna did not extract.
+                </p>
+                <div style=${{ overflowX: "auto" }}>
+                  <table style=${{ width: "100%", borderCollapse: "collapse", fontSize: "0.8125rem" }}>
+                    <thead>
+                      <tr style=${{ borderBottom: "1px solid var(--border)" }}>
+                        <th style=${thStyle}>#</th>
+                        <th style=${thStyle}>Date</th>
+                        <th style=${thStyle}>Description</th>
+                        <th style=${thStyle}>Amount</th>
+                        <th style=${thStyle}>Verdict</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${unmatchedPdfRows.map((row, idx) => h`
+                        <tr key=${"unmatched-" + idx} style=${{ borderBottom: "1px solid var(--border)" }}>
+                          <td style=${{ ...tdStyle, color: "var(--text-muted)", whiteSpace: "nowrap" }}>${row.rowIndex + 1}</td>
+                          <td style=${tdStyle}>${fmtVal(row.date)}</td>
+                          <td style=${tdStyle}>${fmtVal(row.description)}</td>
+                          <td style=${tdStyle}>${fmtVal(row.amount)}</td>
+                          <td style=${tdStyle}><span class="verdict verdict-UNMATCHED_ROW">Unmatched Row</span></td>
+                        </tr>
+                      `)}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            `}
+
+            <div style=${{ marginTop: "1.5rem", display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+              ${extraction && !judge.judging && !verdict && h`
+                <button class="btn btn-primary" onClick=${judge.start}>
+                  ⚖ Judge this statement
+                </button>
+              `}
+              ${extraction && !judge.judging && verdict && h`
+                <button class="btn btn-sm" style=${{ background: "var(--neutral-soft)", color: "var(--text-muted)", border: "1px solid var(--border)" }} onClick=${judge.start}>
+                  ⚖ Re-judge
+                </button>
+              `}
+              ${judge.judging && h`
+                <span style=${{ fontSize: "0.875rem", color: "var(--text-muted)", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span class="judge-spinner"></span> Judging…
+                </span>
+              `}
+              ${judge.error && !judge.judging && h`
+                <span style=${{ fontSize: "0.8125rem", color: "var(--disagree)" }}>⚠ ${judge.error}</span>
+              `}
               <button class="btn btn-primary" onClick=${() => window.location.reload()}>
                 Parse Another Statement
               </button>
@@ -1129,6 +1326,11 @@
               if (apiResults.extraction) {
                 setResults({
                   extraction: apiResults.extraction,
+                  // The post-hoc judge persists per-field verdicts to Lakebase
+                  // keyed by request_id; /api/results returns them here so the
+                  // Results view can render expected/actual/outcome inline.
+                  // null when the trace has not been judged yet.
+                  verdict: apiResults.verdict || null,
                   complete: data.complete,
                 });
                 setView("results");
@@ -1143,6 +1345,7 @@
           if (data.extraction) {
             setResults({
               extraction: data.extraction,
+              verdict: null,
               complete: data.complete,
             });
             setView("results");
@@ -1153,6 +1356,26 @@
           // state when extraction is null.
           setResults(data);
           setView("results");
+        };
+
+        // Called by ResultsView after an on-demand single-trace judge
+        // completes — re-fetches GET /api/results and updates the verdict
+        // so inline per-field badges render immediately.
+        const handleVerdictRefresh = async () => {
+          try {
+            const resp = await fetch(`/api/results/${requestId}`);
+            if (resp.ok) {
+              const apiResults = await resp.json();
+              setResults((prev) => ({
+                ...(prev || {}),
+                extraction: apiResults.extraction || prev?.extraction,
+                verdict: apiResults.verdict || null,
+                complete: prev?.complete,
+              }));
+            }
+          } catch (e) {
+            // Best-effort — the user can re-judge if the refresh fails.
+          }
         };
 
         return h`
@@ -1172,7 +1395,9 @@
             ${view === "results" && h`<${ResultsView}
               requestId=${requestId}
               extraction=${results?.extraction}
+              verdict=${results?.verdict}
               complete=${results?.complete}
+              onVerdictRefresh=${handleVerdictRefresh}
             />`}
             ${view === "judge" && h`<${JudgeEvaluationView} />`}
           </div>

@@ -49,6 +49,119 @@ _EXPERIMENT_PATH = "/Shared/savesage/statement-agent"
 # Module-level flag so _ensure_mlflow_configured runs once per process.
 _mlflow_configured = False
 
+# Module-level cache for the Lakebase ``ResultStore`` used to persist verdicts
+# inline so ``GET /api/results`` can surface the per-field expected/actual/
+# outcome on the per-parse Results view. Built lazily and best-effort: a
+# ``None`` store simply skips the inline persist — the judge metrics still
+# flow to MLflow. Tests inject a fake store via the ``result_store`` param of
+# :func:`score_trace` so this builder is never called on the test path.
+_result_store: Any = None
+_result_store_init_done = False
+
+
+def _build_result_store() -> Any:
+    """Build a Lakebase-backed ``ResultStore`` for verdict persistence.
+
+    Mirrors :func:`app.main._build_lakebase_stores` but only the result store.
+    Raises on failure (missing env / connection error); callers catch and
+    degrade to ``None``. ``databricks-sdk`` and ``psycopg`` are imported
+    function-local inside the dependency modules, so importing this function
+    does not require them — only *calling* it does.
+    """
+    required = ("ENDPOINT_NAME", "PGHOST", "PGUSER", "PGDATABASE")
+    missing = [name for name in required if not os.environ.get(name)]
+    if missing:
+        raise RuntimeError(
+            "Lakebase database resource did not inject required environment "
+            f"variables: {', '.join(missing)}"
+        )
+    from databricks.sdk import WorkspaceClient
+    from db.connection import OAuthConnectionFactory
+    from db.stores import LakebaseResultStore, init_tables
+    client = WorkspaceClient()
+    connect = OAuthConnectionFactory(
+        client,
+        os.environ["ENDPOINT_NAME"],
+        os.environ["PGHOST"],
+        os.environ["PGDATABASE"],
+        os.environ["PGUSER"],
+        port=int(os.environ.get("PGPORT", "5432")),
+        sslmode=os.environ.get("PGSSLMODE", "require"),
+    )
+    init_tables(connect)
+    return LakebaseResultStore(connect)
+
+
+def _get_result_store() -> Any:
+    """Return a cached Lakebase ``ResultStore`` or ``None`` if unavailable.
+
+    Lazily initialised on first call. Failures are logged and cached as
+    ``None`` so a transient outage does not retry on every trace (the same
+    pattern as :func:`app.main._get_stores`).
+    """
+    global _result_store, _result_store_init_done
+    if _result_store_init_done:
+        return _result_store
+    _result_store_init_done = True
+    try:
+        _result_store = _build_result_store()
+    except Exception:
+        _LOGGER.warning(
+            "Lakebase result store unavailable; verdicts will not be "
+            "persisted inline", exc_info=True,
+        )
+        _result_store = None
+    return _result_store
+
+
+def resolve_run_id(request_id: str) -> str | None:
+    """Resolve a ``request_id`` to its MLflow ``run_id`` via the ``request_id`` tag.
+
+    The tracing sink tags each parse run with ``request_id`` (set in
+    :meth:`harness.tracing.MLflowTraceSink._ensure_run`) so the on-demand
+    single-trace judge can find the exact run without scanning artifacts.
+    Uses an MLflow tag-equality filter — efficient (indexed) vs. downloading
+    ``extraction.json`` for every recent run.
+
+    Defense-in-depth: validates ``request_id`` against the canonical
+    ``req-<12hex>`` form before interpolating it into the MLflow filter_string,
+    so a crafted/quoted value can never alter the filter or select the wrong
+    run. Returns ``None`` for a malformed id (the endpoint maps that to 400
+    upstream, but this guard protects any other caller).
+
+    Returns the ``run_id`` or ``None`` if no run is found (the trace may
+    predate the ``request_id`` tag, has aged out of the experiment, or the
+    experiment is unreachable). Never raises — callers use the ``None``
+    result to return a clean 404.
+    """
+    import re
+
+    # Validate BEFORE building the filter — never interpolate an untrusted
+    # value into an MLflow filter_string.
+    if not re.match(r"^req-[0-9a-f]{12}$", request_id or ""):
+        return None
+
+    import mlflow
+
+    _ensure_mlflow_configured(mlflow)
+    exp_id = _get_experiment_id(mlflow)
+    if exp_id is None:
+        return None
+    try:
+        runs_df = mlflow.search_runs(
+            experiment_ids=[exp_id],
+            filter_string=f"tags.request_id = '{request_id}'",
+            max_results=10,
+        )
+    except Exception:  # noqa: BLE001 - never fatal; surface as "not found"
+        _LOGGER.warning(
+            "resolve_run_id search failed for %s", request_id, exc_info=True,
+        )
+        return None
+    if runs_df.empty:
+        return None
+    return runs_df["run_id"].tolist()[0]
+
 
 def _get_experiment_id(mlf: Any) -> str | None:
     """Resolve the MLflow experiment ID from the bound resource env var or config path.
@@ -111,7 +224,74 @@ def _ensure_mlflow_configured(mlf: Any) -> None:
     _mlflow_configured = True
 
 
-def score_trace(run_id: str) -> dict[str, Any]:
+# The ``rationale`` field is OMITTED from the log_dict payload (not just
+# truncated): it is Opus free-text that can echo card names / transaction
+# descriptions from the PDF, and a length cap alone still leaks the first 200
+# chars in cleartext — including on JUDGE_ERROR paths. The outcome +
+# similarity already convey the verdict signal in the artifact; the
+# free-text rationale is not needed there and is the one remaining PII
+# vector. It is retained in the Lakebase verdict_payload (same protected
+# Postgres boundary as extraction_payload).
+_RATIONALE_OMITTED = True
+
+
+def _redact_comparisons(comparisons: Any) -> list[dict[str, Any]]:
+    """Build a PII-redacted JSON payload for the ``verdict_comparisons.json``
+    MLflow artifact.
+
+    Reuses :func:`harness.tracing_feedback.redact_feedback_value` — the SAME
+    field-aware policy as feedback telemetry — so the leaf-driven rules stay
+    consistent across both paths:
+
+    * ``cardDisplayName`` / ``description`` (client PII) -> keyed HMAC, or
+      omitted (None) when no HMAC key is configured (never a reversible
+      unsalted digest).
+    * ``lastFourDigit`` / ``amount`` / ``date`` / ``pointsEarnedThisCycle``
+      / ``closingPoints`` -> retained raw (not individually identifying;
+      documented trade-off — hashing them destroys analytics value).
+    * any other leaf -> omitted (or HMAC if a key is configured).
+
+    The ``rationale`` string is OMITTED entirely (not just truncated): it is
+    Opus free-text that can echo cardholder names / transaction descriptions
+    from the PDF, and a length cap still leaks the first N chars in
+    cleartext — including on JUDGE_ERROR paths. The ``outcome`` and
+    ``similarity`` already convey the verdict signal in the artifact. The
+    ``field_path`` and row indices are NOT PII and are carried verbatim.
+    """
+    from harness.tracing_feedback import redact_feedback_value
+
+    hmac_key = _resolve_feedback_hmac_key()
+    out: list[dict[str, Any]] = []
+    for c in comparisons:
+        out.append({
+            "field_path": c.field_path,
+            "expected": redact_feedback_value(c.field_path, c.expected, hmac_key=hmac_key),
+            "actual": redact_feedback_value(c.field_path, c.actual, hmac_key=hmac_key),
+            "outcome": c.outcome.value,
+            "card_index": c.card_index,
+            "expected_row_index": c.expected_row_index,
+            "actual_row_index": c.actual_row_index,
+            "similarity": c.similarity,
+            # rationale OMITTED — see module docstring (PII vector).
+        })
+    return out
+
+
+def _resolve_feedback_hmac_key() -> bytes:
+    """Resolve the feedback HMAC key from the tracing config (best-effort).
+
+    Returns ``b""`` when unset — in which case PII leaves are OMITTED (None)
+    rather than risk a reversible unsalted digest (the documented policy in
+    harness.tracing_feedback). Never raises.
+    """
+    try:
+        from harness.config_ws4 import get_tracing_config
+        return get_tracing_config().feedback_hmac_key
+    except Exception:  # noqa: BLE001 - telemetry-only; never fatal
+        return b""
+
+
+def score_trace(run_id: str, result_store: Any = None) -> dict[str, Any]:
     """Score a single MLflow trace by re-running the judge on its artifacts.
 
     Steps:
@@ -120,13 +300,19 @@ def score_trace(run_id: str) -> dict[str, Any]:
     3. Call ``OpusJudgeAdapter.judge()`` → ``JudgeVerdict`` (Opus + comparisons).
     4. Compute metrics via ``verdict_to_metrics``.
     5. Log metrics + tag ``judged=true`` on the SAME MLflow run.
-    6. Return a per-trace result dict.
+    6. Persist the verdict to Lakebase (best-effort) so ``GET /api/results``
+       can surface the per-field expected/actual/outcome inline.
+    7. Return a per-trace result dict.
+
+    ``result_store`` is an optional :class:`contracts.ports.ResultStore`. When
+    ``None`` the scorer builds its own lazily (best-effort; ``None`` if the
+    Lakebase env is absent). Tests inject a fake to assert save behaviour.
 
     Returns ``{"run_id": ..., "status": "OK"|"ERROR", ...}`` — never raises
     (errors are captured in the ``status``/``error`` fields).
     """
     try:
-        return _score_trace_impl(run_id)
+        return _score_trace_impl(run_id, result_store)
     except Exception as exc:
         _LOGGER.warning(
             "score_trace failed for run %s: %s", run_id, exc, exc_info=True
@@ -147,7 +333,7 @@ def _sanitize_error(exc: Exception) -> str:
     return exc_name
 
 
-def _score_trace_impl(run_id: str) -> dict[str, Any]:
+def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
     import mlflow
     from mlflow.tracking import MlflowClient
 
@@ -202,7 +388,8 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
 
     # 7. Tag the run. Only tag judged=true on OK status so JUDGE_ERROR traces
     # can be retried in the next evaluation. JUDGE_ERROR gets judged=error so
-    # it's distinguishable but still retriable.
+    # it's distinguishable but still retriable. The status is parsed once here
+    # and reused for the Lakebase persist decision below.
     summary = json.loads(verdict.summary) if verdict.summary else {}
     status = summary.get("status", "OK")
     if status == "OK":
@@ -210,7 +397,55 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
     else:
         client.set_tag(run_id, "judged", "error")
 
-    # 8. Build and return the per-trace result.
+    # 8. Persist the verdict to Lakebase so ``GET /api/results`` can surface
+    # the per-field expected/actual/outcome inline on the per-parse Results
+    # view. Best-effort by contract: a Lakebase write failure is logged and
+    # MUST NOT abort the judge run or the aggregate — the MLflow metrics
+    # above are already recorded. Only written on OK status: a JUDGE_ERROR
+    # verdict carries no usable ground truth (Opus failed to read the PDF),
+    # so persisting it would surface misleading expected values.
+    # The verdict's ``request_id`` is set by the adapter from
+    # ``request.request_id`` (== ``meta['request_id']``), so the upsert keys
+    # the verdict into the same ``statement_results`` row as the extraction.
+    if status == "OK":
+        store = result_store if result_store is not None else _get_result_store()
+        if store is not None:
+            try:
+                store.save_verdict(verdict)
+            except Exception:
+                _LOGGER.warning(
+                    "save_verdict failed for request %s; inline verdict "
+                    "not persisted", verdict.request_id, exc_info=True,
+                )
+
+    # 9. Best-effort: log the per-field expected/actual/outcome comparisons as
+    # a JSON artifact on the run for trace visibility. Guarded like the
+    # metrics — must never fail the run. Uses ``log_dict`` (plain JSON, no
+    # pandas dependency) rather than ``log_table``; ``set_tag`` is avoided
+    # (tag size limits).
+    #
+    # PII REDACTION (review fix): the raw ``expected``/``actual`` values
+    # bypass MLflowTraceSink's recursive span-attribute redaction (which only
+    # applies to span attrs/inputs/outputs). Real card display names and
+    # transaction descriptions are client PII and MUST NOT reach the MLflow
+    # artifact in cleartext. We reuse the EXACT field-aware policy from
+    # harness.tracing_feedback.redact_feedback_value — keyed HMAC (or omit
+    # when no HMAC key) for ``cardDisplayName``/``description``; retain
+    # ``lastFourDigit`` and the non-PII numerics (amount/date/points) raw.
+    # The ``rationale`` string is OMITTED entirely (it is Opus free-text that
+    # may echo cardholder names / transaction descriptions from the PDF).
+    # NOTE: Lakebase verdict_payload is NOT redacted here — it lives behind
+    # the same protected Postgres boundary as the already-stored
+    # extraction_payload, consistent with codex's posture confirmation.
+    try:
+        client.log_dict(run_id, _redact_comparisons(verdict.comparisons),
+                        "verdict_comparisons.json")
+    except Exception:
+        _LOGGER.warning(
+            "log_dict of verdict comparisons failed for %s", run_id, exc_info=True,
+        )
+
+    # 10. Build and return the per-trace result.
     return {
         "run_id": run_id,
         "request_id": meta["request_id"],
@@ -232,7 +467,7 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
     }
 
 
-def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
+def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dict[str, Any]:
     """Sample unjudged MLflow runs, score each, and return an aggregate summary.
 
     1. Query MLflow for recent runs (ordered by start_time DESC).
@@ -331,8 +566,9 @@ def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
     # 3. Pick the sample_size most recent randomly.
     sample = random.sample(run_ids, min(sample_size, len(run_ids)))
 
-    # 4. Score each trace.
-    results = [score_trace(rid) for rid in sample]
+    # 4. Score each trace.  The optional ``result_store`` threads through to
+    # :func:`score_trace` so each OK verdict is persisted inline (best-effort).
+    results = [score_trace(rid, result_store=result_store) for rid in sample]
 
     # 5. Aggregate.
     summary = _aggregate_results(results)

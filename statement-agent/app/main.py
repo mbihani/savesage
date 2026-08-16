@@ -84,6 +84,18 @@ _LOGGER = logging.getLogger("statement-agent.app")
 # Guards against a caller requesting an expensive sweep via the API.
 MAX_SAMPLE_SIZE = 50
 
+# Canonical request_id format — ``req-`` prefix + 12 hex chars (see
+# ``_new_request_id``). Used to validate the single-trace judge path param
+# BEFORE building an MLflow filter_string from it, so a crafted/quoted value
+# cannot alter the filter or select the wrong run.
+import re as _re
+_REQUEST_ID_RE = _re.compile(r"^req-[0-9a-f]{12}$")
+
+
+def _is_valid_request_id(request_id: str) -> bool:
+    """Return True iff ``request_id`` matches the canonical ``req-<12hex>`` form."""
+    return bool(_REQUEST_ID_RE.match(request_id or ""))
+
 # Max seconds to wait for a best-effort persistence/telemetry call (Lakebase
 # or MLflow) inside an ``async`` route handler before giving up and falling
 # back to in-memory storage.  Bounds the blocking call so a hung connection
@@ -102,8 +114,39 @@ _PERSIST_TIMEOUT = 15.0
 _judge_result_cache: Optional[dict[str, Any]] = None
 
 # Guards concurrent judge evaluations — only one background evaluation at a time.
+# Shared between the batch sampler (POST /api/run-judge) and the on-demand
+# single-trace judge (POST /api/results/{request_id}/judge) so the two never
+# run concurrently — a single-trace judge blocks a batch sweep and vice versa.
 _judge_running = False
 _judge_lock = threading.Lock()
+
+
+def _acquire_judge_slot() -> bool:
+    """Try to acquire the judge concurrency slot (shared batch + single).
+
+    Returns ``True`` if acquired (caller MUST release via
+    :func:`_release_judge_slot` when done), ``False`` if a judge run (batch OR
+    single) is already in progress.  Atomic under ``_judge_lock``.
+    """
+    global _judge_running
+    with _judge_lock:
+        if _judge_running:
+            return False
+        _judge_running = True
+        return True
+
+
+def _release_judge_slot() -> None:
+    """Release the judge concurrency slot."""
+    global _judge_running
+    with _judge_lock:
+        _judge_running = False
+
+# Per-request status for the on-demand single-trace judge, keyed by request_id.
+# Populated by POST /api/results/{request_id}/judge and read by the GET status
+# endpoint. Entries persist until evicted by the FIFO cap below.
+_single_judge_status: dict[str, dict[str, Any]] = {}
+_MAX_SINGLE_JUDGE_STATUS = 50
 
 
 # ---------------------------------------------------------------------------
@@ -572,7 +615,12 @@ def _run_judge_evaluation_bg(sample_size: int) -> None:
     global _judge_result_cache, _judge_running
     try:
         from judge.scorer import run_judge_evaluation
-        result = run_judge_evaluation(sample_size=sample_size)
+        # Thread the app's cached Lakebase result store into the scorer so each
+        # OK verdict is persisted inline (best-effort) and surfaces on the
+        # per-parse Results view. _get_stores()[0] is the result store or None
+        # when Lakebase is unavailable; None lets the scorer build its own.
+        result_store = _get_stores()[0]
+        result = run_judge_evaluation(sample_size=sample_size, result_store=result_store)
         _judge_result_cache = result
     except Exception as exc:
         _LOGGER = __import__("logging").getLogger("statement-agent.app")
@@ -589,8 +637,51 @@ def _run_judge_evaluation_bg(sample_size: int) -> None:
             "_status": "error",
         }
     finally:
-        with _judge_lock:
-            _judge_running = False
+        _release_judge_slot()
+
+
+def _run_single_judge_bg(request_id: str, run_id: str) -> None:
+    """Background-thread body for the on-demand single-trace judge.
+
+    Judges JUST the one MLflow run for ``request_id`` (already resolved to
+    ``run_id`` by the caller) by delegating to :func:`judge.scorer.score_trace`
+    — which reuses the existing scoring logic AND persists the verdict to
+    Lakebase (best-effort) so ``GET /api/results`` surfaces it inline.
+
+    The ``result_store`` is the app's cached Lakebase store (same one the
+    batch path threads through ``_run_judge_evaluation_bg``); ``None`` lets
+    the scorer build its own.  Force-rejudge is inherent: ``score_trace``
+    does NOT check the ``judged`` tag (only the batch sampler skips already-
+    judged runs), so calling it on a ``judged=true`` run re-judges it.
+
+    Updates ``_single_judge_status[request_id]`` so the GET status endpoint
+    can report progress.  Never raises — all failures land in the status.
+    """
+    try:
+        from judge.scorer import score_trace
+        result_store = _get_stores()[0]
+        result = score_trace(run_id, result_store=result_store)
+        status = result.get("status", "ERROR")
+        if status == "OK":
+            _single_judge_status[request_id] = {"status": "done", "request_id": request_id}
+        elif status == "JUDGE_ERROR":
+            _single_judge_status[request_id] = {
+                "status": "error", "request_id": request_id,
+                "error": "judge returned an unusable response (JUDGE_ERROR)",
+            }
+        else:
+            _single_judge_status[request_id] = {
+                "status": "error", "request_id": request_id,
+                "error": result.get("error", "judge failed"),
+            }
+    except Exception as exc:
+        _LOGGER.warning("single-trace judge failed for %s: %s", request_id, exc, exc_info=True)
+        _single_judge_status[request_id] = {
+            "status": "error", "request_id": request_id,
+            "error": "judge failed",
+        }
+    finally:
+        _release_judge_slot()
 
 
 # ---------------------------------------------------------------------------
@@ -898,18 +989,33 @@ def create_app():
                 detail=f"sample_size must be <= {MAX_SAMPLE_SIZE}",
             )
 
-        # Only one evaluation at a time.
-        with _judge_lock:
-            if _judge_running:
-                raise HTTPException(status_code=409, detail="evaluation already running")
-            _judge_running = True
+        # Only one evaluation at a time (shared with the single-trace judge).
+        if not _acquire_judge_slot():
+            raise HTTPException(status_code=409, detail="evaluation already running")
 
         thread = threading.Thread(
             target=_run_judge_evaluation_bg,
             args=(sample_size,),
             daemon=True,
         )
-        thread.start()
+        # Hand slot ownership to the runner ONLY after a successful start().
+        # If start() raises (RuntimeError / resource exhaustion / thread
+        # limit), release the slot ourselves so a subsequent judge request
+        # (batch OR single-trace) is NOT 409'd permanently until app restart
+        # — the runner's finally never runs when the thread never starts,
+        # so there is NO double-release (a runner that never started does
+        # not release). Mirrors the single-trace path below.
+        try:
+            thread.start()
+        except Exception:
+            _release_judge_slot()
+            _LOGGER.warning(
+                "failed to start batch judge thread", exc_info=True,
+            )
+            raise HTTPException(
+                status_code=503,
+                detail="failed to start judge; please retry",
+            )
 
         return JSONResponse(
             status_code=202,
@@ -931,6 +1037,123 @@ def create_app():
         if _judge_result_cache is not None:
             return {"status": "done", "results": _judge_result_cache}
         return {"status": "idle", "results": None}
+
+    # -- POST /api/results/{request_id}/judge ----------------------------
+    @app.post("/api/results/{request_id}/judge")
+    async def judge_single(request_id: str):
+        """Judge a SINGLE trace on demand so inline per-field verdicts render
+        immediately without waiting for the 6-hour scheduled sampler.
+
+        Resolves ``request_id`` → MLflow ``run_id`` (via the ``request_id`` tag
+        the tracing sink sets on each parse run), then runs the existing
+        single-trace scorer in a background thread (the Opus call takes
+        ~15-20s — MUST NOT block the uvicorn event loop).  Returns 202
+        immediately; the frontend polls ``GET /api/results/{request_id}/judge``
+        for status, then re-fetches ``GET /api/results`` to render the
+        inline verdict.
+
+        Force-rejudge: ``score_trace`` does NOT check the ``judged`` tag (only
+        the batch sampler skips already-judged runs), so this always re-judges
+        — even if the run is already tagged ``judged=true``.
+
+        Concurrency: shares the ``_judge_running`` guard with the batch
+        ``POST /api/run-judge`` — returns 409 if ANY judge run is in progress.
+
+        Returns:
+          * 202 ``{"status": "started", "request_id": ...}`` — judging in bg.
+          * 404 — no MLflow trace found for this ``request_id``.
+          * 409 — a judge run (batch or single) is already in progress.
+          * 500 — never (errors land in the status endpoint).
+        """
+        # Validate the request_id format BEFORE building an MLflow filter_string
+        # from it — a crafted/quoted value could alter the filter (tags.request_id
+        # = '<value>') or select the wrong run. Reject malformed ids with 400
+        # before touching the concurrency lock.
+        if not _is_valid_request_id(request_id):
+            raise HTTPException(
+                status_code=400,
+                detail="request_id must be the canonical 'req-<12hex>' form",
+            )
+        # Concurrency guard — shared slot with the batch sampler. Reserve
+        # BEFORE resolving so a concurrent batch request sees the busy flag.
+        # Released in _run_single_judge_bg's finally (or here on 404 failure).
+        if not _acquire_judge_slot():
+            raise HTTPException(
+                status_code=409,
+                detail="a judge run is already in progress",
+            )
+
+        # Resolve request_id → run_id. This is a ~1s MLflow tag-filter search
+        # (not the 15-20s Opus call), so it's safe to run via _run_blocking
+        # (bounded 5s) on the event loop. If no run is found, release the guard
+        # and return 404 — never 500.
+        try:
+            from judge.scorer import resolve_run_id
+            run_id = await _run_blocking(resolve_run_id, request_id)
+        except Exception:
+            run_id = None
+
+        if run_id is None:
+            _release_judge_slot()
+            raise HTTPException(
+                status_code=404,
+                detail=(
+                    "no MLflow trace found for this request; it may predate "
+                    "the request_id tag, has aged out of the experiment, or "
+                    "MLflow is unavailable"
+                ),
+            )
+
+        # Evict the oldest status entry if at capacity (FIFO).
+        while len(_single_judge_status) >= _MAX_SINGLE_JUDGE_STATUS:
+            _single_judge_status.pop(next(iter(_single_judge_status)), None)
+        _single_judge_status[request_id] = {"status": "running", "request_id": request_id}
+
+        thread = threading.Thread(
+            target=_run_single_judge_bg,
+            args=(request_id, run_id),
+            daemon=True,
+        )
+        # Hand slot ownership to the runner ONLY after a successful start().
+        # If start() raises (RuntimeError / resource exhaustion / thread limit),
+        # release the slot ourselves so a subsequent judge request is NOT 409'd
+        # permanently until app restart — the runner's finally never runs when
+        # the thread never starts.
+        try:
+            thread.start()
+        except Exception:
+            _release_judge_slot()
+            _single_judge_status[request_id] = {
+                "status": "error", "request_id": request_id,
+                "error": "failed to start judge thread",
+            }
+            _LOGGER.warning(
+                "failed to start single-judge thread for %s",
+                request_id, exc_info=True,
+            )
+            raise HTTPException(
+                status_code=503,
+                detail="failed to start judge; please retry",
+            )
+
+        return JSONResponse(
+            status_code=202,
+            content={"status": "started", "request_id": request_id},
+        )
+
+    # -- GET /api/results/{request_id}/judge ----------------------------
+    @app.get("/api/results/{request_id}/judge")
+    async def judge_single_status(request_id: str):
+        """Return the on-demand single-trace judge status for a request.
+
+        Polled by the frontend after ``POST /api/results/{request_id}/judge``
+        returns 202.  Returns ``{"status": "running"|"done"|"error", ...}``
+        or ``{"status": "idle"}`` if no judge has been triggered for this
+        request in this process.
+        """
+        return _single_judge_status.get(
+            request_id, {"status": "idle", "request_id": request_id},
+        )
 
     # -- Static files (catch-all, mounted AFTER API routes) --------------
     if static_dir.exists():

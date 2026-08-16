@@ -120,6 +120,9 @@ class _FakeMlflowClient:
     def set_tag(self, run_id, key, value):
         self._parent.set_tags.append((key, value, run_id))
 
+    def log_dict(self, run_id, dictionary, artifact_file_path=None):
+        self._parent.logged_dicts.append((run_id, dictionary, artifact_file_path))
+
 
 class _FakeTrackingModule:
     """Fake mlflow.tracking submodule so 'from mlflow.tracking import MlflowClient' works."""
@@ -135,6 +138,7 @@ class _FakeMLflowModule:
         self.artifacts = _FakeArtifacts()
         self.logged_metrics: list[tuple] = []  # (key, value, run_id)
         self.set_tags: list[tuple] = []  # (key, value, run_id)
+        self.logged_dicts: list[tuple] = []  # (run_id, dictionary, artifact_file_path)
         self._experiment = _FakeExperiment()
         self._search_runs_result = _FakeRunsFrame([])
         self.tracking = _FakeTrackingModule(self)
@@ -172,6 +176,22 @@ def _install_fake_mlflow():
 def _uninstall_fake_mlflow():
     sys.modules.pop("mlflow", None)
     sys.modules.pop("mlflow.tracking", None)
+
+
+# ---------------------------------------------------------------------------
+# Fake ResultStore — records save_verdict calls; optionally raises to test
+# the best-effort guarantee that a Lakebase write failure never aborts the run.
+# ---------------------------------------------------------------------------
+
+class _FakeResultStore:
+    def __init__(self, raise_on_save: bool = False):
+        self.saved: list = []
+        self.raise_on_save = raise_on_save
+
+    def save_verdict(self, verdict) -> None:
+        if self.raise_on_save:
+            raise RuntimeError("lakebase write failed")
+        self.saved.append(verdict)
 
 
 # ---------------------------------------------------------------------------
@@ -585,6 +605,405 @@ class AggregateResultsTest(unittest.TestCase):
         # The JUDGE_ERROR entry is in the errors list with its status.
         self.assertEqual(result["errors"][0]["status"], "JUDGE_ERROR")
         self.assertIn("JUDGE_ERROR", result["errors"][0]["error"])
+
+
+# ---------------------------------------------------------------------------
+# Verdict persistence to Lakebase (inline-on-Results-view wiring)
+# ---------------------------------------------------------------------------
+
+class VerdictPersistTest(unittest.TestCase):
+    """The scorer persists each OK verdict to Lakebase keyed by request_id so
+    ``GET /api/results`` can surface expected/actual/outcome inline.
+
+    (a) save_verdict is called on OK (request_id-keyed) and NOT on JUDGE_ERROR.
+    (b) a save_verdict that raises is caught — the judge run and the aggregate
+        still complete (best-effort guarantee).
+    """
+
+    def setUp(self):
+        self.fake_mlflow = _install_fake_mlflow()
+        # Reset the module-level result-store cache so a prior test's lazy
+        # build (which returns None without env vars) doesn't leak in.
+        import judge.scorer as scorer_mod
+        scorer_mod._result_store_init_done = False
+        scorer_mod._result_store = None
+
+    def tearDown(self):
+        _uninstall_fake_mlflow()
+
+    def _register_artifacts(self, meta=None):
+        meta = meta or _make_extraction_meta()
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4 fake")
+        self.fake_mlflow.artifacts.register("extraction.json", json.dumps(meta).encode())
+        return meta
+
+    def test_save_verdict_called_on_ok_keyed_by_request_id(self):
+        """On an OK verdict, save_verdict receives a verdict whose request_id
+        matches the extraction meta — so /api/results keyed by the same
+        request_id finds it."""
+        from judge.scorer import score_trace
+        meta = self._register_artifacts()
+        store = _FakeResultStore()
+        verdict = _make_verdict(request_id=meta["request_id"])
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            result = score_trace("run-123", result_store=store)
+
+        self.assertEqual(result["status"], "OK")
+        self.assertEqual(len(store.saved), 1)
+        # The persisted verdict is keyed by request_id (the store upserts on
+        # verdict.request_id); it must equal the extraction's request_id so
+        # /api/results/{request_id} reads it from the same row.
+        self.assertEqual(store.saved[0].request_id, meta["request_id"])
+
+    def test_save_verdict_not_called_on_judge_error(self):
+        """A JUDGE_ERROR verdict is not persisted — it carries no usable
+        ground truth (Opus failed to read the PDF)."""
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore()
+        judge_error_verdict = JudgeVerdict(
+            request_id="req-test", judge_model_id="databricks-claude-opus-5",
+            comparisons=(FieldComparison(
+                "cards[].cardMeta.cardDisplayName", "Platinum", "???",
+                ComparisonOutcome.DISAGREE, FieldScope.SCALAR, card_index=0,
+            ),),
+            latency_ms=50.0, summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = judge_error_verdict
+            result = score_trace("run-err", result_store=store)
+
+        self.assertEqual(result["status"], "JUDGE_ERROR")
+        self.assertEqual(store.saved, [])
+
+    def test_save_verdict_failure_does_not_crash_score_trace(self):
+        """A save_verdict that raises is caught; the trace still completes OK
+        and its metrics are returned (best-effort guarantee)."""
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore(raise_on_save=True)
+        verdict = _make_verdict(request_id="req-test")
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            result = score_trace("run-123", result_store=store)
+
+        self.assertEqual(result["status"], "OK")
+        self.assertEqual(result["strict_accuracy"], 1.0)
+        # Metrics were still logged to MLflow despite the Lakebase failure.
+        run_metrics = [(k, v) for k, v, rid in self.fake_mlflow.logged_metrics
+                       if rid == "run-123"]
+        self.assertIn(("judge.accuracy", 1.0), run_metrics)
+
+    def test_save_verdict_failure_does_not_crash_aggregate(self):
+        """A raising save_verdict must not abort run_judge_evaluation; the
+        aggregate still returns with the trace counted as judged."""
+        from judge.scorer import run_judge_evaluation
+        self.fake_mlflow.set_search_runs_result(["run-1"])
+        meta = _make_extraction_meta(request_id="req-1")
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4 fake")
+        self.fake_mlflow.artifacts.register("extraction.json", json.dumps(meta).encode())
+        store = _FakeResultStore(raise_on_save=True)
+        verdict = _make_verdict(request_id="req-1")
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            result = run_judge_evaluation(sample_size=1, result_store=store)
+
+        self.assertEqual(result["count_judged"], 1)
+        self.assertEqual(result["count_errors"], 0)
+
+    def test_comparisons_logged_to_mlflow_on_ok(self):
+        """The per-field expected/actual/outcome comparisons are logged as a
+        JSON artifact on the run (secondary, best-effort trace visibility)."""
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore()
+        verdict = _make_verdict(request_id="req-test")
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            score_trace("run-123", result_store=store)
+
+        # log_dict captured: (run_id, dictionary, artifact_file_path)
+        logged = [(rid, d, p) for rid, d, p in self.fake_mlflow.logged_dicts
+                  if rid == "run-123"]
+        self.assertEqual(len(logged), 1)
+        _, body, path = logged[0]
+        self.assertEqual(path, "verdict_comparisons.json")
+        self.assertEqual(len(body), len(verdict.comparisons))
+        self.assertEqual(body[0]["field_path"], "cards[].cardMeta.cardDisplayName")
+        self.assertEqual(body[0]["outcome"], "AGREE")
+
+    def test_log_dict_redacts_pii_fields(self):
+        """The log_dict payload redacts PII fields (cardDisplayName, description)
+        per the field-aware policy, and retains non-PII numerics raw.
+
+        Without an HMAC key configured (the default), PII leaves are OMITTED
+        (None) — never a reversible unsalted digest. lastFourDigit, amount,
+        date, and rewards points are retained raw (not individually
+        identifying; documented trade-off). The rationale is OMITTED.
+        """
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore()
+        # A verdict carrying BOTH PII fields: cardDisplayName + a txn
+        # description, plus non-PII fields (lastFour, amount, date, points).
+        verdict = JudgeVerdict(
+            request_id="req-test",
+            judge_model_id="databricks-claude-opus-5",
+            comparisons=(
+                FieldComparison(
+                    "cards[].cardMeta.cardDisplayName", "Platinum Card",
+                    "Platinum Card", ComparisonOutcome.AGREE,
+                    FieldScope.SCALAR, card_index=0,
+                ),
+                FieldComparison(
+                    "cards[].cardMeta.lastFourDigit", "1234", "1234",
+                    ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+                ),
+                FieldComparison(
+                    "transactions[].description", "UPI-Amazon Pay",
+                    "UPI-Amazon Pay", ComparisonOutcome.AGREE,
+                    FieldScope.TRANSACTION_ROW,
+                    MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                    expected_row_index=0, actual_row_index=0, similarity=1.0,
+                ),
+                FieldComparison(
+                    "transactions[].amount", 150.0, 150.0,
+                    ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                    MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                    expected_row_index=0, actual_row_index=0,
+                ),
+                FieldComparison(
+                    "transactions[].date", "2026-01-01", "2026-01-01",
+                    ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                    MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                    expected_row_index=0, actual_row_index=0,
+                ),
+                FieldComparison(
+                    "rewards.pointsEarnedThisCycle", 100, 100,
+                    ComparisonOutcome.AGREE, FieldScope.SCALAR,
+                ),
+            ),
+            latency_ms=50.0,
+            summary=json.dumps({"status": "OK"}),
+        )
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            score_trace("run-123", result_store=store)
+
+        logged = [(rid, d, p) for rid, d, p in self.fake_mlflow.logged_dicts
+                  if rid == "run-123"]
+        self.assertEqual(len(logged), 1)
+        body = logged[0][1]
+
+        # Build a lookup by field_path for easier assertions.
+        by_path = {row["field_path"]: row for row in body}
+
+        # PII field cardDisplayName — expected/actual are OMITTED (None),
+        # NOT the cleartext "Platinum Card" (no HMAC key → omit policy).
+        card_row = by_path["cards[].cardMeta.cardDisplayName"]
+        self.assertIsNone(card_row["expected"])
+        self.assertIsNone(card_row["actual"])
+        self.assertNotIn("Platinum", json.dumps(body))
+
+        # PII field description — OMITTED, NOT "UPI-Amazon Pay".
+        desc_row = by_path["transactions[].description"]
+        self.assertIsNone(desc_row["expected"])
+        self.assertIsNone(desc_row["actual"])
+        self.assertNotIn("Amazon", json.dumps(body))
+
+        # Non-PII fields retained RAW.
+        self.assertEqual(by_path["cards[].cardMeta.lastFourDigit"]["expected"], "1234")
+        self.assertEqual(by_path["transactions[].amount"]["expected"], 150.0)
+        self.assertEqual(by_path["transactions[].date"]["expected"], "2026-01-01")
+        self.assertEqual(
+            by_path["rewards.pointsEarnedThisCycle"]["expected"], 100,
+        )
+
+    def test_log_dict_redacts_pii_with_hmac_key(self):
+        """When an HMAC key IS configured, PII fields become keyed HMAC
+        digests (not None, not cleartext). Non-PII fields stay raw."""
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore()
+        verdict = JudgeVerdict(
+            request_id="req-test", judge_model_id="databricks-claude-opus-5",
+            comparisons=(
+                FieldComparison(
+                    "cards[].cardMeta.cardDisplayName", "Platinum Card",
+                    "Platinum", ComparisonOutcome.DISAGREE,
+                    FieldScope.SCALAR, card_index=0,
+                ),
+                FieldComparison(
+                    "cards[].cardMeta.lastFourDigit", "1234", "1234",
+                    ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+                ),
+            ),
+            latency_ms=50.0, summary=json.dumps({"status": "OK"}),
+        )
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter, \
+             patch("harness.config_ws4.get_tracing_config") as mock_cfg:
+            mock_cfg.return_value.feedback_hmac_key = b"test-hmac-key"
+            MockAdapter.return_value.judge.return_value = verdict
+            score_trace("run-123", result_store=store)
+
+        logged = [(rid, d, p) for rid, d, p in self.fake_mlflow.logged_dicts
+                  if rid == "run-123"]
+        body = logged[0][1]
+        by_path = {row["field_path"]: row for row in body}
+
+        # cardDisplayName → keyed HMAC (prefix "hmac:"), NOT cleartext.
+        card_expected = by_path["cards[].cardMeta.cardDisplayName"]["expected"]
+        self.assertIsInstance(card_expected, str)
+        self.assertTrue(card_expected.startswith("hmac:"))
+        self.assertNotIn("Platinum", card_expected)
+
+        # lastFourDigit stays raw.
+        self.assertEqual(
+            by_path["cards[].cardMeta.lastFourDigit"]["expected"], "1234",
+        )
+
+    def test_log_dict_rationale_omitted(self):
+        """Fix #1 (round 2): the ``rationale`` key is OMITTED entirely from
+        the log_dict payload (not just truncated) — it is Opus free-text that
+        can echo cardholder names / transaction descriptions from the PDF, and
+        a length cap still leaks the first N chars in cleartext. The outcome
+        + similarity already convey the verdict signal in the artifact.
+        """
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore()
+        # A rationale containing a known cleartext PII string.
+        pii_rationale = "cardholder name is John Doe, txn: UPI-Amazon Pay"
+        verdict = JudgeVerdict(
+            request_id="req-test", judge_model_id="databricks-claude-opus-5",
+            comparisons=(
+                FieldComparison(
+                    "rewards.closingPoints", 500, 500,
+                    ComparisonOutcome.AGREE, FieldScope.SCALAR,
+                    rationale=pii_rationale,
+                ),
+            ),
+            latency_ms=50.0, summary=json.dumps({"status": "OK"}),
+        )
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            score_trace("run-123", result_store=store)
+
+        body = [(rid, d) for rid, d, _ in self.fake_mlflow.logged_dicts
+                if rid == "run-123"][0][1]
+        # The rationale key is ABSENT from every comparison row.
+        for row in body:
+            self.assertNotIn("rationale", row)
+        # The known cleartext PII rationale does NOT appear anywhere in the
+        # serialized log_dict payload.
+        self.assertNotIn("John Doe", json.dumps(body))
+        self.assertNotIn("UPI-Amazon", json.dumps(body))
+
+    def test_log_dict_rationale_omitted_on_judge_error(self):
+        """The rationale is omitted even on JUDGE_ERROR paths — the judge-error
+        sentinels carry a rationale echoing the Opus failure, which can still
+        contain echoed PDF text. The log_dict artifact must never carry it."""
+        from judge.scorer import score_trace
+        self._register_artifacts()
+        store = _FakeResultStore()
+        judge_error_verdict = JudgeVerdict(
+            request_id="req-test", judge_model_id="databricks-claude-opus-5",
+            comparisons=(
+                FieldComparison(
+                    "cards[].cardMeta.cardDisplayName", None, None,
+                    ComparisonOutcome.ABSENT_IN_PDF, FieldScope.SCALAR,
+                    rationale="judge response unusable: saw card 'Platinum'",
+                ),
+            ),
+            latency_ms=50.0, summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = judge_error_verdict
+            score_trace("run-123", result_store=store)
+
+        body = [(rid, d) for rid, d, _ in self.fake_mlflow.logged_dicts
+                if rid == "run-123"][0][1]
+        for row in body:
+            self.assertNotIn("rationale", row)
+        self.assertNotIn("Platinum", json.dumps(body))
+        self.assertNotIn("unusable", json.dumps(body))
+
+
+# ---------------------------------------------------------------------------
+# resolve_run_id — request_id → MLflow run_id via the request_id tag
+# ---------------------------------------------------------------------------
+
+class ResolveRunIdTest(unittest.TestCase):
+    """The on-demand single-trace judge resolves request_id → run_id via an
+    MLflow tag-equality filter on the ``request_id`` tag the tracing sink sets.
+    Returns None cleanly when no run is found (the endpoint maps that to 404).
+    """
+
+    def setUp(self):
+        self.fake_mlflow = _install_fake_mlflow()
+        import judge.scorer as scorer_mod
+        scorer_mod._mlflow_configured = False
+
+    def tearDown(self):
+        _uninstall_fake_mlflow()
+
+    def test_resolves_request_id_to_run_id(self):
+        """When a run tagged with request_id exists, returns its run_id."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow.set_search_runs_result(["run-abc"])
+        run_id = resolve_run_id("req-aabbccddeeff")
+        self.assertEqual(run_id, "run-abc")
+
+    def test_returns_none_when_no_run_found(self):
+        """When no run matches the request_id tag, returns None (→ endpoint 404)."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow.set_search_runs_result([])
+        run_id = resolve_run_id("req-aabbccddeeff")
+        self.assertIsNone(run_id)
+
+    def test_returns_none_for_malformed_request_id(self):
+        """A request_id not matching the canonical req-<12hex> form is rejected
+        before the MLflow search (→ 404/400, no filter injection risk)."""
+        from judge.scorer import resolve_run_id
+        # Replace search_runs with a Mock that would record a call — assert
+        # it is NEVER called for a malformed id (the regex guard short-circuits).
+        self.fake_mlflow.search_runs = Mock(return_value=_FakeRunsFrame([]))
+        run_id = resolve_run_id("req-123")
+        self.assertIsNone(run_id)
+        # The malformed id never reached the MLflow search.
+        self.fake_mlflow.search_runs.assert_not_called()
+
+    def test_rejects_filter_injection_attempt(self):
+        """A request_id crafted to alter the MLflow filter (e.g. a quote) is
+        rejected by the canonical-form guard — never interpolated into the
+        filter_string."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow.search_runs = Mock(return_value=_FakeRunsFrame([]))
+        for malicious in (
+            "req-' OR '1'='1",      # SQL-style injection
+            "req-abc' OR tags.x='y", # MLflow filter injection
+            "'; DROP TABLE runs;--", # classical
+            "req-aaaaaaaaaaaa'",     # quote after valid-looking prefix
+        ):
+            self.assertIsNone(resolve_run_id(malicious))
+        self.fake_mlflow.search_runs.assert_not_called()
+
+    def test_returns_none_when_experiment_not_found(self):
+        """When the experiment is unreachable, returns None (→ 404, never 500)."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow._experiment = None
+        run_id = resolve_run_id("req-aabbccddeeff")
+        self.assertIsNone(run_id)
+
+    def test_search_failure_returns_none_not_raise(self):
+        """An MLflow search exception is caught; returns None (→ 404, never 500)."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow.search_runs = Mock(
+            side_effect=RuntimeError("mlflow internal error")
+        )
+        run_id = resolve_run_id("req-aabbccddeeff")
+        self.assertIsNone(run_id)
 
 
 if __name__ == "__main__":
