@@ -361,10 +361,12 @@ class _ProgressTraceSink(TraceSink):
                 "type": "rewards",
                 "data": rewards,
             })
-        # Summary event (kept for model_id / schema_valid display)
+        # Summary event — includes the full payload so ResultsView can
+        # render extracted fields with per-field Accept/Correct feedback.
         self._ctx.push("extraction", {
             "model_id": state.extraction.model_id,
             "schema_valid": state.extraction.schema_valid,
+            "payload": payload,
         })
 
 

@@ -351,44 +351,6 @@
       const BANKS = ["HDFC", "ICICI", "SBI", "AXIS"];
       const STAGES = ["route", "extract", "validate", "persist", "finalize"];
 
-      const FIELD_LABELS = {
-        "cards[].cardMeta.cardDisplayName": "Card Name",
-        "cards[].cardMeta.lastFourDigit": "Last 4 Digits",
-        "rewards.pointsEarnedThisCycle": "Points Earned",
-        "rewards.closingPoints": "Closing Points",
-        "transactions[].date": "Date",
-        "transactions[].description": "Description",
-        "transactions[].amount": "Amount",
-      };
-
-      function fieldLabel(comp) {
-        const base = FIELD_LABELS[comp.field_path] || comp.field_path;
-        if (comp.scope === "TRANSACTION_ROW") {
-          const idx = comp.actual_row_index ?? comp.expected_row_index ?? 0;
-          return `${base} — Txn #${idx + 1}`;
-        }
-        if (comp.scope === "SCALAR" && comp.card_index != null) {
-          return `${base} — Card ${comp.card_index + 1}`;
-        }
-        return base;
-      }
-
-      function toCanonicalPath(comp) {
-        // Prefer the backend-supplied feedback_path (always valid, handles
-        // unmatched rows where actual_row_index is None by falling back to
-        // expected_row_index).  Only compute locally as a fallback.
-        if (comp.feedback_path) return comp.feedback_path;
-        const fp = comp.field_path;
-        if (fp.startsWith("cards[].")) {
-          return fp.replace("cards[]", `cards.${comp.card_index}`, 1);
-        }
-        if (fp.startsWith("transactions[].")) {
-          const idx = comp.actual_row_index ?? comp.expected_row_index ?? 0;
-          return fp.replace("transactions[]", `transactions.${idx}`, 1);
-        }
-        return fp;
-      }
-
       function fmtVal(v) {
         if (v === null || v === undefined) return "—";
         if (typeof v === "number") return String(v);
@@ -619,26 +581,24 @@
       }
 
       /* ===================================================================
-       * ResultsView — per-field verdicts + feedback
+       * ResultsView — extracted fields with per-field Accept/Correct feedback
        * =================================================================== */
 
-      function FieldRow({ comp, requestId, originalValue }) {
+      /* Shared accept/correct state machine for a single feedback field.
+       * Used by both FieldRow (card mode) and TxnCell (inline table mode). */
+      function useFeedback(requestId, fieldPath, value) {
         const [showCorrect, setShowCorrect] = useState(false);
         const [corrected, setCorrected] = useState("");
         const [submitted, setSubmitted] = useState(null);
         const [error, setError] = useState(null);
 
-        const canonical = toCanonicalPath(comp);
-        const feedbackPath = comp.feedback_path;
-        const outcome = comp.outcome;
-
         const handleAccept = async () => {
           setError(null);
           try {
             await submitFeedback(requestId, {
-              field_path: feedbackPath,
+              field_path: fieldPath,
               disposition: "ACCEPT",
-              original_value: comp.actual,
+              original_value: value,
             });
             setSubmitted("accept");
           } catch (e) {
@@ -651,9 +611,9 @@
           if (!corrected.trim()) return;
           try {
             await submitFeedback(requestId, {
-              field_path: feedbackPath,
+              field_path: fieldPath,
               disposition: "CORRECT",
-              original_value: comp.actual,
+              original_value: value,
               corrected_value: corrected,
             });
             setSubmitted("correct");
@@ -663,67 +623,113 @@
           }
         };
 
+        return {
+          showCorrect, setShowCorrect, corrected, setCorrected,
+          submitted, error, handleAccept, handleCorrect,
+        };
+      }
+
+      /* Full-card feedback row — used for card fields and reward scalars. */
+      function FieldRow({ requestId, fieldPath, label, value }) {
+        const fb = useFeedback(requestId, fieldPath, value);
+
         return h`
           <div class="field-row">
             <div class="field-row-head">
-              <div>
-                <span class="field-label">${fieldLabel(comp)}</span>
-                ${comp.rationale && h`<div class="field-context">${comp.rationale}</div>`}
-              </div>
-              <span class=${"verdict verdict-" + outcome}>${outcome}</span>
+              <span class="field-label">${label}</span>
             </div>
-            <div class="field-values">
-              <div class="field-val-box">
-                <div class="field-val-label">Expected (PDF)</div>
-                <div class="field-val">${fmtVal(comp.expected)}</div>
-              </div>
-              <div class="field-val-box">
-                <div class="field-val-label">Extracted</div>
-                <div class="field-val">${fmtVal(comp.actual)}</div>
-              </div>
+            <div class="field-val-box">
+              <div class="field-val-label">Extracted Value</div>
+              <div class="field-val">${fmtVal(value)}</div>
             </div>
-            ${submitted
+            ${fb.submitted
               ? h`<div class="feedback-note">
-                  ${submitted === "accept" ? "✓ Accepted as correct" : "✓ Correction submitted"}
+                  ${fb.submitted === "accept" ? "✓ Accepted as correct" : "✓ Correction submitted"}
                 </div>`
-              : feedbackPath
-                ? h`<div class="field-actions">
-                    <button class="btn btn-sm btn-accept" onClick=${handleAccept}>
-                      ✓ Accept
-                    </button>
-                    <button class="btn btn-sm btn-correct" onClick=${() => setShowCorrect(!showCorrect)}>
-                      ✎ Correct
+              : h`<div class="field-actions" style=${{ marginTop: "0.5rem" }}>
+                  <button class="btn btn-sm btn-accept" onClick=${fb.handleAccept}>
+                    ✓ Accept
+                  </button>
+                  <button class="btn btn-sm btn-correct" onClick=${() => fb.setShowCorrect(!fb.showCorrect)}>
+                    ✎ Correct
+                  </button>
+                </div>
+                ${fb.showCorrect && h`
+                  <div class="correct-input" style=${{ marginTop: "0.5rem" }}>
+                    <input
+                      type="text"
+                      placeholder="Corrected value"
+                      value=${fb.corrected}
+                      onChange=${(e) => fb.setCorrected(e.target.value)}
+                      onKeyDown=${(e) => { if (e.key === "Enter") fb.handleCorrect(); }}
+                    />
+                    <button class="btn btn-sm btn-primary" onClick=${fb.handleCorrect} disabled=${!fb.corrected.trim()}>
+                      Submit
                     </button>
                   </div>
-                  ${showCorrect && h`
-                    <div class="correct-input" style=${{ marginTop: "0.5rem" }}>
+                `}
+                ${fb.error && h`<div class="alert alert-error" style=${{ marginTop: "0.5rem" }}>${fb.error}</div>`}
+            `}
+          </div>
+        `;
+      }
+
+      /* Compact inline feedback cell — used inside the transactions table. */
+      function TxnCell({ requestId, fieldPath, value }) {
+        const fb = useFeedback(requestId, fieldPath, value);
+
+        return h`
+          <div style=${{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "100px" }}>
+            ${fb.submitted
+              ? h`<span class="feedback-note" style=${{ fontSize: "0.75rem" }}>
+                  ${fb.submitted === "accept" ? "✓ Accepted" : "✓ Corrected"}
+                </span>`
+              : fb.showCorrect
+                ? h`<div style=${{ display: "flex", alignItems: "center", gap: "0.25rem", flexWrap: "wrap" }}>
+                    <div class="correct-input" style=${{ minWidth: "140px" }}>
                       <input
                         type="text"
                         placeholder="Corrected value"
-                        value=${corrected}
-                        onChange=${(e) => setCorrected(e.target.value)}
-                        onKeyDown=${(e) => { if (e.key === "Enter") handleCorrect(); }}
+                        value=${fb.corrected}
+                        onChange=${(e) => fb.setCorrected(e.target.value)}
+                        onKeyDown=${(e) => { if (e.key === "Enter") fb.handleCorrect(); }}
                       />
-                      <button class="btn btn-sm btn-primary" onClick=${handleCorrect} disabled=${!corrected.trim()}>
-                        Submit
+                      <button class="btn btn-sm btn-primary" onClick=${fb.handleCorrect} disabled=${!fb.corrected.trim()}>
+                        ✓
                       </button>
                     </div>
-                  `}
-                  ${error && h`<div class="alert alert-error" style=${{ marginTop: "0.5rem" }}>${error}</div>`}`
-                : h`<div class="feedback-note" style=${{ color: "var(--text-muted)" }}>
-                    Feedback unavailable (no valid path)
+                    <button class="btn btn-sm" style=${{ background: "var(--neutral-soft)", color: "var(--text-muted)", fontSize: "0.6875rem", padding: "0.1875rem 0.5rem", border: "1px solid var(--border)" }}
+                      onClick=${() => fb.setShowCorrect(false)}>
+                      Cancel
+                    </button>
+                  </div>`
+                : h`<div style=${{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <span class="field-val" style=${{ fontSize: "0.8125rem" }}>${fmtVal(value)}</span>
+                    <button class="btn btn-sm btn-accept" style=${{ padding: "0.125rem 0.375rem", fontSize: "0.6875rem" }} onClick=${fb.handleAccept}>✓</button>
+                    <button class="btn btn-sm btn-correct" style=${{ padding: "0.125rem 0.375rem", fontSize: "0.6875rem" }} onClick=${() => fb.setShowCorrect(true)}>✎</button>
                   </div>`
             }
+            ${fb.error && h`<div style=${{ fontSize: "0.6875rem", color: "var(--disagree)" }}>${fb.error}</div>`}
           </div>
         `;
       }
 
       function ResultsView({ requestId, extraction, complete }) {
         const outcome = complete?.outcome || "UNKNOWN";
-
         const bannerClass =
           outcome === "SUCCESS" ? "SUCCESS" :
           outcome === "PARTIAL" ? "PARTIAL" : "FAILURE";
+
+        const payload = extraction?.payload;
+        const cards = (payload?.cards || []).filter(Boolean);
+        const rewards = payload?.rewards;
+        const transactions = (payload?.transactions || []).filter(Boolean);
+
+        const thStyle = {
+          padding: "0.5rem 0.625rem", textAlign: "left",
+          fontSize: "0.75rem", textTransform: "uppercase", color: "var(--text-muted)",
+        };
+        const tdStyle = { padding: "0.5rem 0.625rem" };
 
         return h`
           <div class="container">
@@ -760,11 +766,79 @@
                 <p style=${{ color: "var(--text-muted)", fontSize: "0.875rem" }}>
                   Model: ${extraction.model_id || "—"} · Schema ${(complete?.schema_valid ?? extraction?.schema_valid) ? "valid" : "invalid"}
                 </p>
-                <p style=${{ color: "var(--text-muted)", fontSize: "0.8125rem", marginTop: "0.5rem" }}>
-                  The judge runs asynchronously as a post-hoc evaluation over
-                  sampled MLflow traces — use the Judge Evaluation tab to run
-                  and view judge scores.
-                </p>
+              </div>
+            `}
+
+            ${cards.length > 0 && h`
+              <div class="section-title">Cards (${cards.length})</div>
+              ${cards.map((card, i) => h`
+                <div class="card" key=${"card-" + i}>
+                  <div class="section-title" style=${{ marginTop: 0, fontSize: "1rem" }}>Card ${i + 1}</div>
+                  <${FieldRow}
+                    requestId=${requestId}
+                    fieldPath=${`cards.${i}.cardMeta.cardDisplayName`}
+                    label="Card Name"
+                    value=${card?.cardMeta?.cardDisplayName}
+                  />
+                  <${FieldRow}
+                    requestId=${requestId}
+                    fieldPath=${`cards.${i}.cardMeta.lastFourDigit`}
+                    label="Last 4 Digits"
+                    value=${card?.cardMeta?.lastFourDigit}
+                  />
+                </div>
+              `)}
+            `}
+
+            ${rewards && h`
+              <div class="section-title">Rewards</div>
+              <div class="card">
+                <${FieldRow}
+                  requestId=${requestId}
+                  fieldPath="rewards.pointsEarnedThisCycle"
+                  label="Points Earned This Cycle"
+                  value=${rewards.pointsEarnedThisCycle}
+                />
+                <${FieldRow}
+                  requestId=${requestId}
+                  fieldPath="rewards.closingPoints"
+                  label="Closing Points"
+                  value=${rewards.closingPoints}
+                />
+              </div>
+            `}
+
+            ${transactions.length > 0 && h`
+              <div class="section-title">Transactions (${transactions.length})</div>
+              <div class="card" style=${{ padding: 0, overflow: "hidden" }}>
+                <div style=${{ overflowX: "auto" }}>
+                  <table style=${{ width: "100%", borderCollapse: "collapse", fontSize: "0.8125rem" }}>
+                    <thead>
+                      <tr style=${{ borderBottom: "1px solid var(--border)" }}>
+                        <th style=${thStyle}>#</th>
+                        <th style=${thStyle}>Date</th>
+                        <th style=${thStyle}>Description</th>
+                        <th style=${thStyle}>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${transactions.map((txn, i) => h`
+                        <tr key=${"txn-" + i} style=${{ borderBottom: "1px solid var(--border)" }}>
+                          <td style=${{ ...tdStyle, color: "var(--text-muted)", whiteSpace: "nowrap" }}>${i + 1}</td>
+                          <td style=${tdStyle}>
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.date`} value=${txn?.date} />
+                          </td>
+                          <td style=${tdStyle}>
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.description`} value=${txn?.description} />
+                          </td>
+                          <td style=${tdStyle}>
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.amount`} value=${txn?.amount} />
+                          </td>
+                        </tr>
+                      `)}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             `}
 
