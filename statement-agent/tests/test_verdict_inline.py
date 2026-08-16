@@ -668,8 +668,9 @@ class ResolveRunIdIntegrationTest(unittest.TestCase):
 
     def setUp(self):
         import sys
-        from tests.test_scorer import _install_fake_mlflow
+        from tests.test_scorer import _install_fake_mlflow, _make_fake_trace
         self._install = _install_fake_mlflow
+        self._make_fake_trace = _make_fake_trace
         self.fake_mlflow = self._install()
         import judge.scorer as scorer_mod
         scorer_mod._mlflow_configured = False
@@ -680,16 +681,29 @@ class ResolveRunIdIntegrationTest(unittest.TestCase):
         sys.modules.pop("mlflow.tracking", None)
 
     def test_resolve_found_then_judge_succeeds(self):
-        """resolve_run_id returns a run_id → bg runner judges that run."""
+        """resolve_run_id returns a run_id → bg runner judges that run.
+
+        Resolves via the trace-based fallback (the live root-cause path: the
+        run tag is unreliable, but the trace always carries request_id in
+        traceInputs and the backing run in sourceRun).
+        """
         from judge.scorer import resolve_run_id
-        self.fake_mlflow.set_search_runs_result(["run-target"])
+        self.fake_mlflow.set_traces([
+            self._make_fake_trace("req-aabbccddeeff", "run-target"),
+        ])
         run_id = resolve_run_id("req-aabbccddeeff")
         self.assertEqual(run_id, "run-target")
 
     def test_resolve_not_found_returns_none(self):
-        """resolve_run_id returns None → endpoint would 404 (never 500)."""
+        """resolve_run_id returns None → endpoint would 404 (never 500).
+
+        An UNRELATED trace is registered so the trace scan is non-vacuous
+        (it must scan and reject it, not short-circuit on an empty result).
+        """
         from judge.scorer import resolve_run_id
-        self.fake_mlflow.set_search_runs_result([])
+        self.fake_mlflow.set_traces([
+            self._make_fake_trace("req-deadbeefdead", "run-other"),
+        ])
         run_id = resolve_run_id("req-aabbccddeeff")
         self.assertIsNone(run_id)
 
