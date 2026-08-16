@@ -17,6 +17,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from contracts.models import (
+    Bank,
     ComparisonOutcome,
     ExtractionResult,
     FieldComparison,
@@ -43,7 +44,7 @@ class InMemoryResultStore(ResultStore):
         self.extractions: dict[str, ExtractionResult] = {}
         self.verdicts: dict[str, JudgeVerdict] = {}
 
-    def save_extraction(self, result: ExtractionResult) -> None:
+    def save_extraction(self, result: ExtractionResult, bank: Bank) -> None:
         self.extractions[result.request_id] = result
 
     def save_verdict(self, verdict: JudgeVerdict) -> None:

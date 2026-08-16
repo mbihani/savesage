@@ -50,7 +50,7 @@ class GraphE2ETest(unittest.TestCase):
     def test_persistence_failure_yields_partial(self) -> None:
         # BLOCKING 4: a run that persisted nothing must never report SUCCESS.
         class FailingStore(InMemoryResultStore):
-            def save_extraction(self, result):
+            def save_extraction(self, result, bank):
                 raise RuntimeError("db down")
         deps = NodeDeps(
             extraction=FakeExtractionAdapter(),

@@ -324,7 +324,7 @@ class EmptySpansWhenNoPayloadTest(unittest.TestCase):
 class _FailingResultStore(InMemoryResultStore):
     """ResultStore that always raises on save_extraction (persist-failure test)."""
 
-    def save_extraction(self, result):
+    def save_extraction(self, result, bank):
         raise RuntimeError("persist failure: lakebase unavailable")
 
 

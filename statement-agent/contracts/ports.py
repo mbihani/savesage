@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 
-from .models import ExtractionResult, FieldFeedback, JudgeVerdict, ParseRequest, TraceEvent
+from .models import Bank, ExtractionResult, FieldFeedback, JudgeVerdict, ParseRequest, TraceEvent
 
 
 class ExtractionAdapter(ABC):
@@ -26,7 +26,7 @@ class ResultStore(ABC):
     """Workstream 3: durable extraction/verdict persistence and retrieval."""
 
     @abstractmethod
-    def save_extraction(self, result: ExtractionResult) -> None:
+    def save_extraction(self, result: ExtractionResult, bank: Bank) -> None:
         raise NotImplementedError
 
     @abstractmethod

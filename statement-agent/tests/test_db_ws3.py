@@ -5,18 +5,35 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from io import StringIO
 
-from contracts.models import (ComparisonOutcome, FieldComparison, FieldFeedback,
-    FieldScope, JudgeVerdict, MatchMethod)
+from contracts.models import (Bank, ComparisonOutcome, ExtractionResult,
+    FieldComparison, FieldFeedback, FieldScope, JudgeVerdict, MatchMethod,
+    TokenUsage)
 from db.mapping import (feedback_from_row, feedback_values, promoted_columns,
                         verdict_from_dict, verdict_to_dict)
 from db.sql import DDL, UPSERT_EXTRACTION_SQL, current_state_view_sql
 from db.config_ws3 import LakebaseSettings
 from db.provision import CdfCreateError, ensure_cdf, resolve_database_resource
-from db.stores import init_tables
+from db.stores import LakebaseResultStore, init_tables
 from db.connection import OAuthConnectionFactory
 
 
 class LakebaseSqlTests(unittest.TestCase):
+    def test_save_extraction_binds_request_bank_to_promoted_column(self):
+        executed = []
+
+        class CapturingStore(LakebaseResultStore):
+            def _execute(self, statement, params, *, fetch=False):
+                executed.append((statement, params))
+
+        result = ExtractionResult(
+            "req-bank", {"statementDate": "2026-01-02"}, "luna", 12.5,
+            TokenUsage(), schema_valid=True,
+        )
+        CapturingStore(None).save_extraction(result, Bank.ICICI)
+
+        self.assertEqual(len(executed), 1)
+        self.assertEqual(executed[0][1][7], "ICICI")
+
     def test_connection_factory_uses_autoscaling_postgres_api(self):
         class Credential:
             token = "fresh-token"
