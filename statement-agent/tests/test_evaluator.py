@@ -126,6 +126,42 @@ class BuildEvalRowsTest(unittest.TestCase):
         self.assertIsNone(rows[0]["transactions_date"])
         self.assertIsNone(rows[0]["transactions_amount"])
 
+    def test_per_field_accuracy_values_transferred(self):
+        """Every per-field accuracy VALUE is transferred from the result dict
+        to the eval row (not just the key existing).  Set a distinct value for
+        each of the 7 judged fields and assert each round-trips exactly."""
+        from judge.evaluator import build_eval_rows
+
+        # A distinct accuracy value for each of the 7 judged fields, keyed by
+        # the flat metric/row key (mirrors _field_key in evaluator.py).
+        distinct = {
+            "cards_cardMeta_cardDisplayName": 0.10,
+            "cards_cardMeta_lastFourDigit": 0.20,
+            "rewards_pointsEarnedThisCycle": 0.30,
+            "rewards_closingPoints": 0.40,
+            "transactions_date": 0.50,
+            "transactions_description": 0.60,
+            "transactions_amount": 0.70,
+        }
+        result = {
+            "run_id": "r1", "status": "OK", "bank": "HDFC", "request_id": "req-1",
+            "strict_accuracy": 1.0, "narration_forgiven_accuracy": 1.0,
+            "comparisons": 7, "scored": 7, "correct": 4,
+            "per_field": distinct,
+        }
+        row = build_eval_rows([result])[0]
+
+        # Every per-field value is transferred exactly — not merely present.
+        for field in JUDGED_FIELDS:
+            key = field.replace("[]", "").replace(".", "_")
+            self.assertEqual(row[key], distinct[key])
+
+        # The carried scalar values round-trip too.
+        self.assertEqual(row["run_id"], "r1")
+        self.assertEqual(row["bank"], "HDFC")
+        self.assertEqual(row["strict_accuracy"], 1.0)
+        self.assertEqual(row["narration_forgiven_accuracy"], 1.0)
+
 
 # ---------------------------------------------------------------------------
 # Real-mlflow end-to-end tests (temp file store)

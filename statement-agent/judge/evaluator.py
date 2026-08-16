@@ -234,11 +234,10 @@ def run_mlflow_evaluation(
         forgiven_metric = _make_forgiven_scorer()
 
         # mlflow.models.evaluate is the non-deprecated successor to
-        # mlflow.evaluate (deprecated in MLflow 3.0).  Fall back to
-        # mlflow.evaluate for older runtimes that lack the new path.
-        evaluate = getattr(getattr(mlflow, "models", None), "evaluate", None)
-        if evaluate is None:
-            evaluate = mlflow.evaluate
+        # mlflow.evaluate (deprecated in MLflow 3.0); use it exclusively
+        # per the contract.  If it is unavailable the AttributeError
+        # propagates into the surrounding except (best-effort None return).
+        evaluate = mlflow.models.evaluate
 
         with mlflow.start_run(
             experiment_id=experiment_id, run_name="judge-evaluation"
