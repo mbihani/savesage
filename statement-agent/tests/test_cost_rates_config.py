@@ -20,7 +20,13 @@ from contracts.models import TokenUsage
 from harness.config_ws4 import _DEFAULT_COST_RATES, get_tracing_config
 from harness.tracing_cost import cost_attributes
 
+# The AI-Gateway endpoint name (EXTRACTION_ENDPOINT) — kept as a rate-table alias.
 _LUNA = "databricks-gpt-5-6-luna"
+# The model_id the Luna AI-Gateway response actually returns in its ``model``
+# field — this is what the extract span records and what ``cost_attributes``
+# looks up (verified from the live MLflow run param / trace). It is the EFFECTIVE
+# cost-lookup key: without it keyed, cost stays $0 even at a non-zero rate.
+_LUNA_MODEL = "gpt-5.6-luna"
 _JUDGE = "databricks-claude-opus-5"
 
 
@@ -33,7 +39,10 @@ class DefaultRatesTest(unittest.TestCase):
     """The hardcoded defaults — the single source of real rates without an env override."""
 
     def test_luna_default_rates_are_real(self) -> None:
+        # Both the effective span model_id and the endpoint-name alias carry the
+        # real rate.
         self.assertEqual(_DEFAULT_COST_RATES[_LUNA], {"input": 0.2, "output": 1.2})
+        self.assertEqual(_DEFAULT_COST_RATES[_LUNA_MODEL], {"input": 0.2, "output": 1.2})
 
     def test_judge_default_rate_stays_zero(self) -> None:
         # No judge rate was provided, and the judge path captures no usage yet —
@@ -65,6 +74,23 @@ class CostAttributesWithDefaultRatesTest(unittest.TestCase):
         self.assertNotEqual(c["output_cost"], 0.0)
         self.assertNotEqual(c["total_cost"], 0.0)
 
+    def test_span_model_id_is_priced_nonzero(self) -> None:
+        # THE goal test: the model_id the extract span ACTUALLY records is
+        # ``gpt-5.6-luna`` (the AI-Gateway ``model`` field), not the endpoint name.
+        # cost_attributes must hit a rate for it and return non-zero cost — this
+        # is what makes per-statement parse cost appear in MLflow traces. With
+        # only the endpoint-name key keyed (the original gap), this returned
+        # explicit zeros and the trace cost stayed $0.
+        rates = _defaults_copy()
+        usage = TokenUsage(input_tokens=1000, output_tokens=500, total_tokens=1500)
+        c = cost_attributes(usage, _LUNA_MODEL, rates)
+        expected_input = 1000 * 0.2 / 1_000_000   # 0.0002
+        expected_output = 500 * 1.2 / 1_000_000   # 0.0006
+        self.assertEqual(c["input_cost"], expected_input)
+        self.assertEqual(c["output_cost"], expected_output)
+        self.assertEqual(c["total_cost"], expected_input + expected_output)
+        self.assertGreater(c["total_cost"], 0.0)
+
     def test_luna_cost_is_nonzero_with_realistic_usage(self) -> None:
         # A realistic extraction: ~12k prompt + ~3k completion tokens.
         rates = _defaults_copy()
@@ -78,14 +104,15 @@ class CostAttributesWithDefaultRatesTest(unittest.TestCase):
 
     def test_pipeline_uses_config_defaults_without_env(self) -> None:
         # End-to-end config -> cost: with no WS4_COST_RATES_JSON, get_tracing_config()
-        # must hand the non-zero Luna rate to cost_attributes (this is the path
-        # tracing.py:491 uses: cost_attributes(usage, model, cfg.cost_rates_per_million)).
+        # must hand the non-zero Luna rate to cost_attributes for the model_id the
+        # extract span ACTUALLY records (gpt-5.6-luna) — this is the path
+        # tracing.py:491 uses: cost_attributes(usage, model, cfg.cost_rates_per_million).
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("WS4_COST_RATES_JSON", None)
             cfg = get_tracing_config()
         c = cost_attributes(
             TokenUsage(input_tokens=1000, output_tokens=500, total_tokens=1500),
-            _LUNA, cfg.cost_rates_per_million,
+            _LUNA_MODEL, cfg.cost_rates_per_million,
         )
         expected_input = 1000 * 0.2 / 1_000_000
         expected_output = 500 * 1.2 / 1_000_000

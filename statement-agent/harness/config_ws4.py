@@ -23,7 +23,19 @@ from dataclasses import dataclass, field
 # usage yet — out of scope here). Override per-workspace at deploy via
 # WS4_COST_RATES_JSON (see get_tracing_config); do NOT hand-edit these rates
 # for a deploy.
+#
+# Rate-table KEY vs endpoint name: ``cost_attributes`` (tracing_cost.py) looks the
+# span's ``model_id`` up in this table. For the Luna extraction call that
+# ``model_id`` is the value the AI-Gateway returns in its response ``model``
+# field ("gpt-5.6-luna" — verified from the live MLflow run param / trace), NOT
+# the ``EXTRACTION_ENDPOINT`` name. So "gpt-5.6-luna" is the EFFECTIVE cost-lookup
+# key (the one the extract span actually records); "databricks-gpt-5-6-luna" is
+# the AI-Gateway endpoint name, keyed too as an alias so an ops override or a
+# future API change surfacing the endpoint name still prices the span. Both
+# carry the same rate. Without the "gpt-5.6-luna" key cost stays $0 even with a
+# non-zero rate, because the lookup misses.
 _DEFAULT_COST_RATES: dict[str, dict[str, float]] = {
+    "gpt-5.6-luna": {"input": 0.2, "output": 1.2},
     "databricks-gpt-5-6-luna": {"input": 0.2, "output": 1.2},
     "databricks-claude-opus-5": {"input": 0.0, "output": 0.0},
 }
