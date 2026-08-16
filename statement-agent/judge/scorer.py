@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import random
 from pathlib import Path
 from typing import Any
@@ -37,20 +38,76 @@ JUDGED_FIELDS = (
     "transactions[].amount",
 )
 
-# The MLflow experiment path (resolved lazily from config so the module stays
-# stdlib-importable). Used by run_judge_evaluation to search for unjudged traces.
+# Fallback MLflow experiment path used when neither the MLFLOW_EXPERIMENT_ID
+# env var (injected by the bound Databricks App resource) nor the configurable
+# MLFLOW_EXPERIMENT_PATH / config.Settings path resolve.  The scorer prefers
+# the env-var experiment ID — the same approach used by
+# harness.tracing.configure_tracing — because the ID is more robust: it
+# survives experiment recreation and cross-workspace deploys.
 _EXPERIMENT_PATH = "/Shared/savesage/statement-agent"
+
+# Module-level flag so _ensure_mlflow_configured runs once per process.
+_mlflow_configured = False
 
 
 def _get_experiment_id(mlf: Any) -> str | None:
-    """Resolve the MLflow experiment ID from the config path."""
+    """Resolve the MLflow experiment ID from the bound resource env var or config path.
+
+    Prefers ``MLFLOW_EXPERIMENT_ID`` (set by the bound Databricks App resource,
+    the same source the live trace sink uses) over a name-based lookup.  Falls
+    back to ``get_experiment_by_name`` with the configurable experiment path
+    from ``config.Settings.mlflow_experiment_path`` (read from the
+    ``MLFLOW_EXPERIMENT_PATH`` env var or the hardcoded default).
+    """
+    exp_id = os.getenv("MLFLOW_EXPERIMENT_ID", "")
+    if exp_id:
+        return exp_id
+    # Fall back to looking up the experiment by its configured path/name.
     try:
-        exp = mlf.get_experiment_by_name(_EXPERIMENT_PATH)
+        from config import get_settings
+        experiment_path = get_settings().mlflow_experiment_path
+    except Exception:  # noqa: BLE001 - config import must never break the scorer
+        experiment_path = _EXPERIMENT_PATH
+    try:
+        exp = mlf.get_experiment_by_name(experiment_path)
         if exp is not None:
             return exp.experiment_id
-    except Exception:
+    except Exception:  # noqa: BLE001 - never fatal; surfaced as "experiment not found"
         pass
     return None
+
+
+def _ensure_mlflow_configured(mlf: Any) -> None:
+    """Ensure the MLflow tracking URI and Databricks profile are configured.
+
+    Mirrors the ``DATABRICKS_CONFIG_PROFILE`` handling from
+    :func:`harness.tracing.configure_tracing`.  Critical for the scheduled job
+    (which runs outside the app process where MLflow defaults to a local file
+    store) and for the in-app judge when no parse has been done yet (the
+    tracing module configures MLflow lazily on the first trace event).
+    """
+    global _mlflow_configured
+    if _mlflow_configured:
+        return
+    # Set tracking URI to databricks (the default is a local file/sqlite store).
+    try:
+        mlf.set_tracking_uri("databricks")
+    except Exception:  # noqa: BLE001 - fake mlflow in tests may lack this method
+        pass
+    # Handle DATABRICKS_CONFIG_PROFILE: same logic as configure_tracing.
+    # In the Databricks Apps runtime the config file is absent and the bound
+    # experiment resource supplies auth — a stale DATABRICKS_CONFIG_PROFILE
+    # pointing at a non-existent profile would break the SDK credential chain.
+    cfg_path = os.environ.get(
+        "DATABRICKS_CONFIG_FILE",
+        os.path.expanduser("~/.databrickscfg"),
+    )
+    if os.path.isfile(cfg_path):
+        profile = os.getenv("DATABRICKS_CONFIG_PROFILE", "fevm-stable")
+        os.environ["DATABRICKS_CONFIG_PROFILE"] = profile
+    else:
+        os.environ.pop("DATABRICKS_CONFIG_PROFILE", None)
+    _mlflow_configured = True
 
 
 def score_trace(run_id: str) -> dict[str, Any]:
@@ -71,11 +128,13 @@ def score_trace(run_id: str) -> dict[str, Any]:
         return _score_trace_impl(run_id)
     except Exception as exc:
         _LOGGER.warning("score_trace failed for run %s: %s", run_id, exc)
-        return {"run_id": run_id, "status": "ERROR", "error": "scorer error"}
+        return {"run_id": run_id, "status": "ERROR",
+                "error": f"{type(exc).__name__}: {exc}"}
 
 
 def _score_trace_impl(run_id: str) -> dict[str, Any]:
     import mlflow
+    from mlflow.tracking import MlflowClient
 
     from contracts.models import Bank, ExtractionResult, ParseRequest
     from harness.judge_adapter import OpusJudgeAdapter
@@ -115,10 +174,16 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
     # 5. Compute metrics from the verdict.
     metrics = verdict_to_metrics(verdict)
 
-    # 6. Log metrics back to the SAME MLflow run.
+    # 6. Log metrics back to the SAME MLflow run.  Use the MlflowClient API
+    # (not the module-level mlflow.log_metric / mlflow.set_tag) because the
+    # module-level set_tag() does NOT accept a run_id keyword argument —
+    # it only sets tags on the active run.  MlflowClient.log_metric /
+    # .set_tag take run_id as the first positional argument and work on
+    # any run, active or not.
+    client = MlflowClient()
     for key, value in metrics.items():
         if value is not None:
-            mlflow.log_metric(key=key, value=float(value), run_id=run_id)
+            client.log_metric(run_id, key, float(value))
 
     # 7. Tag the run. Only tag judged=true on OK status so JUDGE_ERROR traces
     # can be retried in the next evaluation. JUDGE_ERROR gets judged=error so
@@ -126,9 +191,9 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
     summary = json.loads(verdict.summary) if verdict.summary else {}
     status = summary.get("status", "OK")
     if status == "OK":
-        mlflow.set_tag(key="judged", value="true", run_id=run_id)
+        client.set_tag(run_id, "judged", "true")
     else:
-        mlflow.set_tag(key="judged", value="error", run_id=run_id)
+        client.set_tag(run_id, "judged", "error")
 
     # 8. Build and return the per-trace result.
     return {
@@ -169,12 +234,22 @@ def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
     """
     import mlflow
 
+    # 0. Ensure MLflow is configured (tracking URI + Databricks profile).
+    # Critical for the scheduled job (runs outside the app process where
+    # MLflow defaults to a local file store) and for the in-app judge when
+    # no parse has been done yet (the tracing module configures MLflow
+    # lazily on the first trace event).
+    _ensure_mlflow_configured(mlflow)
+
     # 1. Resolve the experiment and search for recent runs.
     exp_id = _get_experiment_id(mlflow)
     if exp_id is None:
+        # Surface the configured path (or env-var ID) so the operator can
+        # see what was searched, not just "experiment not found".
+        tried = os.getenv("MLFLOW_EXPERIMENT_ID") or _EXPERIMENT_PATH
         return {
             "count_judged": 0,
-            "errors": [{"error": f"experiment not found: {_EXPERIMENT_PATH}"}],
+            "errors": [{"error": f"experiment not found: {tried}"}],
             "overall_strict": None,
             "overall_narration_forgiven": None,
             "per_field": {},

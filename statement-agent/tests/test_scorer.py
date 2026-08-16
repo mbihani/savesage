@@ -102,6 +102,32 @@ class _FakeRunsFrame:
         return _FakeSeries([])
 
 
+class _FakeMlflowClient:
+    """Fake MlflowClient — delegates to the parent fake module's bookkeeping.
+
+    The real MlflowClient.log_metric / .set_tag take ``run_id`` as the first
+    positional argument (unlike the module-level mlflow.log_metric which takes
+    it as a keyword).  This fake translates the client API to the same
+    (key, value, run_id) tuples the test assertions already check.
+    """
+
+    def __init__(self, parent: "_FakeMLflowModule"):
+        self._parent = parent
+
+    def log_metric(self, run_id, key, value):
+        self._parent.logged_metrics.append((key, value, run_id))
+
+    def set_tag(self, run_id, key, value):
+        self._parent.set_tags.append((key, value, run_id))
+
+
+class _FakeTrackingModule:
+    """Fake mlflow.tracking submodule so 'from mlflow.tracking import MlflowClient' works."""
+
+    def __init__(self, parent: "_FakeMLflowModule"):
+        self.MlflowClient = lambda: _FakeMlflowClient(parent)
+
+
 class _FakeMLflowModule:
     """Fake mlflow module for score_trace / run_judge_evaluation tests."""
 
@@ -111,6 +137,11 @@ class _FakeMLflowModule:
         self.set_tags: list[tuple] = []  # (key, value, run_id)
         self._experiment = _FakeExperiment()
         self._search_runs_result = _FakeRunsFrame([])
+        self.tracking = _FakeTrackingModule(self)
+
+    def set_tracking_uri(self, uri):
+        """No-op — the scorer calls this to ensure databricks tracking."""
+        pass
 
     def log_metric(self, key, value, run_id=None):
         self.logged_metrics.append((key, value, run_id))
@@ -134,11 +165,13 @@ def _install_fake_mlflow():
     """Insert a fake mlflow module into sys.modules; return it."""
     fake = _FakeMLflowModule()
     sys.modules["mlflow"] = fake
+    sys.modules["mlflow.tracking"] = fake.tracking
     return fake
 
 
 def _uninstall_fake_mlflow():
     sys.modules.pop("mlflow", None)
+    sys.modules.pop("mlflow.tracking", None)
 
 
 # ---------------------------------------------------------------------------
@@ -261,8 +294,9 @@ class ScoreTraceTest(unittest.TestCase):
             result = score_trace("run-opus-fail")
 
         self.assertEqual(result["status"], "ERROR")
-        # Error is sanitized — raw exception string is NOT exposed to the client.
-        self.assertEqual(result["error"], "scorer error")
+        # The actual error type and message are surfaced for debugging.
+        self.assertIn("RuntimeError", result["error"])
+        self.assertIn("opus 500", result["error"])
 
     def test_score_trace_per_field_metrics(self):
         """Per-field metrics are returned in the result."""
@@ -325,6 +359,10 @@ class ScoreTraceTest(unittest.TestCase):
 class RunJudgeEvaluationTest(unittest.TestCase):
     def setUp(self):
         self.fake_mlflow = _install_fake_mlflow()
+        # Reset the module-level config flag so _ensure_mlflow_configured runs
+        # fresh for each test (the env-var handling should be exercised every time).
+        import judge.scorer as scorer_mod
+        scorer_mod._mlflow_configured = False
 
     def tearDown(self):
         _uninstall_fake_mlflow()
