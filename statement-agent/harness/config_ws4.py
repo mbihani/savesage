@@ -9,6 +9,7 @@ and an explicit per-model cost-rate table.
 This module is stdlib-only (no mlflow import) so it stays on the contract-test path.
 """
 
+import json
 import logging
 import os
 from dataclasses import dataclass, field
@@ -17,9 +18,25 @@ from dataclasses import dataclass, field
 # through the Databricks AI Gateway under FMAPI names. MLflow does not natively
 # price these, and AI-Gateway usage tables lag, so cost is set explicitly on the
 # trace. A rate of 0.0 means "cost is recorded explicitly as 0.0" — it is NEVER
-# silently absent. Fill real rates at deploy.
+# silently absent. The Luna extraction model carries its real rates; the judge
+# model stays 0.0 (no judge rate was provided, and the judge path captures no
+# usage yet — out of scope here). Override per-workspace at deploy via
+# WS4_COST_RATES_JSON (see get_tracing_config); do NOT hand-edit these rates
+# for a deploy.
+#
+# Rate-table KEY vs endpoint name: ``cost_attributes`` (tracing_cost.py) looks the
+# span's ``model_id`` up in this table. For the Luna extraction call that
+# ``model_id`` is the value the AI-Gateway returns in its response ``model``
+# field ("gpt-5.6-luna" — verified from the live MLflow run param / trace), NOT
+# the ``EXTRACTION_ENDPOINT`` name. So "gpt-5.6-luna" is the EFFECTIVE cost-lookup
+# key (the one the extract span actually records); "databricks-gpt-5-6-luna" is
+# the AI-Gateway endpoint name, keyed too as an alias so an ops override or a
+# future API change surfacing the endpoint name still prices the span. Both
+# carry the same rate. Without the "gpt-5.6-luna" key cost stays $0 even with a
+# non-zero rate, because the lookup misses.
 _DEFAULT_COST_RATES: dict[str, dict[str, float]] = {
-    "databricks-gpt-5-6-luna": {"input": 0.0, "output": 0.0},
+    "gpt-5.6-luna": {"input": 0.2, "output": 1.2},
+    "databricks-gpt-5-6-luna": {"input": 0.2, "output": 1.2},
     "databricks-claude-opus-5": {"input": 0.0, "output": 0.0},
 }
 
@@ -85,11 +102,58 @@ def _env_int(name: str, default: int) -> int:
         return default
 
 
+def _merged_cost_rates() -> dict[str, dict[str, float]]:
+    """Return the deploy-time cost-rate table (USD per 1,000,000 tokens).
+
+    Starts from a fresh copy of ``_DEFAULT_COST_RATES`` and overlays any
+    per-model override supplied via the ``WS4_COST_RATES_JSON`` env var — a JSON
+    object mapping ``model_id -> {"input": float, "output": float}``. Best-effort,
+    matching ``_env_int``: a missing var or empty string means "no override" and
+    returns the defaults unchanged; invalid JSON or a non-dict value is warned
+    about (never raised) and the defaults are used. Each override is shallow-merged
+    per model, so an override may set one rate and inherit the other. Per-rate
+    values are coerced to float; a non-numeric rate is skipped (not stored) so a
+    bad override can never crash ``cost_attributes`` at trace time. A model id
+    that is new (absent from the defaults) is added; one present is updated.
+    """
+    rates = {k: dict(v) for k, v in _DEFAULT_COST_RATES.items()}
+    raw = os.getenv("WS4_COST_RATES_JSON", "")
+    if not raw:
+        return rates
+    try:
+        parsed = json.loads(raw)
+    except (ValueError, TypeError):
+        logging.getLogger("statement-agent.tracing").warning(
+            "invalid WS4_COST_RATES_JSON (not valid JSON); using default cost rates",
+        )
+        return rates
+    if not isinstance(parsed, dict):
+        logging.getLogger("statement-agent.tracing").warning(
+            "invalid WS4_COST_RATES_JSON (not a JSON object); using default cost rates",
+        )
+        return rates
+    for model_id, override in parsed.items():
+        if not isinstance(model_id, str) or not isinstance(override, dict):
+            continue
+        merged = dict(rates.get(model_id, {}))
+        for key in ("input", "output"):
+            if key in override:
+                try:
+                    merged[key] = float(override[key])
+                except (ValueError, TypeError):
+                    pass
+        rates[model_id] = merged
+    return rates
+
+
 def get_tracing_config() -> TracingConfig:
     """Read a fresh environment snapshot on every call (mirrors config.get_settings).
 
     Fail-safe: invalid ``WS4_MAX_*`` env vars fall back to defaults rather than
-    raising (review B1) — a config typo must not prevent app startup.
+    raising (review B1) — a config typo must not prevent app startup. The same
+    discipline applies to ``WS4_COST_RATES_JSON`` (see ``_merged_cost_rates``): a
+    missing/empty/malformed override never raises; the default cost-rate table is
+    used. This lets ops set per-model rates per workspace without a code edit.
     """
     hmac_raw = os.getenv("WS4_FEEDBACK_HMAC_KEY", "")
     return TracingConfig(
@@ -101,6 +165,7 @@ def get_tracing_config() -> TracingConfig:
         redact_pii_values=_env_bool("WS4_REDACT_PII", True),
         log_nonpii_values_raw=_env_bool("WS4_LOG_NONPII_RAW", True),
         feedback_hmac_key=hmac_raw.encode() if hmac_raw else b"",
+        cost_rates_per_million=_merged_cost_rates(),
         max_pending_requests=_env_int("WS4_MAX_PENDING", 1024),
         max_trace_ids=_env_int("WS4_MAX_TRACE_IDS", 1024),
         max_flushed=_env_int("WS4_MAX_FLUSHED", 2048),
