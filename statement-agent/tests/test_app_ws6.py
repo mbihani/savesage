@@ -955,15 +955,13 @@ class RunBlockingTest(unittest.TestCase):
             _t.sleep(0.4)
             return "late"
 
-        async def go(start: float) -> None:
+        async def go() -> float:
+            start = time.monotonic()
             self.assertIsNone(await _run_blocking(slow, timeout=0.1))
+            return time.monotonic() - start
 
-        start = time.monotonic()
-        asyncio.run(go(start))
-        # wait_for returned at ~0.1s; executor shutdown then waits for the
-        # 0.4s thread, so the whole call lands near 0.4s — but crucially it is
-        # NOT the value "late" and the coroutine itself unblocked at 0.1s.
-        self.assertLess(time.monotonic() - start, 1.0)
+        elapsed = asyncio.run(go())
+        self.assertLess(elapsed, 0.5)
 
 
 if __name__ == "__main__":

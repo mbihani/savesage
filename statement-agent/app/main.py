@@ -678,14 +678,18 @@ def create_app():
         # single uvicorn event loop — the mechanism behind the proxy 502 on
         # feedback submit.  Even if both fail, we fall back to in-memory below.
         try:
-            _result_store, feedback_store = _get_stores()
+            stores = await _run_blocking(_get_stores)
+            if stores is not None:
+                _result_store, feedback_store = stores
+            else:
+                _result_store, feedback_store = None, None
         except Exception:
-            feedback_store = None
+            _result_store, feedback_store = None, None
         if feedback_store is not None and fb is not None:
             await _run_blocking(feedback_store.append_feedback, fb)
 
         try:
-            sink = _get_trace_sink()
+            sink = await _run_blocking(_get_trace_sink)
         except Exception:
             sink = None
         if sink is not None and fb is not None:
@@ -724,7 +728,11 @@ def create_app():
         # 502 mechanism as feedback submit).  ``_run_blocking`` returns None
         # on exception/timeout, which simply falls back to in-memory below.
         try:
-            result_store, feedback_store = _get_stores()
+            stores = await _run_blocking(_get_stores)
+            if stores is not None:
+                result_store, feedback_store = stores
+            else:
+                result_store, feedback_store = None, None
         except Exception:
             result_store, feedback_store = None, None
 
