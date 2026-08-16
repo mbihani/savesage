@@ -488,11 +488,22 @@
           });
 
           es.addEventListener("complete", (e) => {
-            const d = JSON.parse(e.data);
+            let d;
+            try {
+              d = JSON.parse(e.data);
+            } catch (err) {
+              // Truncated/malformed complete frame — fall back to
+              // extractionRef + an HTTP fetch in handleComplete.
+              d = {};
+            }
             closed = true;
             es.close();
+            // The complete event carries the extraction payload inline
+            // (complete.extraction), so we prefer it over the potentially
+            // truncated extraction SSE event.  handleComplete further
+            // falls back to an HTTP fetch if both are absent.
             onCompleteRef.current({
-              extraction: extractionRef.current,
+              extraction: d.extraction || extractionRef.current,
               complete: d,
             });
           });
@@ -1053,10 +1064,20 @@
         };
 
         const handleComplete = async (data) => {
-          // Fetch full extraction data via HTTP — the extraction SSE event
-          // may be too large for the SSE transport and get dropped/truncated
-          // for big statements. The results endpoint returns the payload
-          // from ctx.extraction_data (in-memory) or Lakebase, with the same
+          // The complete SSE event carries the extraction payload inline
+          // (data.extraction), so prefer it — no HTTP round-trip needed.
+          // Fall back to an HTTP fetch to /api/results only if the SSE
+          // payload is absent (e.g. the complete frame was truncated).
+          if (data.extraction) {
+            setResults({
+              extraction: data.extraction,
+              complete: data.complete,
+            });
+            setView("results");
+            return;
+          }
+          // HTTP fallback: /api/results returns the payload from
+          // ctx.extraction_data (in-memory) or Lakebase, with the same
           // {payload, model_id, schema_valid} shape as the SSE event.
           try {
             const resp = await fetch(`/api/results/${requestId}`, {
