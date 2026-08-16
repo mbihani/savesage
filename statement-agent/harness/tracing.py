@@ -74,13 +74,42 @@ def configure_tracing(config: TracingConfig, mlflow_module: Any = None) -> None:
     """
     mlf = mlflow_module if mlflow_module is not None else _import_mlflow()
     if config.tracking_uri == "databricks" and config.databricks_profile:
-        if "DATABRICKS_CONFIG_PROFILE" not in os.environ:
+        # Resolve the config file path the same way the SDK does: honour
+        # ``DATABRICKS_CONFIG_FILE`` when set, else default to ~/.databrickscfg.
+        # In the Databricks Apps runtime the file is absent and the bound
+        # experiment resource supplies auth — a stale ``DATABRICKS_CONFIG_PROFILE``
+        # pointing at a non-existent profile would break the SDK credential
+        # chain for tracing calls (start_span_no_context), so we remove it.
+        cfg_path = os.environ.get(
+            "DATABRICKS_CONFIG_FILE",
+            os.path.expanduser("~/.databrickscfg"),
+        )
+        if os.path.isfile(cfg_path):
             os.environ["DATABRICKS_CONFIG_PROFILE"] = config.databricks_profile
+            _LOGGER.info(
+                "tracing: set DATABRICKS_CONFIG_PROFILE=%s (local dev, %s exists)",
+                config.databricks_profile, cfg_path,
+            )
+        else:
+            # Apps runtime: no config file. Remove any stale profile env
+            # var that would break the SDK credential chain.
+            os.environ.pop("DATABRICKS_CONFIG_PROFILE", None)
+            _LOGGER.info(
+                "tracing: removed stale DATABRICKS_CONFIG_PROFILE"
+                " (no config file at %s — Apps runtime, auth from bound resource)",
+                cfg_path,
+            )
     best_effort("mlflow.set_tracking_uri", mlf.set_tracking_uri, config.tracking_uri)
     experiment_path = resolve_experiment_path(config)
     if experiment_path:
         best_effort("mlflow.set_experiment", mlf.set_experiment, experiment_path)
     best_effort("mlflow.tracing.enable", mlf.tracing.enable)
+    _LOGGER.info(
+        "tracing configured: uri=%s experiment=%s profile_env=%s",
+        config.tracking_uri,
+        experiment_path or "(default)",
+        os.environ.get("DATABRICKS_CONFIG_PROFILE", "(unset)"),
+    )
 
     if config.autolog_langchain:
 
@@ -259,6 +288,8 @@ class MLflowTraceSink(TraceSink):
         self._end_run(event.request_id)
 
     def _flush(self, ops: list[SpanOp], request_id: str) -> None:
+        _LOGGER.debug("tracing flush: %d spans for %s", len(ops), request_id)
+
         def _do() -> None:
             mlf = self._mlflow()
             live_by_span: dict[Any, Any] = {}
@@ -283,6 +314,10 @@ class MLflowTraceSink(TraceSink):
                 live_by_span[op.event.span_id] = live
                 if op.is_root:
                     root_trace_id = getattr(live, "trace_id", None)
+                    _LOGGER.debug(
+                        "tracing: root span '%s' created, trace_id=%s",
+                        op.event.name, root_trace_id,
+                    )
             # Reverse pre-order: end children before the root, with explicit times.
             for op in reversed(ops):
                 live = live_by_span.get(op.event.span_id)

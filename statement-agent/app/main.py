@@ -446,7 +446,14 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
                 "schema_valid": final_state.extraction.schema_valid,
             }
 
-        # Push terminal outcome.
+        # Push terminal outcome.  The ``complete`` event is kept SMALL — it
+        # carries only scalar status fields, never the extraction payload.
+        # A large payload here would risk truncating the SSE frame before
+        # the terminating blank line, causing the browser to silently drop
+        # the event entirely (no dispatch, no fallback).  The frontend fetches
+        # the full extraction via ``GET /api/results/{request_id}`` on the
+        # ``complete`` event; the ``extraction`` SSE event is a fast-path
+        # optimisation only.
         ctx.outcome = final_state.outcome.value if final_state.outcome else None
         ctx.complete_data = {
             "request_id": ctx.request_id,
