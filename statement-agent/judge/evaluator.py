@@ -1,43 +1,54 @@
-"""MLflow Evaluate-based judge scorer: aggregates judge results into one
-evaluation run visible in the MLflow experiments "Evaluations" tab.
+"""MLflow ``genai.evaluate``-based judge scorer: per-field TRACE-LEVEL
+assessments in the MLflow Assessments tab.
 
-WHY THIS EXISTS — answers "why can't we add a custom scorer via MLflow?":
+MIGRATION — ``mlflow.models.evaluate`` → ``mlflow.genai.evaluate`` + ``@scorer``
 
-The existing post-hoc judge (``judge/scorer.py``) logs per-field accuracy
-metrics to EACH individual trace run via
-``MlflowClient.log_metric(run_id, key, value)``.  Those metrics ARE in MLflow,
-but they are scattered across individual parse runs — there is no single
-aggregated view in the experiments tab.  You can open one trace and see ITS
-``judge.accuracy``, but you cannot see all judge results in one place, nor
-the per-trace breakdown side by side.
+The previous implementation (``mlflow.models.evaluate`` + ``make_metric``)
+produced ONLY an aggregate Evaluation Run visible in the experiments
+"Evaluations" tab — per-field judge accuracy was NOT surfaced as trace-level
+assessments.  This module migrates to ``mlflow.genai.evaluate`` (mode 1:
+post-hoc, trace-column dataset, ``predict_fn=None``) with ONE ``@scorer``
+that judges each already-logged parse trace and returns a LIST of per-field
+``Feedback`` objects.  ``genai.evaluate`` logs those as ASSESSMENTS on the
+ORIGINAL parse trace (one row per field in the Assessments tab).
 
-``mlflow.models.evaluate`` (the non-deprecated successor to ``mlflow.evaluate``
-as of MLflow 3.0) creates a dedicated **Evaluation Run** that fixes this:
+SCORER DESIGN — one Opus call → list of 7 per-field Feedbacks
 
-* Each judged trace becomes a ROW in the ``eval_results_table`` artifact
-  (run_id, bank, strict/forgiven accuracy, per-field accuracy, outputs).
-* Custom scorers (``mlflow.models.make_metric``) compute aggregate metrics
-  that render in the run's metrics column AND the "Evaluations" tab.
-* The run is tagged ``eval_run=true`` so it is identifiable in the
-  experiment list alongside the individual parse traces.
+A single ``@scorer`` (``judge_per_field``) resolves the sourceRun ``run_id``
+from the trace's ``mlflow.sourceRun`` metadata, reuses
+:func:`judge.scorer._judge_and_persist` (the shared download→Opus→compare→
+persist core) so Opus is called EXACTLY ONCE per trace, then returns 7
+per-field ``Feedback`` objects (one per judged field:
+``judge.cardDisplayName``, ``judge.transactions.amount``, …) plus 2 overall
+(``judge.overall.strict`` / ``judge.overall.forgiven``).  Do NOT write 7
+separate scorer functions — that would call Opus 7×.
 
-This module keeps the per-trace metric logging in ``judge/scorer.py`` (so
-individual traces still show their own scores) and ADDS this aggregated
-evaluation run on top of it.  The two are complementary: per-run metrics for
-drilling into one parse, the evaluation run for the cross-trace view.
+PII REDACTION — reuse the EXACT field-aware policy from
+:func:`judge.scorer._redact_comparisons` (keyed HMAC / omit for
+``cardDisplayName`` + ``description``; retain ``lastFourDigit`` + non-PII
+numerics raw; DROP the free-text ``rationale`` — set to ``None``).  No card
+names or descriptions reach an assessment in cleartext.
 
-CURRENT PROCESS vs THIS MODULE
--------------------------------
-* Current: ``score_trace`` logs ``judge.accuracy`` etc. to each parse run.
-  Visible per-trace, NOT aggregated in the experiments tab.
-* This module: ``run_mlflow_evaluation`` builds one row per judged trace and
-  calls ``mlflow.models.evaluate`` with custom scorers, producing ONE
-  evaluation run whose per-row table + aggregate metrics ARE the aggregated
-  view the current process cannot provide.
+ADDITIVE — both the existing aggregate Evaluations view AND the inline
+per-parse verdict keep working:
 
-The module is stdlib-importable at the module level (third-party imports
-like ``mlflow``/``pandas`` are function-local inside ``try/except``) so the
-test gate runs on this machine where ``pypi`` is blackholed.
+* The aggregate summary shape consumed by the frontend
+  (``count_judged``, ``count_errors``, ``overall_strict``,
+  ``overall_narration_forgiven``, ``per_field``, ``per_bank``,
+  ``eval_run_id``) is built by :func:`judge.scorer._aggregate_results`
+  (unchanged) from a side-channel of per-trace result dicts the scorer
+  collects — so the frontend contract is preserved.
+* Supplementary aggregate metrics (counts, per-field means, per-bank
+  breakdown) + tags are logged to the genai.evaluate run via
+  ``MlflowClient`` after it returns, so the "Evaluations" tab still
+  renders them.
+* The inline per-parse verdict (Lakebase ``save_verdict``) is called inside
+  ``_judge_and_persist`` — so the Results-view "Judge this statement" path
+  keeps working.
+
+This module is stdlib-importable at the module level (third-party imports
+like ``mlflow`` are function-local) so the test gate runs on this machine
+where ``pypi`` is blackholed.
 """
 
 from __future__ import annotations
@@ -49,128 +60,234 @@ from judge.scorer import JUDGED_FIELDS
 
 _LOGGER = logging.getLogger("statement-agent.evaluator")
 
+# Per-field assessment names — one row per field in the Assessments tab.
+# Short, stable names (``judge.cardDisplayName``, ``judge.transactions.amount``)
+# so each field is its own row.  Ordered to mirror :data:`JUDGED_FIELDS`.
+FIELD_ASSESSMENT_NAMES: dict[str, str] = {
+    "cards[].cardMeta.cardDisplayName": "judge.cardDisplayName",
+    "cards[].cardMeta.lastFourDigit": "judge.lastFourDigit",
+    "rewards.pointsEarnedThisCycle": "judge.pointsEarnedThisCycle",
+    "rewards.closingPoints": "judge.closingPoints",
+    "transactions[].date": "judge.transactions.date",
+    "transactions[].description": "judge.transactions.description",
+    "transactions[].amount": "judge.transactions.amount",
+}
+
+# Overall assessment names (additive to the 7 per-field ones).
+OVERALL_STRICT_NAME = "judge.overall.strict"
+OVERALL_FORGIVEN_NAME = "judge.overall.forgiven"
+
 
 def _field_key(field_path: str) -> str:
-    """Map a judged field path to its flat metric/row key (mirrors scorer)."""
+    """Map a judged field path to its flat metric key (mirrors scorer)."""
     return field_path.replace("[]", "").replace(".", "_")
 
 
-def build_eval_rows(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Build one eval-table row per OK-scored trace.
+def build_field_feedbacks(
+    verdict: Any, metrics: dict[str, Any]
+) -> list[Any]:
+    """Build 7 per-field ``Feedback`` objects + 2 overall from a ``JudgeVerdict``.
 
-    Each row carries the trace's ``run_id``, ``bank``, strict/forgiven
-    accuracy, and the seven per-field strict accuracies.  Non-OK traces
-    (``ERROR`` / ``JUDGE_ERROR``) are excluded — they have no accuracy to
-    tabulate; they remain counted in the summary's ``count_errors``.
+    One ``Feedback`` per judged field (``judge.cardDisplayName`` etc.), plus
+    ``judge.overall.strict`` and ``judge.overall.forgiven``.  Each per-field
+    assessment's ``value`` is the per-field strict accuracy (float or ``None``);
+    its ``metadata`` carries the field path, comparison count, and the
+    PII-REDACTED per-comparison details (reusing
+    :func:`judge.scorer._redact_comparisons`).
 
-    Pure stdlib (no pandas) so it is unit-testable without third-party deps;
-    ``run_mlflow_evaluation`` wraps the rows in a DataFrame at call time.
+    PII REDACTION — reuses the EXACT field-aware policy from the
+    ``verdict_comparisons.json`` artifact:
+
+    * ``cardDisplayName`` / ``description`` (client PII) → keyed HMAC, or
+      omitted (``None``) when no HMAC key is configured (never a reversible
+      unsalted digest).
+    * ``lastFourDigit`` / ``amount`` / ``date`` / points → retained raw
+      (not individually identifying; documented trade-off).
+    * The free-text ``rationale`` is OMITTED entirely (``Feedback.rationale
+      = None``) — it is Opus free-text that may echo cardholder names /
+      transaction descriptions from the PDF.
+
+    Third-party imports (``mlflow.entities``) are function-local so this
+    module stays stdlib-importable for the test gate.  Returns a list of
+    ``mlflow.entities.assessment.Feedback`` objects.
     """
-    rows: list[dict[str, Any]] = []
-    for r in results:
-        if r.get("status") != "OK":
-            continue
-        row: dict[str, Any] = {
-            "run_id": r.get("run_id", ""),
-            "bank": r.get("bank", ""),
-            "strict_accuracy": r.get("strict_accuracy"),
-            "narration_forgiven_accuracy": r.get("narration_forgiven_accuracy"),
-        }
-        per_field = r.get("per_field", {})
-        for field in JUDGED_FIELDS:
-            row[_field_key(field)] = per_field.get(_field_key(field))
-        rows.append(row)
-    return rows
+    from collections import defaultdict
 
+    from mlflow.entities import AssessmentSource, Feedback
 
-def _mean_and_scores(series) -> tuple[float | None, list[float | None]]:
-    """Return ``(mean of non-null values, per-row scores)`` for a Series.
+    from harness.tracing_keys import ASSESSMENT_LLM_JUDGE
+    from judge.scorer import _redact_comparisons
 
-    pandas turns ``None`` into ``NaN`` in numeric columns, so ``is not None``
-    is insufficient — ``pd.isna`` catches both ``None`` and ``NaN``.  Shared
-    by the two custom scorers so "aggregate over scored rows" means one
-    thing.  Rows with no scored comparisons (accuracy ``None``) are excluded
-    from the mean but kept as ``None`` in the per-row scores so the eval
-    table renders them as null.
-    """
-    import pandas as pd
+    source = AssessmentSource(ASSESSMENT_LLM_JUDGE, verdict.judge_model_id)
 
-    raw = series.tolist()
-    vals = [float(x) for x in raw if not pd.isna(x)]
-    agg = sum(vals) / len(vals) if vals else None
-    scores = [float(x) if not pd.isna(x) else None for x in raw]
-    return agg, scores
+    # Group comparisons by field_path for per-field metadata.
+    grouped: dict[str, list[Any]] = defaultdict(list)
+    for c in verdict.comparisons:
+        grouped[c.field_path].append(c)
 
+    def _feedback_value(accuracy: Any) -> Any:
+        """Map a per-field accuracy to a Feedback value.
 
-def _make_strict_scorer():
-    """Custom scorer: mean strict accuracy across judged traces.
+        ``mlflow.entities.Feedback`` rejects ``value=None`` (it requires
+        either a value or an error).  When a field has no scored comparisons
+        (accuracy ``None`` — e.g. transactions absent from the PDF), use the
+        string sentinel ``"not_scored"`` so the field still produces a row in
+        the Assessments tab (7 per-field assessments per trace regardless),
+        while genai.evaluate's aggregation skips it (``_cast_assessment_value
+        _to_float`` returns ``None`` for unrecognised strings → excluded from
+        the mean).
+        """
+        return accuracy if accuracy is not None else "not_scored"
 
-    ``predictions`` resolves to the ``strict_accuracy`` column (the
-    ``predictions="strict_accuracy"`` arg to ``mlflow.models.evaluate``).
-    The per-row scores populate the eval table; the aggregate lands in the
-    run's metrics.  ``targets`` is intentionally omitted from the signature —
-    there is no ground-truth target column here (the judge already produced
-    the accuracies), and a ``targets`` parameter with no target column makes
-    MLflow's metric-arg resolver raise.
-    """
-    from mlflow.metrics import MetricValue
-    from mlflow.models import make_metric
-
-    def eval_fn(predictions, metrics):
-        agg, scores = _mean_and_scores(predictions)
-        return MetricValue(
-            scores=scores,
-            aggregate_results={"judge.mean_strict_accuracy": agg},
+    feedbacks: list[Any] = []
+    for field_path in JUDGED_FIELDS:
+        name = FIELD_ASSESSMENT_NAMES[field_path]
+        accuracy = metrics.get(f"judge.{_field_key(field_path)}")
+        comps = grouped.get(field_path, [])
+        feedbacks.append(
+            Feedback(
+                name=name,
+                value=_feedback_value(accuracy),
+                source=source,
+                rationale=None,  # OMITTED — PII vector (Opus free-text)
+                metadata={
+                    "field_path": field_path,
+                    "n_comparisons": len(comps),
+                    # Redacted per-comparison details (HMAC/omit PII, no rationale).
+                    "comparisons": _redact_comparisons(comps),
+                },
+            )
         )
 
-    return make_metric(
-        eval_fn=eval_fn,
-        name="judge.mean_strict_accuracy",
-        greater_is_better=True,
+    # Overall strict + narration-forgiven (additive to the 7 per-field).
+    feedbacks.append(
+        Feedback(
+            name=OVERALL_STRICT_NAME,
+            value=_feedback_value(metrics.get("judge.accuracy")),
+            source=source,
+            rationale=None,
+            metadata={
+                "n_scored": int(metrics.get("judge.scored", 0)),
+                "n_correct": int(metrics.get("judge.correct", 0)),
+            },
+        )
     )
+    feedbacks.append(
+        Feedback(
+            name=OVERALL_FORGIVEN_NAME,
+            value=_feedback_value(metrics.get("judge.accuracy_forgiven")),
+            source=source,
+            rationale=None,
+        )
+    )
+    return feedbacks
 
 
-def _make_forgiven_scorer():
-    """Custom scorer: mean narration-forgiven accuracy across judged traces.
+def make_judge_scorer(
+    result_store: Any, results_collector: list[dict[str, Any]]
+) -> Any:
+    """Build the ``@mlflow.genai.scorer`` that judges one trace per row.
 
-    The ``narration_forgiven_accuracy`` parameter name matches the input
-    DataFrame column exactly, so MLflow's metric-arg resolver fetches that
-    column as a Series (no ``col_mapping`` needed).  This is the "custom
-    scorer via MLflow" the per-trace logging cannot express — an aggregate
-    over a non-prediction column, surfaced as an evaluation metric.
+    The scorer resolves the sourceRun ``run_id`` from the trace's
+    ``mlflow.sourceRun`` metadata, reuses
+    :func:`judge.scorer._judge_and_persist` (the SINGLE Opus call per trace),
+    collects the per-trace result dict into ``results_collector`` (the
+    side-channel :func:`run_judge_evaluation` aggregates via
+    :func:`_aggregate_results`), and returns the 7+2 per-field ``Feedback``
+    objects.  ``genai.evaluate`` logs those as trace-level assessments on the
+    original parse trace.
+
+    On failure the scorer appends an ``ERROR`` result dict to the side-channel
+    (so the aggregate ``count_errors`` is correct) and re-raises —
+    ``genai.evaluate`` catches it and logs an error assessment with the
+    scorer name.
+
+    ``result_store`` threads the app's cached Lakebase store into the scorer
+    so each OK verdict is persisted inline (best-effort).  ``None`` lets the
+    scorer build its own lazily.
     """
-    from mlflow.metrics import MetricValue
-    from mlflow.models import make_metric
+    from mlflow.genai.scorers import scorer
 
-    def eval_fn(predictions, metrics, narration_forgiven_accuracy):
-        agg, scores = _mean_and_scores(narration_forgiven_accuracy)
-        return MetricValue(
-            scores=scores,
-            aggregate_results={"judge.mean_narration_forgiven": agg},
+    @scorer(
+        name="judge_per_field",
+        description=(
+            "Opus-5 per-field judge: one Opus call → 7 per-field Feedback "
+            "assessments (one per judged field) + overall strict/forgiven."
+        ),
+    )
+    def _judge_per_field(trace: Any) -> list[Any]:
+        from judge.scorer import (
+            _build_result_dict,
+            _judge_and_persist,
+            _sanitize_error,
         )
 
-    return make_metric(
-        eval_fn=eval_fn,
-        name="judge.mean_narration_forgiven",
-        greater_is_better=True,
-    )
+        # Resolve sourceRun run_id from the trace metadata (the same key
+        # resolve_run_id / _iter_trace_metadata read).
+        tmeta = (
+            getattr(getattr(trace, "info", None), "request_metadata", None)
+            or {}
+        )
+        run_id = tmeta.get("mlflow.sourceRun")
+        if not run_id:
+            # No sourceRun → cannot download artifacts.  Record an error in
+            # the side-channel and re-raise so genai.evaluate logs an error
+            # assessment.  count_errors stays correct.
+            results_collector.append(
+                {
+                    "run_id": None,
+                    "status": "ERROR",
+                    "error": "trace has no mlflow.sourceRun metadata",
+                }
+            )
+            raise ValueError("trace has no mlflow.sourceRun metadata")
+
+        try:
+            verdict, meta, metrics, status = _judge_and_persist(
+                run_id, result_store
+            )
+        except Exception as exc:  # noqa: BLE001 - re-raise for genai.evaluate
+            results_collector.append(
+                {
+                    "run_id": run_id,
+                    "status": "ERROR",
+                    "error": _sanitize_error(exc),
+                }
+            )
+            raise
+
+        # Side-channel: collect the result dict for the aggregate summary.
+        results_collector.append(
+            _build_result_dict(run_id, meta, metrics, status)
+        )
+        return build_field_feedbacks(verdict, metrics)
+
+    return _judge_per_field
 
 
-def _log_supplementary_metrics(summary: dict[str, Any]) -> None:
-    """Log aggregate metrics not covered by the two custom scorers.
+def _log_supplementary_metrics_and_tags(
+    run_id: str, summary: dict[str, Any]
+) -> None:
+    """Log aggregate metrics + tags not produced by genai.evaluate's scorer
+    aggregation to the evaluation run.
 
-    The scorers handle ``judge.mean_strict_accuracy`` and
-    ``judge.mean_narration_forgiven``.  Counts, per-field means, and the
-    per-bank breakdown are logged here directly so they appear in the run's
-    metrics column too (the "Evaluations" tab aggregates these).  ``None``
-    values are skipped — ``MlflowClient.log_metric`` rejects them.
+    genai.evaluate aggregates the per-field Feedback VALUES into ``mean``
+    metrics (e.g. ``judge.cardDisplayName/mean``).  Counts, per-field means
+    (keyed by the full field path), and the per-bank breakdown are NOT
+    derivable from assessment values alone — they are logged here directly
+    via ``MlflowClient`` (explicit ``run_id`` — works after the genai.evaluate
+    run context has ended) so the "Evaluations" tab still renders them.
+    Mirrors the previous ``_log_supplementary_metrics`` + tag logic.  ``None``
+    values are skipped — ``log_metric`` rejects them.
     """
-    import mlflow
+    from mlflow.tracking import MlflowClient
+
+    client = MlflowClient()
 
     def _log(key: str, value: Any) -> None:
         if value is not None:
             try:
-                mlflow.log_metric(key, float(value))
+                client.log_metric(run_id, key, float(value))
             except Exception:  # noqa: BLE001 - a bad value never fails the run
                 pass
 
@@ -186,78 +303,88 @@ def _log_supplementary_metrics(summary: dict[str, Any]) -> None:
     for bank, data in per_bank.items():
         if isinstance(data, dict):
             _log(f"judge.bank.{bank}.strict", data.get("strict_accuracy"))
-            _log(f"judge.bank.{bank}.forgiven", data.get("narration_forgiven_accuracy"))
+            _log(
+                f"judge.bank.{bank}.forgiven",
+                data.get("narration_forgiven_accuracy"),
+            )
+
+    try:
+        client.set_tag(run_id, "eval_run", "true")
+        client.set_tag(run_id, "judge_evaluation", "true")
+        client.set_tag(run_id, "n_judged", str(summary.get("count_judged", 0)))
+        client.set_tag(run_id, "n_errors", str(summary.get("count_errors", 0)))
+    except Exception:  # noqa: BLE001 - best-effort tagging
+        pass
 
 
-def run_mlflow_evaluation(
-    results: list[dict[str, Any]],
-    summary: dict[str, Any],
+def run_genai_evaluation(
+    traces: list[Any],
+    result_store: Any,
     *,
     experiment_id: str | None = None,
 ) -> dict[str, Any] | None:
-    """Create an MLflow Evaluate run aggregating all judge results.
+    """Run ``mlflow.genai.evaluate`` over a list of parse ``Trace`` objects.
 
-    Builds a DataFrame (one row per OK trace) and calls
-    ``mlflow.models.evaluate`` with two custom scorers (strict + forgiven),
-    then logs supplementary aggregate metrics (counts, per-field means,
-    per-bank breakdown) and tags the run ``eval_run=true``.  The per-row
-    ``eval_results_table`` artifact + the aggregate metrics render in the
-    MLflow experiments "Evaluations" tab — the one-place cross-trace view
-    the per-run metric logging cannot provide.
+    Creates the ``@scorer`` via :func:`make_judge_scorer`, starts an MLflow run
+    (which ``genai.evaluate`` reuses — its ``_start_run_or_reuse_active_run``
+    yields the active run id), and evaluates.  Returns
+    ``{"eval_run_id": ..., "results": [...]}`` where ``results`` is the
+    side-channel of per-trace result dicts the scorer collected.
 
-    Best-effort: any failure (mlflow unavailable, API mismatch, empty result
-    set) is caught and logged so the per-trace scoring + aggregate summary
-    in ``run_judge_evaluation`` still return successfully.  Returns
-    ``None`` on failure or when there is nothing to evaluate, ``{"eval_run_id": ...}`` on success.
+    PARTIAL-FAILURE PRESERVES COMPLETED RESULTS — never returns ``None`` when
+    ``traces`` is non-empty.  If ``genai.evaluate`` raises AFTER one or more
+    per-trace scorers already completed (each already called Opus once + wrote
+    ``save_verdict`` + metrics), the completed ``results`` are returned with
+    ``"partial": True`` and ``eval_run_id=None``.  The caller uses those to
+    SKIP the completed run_ids in the ``score_trace`` fallback — preventing a
+    second Opus call and duplicate ``save_verdict``/metric writes for the
+    completed subset.  Returns ``None`` only when ``traces`` is empty.
     """
-    rows = build_eval_rows(results)
-    if not rows:
-        # No OK traces to tabulate.  Don't create an empty evaluation run —
-        # it would render an empty table and add noise to the experiment.
-        _LOGGER.info("skipping MLflow Evaluate run: no OK-scored traces")
+    if not traces:
+        _LOGGER.info("skipping genai.evaluate run: no traces to evaluate")
         return None
 
+    # Declared OUTSIDE the try so it survives a partial failure: if
+    # genai.evaluate raises mid-run, the scorer calls already recorded here
+    # are returned to the caller so it can skip those run_ids in the
+    # score_trace fallback (no double Opus, no double save_verdict).
+    results_collector: list[dict[str, Any]] = []
     try:
-        import pandas as pd
         import mlflow
 
-        # Reuse the scorer's MLflow config (tracking URI + Databricks profile)
-        # so the eval run lands in the SAME experiment as the traces.
         from judge.scorer import _ensure_mlflow_configured, _get_experiment_id
 
         _ensure_mlflow_configured(mlflow)
         if experiment_id is None:
             experiment_id = _get_experiment_id(mlflow)
 
-        df = pd.DataFrame(rows)
-        strict_metric = _make_strict_scorer()
-        forgiven_metric = _make_forgiven_scorer()
+        scorer = make_judge_scorer(result_store, results_collector)
 
-        # mlflow.models.evaluate is the non-deprecated successor to
-        # mlflow.evaluate (deprecated in MLflow 3.0); use it exclusively
-        # per the contract.  If it is unavailable the AttributeError
-        # propagates into the surrounding except (best-effort None return).
-        evaluate = mlflow.models.evaluate
-
+        # genai.evaluate reuses the active run — start one ourselves so we
+        # control the experiment + run_name, then genai.evaluate logs into it.
+        # If start_run is unavailable the AttributeError propagates into the
+        # surrounding except (best-effort partial return).
         with mlflow.start_run(
             experiment_id=experiment_id, run_name="judge-evaluation"
         ) as run:
-            eval_run_id = run.info.run_id
-            evaluate(
-                data=df,
-                predictions="strict_accuracy",
-                extra_metrics=[strict_metric, forgiven_metric],
+            eval_result = mlflow.genai.evaluate(
+                data=[{"trace": t} for t in traces],
+                scorers=[scorer],
             )
-            _log_supplementary_metrics(summary)
-            mlflow.set_tag("eval_run", "true")
-            mlflow.set_tag("judge_evaluation", "true")
-            mlflow.set_tag("n_judged", str(summary.get("count_judged", 0)))
-            mlflow.set_tag("n_errors", str(summary.get("count_errors", 0)))
+            eval_run_id = eval_result.run_id
 
-        _LOGGER.info(
-            "MLflow Evaluate run created: %s (%d traces)", eval_run_id, len(rows)
-        )
-        return {"eval_run_id": eval_run_id, "count_rows": len(rows)}
+        return {"eval_run_id": eval_run_id, "results": results_collector}
     except Exception as exc:  # noqa: BLE001 - best-effort, never fatal
-        _LOGGER.warning("MLflow Evaluate run failed: %s", exc)
-        return None
+        _LOGGER.warning("genai.evaluate run failed: %s", exc, exc_info=True)
+        # Preserve the run_ids the scorer already completed (each already
+        # called Opus once + wrote save_verdict + metrics) so the caller does
+        # NOT re-score them via the score_trace fallback — that would
+        # double-call Opus and double-write save_verdict/metrics for the
+        # completed subset.  ``partial=True`` signals the genai run did not
+        # finish; ``eval_run_id=None`` so the caller skips supplementary
+        # metric logging to a half-formed run.
+        return {
+            "eval_run_id": None,
+            "results": results_collector,
+            "partial": True,
+        }

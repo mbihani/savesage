@@ -7,7 +7,7 @@ per CONTRACTS.md). The string values are part of MLflow's stable on-the-wire spa
 format; if they drift in a future mlflow release, update this file and the note.
 
 Verified against the locally importable ``mlflow 3.10.1`` (requirements.txt pins
-``mlflow[databricks]==3.2.0``); the keys below are identical in both.
+``mlflow[databricks]==3.10.1``); the keys below are identical in both.
 """
 
 # --- Span attributes (mlflow.entities.span.SpanAttributeKey) ---
@@ -38,4 +38,4 @@ FEEDBACK_ASSESSMENT_NAME = "field_feedback"
 JUDGE_ASSESSMENT_NAME = "judge_accuracy"
 
 VERIFIED_MLFLOW_VERSION = "3.10.1"
-DECLARED_MLFLOW_VERSION = "3.2.0"
+DECLARED_MLFLOW_VERSION = "3.10.1"

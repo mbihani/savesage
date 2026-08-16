@@ -502,7 +502,30 @@ def _sanitize_error(exc: Exception) -> str:
     return exc_name
 
 
-def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
+def _judge_and_persist(
+    run_id: str, result_store: Any = None
+) -> tuple[Any, dict[str, Any], dict[str, Any], str]:
+    """Shared scoring core used by BOTH the single-trace on-demand path
+    (:func:`score_trace`) and the genai.evaluate batch scorer.
+
+    Steps:
+    1. Download ``statement.pdf`` and ``extraction.json`` artifacts from the run.
+    2. Reconstruct a ``ParseRequest`` and ``ExtractionResult``.
+    3. Call ``OpusJudgeAdapter.judge()`` → ``JudgeVerdict`` (Opus + comparisons).
+       This is the SINGLE Opus call per trace — both callers reuse it.
+    4. Compute metrics via ``verdict_to_metrics``.
+    5. Log metrics + tag ``judged=true``/``judged=error`` on the SAME MLflow run.
+    6. Persist the verdict to Lakebase (best-effort) so ``GET /api/results``
+       can surface the per-field expected/actual/outcome inline.
+    7. Log the PII-redacted ``verdict_comparisons.json`` artifact on the run
+       (best-effort).
+
+    Returns ``(verdict, meta, metrics, status)`` where ``meta`` is the parsed
+    ``extraction.json`` dict (carrying ``request_id``, ``bank``, etc.) and
+    ``status`` is ``"OK"`` or ``"JUDGE_ERROR"``.  Raises on failure — callers
+    wrap it in their own error handling (``score_trace`` → ERROR dict; the
+    genai scorer re-raises so genai.evaluate logs an error assessment).
+    """
     import mlflow
     from mlflow.tracking import MlflowClient
 
@@ -537,7 +560,8 @@ def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
         schema_valid=meta.get("schema_valid", False),
     )
 
-    # 4. Call the judge (Opus + comparisons + aggregation).
+    # 4. Call the judge (Opus + comparisons + aggregation) — the SINGLE Opus
+    # call per trace.  Both score_trace and the genai scorer reach this path.
     adapter = OpusJudgeAdapter()
     verdict = adapter.judge(request, extraction)
 
@@ -614,7 +638,18 @@ def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
             "log_dict of verdict comparisons failed for %s", run_id, exc_info=True,
         )
 
-    # 10. Build and return the per-trace result.
+    return verdict, meta, metrics, status
+
+
+def _build_result_dict(
+    run_id: str, meta: dict[str, Any], metrics: dict[str, Any], status: str,
+) -> dict[str, Any]:
+    """Build the per-trace result dict consumed by ``_aggregate_results``.
+
+    Shared by :func:`score_trace` (on-demand single-trace path) and the
+    genai.evaluate scorer (batch path, via the side-channel collector) so the
+    aggregate summary shape is identical regardless of which path produced it.
+    """
     return {
         "run_id": run_id,
         "request_id": meta["request_id"],
@@ -634,6 +669,39 @@ def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
             )
         },
     }
+
+
+def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
+    verdict, meta, metrics, status = _judge_and_persist(run_id, result_store)
+    return _build_result_dict(run_id, meta, metrics, status)
+
+
+def _resolve_trace_for_run(run_id: str) -> Any:
+    """Resolve the single parse ``Trace`` object associated with ``run_id``.
+
+    Uses ``mlflow.search_traces(run_id=run_id, return_type="list")`` (the
+    module-level API returns a list of ``Trace`` objects when
+    ``return_type="list"``).  A parse run has exactly one trace; if none is
+    found (older run whose trace aged out, or search unavailable) returns
+    ``None`` so :func:`run_judge_evaluation` can fall back to
+    :func:`score_trace` for that run.  Never raises.
+    """
+    import mlflow
+
+    try:
+        traces = mlflow.search_traces(run_id=run_id, return_type="list")
+    except Exception:  # noqa: BLE001 - never fatal; fall back to score_trace
+        _LOGGER.warning(
+            "trace resolution failed for run %s; falling back to score_trace",
+            run_id, exc_info=True,
+        )
+        return None
+    if not traces:
+        return None
+    # A parse run has one trace; take the first.
+    return traces[0] if isinstance(traces, list) else (
+        traces.iloc[0]["trace"] if hasattr(traces, "iloc") else None
+    )
 
 
 def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dict[str, Any]:
@@ -735,23 +803,78 @@ def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dic
     # 3. Pick the sample_size most recent randomly.
     sample = random.sample(run_ids, min(sample_size, len(run_ids)))
 
-    # 4. Score each trace.  The optional ``result_store`` threads through to
-    # :func:`score_trace` so each OK verdict is persisted inline (best-effort).
-    results = [score_trace(rid, result_store=result_store) for rid in sample]
+    # 4. Resolve each sampled run's parse Trace for the genai.evaluate path.
+    # Runs WITH a trace go through genai.evaluate (one @scorer → 7 per-field
+    # trace-level assessments + aggregate metrics).  Runs WITHOUT a trace
+    # (older run whose trace aged out, or search unavailable) fall back to
+    # :func:`score_trace` (per-run metrics + save_verdict, no assessments).
+    # The optional ``result_store`` threads through to BOTH paths so each OK
+    # verdict is persisted inline (best-effort) and surfaces on the per-parse
+    # Results view.
+    traced: list[tuple[str, Any]] = []  # (run_id, trace) pairs
+    fallback_run_ids: list[str] = []     # run_ids without a trace
+    for rid in sample:
+        trace = _resolve_trace_for_run(rid)
+        if trace is not None:
+            traced.append((rid, trace))
+        else:
+            fallback_run_ids.append(rid)
 
-    # 5. Aggregate.
+    results: list[dict[str, Any]] = []
+    eval_run_id: str | None = None
+
+    # 5. genai.evaluate path (traces present): one Opus call per trace, 7
+    # per-field Feedback assessments logged to the original parse trace,
+    # per-trace result dicts collected via the scorer's side-channel.
+    if traced:
+        from judge.evaluator import run_genai_evaluation
+
+        trace_objs = [t for _, t in traced]
+        eval_info = run_genai_evaluation(
+            trace_objs, result_store, experiment_id=exp_id,
+        )
+        if eval_info is not None:
+            # genai.evaluate ran (fully OR partially).  Extend with the
+            # per-trace result dicts the scorer collected via the side-channel.
+            results.extend(eval_info["results"])
+            eval_run_id = eval_info.get("eval_run_id")  # None if partial
+            # run_ids the genai scorer already touched (OK or ERROR) — each
+            # already called Opus once inside _judge_and_persist.  SKIP them
+            # in the score_trace fallback so they are NOT re-scored:
+            # re-scoring a completed trace would call Opus a SECOND time and
+            # DUPLICATE the save_verdict + metric writes.  Only the traced
+            # runs the scorer did NOT reach fall back to score_trace.
+            scored_run_ids = {
+                r["run_id"] for r in eval_info["results"] if r.get("run_id")
+            }
+            fallback_run_ids = [
+                rid for rid, _ in traced if rid not in scored_run_ids
+            ] + fallback_run_ids
+        else:
+            # genai.evaluate could not start (no traces / import failure) —
+            # fall back to score_trace for all traced runs.
+            fallback_run_ids = [rid for rid, _ in traced] + fallback_run_ids
+
+    # 6. Fallback path (no trace, or genai.evaluate failed): score_trace per
+    # run.  Each call logs per-run metrics + tags + save_verdict + the
+    # verdict_comparisons.json artifact on the source run.
+    for rid in fallback_run_ids:
+        results.append(score_trace(rid, result_store=result_store))
+
+    # 7. Aggregate (UNCHANGED shape — frontend contract preserved).
     summary = _aggregate_results(results)
 
-    # 6. Additionally create an aggregated MLflow Evaluate run (best-effort)
-    # so all judge results appear in one place in the experiments "Evaluations"
-    # tab — the per-run metrics logged by ``score_trace`` are scattered across
-    # individual parse runs; this evaluation run aggregates them into a
-    # single per-row table + aggregate metrics.  Best-effort: failure is
-    # logged and ``eval_run_id`` is left ``None`` so the summary still returns.
-    from judge.evaluator import run_mlflow_evaluation
+    # 8. Log supplementary aggregate metrics + tags to the genai.evaluate run
+    # (counts, per-field means, per-bank breakdown, eval_run tag) so the
+    # "Evaluations" tab still renders them alongside the assessment means
+    # genai.evaluate already computed.  Skipped when genai.evaluate was not
+    # used (eval_run_id is None) — the per-run metrics still render per-trace.
+    if eval_run_id is not None:
+        from judge.evaluator import _log_supplementary_metrics_and_tags
 
-    eval_info = run_mlflow_evaluation(results, summary, experiment_id=exp_id)
-    summary["eval_run_id"] = eval_info["eval_run_id"] if eval_info else None
+        _log_supplementary_metrics_and_tags(eval_run_id, summary)
+
+    summary["eval_run_id"] = eval_run_id
 
     return summary
 

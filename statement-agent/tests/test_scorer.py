@@ -235,6 +235,104 @@ class _FakeTrackingModule:
         self.MlflowClient = lambda: _FakeMlflowClient(parent)
 
 
+class _FakeScorer:
+    """Fake ``@mlflow.genai.scorer`` — wraps the scorer function so the fake
+    ``genai.evaluate`` can drive it once per row via ``.run(trace=...)``,
+    mirroring ``mlflow.genai.scorers.base.Scorer.run``."""
+
+    def __init__(self, func, name=None, description=None, aggregations=None):
+        self._func = func
+        self.name = name or func.__name__
+        self.description = description
+        self.aggregations = aggregations
+
+    def __call__(self, **kwargs):
+        return self._func(**kwargs)
+
+    def run(self, *, inputs=None, outputs=None, expectations=None,
+            trace=None, session=None):
+        import inspect as _inspect
+
+        sig = _inspect.signature(self._func)
+        merged = {"inputs": inputs, "outputs": outputs,
+                  "expectations": expectations, "trace": trace, "session": session}
+        filtered = {k: v for k, v in merged.items() if k in sig.parameters}
+        return self._func(**filtered)
+
+
+def _fake_scorer_decorator(func=None, *, name=None, description=None,
+                           aggregations=None):
+    """Fake ``mlflow.genai.scorers.scorer`` decorator — returns a _FakeScorer."""
+    if func is None:
+        def _decorator(f):
+            return _FakeScorer(f, name=name, description=description,
+                               aggregations=aggregations)
+        return _decorator
+    return _FakeScorer(func, name=name, description=description,
+                       aggregations=aggregations)
+
+
+class _FakeEvaluationResult:
+    """Fake ``mlflow.genai.evaluation.entities.EvaluationResult``."""
+
+    def __init__(self, run_id, metrics=None, result_df=None):
+        self.run_id = run_id
+        self.metrics = metrics or {}
+        self.result_df = result_df
+
+
+class _FakeGenaiScorersModule:
+    """Fake ``mlflow.genai.scorers`` submodule — exposes ``scorer``."""
+
+    def __init__(self):
+        self.scorer = _fake_scorer_decorator
+
+
+class _FakeGenaiModule:
+    """Fake ``mlflow.genai`` module — exposes ``evaluate`` + ``scorers``.
+
+    ``evaluate`` ASSERTS scorers were passed (non-empty), records the call,
+    drives the scorer once per row (calling ``scorer.run(trace=row["trace"])``
+    so the full ``_judge_and_persist`` pipeline runs through the fake mlflow),
+    and returns a ``_FakeEvaluationResult``.  This mirrors the production
+    ``genai.evaluate`` mode-1 (trace-column dataset, ``predict_fn=None``).
+    """
+
+    def __init__(self, parent: "_FakeMLflowModule"):
+        self._parent = parent
+        self.scorers = _FakeGenaiScorersModule()
+        self.evaluate_calls: int = 0
+        self.scorers_passed: list = []
+        self.assessments: list = []  # all Feedback objects returned
+        # When set, raise RuntimeError AFTER processing this many rows —
+        # simulates a partial genai.evaluate failure (some scorers
+        # complete, then the run raises).  None = no mid-run failure.
+        self.fail_after_n_rows: int | None = None
+
+    def evaluate(self, data, scorers, predict_fn=None, model_id=None, **kw):
+        # ASSERT scorers were passed (the key contract — one scorer, not zero).
+        assert scorers, "genai.evaluate requires at least one scorer"
+        self.evaluate_calls += 1
+        self.scorers_passed = list(scorers)
+        # Drive the scorer once per row, collecting returned Feedbacks.
+        for i, row in enumerate(data):
+            # Simulate a partial failure: after fail_after_n_rows scorers
+            # complete, raise mid-run.  The completed results are already in
+            # the scorer's results_collector (the side-channel); the caller
+            # must skip those run_ids in the fallback.
+            if (self.fail_after_n_rows is not None
+                    and i >= self.fail_after_n_rows):
+                raise RuntimeError(
+                    f"genai.evaluate failed mid-run after {i} scorer(s)"
+                )
+            trace = row.get("trace")
+            for scorer in scorers:
+                result = scorer.run(trace=trace)
+                if isinstance(result, list):
+                    self.assessments.extend(result)
+        return _FakeEvaluationResult(run_id="fake-eval-run-1")
+
+
 class _FakeMLflowModule:
     """Fake mlflow module for score_trace / run_judge_evaluation tests."""
 
@@ -259,6 +357,10 @@ class _FakeMLflowModule:
         self._trace_search_calls: int = 0
         # When True, _FakeMlflowClient.search_traces raises (failure test).
         self._trace_search_raises: bool = False
+        # Run IDs yielded by start_run (the genai.evaluate run context).
+        self._started_runs: list[str] = []
+        # Fake genai module (evaluate + scorer) for the genai.evaluate path.
+        self.genai = _FakeGenaiModule(self)
 
     def set_tracking_uri(self, uri):
         """No-op — the scorer calls this to ensure databricks tracking."""
@@ -272,6 +374,24 @@ class _FakeMLflowModule:
 
     def get_experiment_by_name(self, name):
         return self._experiment
+
+    def start_run(self, experiment_id=None, run_name=None, **kwargs):
+        """Fake ``mlflow.start_run`` — a context manager yielding a run with
+        ``info.run_id``.  ``run_genai_evaluation`` wraps the ``genai.evaluate``
+        call in this so genai.evaluate reuses the active run."""
+        from contextlib import contextmanager
+
+        run_id = f"fake-eval-run-{len(self._started_runs) + 1}"
+        self._started_runs.append(run_id)
+
+        @contextmanager
+        def _ctx():
+            try:
+                yield SimpleNamespace(info=SimpleNamespace(run_id=run_id))
+            finally:
+                pass
+
+        return _ctx()
 
     def search_runs(self, experiment_ids=None, filter_string=None,
                     max_results=100, order_by=None, **kwargs):
@@ -288,11 +408,24 @@ class _FakeMLflowModule:
         return self._search_runs_result
 
     def search_traces(self, experiment_ids=None, filter_string=None,
-                      max_results=100, order_by=None, **kwargs):
-        # Return the registered trace-like objects. resolve_run_id scans them
-        # in Python (matching trace_metadata.mlflow.traceInputs.request_id),
-        # so we do NOT pre-filter here — that would make the test vacuous.
-        return list(self._traces)
+                      max_results=100, order_by=None, run_id=None,
+                      return_type=None, **kwargs):
+        # Return the registered trace-like objects. When ``run_id`` is
+        # provided (the _resolve_trace_for_run path), filter traces whose
+        # ``mlflow.sourceRun`` metadata matches, so only that run's trace is
+        # returned — mirroring production ``mlflow.search_traces(run_id=...)``.
+        traces = list(self._traces)
+        if run_id is not None:
+            filtered = []
+            for t in traces:
+                tmeta = (
+                    getattr(getattr(t, "info", None), "request_metadata", None)
+                    or {}
+                )
+                if tmeta.get("mlflow.sourceRun") == run_id:
+                    filtered.append(t)
+            traces = filtered
+        return traces
 
     def set_search_runs_result(self, run_ids: list[str],
                                judged_tags: dict[str, str] | None = None):
@@ -311,17 +444,90 @@ class _FakeMLflowModule:
         self._trace_search_raises = raises
 
 
+# ---------------------------------------------------------------------------
+# Fake mlflow.entities module (Feedback, AssessmentSource)
+#
+# build_field_feedbacks (judge/evaluator.py) does:
+#   from mlflow.entities import AssessmentSource, Feedback
+# When the fake mlflow is active, sys.modules["mlflow"] is a _FakeMLflowModule
+# (not a real package), so the submodule import fails unless we register
+# mlflow.entities ourselves.  The fake classes mirror the real constructor
+# signatures (verified against mlflow 3.10.1) so the scorer can build Feedback
+# objects while the tracking/genai APIs are faked.
+# ---------------------------------------------------------------------------
+
+
+class _FakeAssessmentSource:
+    """Fake ``mlflow.entities.AssessmentSource``."""
+
+    def __init__(self, source_type: str, source_id: str = "default") -> None:
+        self.source_type = source_type
+        self.source_id = source_id
+
+
+class _FakeFeedback:
+    """Fake ``mlflow.entities.assessment.Feedback``.
+
+    Mirrors the real constructor signature (mlflow 3.10.1): raises if both
+    ``value`` and ``error`` are ``None``.  Stores all attributes the tests
+    inspect (``name``, ``value``, ``source``, ``rationale``, ``metadata``).
+    """
+
+    def __init__(
+        self,
+        name: str = "feedback",
+        value: Any = None,
+        error: Any = None,
+        source: Any = None,
+        trace_id: str | None = None,
+        metadata: dict[str, Any] | None = None,
+        span_id: str | None = None,
+        create_time_ms: int | None = None,
+        last_update_time_ms: int | None = None,
+        rationale: str | None = None,
+        overrides: str | None = None,
+        valid: bool = True,
+    ) -> None:
+        if value is None and error is None:
+            raise ValueError(
+                "Either value or error must be provided for a Feedback."
+            )
+        self.name = name
+        self.value = value
+        self.error = error
+        self.source = source or _FakeAssessmentSource("CODE")
+        self.trace_id = trace_id
+        self.metadata = metadata
+        self.span_id = span_id
+        self.rationale = rationale
+        self.overrides = overrides
+        self.valid = valid
+
+
+class _FakeEntitiesModule:
+    """Fake ``mlflow.entities`` submodule — exposes Feedback + AssessmentSource."""
+
+    AssessmentSource = _FakeAssessmentSource
+    Feedback = _FakeFeedback
+
+
 def _install_fake_mlflow():
     """Insert a fake mlflow module into sys.modules; return it."""
     fake = _FakeMLflowModule()
     sys.modules["mlflow"] = fake
     sys.modules["mlflow.tracking"] = fake.tracking
+    sys.modules["mlflow.genai"] = fake.genai
+    sys.modules["mlflow.genai.scorers"] = fake.genai.scorers
+    sys.modules["mlflow.entities"] = _FakeEntitiesModule()
     return fake
 
 
 def _uninstall_fake_mlflow():
     sys.modules.pop("mlflow", None)
     sys.modules.pop("mlflow.tracking", None)
+    sys.modules.pop("mlflow.genai", None)
+    sys.modules.pop("mlflow.genai.scorers", None)
+    sys.modules.pop("mlflow.entities", None)
 
 
 # ---------------------------------------------------------------------------
@@ -1314,7 +1520,8 @@ class ResolveRunIdTest(unittest.TestCase):
         (``iterrows`` + ``row.get('trace_metadata')``) is exercised directly
         so a future column-name or Series-.get regression is caught. Codex
         confirmed the column IS named ``trace_metadata`` and rows are pandas
-        Series in both mlflow 3.2.0 and 3.10.1; this fake models that shape.
+        Series in both mlflow 3.10.1 (the pinned version) and earlier; this
+        fake models that shape.
         The production paginated path uses ``PagedList[Trace]`` (the
         Trace-object branch), but the DataFrame branch is kept for
         defensive coverage of the module-level API shape."""
@@ -1341,6 +1548,305 @@ class ResolveRunIdTest(unittest.TestCase):
         # Verify the traceInputs JSON is parseable and carries request_id.
         inp0 = json.loads(metas[0]["mlflow.traceInputs"])
         self.assertEqual(inp0["request_id"], "req-aabbccddeeff")
+
+
+# ---------------------------------------------------------------------------
+# genai.evaluate path tests (run_judge_evaluation with traces → genai scorer)
+# ---------------------------------------------------------------------------
+
+class RunGenaiEvaluationTest(unittest.TestCase):
+    """Tests for the genai.evaluate batch path: run_judge_evaluation resolves
+    each sampled run's trace, drives ONE @scorer (single Opus call per trace),
+    and returns 7 per-field Feedback assessments per trace + the unchanged
+    aggregate summary shape.
+
+    Uses the fake mlflow.genai.evaluate which ASSERTS scorers were passed and
+    drives the scorer once per row (so the full _judge_and_persist pipeline
+    runs through the fake mlflow artifacts + MlflowClient).
+    """
+
+    def setUp(self):
+        self.fake_mlflow = _install_fake_mlflow()
+        import judge.scorer as scorer_mod
+        scorer_mod._mlflow_configured = False
+
+    def tearDown(self):
+        _uninstall_fake_mlflow()
+
+    def _setup_three_traced_runs(self, store):
+        """Register 3 unjudged runs + their traces + shared artifacts.
+        Returns the 3 run_ids."""
+        run_ids = ["run-1", "run-2", "run-3"]
+        self.fake_mlflow.set_search_runs_result(run_ids)
+        # Register a trace per run (sourceRun matches the run_id).
+        traces = [_make_fake_trace(f"req-{i}", rid)
+                  for i, rid in enumerate(run_ids, 1)]
+        self.fake_mlflow.set_traces(traces)
+        # Register shared artifacts (the fake matches by artifact_path).
+        meta = _make_extraction_meta()
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4 fake")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json", json.dumps(meta).encode()
+        )
+        return run_ids
+
+    def test_genai_evaluate_called_with_scorers(self):
+        """genai.evaluate is called with a non-empty scorers list (the fake
+        asserts this), and exactly one scorer is passed (not 7)."""
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        self._setup_three_traced_runs(store)
+        verdict = _make_verdict()
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            run_judge_evaluation(sample_size=3, result_store=store)
+
+        self.assertGreater(self.fake_mlflow.genai.evaluate_calls, 0)
+        self.assertEqual(len(self.fake_mlflow.genai.scorers_passed), 1)
+
+    def test_opus_called_once_per_trace_not_seven_times(self):
+        """Opus (OpusJudgeAdapter.judge) is called EXACTLY ONCE per trace —
+        not 7× (one scorer, not seven).  3 traces → 3 judge calls."""
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        self._setup_three_traced_runs(store)
+        verdict = _make_verdict()
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            run_judge_evaluation(sample_size=3, result_store=store)
+
+        # 3 traces → exactly 3 Opus calls (one per trace, NOT 7×3=21).
+        self.assertEqual(MockAdapter.return_value.judge.call_count, 3)
+
+    def test_seven_per_field_assessments_per_trace(self):
+        """The scorer returns 7 per-field + 2 overall Feedbacks per trace.
+        3 traces → 27 assessments collected by the fake genai.evaluate.
+        The 7 per-field names are the expected ones (3× each)."""
+        from judge.evaluator import FIELD_ASSESSMENT_NAMES
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        self._setup_three_traced_runs(store)
+        verdict = _make_verdict()
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            run_judge_evaluation(sample_size=3, result_store=store)
+
+        assessments = self.fake_mlflow.genai.assessments
+        # 3 traces × 9 Feedbacks (7 per-field + 2 overall) = 27.
+        self.assertEqual(len(assessments), 27)
+        # 7 per-field names × 3 traces = 21 per-field assessments.
+        per_field = [a for a in assessments
+                     if not a.name.startswith("judge.overall")]
+        self.assertEqual(len(per_field), 21)
+        # Each of the 7 field names appears exactly 3 times.
+        from collections import Counter
+        name_counts = Counter(a.name for a in per_field)
+        self.assertEqual(set(name_counts.keys()), set(FIELD_ASSESSMENT_NAMES.values()))
+        for name, count in name_counts.items():
+            self.assertEqual(count, 3, f"{name} should appear 3× (once per trace)")
+
+    def test_save_verdict_called_per_trace(self):
+        """The verdict is persisted to Lakebase (save_verdict) once per
+        OK-scored trace — the inline per-parse verdict keeps working."""
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        self._setup_three_traced_runs(store)
+        verdict = _make_verdict()
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            run_judge_evaluation(sample_size=3, result_store=store)
+
+        self.assertEqual(len(store.saved), 3)
+
+    def test_aggregate_summary_shape_unchanged(self):
+        """The aggregate summary shape consumed by the frontend is unchanged:
+        count_judged, count_errors, overall_strict, overall_narration_forgiven,
+        per_field (7 fields), per_bank, eval_run_id."""
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        self._setup_three_traced_runs(store)
+        verdict = _make_verdict()
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            result = run_judge_evaluation(sample_size=3, result_store=store)
+
+        self.assertEqual(result["count_judged"], 3)
+        self.assertEqual(result["count_errors"], 0)
+        self.assertEqual(result["overall_strict"], 1.0)
+        self.assertEqual(result["overall_narration_forgiven"], 1.0)
+        self.assertEqual(len(result["per_field"]), 7)
+        self.assertIn("HDFC", result["per_bank"])
+        self.assertEqual(result["per_bank"]["HDFC"]["count"], 3)
+        # eval_run_id is set (from the fake genai.evaluate).
+        self.assertIsNotNone(result["eval_run_id"])
+
+    def test_pii_redacted_in_assessments(self):
+        """PII fields (cardDisplayName, description) are HMAC'd/omitted in the
+        assessment metadata; the rationale is dropped (None).  No card names
+        or descriptions in cleartext."""
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        self._setup_three_traced_runs(store)
+        # A verdict with PII fields.
+        verdict = JudgeVerdict(
+            request_id="req-test",
+            judge_model_id="databricks-claude-opus-5",
+            comparisons=(
+                FieldComparison(
+                    "cards[].cardMeta.cardDisplayName", "Platinum Card",
+                    "Platinum Card", ComparisonOutcome.AGREE,
+                    FieldScope.SCALAR, card_index=0,
+                ),
+                FieldComparison(
+                    "cards[].cardMeta.lastFourDigit", "1234", "1234",
+                    ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+                ),
+                FieldComparison(
+                    "rewards.pointsEarnedThisCycle", 100, 100,
+                    ComparisonOutcome.AGREE, FieldScope.SCALAR,
+                ),
+                FieldComparison(
+                    "rewards.closingPoints", 500, 500,
+                    ComparisonOutcome.AGREE, FieldScope.SCALAR,
+                ),
+            ),
+            latency_ms=50.0,
+            summary=json.dumps({"status": "OK"}),
+        )
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            run_judge_evaluation(sample_size=3, result_store=store)
+
+        assessments = self.fake_mlflow.genai.assessments
+        card_fb = next(a for a in assessments if a.name == "judge.cardDisplayName")
+        comps = card_fb.metadata["comparisons"]
+        # PII omitted (None) without HMAC key — NOT the cleartext.
+        self.assertIsNone(comps[0]["expected"])
+        self.assertIsNone(comps[0]["actual"])
+        self.assertNotIn("Platinum", json.dumps(comps))
+        # Rationale is dropped.
+        self.assertIsNone(card_fb.rationale)
+
+    def test_runs_without_traces_fall_back_to_score_trace(self):
+        """Runs without a trace (search_traces returns empty) fall back to
+        score_trace — they are still scored (per-run metrics + save_verdict),
+        just without trace-level assessments."""
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        # 2 runs, but NO traces registered → _resolve_trace_for_run returns None.
+        self.fake_mlflow.set_search_runs_result(["run-1", "run-2"])
+        meta = _make_extraction_meta()
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4 fake")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json", json.dumps(meta).encode()
+        )
+        verdict = _make_verdict()
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            result = run_judge_evaluation(sample_size=2, result_store=store)
+
+        # genai.evaluate was NOT called (no traces).
+        self.assertEqual(self.fake_mlflow.genai.evaluate_calls, 0)
+        # But the runs were still scored via score_trace fallback.
+        self.assertEqual(result["count_judged"], 2)
+        self.assertEqual(len(store.saved), 2)
+        # eval_run_id is None (no genai.evaluate run).
+        self.assertIsNone(result["eval_run_id"])
+
+    def test_genai_failure_falls_back_to_score_trace(self):
+        """If genai.evaluate fails, run_judge_evaluation falls back to
+        score_trace for all traced runs — they are still scored."""
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        self._setup_three_traced_runs(store)
+        verdict = _make_verdict()
+
+        # Make genai.evaluate raise.
+        original_evaluate = self.fake_mlflow.genai.evaluate
+        self.fake_mlflow.genai.evaluate = lambda *a, **kw: (_ for _ in ()).throw(
+            RuntimeError("genai evaluate boom")
+        )
+        try:
+            with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+                MockAdapter.return_value.judge.return_value = verdict
+                result = run_judge_evaluation(sample_size=3, result_store=store)
+        finally:
+            self.fake_mlflow.genai.evaluate = original_evaluate
+
+        # Fallback: all 3 runs scored via score_trace.
+        self.assertEqual(result["count_judged"], 3)
+        self.assertEqual(len(store.saved), 3)
+        self.assertIsNone(result["eval_run_id"])
+
+    def test_run_metrics_logged_to_source_run(self):
+        """Per-trace metrics are logged to the SOURCE run (not the eval run)
+        via MlflowClient.log_metric — the per-run view still works."""
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        run_ids = self._setup_three_traced_runs(store)
+        verdict = _make_verdict()
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            run_judge_evaluation(sample_size=3, result_store=store)
+
+        # Each source run has judge.accuracy logged.
+        for rid in run_ids:
+            run_metrics = [(k, v) for k, v, r in self.fake_mlflow.logged_metrics
+                           if r == rid]
+            self.assertIn(("judge.accuracy", 1.0), run_metrics)
+        # Each source run is tagged judged=true.
+        for rid in run_ids:
+            self.assertIn(("judged", "true", rid), self.fake_mlflow.set_tags)
+
+    def test_partial_genai_failure_does_not_rescore_completed_traces(self):
+        """BLOCKING regression guard: if genai.evaluate completes N scorers
+        then RAISES mid-run, the completed traces are NOT re-scored by the
+        score_trace fallback.  Without the fix, the fallback re-scores EVERY
+        traced run — double-calling Opus and duplicating save_verdict/metric
+        writes for the completed subset.
+
+        Setup: 3 traced runs.  genai.evaluate processes 2 rows (Opus +
+        save_verdict + metrics for each), then raises on the 3rd.  The 3rd
+        run was never scored by genai.  Expected: the fallback scores ONLY
+        the 3rd run — 3 total Opus calls + 3 total save_verdict (NOT 6).
+        """
+        from judge.scorer import run_judge_evaluation
+
+        store = _FakeResultStore()
+        self._setup_three_traced_runs(store)  # 3 traced runs
+        verdict = _make_verdict()
+
+        # genai.evaluate completes 2 scorers then raises on the 3rd row.
+        self.fake_mlflow.genai.fail_after_n_rows = 2
+        try:
+            with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+                MockAdapter.return_value.judge.return_value = verdict
+                result = run_judge_evaluation(sample_size=3, result_store=store)
+        finally:
+            self.fake_mlflow.genai.fail_after_n_rows = None
+
+        # 3 traces → exactly 3 Opus calls total (2 from genai + 1 from
+        # fallback).  NOT 5 (2 genai + 3 fallback) — the 2 completed
+        # traces must NOT be re-scored.
+        self.assertEqual(MockAdapter.return_value.judge.call_count, 3)
+        # 3 save_verdict total (2 from genai + 1 from fallback).  NOT 5 —
+        # no duplicate save_verdict for the completed traces.
+        self.assertEqual(len(store.saved), 3)
+        # All 3 runs are scored (2 by genai + 1 by fallback).
+        self.assertEqual(result["count_judged"], 3)
+        self.assertEqual(result["count_errors"], 0)
+        # eval_run_id is None — partial genai failure (no eval run to log
+        # supplementary metrics to).
+        self.assertIsNone(result["eval_run_id"])
 
 
 if __name__ == "__main__":
