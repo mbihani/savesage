@@ -279,6 +279,13 @@ class MLflowTraceSink(TraceSink):
                 run_id = str(getattr(run, "run_id", "")) or None
             if run_id is not None:
                 self._set_run_id(request_id, run_id)
+                # Tag the run with request_id so the on-demand single-trace
+                # judge (POST /api/results/{request_id}/judge) can resolve
+                # request_id -> run_id via an MLflow tag filter search. Set
+                # immediately after start_run so the tag is present before any
+                # artifacts/spans flush. Best-effort like every mlflow call.
+                best_effort("mlflow.set_tag.request_id",
+                            lambda rid=request_id: mlf.set_tag("request_id", rid))
 
         best_effort("mlflow.start_run", _do)
 

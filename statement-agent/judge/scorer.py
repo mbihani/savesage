@@ -114,6 +114,42 @@ def _get_result_store() -> Any:
     return _result_store
 
 
+def resolve_run_id(request_id: str) -> str | None:
+    """Resolve a ``request_id`` to its MLflow ``run_id`` via the ``request_id`` tag.
+
+    The tracing sink tags each parse run with ``request_id`` (set in
+    :meth:`harness.tracing.MLflowTraceSink._ensure_run`) so the on-demand
+    single-trace judge can find the exact run without scanning artifacts.
+    Uses an MLflow tag-equality filter — efficient (indexed) vs. downloading
+    ``extraction.json`` for every recent run.
+
+    Returns the ``run_id`` or ``None`` if no run is found (the trace may
+    predate the ``request_id`` tag, has aged out of the experiment, or the
+    experiment is unreachable). Never raises — callers use the ``None``
+    result to return a clean 404.
+    """
+    import mlflow
+
+    _ensure_mlflow_configured(mlflow)
+    exp_id = _get_experiment_id(mlflow)
+    if exp_id is None:
+        return None
+    try:
+        runs_df = mlflow.search_runs(
+            experiment_ids=[exp_id],
+            filter_string=f"tags.request_id = '{request_id}'",
+            max_results=10,
+        )
+    except Exception:  # noqa: BLE001 - never fatal; surface as "not found"
+        _LOGGER.warning(
+            "resolve_run_id search failed for %s", request_id, exc_info=True,
+        )
+        return None
+    if runs_df.empty:
+        return None
+    return runs_df["run_id"].tolist()[0]
+
+
 def _get_experiment_id(mlf: Any) -> str | None:
     """Resolve the MLflow experiment ID from the bound resource env var or config path.
 

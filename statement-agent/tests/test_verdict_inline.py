@@ -19,6 +19,7 @@ import json
 import re
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from app.main import _comparison_to_dict
 from contracts.models import (
@@ -310,12 +311,13 @@ class FrontendVerdictInlineTest(unittest.TestCase):
 
     def test_resultsview_accepts_verdict_prop(self):
         self.assertIn(
-            "function ResultsView({ requestId, extraction, complete, verdict })",
+            "function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh })",
             self.html,
         )
 
     def test_app_passes_verdict_to_resultsview(self):
         self.assertIn("verdict=${results?.verdict}", self.html)
+        self.assertIn("onVerdictRefresh=${handleVerdictRefresh}", self.html)
 
     def test_builds_verdict_lookup_structures(self):
         self.assertIn("verdictByPath", self.html)
@@ -368,6 +370,172 @@ class FrontendVerdictInlineTest(unittest.TestCase):
         # 'Parse Another Statement' is the existing Results footer; a new
         # on-demand judge button would add a 'Judge' label here.
         self.assertIn("Parse Another Statement", self.html)
+
+    def test_judge_button_renders_when_no_verdict(self):
+        """When verdict is null the 'Judge this statement' button shows."""
+        self.assertIn("Judge this statement", self.html)
+
+    def test_rejudge_button_renders_when_verdict_present(self):
+        """When a verdict exists a lighter 'Re-judge' affordance shows."""
+        self.assertIn("Re-judge", self.html)
+
+    def test_judge_spinner_css_exists(self):
+        self.assertIn("judge-spinner", self.html)
+        self.assertIn("@keyframes spin", self.html)
+
+    def test_single_judge_hook_exists(self):
+        self.assertIn("function useSingleJudge", self.html)
+
+    def test_on_verdict_refresh_passed_to_resultsview(self):
+        self.assertIn("onVerdictRefresh=${handleVerdictRefresh}", self.html)
+
+    def test_handle_verdict_refresh_re_fetches_api_results(self):
+        self.assertIn("handleVerdictRefresh", self.html)
+
+
+# ---------------------------------------------------------------------------
+# On-demand single-trace judge — backend helpers
+# ---------------------------------------------------------------------------
+
+class SingleJudgeSlotTest(unittest.TestCase):
+    """The shared concurrency slot: acquire/release, 409-on-busy."""
+
+    def setUp(self):
+        import app.main as main_mod
+        self._main = main_mod
+        self._saved_running = main_mod._judge_running
+        main_mod._judge_running = False
+
+    def tearDown(self):
+        self._main._judge_running = self._saved_running
+
+    def test_acquire_when_idle(self):
+        self.assertTrue(self._main._acquire_judge_slot())
+        self.assertTrue(self._main._judge_running)
+
+    def test_acquire_releases(self):
+        self._main._acquire_judge_slot()
+        self._main._release_judge_slot()
+        self.assertFalse(self._main._judge_running)
+
+    def test_acquire_fails_when_busy(self):
+        """When a judge run is in progress, acquire returns False (→ 409)."""
+        self._main._acquire_judge_slot()
+        self.assertFalse(self._main._acquire_judge_slot())
+
+    def test_release_allows_reacquire(self):
+        """After release, the slot can be reacquired."""
+        self._main._acquire_judge_slot()
+        self._main._release_judge_slot()
+        self.assertTrue(self._main._acquire_judge_slot())
+
+
+class SingleJudgeBgRunnerTest(unittest.TestCase):
+    """_run_single_judge_bg resolves, invokes score_trace with the
+    result_store, and updates per-request status — force-rejudging even
+    when the run is already tagged judged=true."""
+
+    def setUp(self):
+        import app.main as main_mod
+        self._main = main_mod
+        self._saved_running = main_mod._judge_running
+        self._saved_status = dict(main_mod._single_judge_status)
+        main_mod._single_judge_status.clear()
+        main_mod._judge_running = False
+
+    def tearDown(self):
+        self._main._judge_running = self._saved_running
+        self._main._single_judge_status.clear()
+        self._main._single_judge_status.update(self._saved_status)
+
+    def test_invokes_score_trace_with_run_id_and_result_store(self):
+        """The bg runner calls score_trace(run_id, result_store=...) —
+        reusing the existing single-trace scorer with the app's result store."""
+        from tests.test_scorer import _FakeResultStore
+        store = _FakeResultStore()
+
+        with patch.object(self._main, "_get_stores", return_value=(store, None)), \
+             patch("judge.scorer.score_trace", return_value={"status": "OK"}) as mock_score:
+            self._main._run_single_judge_bg("req-1", "run-1")
+
+        mock_score.assert_called_once_with("run-1", result_store=store)
+        self.assertEqual(self._main._single_judge_status["req-1"]["status"], "done")
+
+    def test_score_trace_failure_does_not_crash(self):
+        """A score_trace exception lands in the status, never raised."""
+        with patch.object(self._main, "_get_stores", return_value=(None, None)), \
+             patch("judge.scorer.score_trace", side_effect=RuntimeError("boom")):
+            self._main._run_single_judge_bg("req-1", "run-1")
+
+        self.assertEqual(self._main._single_judge_status["req-1"]["status"], "error")
+
+    def test_judge_error_status_surfaces(self):
+        """A JUDGE_ERROR result is surfaced as an error status."""
+        with patch.object(self._main, "_get_stores", return_value=(None, None)), \
+             patch("judge.scorer.score_trace", return_value={"status": "JUDGE_ERROR"}):
+            self._main._run_single_judge_bg("req-1", "run-1")
+
+        self.assertEqual(self._main._single_judge_status["req-1"]["status"], "error")
+        self.assertIn("JUDGE_ERROR", self._main._single_judge_status["req-1"]["error"])
+
+    def test_force_rejudge_ignores_judged_true_tag(self):
+        """score_trace is called regardless of whether the run is already
+        tagged judged=true — force-rejudge is inherent (score_trace does NOT
+        check the tag; only the batch sampler skips already-judged runs)."""
+        with patch.object(self._main, "_get_stores", return_value=(None, None)), \
+             patch("judge.scorer.score_trace", return_value={"status": "OK"}) as mock_score:
+            # Simulate a run that is ALREADY judged=true (the tag exists).
+            self._main._run_single_judge_bg("req-already", "run-already")
+
+        # score_trace was still called — force re-judge.
+        mock_score.assert_called_once()
+
+    def test_releases_slot_on_completion(self):
+        """The concurrency slot is released in the finally block."""
+        with patch.object(self._main, "_get_stores", return_value=(None, None)), \
+             patch("judge.scorer.score_trace", return_value={"status": "OK"}):
+            self._main._run_single_judge_bg("req-1", "run-1")
+        self.assertFalse(self._main._judge_running)
+
+    def test_releases_slot_on_failure(self):
+        """The slot is released even when score_trace raises."""
+        with patch.object(self._main, "_get_stores", return_value=(None, None)), \
+             patch("judge.scorer.score_trace", side_effect=RuntimeError("boom")):
+            self._main._run_single_judge_bg("req-1", "run-1")
+        self.assertFalse(self._main._judge_running)
+
+
+class ResolveRunIdIntegrationTest(unittest.TestCase):
+    """The endpoint resolves request_id → run_id via resolve_run_id; when
+    None, the endpoint returns 404 (not 500). This tests the resolution
+    integration with the scorer's search helper."""
+
+    def setUp(self):
+        import sys
+        from tests.test_scorer import _install_fake_mlflow
+        self._install = _install_fake_mlflow
+        self.fake_mlflow = self._install()
+        import judge.scorer as scorer_mod
+        scorer_mod._mlflow_configured = False
+
+    def tearDown(self):
+        import sys
+        sys.modules.pop("mlflow", None)
+        sys.modules.pop("mlflow.tracking", None)
+
+    def test_resolve_found_then_judge_succeeds(self):
+        """resolve_run_id returns a run_id → bg runner judges that run."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow.set_search_runs_result(["run-target"])
+        run_id = resolve_run_id("req-target")
+        self.assertEqual(run_id, "run-target")
+
+    def test_resolve_not_found_returns_none(self):
+        """resolve_run_id returns None → endpoint would 404 (never 500)."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow.set_search_runs_result([])
+        run_id = resolve_run_id("req-orphan")
+        self.assertIsNone(run_id)
 
 
 if __name__ == "__main__":

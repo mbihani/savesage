@@ -734,5 +734,54 @@ class VerdictPersistTest(unittest.TestCase):
         self.assertEqual(body[0]["outcome"], "AGREE")
 
 
+# ---------------------------------------------------------------------------
+# resolve_run_id — request_id → MLflow run_id via the request_id tag
+# ---------------------------------------------------------------------------
+
+class ResolveRunIdTest(unittest.TestCase):
+    """The on-demand single-trace judge resolves request_id → run_id via an
+    MLflow tag-equality filter on the ``request_id`` tag the tracing sink sets.
+    Returns None cleanly when no run is found (the endpoint maps that to 404).
+    """
+
+    def setUp(self):
+        self.fake_mlflow = _install_fake_mlflow()
+        import judge.scorer as scorer_mod
+        scorer_mod._mlflow_configured = False
+
+    def tearDown(self):
+        _uninstall_fake_mlflow()
+
+    def test_resolves_request_id_to_run_id(self):
+        """When a run tagged with request_id exists, returns its run_id."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow.set_search_runs_result(["run-abc"])
+        run_id = resolve_run_id("req-123")
+        self.assertEqual(run_id, "run-abc")
+
+    def test_returns_none_when_no_run_found(self):
+        """When no run matches the request_id tag, returns None (→ endpoint 404)."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow.set_search_runs_result([])
+        run_id = resolve_run_id("req-missing")
+        self.assertIsNone(run_id)
+
+    def test_returns_none_when_experiment_not_found(self):
+        """When the experiment is unreachable, returns None (→ 404, never 500)."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow._experiment = None
+        run_id = resolve_run_id("req-orphan")
+        self.assertIsNone(run_id)
+
+    def test_search_failure_returns_none_not_raise(self):
+        """An MLflow search exception is caught; returns None (→ 404, never 500)."""
+        from judge.scorer import resolve_run_id
+        self.fake_mlflow.search_runs = Mock(
+            side_effect=RuntimeError("mlflow internal error")
+        )
+        run_id = resolve_run_id("req-boom")
+        self.assertIsNone(run_id)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -217,6 +217,18 @@
       .verdict-ABSENT_IN_PDF { background: var(--neutral-soft); color: var(--neutral); }
       .verdict-UNMATCHED_ROW { background: var(--neutral-soft); color: var(--neutral); }
 
+      /* Inline judge action spinner */
+      .judge-spinner {
+        display: inline-block;
+        width: 0.875rem; height: 0.875rem;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        vertical-align: middle;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
       /* Results table */
       .field-row {
         padding: 1rem;
@@ -784,7 +796,69 @@
         `;
       }
 
-      function ResultsView({ requestId, extraction, complete, verdict }) {
+      /* On-demand single-trace judge hook — POST, poll status, re-fetch verdict.
+       * Used by ResultsView to render inline per-field badges immediately. */
+      function useSingleJudge(requestId, onVerdictRefresh) {
+        const [judging, setJudging] = useState(false);
+        const [error, setError] = useState(null);
+        const pollRef = useRef(null);
+
+        const start = async () => {
+          setJudging(true);
+          setError(null);
+          try {
+            const resp = await fetch(`/api/results/${requestId}/judge`, { method: "POST" });
+            if (resp.status === 404) {
+              setError("no trace found for this statement");
+              setJudging(false);
+              return;
+            }
+            if (resp.status === 409) {
+              setError("a judge run is already in progress");
+              setJudging(false);
+              return;
+            }
+            if (!resp.ok) {
+              setError("judge request failed");
+              setJudging(false);
+              return;
+            }
+            // Poll the status endpoint until done/error.
+            const poll = async () => {
+              try {
+                const sr = await fetch(`/api/results/${requestId}/judge`);
+                const sd = await sr.json();
+                if (sd.status === "running") {
+                  pollRef.current = setTimeout(poll, 2000);
+                } else if (sd.status === "done") {
+                  setJudging(false);
+                  await onVerdictRefresh();
+                } else if (sd.status === "error") {
+                  setError(sd.error || "judge failed");
+                  setJudging(false);
+                } else {
+                  setJudging(false);
+                }
+              } catch (e) {
+                setError(e.message);
+                setJudging(false);
+              }
+            };
+            pollRef.current = setTimeout(poll, 1000);
+          } catch (e) {
+            setError(e.message);
+            setJudging(false);
+          }
+        };
+
+        useEffect(() => {
+          return () => { if (pollRef.current) clearTimeout(pollRef.current); };
+        }, []);
+
+        return { judging, error, start };
+      }
+
+      function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh }) {
         const outcome = complete?.outcome || "UNKNOWN";
         const bannerClass =
           outcome === "SUCCESS" ? "SUCCESS" :
@@ -794,6 +868,9 @@
         const cards = (payload?.cards || []).filter(Boolean);
         const rewards = payload?.rewards;
         const transactions = (payload?.transactions || []).filter(Boolean);
+
+        // On-demand single-trace judge — renders inline verdicts immediately.
+        const judge = useSingleJudge(requestId, onVerdictRefresh);
 
         // Build a per-field verdict lookup from the post-hoc judge's
         // comparisons so each rendered field can show its judge badge inline.
@@ -995,7 +1072,25 @@
               </div>
             `}
 
-            <div style=${{ marginTop: "1.5rem" }}>
+            <div style=${{ marginTop: "1.5rem", display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+              ${extraction && !judge.judging && !verdict && h`
+                <button class="btn btn-primary" onClick=${judge.start}>
+                  ⚖ Judge this statement
+                </button>
+              `}
+              ${extraction && !judge.judging && verdict && h`
+                <button class="btn btn-sm" style=${{ background: "var(--neutral-soft)", color: "var(--text-muted)", border: "1px solid var(--border)" }} onClick=${judge.start}>
+                  ⚖ Re-judge
+                </button>
+              `}
+              ${judge.judging && h`
+                <span style=${{ fontSize: "0.875rem", color: "var(--text-muted)", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span class="judge-spinner"></span> Judging…
+                </span>
+              `}
+              ${judge.error && !judge.judging && h`
+                <span style=${{ fontSize: "0.8125rem", color: "var(--disagree)" }}>⚠ ${judge.error}</span>
+              `}
               <button class="btn btn-primary" onClick=${() => window.location.reload()}>
                 Parse Another Statement
               </button>
@@ -1257,6 +1352,26 @@
           setView("results");
         };
 
+        // Called by ResultsView after an on-demand single-trace judge
+        // completes — re-fetches GET /api/results and updates the verdict
+        // so inline per-field badges render immediately.
+        const handleVerdictRefresh = async () => {
+          try {
+            const resp = await fetch(`/api/results/${requestId}`);
+            if (resp.ok) {
+              const apiResults = await resp.json();
+              setResults((prev) => ({
+                ...(prev || {}),
+                extraction: apiResults.extraction || prev?.extraction,
+                verdict: apiResults.verdict || null,
+                complete: prev?.complete,
+              }));
+            }
+          } catch (e) {
+            // Best-effort — the user can re-judge if the refresh fails.
+          }
+        };
+
         return h`
           <div>
             ${view === "upload" && h`
@@ -1276,6 +1391,7 @@
               extraction=${results?.extraction}
               verdict=${results?.verdict}
               complete=${results?.complete}
+              onVerdictRefresh=${handleVerdictRefresh}
             />`}
             ${view === "judge" && h`<${JudgeEvaluationView} />`}
           </div>
