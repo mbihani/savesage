@@ -1,7 +1,7 @@
 # Installed by Databricks Apps at deploy time; these CANNOT be installed locally.
 langgraph==0.6.4
 langchain-core==0.3.74
-mlflow[databricks]==3.2.0
+mlflow[databricks]==3.10.1
 fastapi==0.116.1
 uvicorn==0.35.0
 psycopg[binary]==3.2.9

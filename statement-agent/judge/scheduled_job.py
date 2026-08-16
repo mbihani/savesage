@@ -33,7 +33,7 @@ Job configuration (create on fevm-stable via the Databricks CLI or UI):
           python_file: statement-agent/judge/scheduled_job.py
           source: GIT
           libraries:
-            - pypi: mlflow[databricks]==3.2.0
+            - pypi: mlflow[databricks]==3.10.1
     permissions:
       - user: "{{run_as}}"
         permission_level: CAN_MANAGE
