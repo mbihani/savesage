@@ -517,18 +517,18 @@ def _run_judge_evaluation_bg(sample_size: int) -> None:
         result = run_judge_evaluation(sample_size=sample_size)
         _judge_result_cache = result
     except Exception as exc:
+        _LOGGER = __import__("logging").getLogger("statement-agent.app")
+        _LOGGER.warning("judge evaluation failed: %s", exc, exc_info=True)
         _judge_result_cache = {
             "count_judged": 0,
             "count_errors": 1,
-            "errors": [{"error": f"{type(exc).__name__}: {exc}"}],
+            "errors": [{"error": "evaluation failed"}],
             "overall_strict": None,
             "overall_narration_forgiven": None,
             "per_field": {},
             "per_bank": {},
             "_status": "error",
         }
-        _LOGGER = __import__("logging").getLogger("statement-agent.app")
-        _LOGGER.warning("judge evaluation failed: %s", exc)
     finally:
         with _judge_lock:
             _judge_running = False

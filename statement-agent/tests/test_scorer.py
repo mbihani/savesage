@@ -16,7 +16,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from contracts.models import (
     Bank,
@@ -294,9 +294,22 @@ class ScoreTraceTest(unittest.TestCase):
             result = score_trace("run-opus-fail")
 
         self.assertEqual(result["status"], "ERROR")
-        # The actual error type and message are surfaced for debugging.
-        self.assertIn("RuntimeError", result["error"])
-        self.assertIn("opus 500", result["error"])
+        self.assertEqual(result["error"], "RuntimeError")
+        self.assertNotIn("opus 500", result["error"])
+
+    def test_score_trace_sanitizes_known_error_categories(self):
+        """Known failures expose only safe categories, never exception details."""
+        from judge.scorer import _sanitize_error
+
+        self.assertEqual(_sanitize_error(TimeoutError("secret host")), "network error")
+        self.assertEqual(
+            _sanitize_error(RuntimeError("permission denied for account 123")),
+            "authentication error",
+        )
+        self.assertEqual(
+            _sanitize_error(RuntimeError("private resource not found")),
+            "resource not found",
+        )
 
     def test_score_trace_per_field_metrics(self):
         """Per-field metrics are returned in the result."""
@@ -387,6 +400,32 @@ class RunJudgeEvaluationTest(unittest.TestCase):
 
         self.assertEqual(result["count_judged"], 0)
         self.assertGreater(len(result["errors"]), 0)
+
+    def test_experiment_not_found_reports_custom_path(self):
+        """The error identifies the configured path that was actually searched."""
+        from judge.scorer import run_judge_evaluation
+
+        self.fake_mlflow._experiment = None
+        with patch.dict(os.environ, {"MLFLOW_EXPERIMENT_PATH": "/custom/path"}, clear=False):
+            result = run_judge_evaluation(sample_size=5)
+
+        self.assertEqual(
+            result["errors"], [{"error": "experiment not found: /custom/path"}]
+        )
+
+    def test_tracking_uri_failure_is_retried(self):
+        """A failed tracking URI setup must not permanently mark configuration done."""
+        import judge.scorer as scorer_mod
+
+        self.fake_mlflow.set_tracking_uri = Mock(
+            side_effect=[RuntimeError("temporary failure"), None]
+        )
+        scorer_mod._ensure_mlflow_configured(self.fake_mlflow)
+        self.assertFalse(scorer_mod._mlflow_configured)
+
+        scorer_mod._ensure_mlflow_configured(self.fake_mlflow)
+        self.assertTrue(scorer_mod._mlflow_configured)
+        self.assertEqual(self.fake_mlflow.set_tracking_uri.call_count, 2)
 
     def test_samples_and_scores_traces(self):
         """run_judge_evaluation samples N traces, scores each, aggregates."""

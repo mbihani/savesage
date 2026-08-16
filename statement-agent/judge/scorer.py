@@ -92,8 +92,9 @@ def _ensure_mlflow_configured(mlf: Any) -> None:
     # Set tracking URI to databricks (the default is a local file/sqlite store).
     try:
         mlf.set_tracking_uri("databricks")
-    except Exception:  # noqa: BLE001 - fake mlflow in tests may lack this method
-        pass
+    except Exception:  # noqa: BLE001 - retry configuration on the next call
+        _LOGGER.warning("failed to configure MLflow tracking URI", exc_info=True)
+        return
     # Handle DATABRICKS_CONFIG_PROFILE: same logic as configure_tracing.
     # In the Databricks Apps runtime the config file is absent and the bound
     # experiment resource supplies auth — a stale DATABRICKS_CONFIG_PROFILE
@@ -127,9 +128,23 @@ def score_trace(run_id: str) -> dict[str, Any]:
     try:
         return _score_trace_impl(run_id)
     except Exception as exc:
-        _LOGGER.warning("score_trace failed for run %s: %s", run_id, exc)
+        _LOGGER.warning(
+            "score_trace failed for run %s: %s", run_id, exc, exc_info=True
+        )
         return {"run_id": run_id, "status": "ERROR",
-                "error": f"{type(exc).__name__}: {exc}"}
+                "error": _sanitize_error(exc)}
+
+
+def _sanitize_error(exc: Exception) -> str:
+    """Map known exception types to safe error messages for the UI."""
+    exc_name = type(exc).__name__
+    if isinstance(exc, (ConnectionError, TimeoutError, OSError)):
+        return "network error"
+    if "auth" in exc_name.lower() or "permission" in str(exc).lower():
+        return "authentication error"
+    if "not found" in str(exc).lower():
+        return "resource not found"
+    return exc_name
 
 
 def _score_trace_impl(run_id: str) -> dict[str, Any]:
@@ -246,7 +261,11 @@ def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
     if exp_id is None:
         # Surface the configured path (or env-var ID) so the operator can
         # see what was searched, not just "experiment not found".
-        tried = os.getenv("MLFLOW_EXPERIMENT_ID") or _EXPERIMENT_PATH
+        tried = (
+            os.getenv("MLFLOW_EXPERIMENT_ID")
+            or os.getenv("MLFLOW_EXPERIMENT_PATH")
+            or _EXPERIMENT_PATH
+        )
         return {
             "count_judged": 0,
             "errors": [{"error": f"experiment not found: {tried}"}],

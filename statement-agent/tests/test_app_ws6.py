@@ -11,6 +11,7 @@ import queue
 import unittest
 from datetime import UTC, datetime
 from pathlib import Path
+from unittest.mock import patch
 
 from app.main import (
     PIPELINE_STAGES,
@@ -792,6 +793,30 @@ class JudgeEndpointTest(unittest.TestCase):
         """The background evaluation runner exists and is callable."""
         from app.main import _run_judge_evaluation_bg
         self.assertTrue(callable(_run_judge_evaluation_bg))
+
+    def test_judge_bg_failure_is_sanitized(self) -> None:
+        """Background evaluation errors never expose exception details via the cache."""
+        import app.main as main_mod
+
+        saved_cache = main_mod._judge_result_cache
+        saved_running = main_mod._judge_running
+        try:
+            main_mod._judge_running = True
+            with patch(
+                "judge.scorer.run_judge_evaluation",
+                side_effect=RuntimeError("secret endpoint and account"),
+            ):
+                main_mod._run_judge_evaluation_bg(1)
+
+            self.assertEqual(
+                main_mod._judge_result_cache["errors"],
+                [{"error": "evaluation failed"}],
+            )
+            self.assertNotIn("secret", str(main_mod._judge_result_cache))
+            self.assertFalse(main_mod._judge_running)
+        finally:
+            main_mod._judge_result_cache = saved_cache
+            main_mod._judge_running = saved_running
 
 
 # ---------------------------------------------------------------------------
