@@ -58,9 +58,9 @@ PIPELINE_STAGES: tuple[str, ...] = (
 
 # In-memory request contexts, keyed by request_id.  Populated by
 # ``POST /api/parse`` and consumed by the SSE + results endpoints.  Entries
-# persist for the process lifetime; a long-lived Apps process would eventually
-# want TTL eviction, but for a demo this is sufficient.
+# persist until evicted by the FIFO cap below.
 _REQUESTS: dict[str, Any] = {}
+_MAX_REQUESTS = 50  # FIFO cap — each entry holds ~1-10 MB of PDF bytes
 
 # Module-level caches so we don't create a WorkspaceClient or MLflow sink
 # per request.  ``None`` means "not yet attempted"; a tuple/store means
@@ -548,6 +548,10 @@ def create_app():
         ctx.pdf_bytes = pdf_bytes
         ctx.pdf_filename = file.filename or "statement.pdf"
         _REQUESTS[request_id] = ctx
+        # FIFO eviction: prevent unbounded memory growth from stored PDF bytes.
+        while len(_REQUESTS) > _MAX_REQUESTS:
+            oldest = next(iter(_REQUESTS))
+            _REQUESTS.pop(oldest, None)
 
         thread = threading.Thread(
             target=_run_parse,
@@ -563,8 +567,16 @@ def create_app():
     async def get_pdf(request_id: str):
         ctx = _REQUESTS.get(request_id)
         if ctx is None or ctx.pdf_bytes is None:
-            return JSONResponse(status_code=404, content={"detail": "PDF not found"})
-        return Response(content=ctx.pdf_bytes, media_type="application/pdf")
+            return Response(
+                content=b'<html><body style="font-family:sans-serif;padding:2rem;color:#666">PDF not available. The session may have expired.</body></html>',
+                media_type="text/html",
+                status_code=404,
+            )
+        return Response(
+            content=ctx.pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'inline; filename="{ctx.pdf_filename}"'},
+        )
 
     # -- GET /api/parse/{request_id}/stream (SSE) -------------------------
     @app.get("/api/parse/{request_id}/stream")
