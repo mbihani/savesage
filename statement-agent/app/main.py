@@ -58,9 +58,9 @@ PIPELINE_STAGES: tuple[str, ...] = (
 
 # In-memory request contexts, keyed by request_id.  Populated by
 # ``POST /api/parse`` and consumed by the SSE + results endpoints.  Entries
-# persist for the process lifetime; a long-lived Apps process would eventually
-# want TTL eviction, but for a demo this is sufficient.
+# persist until evicted by the FIFO cap below.
 _REQUESTS: dict[str, Any] = {}
+_MAX_REQUESTS = 50  # FIFO cap — each entry holds ~1-10 MB of PDF bytes
 
 # Module-level caches so we don't create a WorkspaceClient or MLflow sink
 # per request.  ``None`` means "not yet attempted"; a tuple/store means
@@ -107,6 +107,10 @@ class RequestContext:
         # Result snapshots for /api/results (populated after the graph completes).
         self.extraction_data: Optional[dict[str, Any]] = None
         self.complete_data: Optional[dict[str, Any]] = None
+        # Original upload retained so the results view can display it alongside
+        # the extracted fields for the lifetime of this process.
+        self.pdf_bytes: Optional[bytes] = None
+        self.pdf_filename: str = "statement.pdf"
         # In-memory feedback list (fallback when Lakebase feedback store is down).
         self.feedback: list[dict[str, Any]] = []
 
@@ -516,7 +520,7 @@ def create_app():
     from pathlib import Path as _Path
 
     from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
-    from fastapi.responses import JSONResponse, StreamingResponse
+    from fastapi.responses import JSONResponse, Response, StreamingResponse
     from fastapi.staticfiles import StaticFiles
 
     app = FastAPI(title="SaveSage Statement Agent")
@@ -541,7 +545,13 @@ def create_app():
 
         request_id = _new_request_id()
         ctx = RequestContext(request_id)
+        ctx.pdf_bytes = pdf_bytes
+        ctx.pdf_filename = file.filename or "statement.pdf"
         _REQUESTS[request_id] = ctx
+        # FIFO eviction: prevent unbounded memory growth from stored PDF bytes.
+        while len(_REQUESTS) > _MAX_REQUESTS:
+            oldest = next(iter(_REQUESTS))
+            _REQUESTS.pop(oldest, None)
 
         thread = threading.Thread(
             target=_run_parse,
@@ -551,6 +561,22 @@ def create_app():
         thread.start()
 
         return {"request_id": request_id}
+
+    # -- GET /api/pdf/{request_id} ---------------------------------------
+    @app.get("/api/pdf/{request_id}")
+    async def get_pdf(request_id: str):
+        ctx = _REQUESTS.get(request_id)
+        if ctx is None or ctx.pdf_bytes is None:
+            return Response(
+                content=b'<html><body style="font-family:sans-serif;padding:2rem;color:#666">PDF not available. The session may have expired.</body></html>',
+                media_type="text/html",
+                status_code=404,
+            )
+        return Response(
+            content=ctx.pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'inline; filename="{ctx.pdf_filename}"'},
+        )
 
     # -- GET /api/parse/{request_id}/stream (SSE) -------------------------
     @app.get("/api/parse/{request_id}/stream")

@@ -58,6 +58,41 @@
         margin: 0 auto;
         padding: 2rem 1.25rem;
       }
+      .results-layout {
+        display: flex;
+        gap: 1rem;
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 1rem;
+        align-items: flex-start;
+      }
+      .pdf-panel {
+        flex: 0 1 45%;
+        height: calc(100vh - 2rem);
+        min-width: 0;
+        overflow: auto;
+        position: sticky;
+        top: 1rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .pdf-panel iframe { display: block; width: 100%; height: 100%; border: none; }
+      .results-panel { flex: 1 1 55%; min-width: 0; }
+      .results-panel .container { max-width: none; padding: 1rem 0; }
+      @media (max-width: 768px) {
+        .results-layout { flex-direction: column; padding: 0.75rem; }
+        .pdf-panel {
+          flex: none;
+          width: 100%;
+          height: 50vh;
+          max-height: 50vh;
+          position: static;
+        }
+        .results-panel { width: 100%; }
+      }
       .header {
         margin-bottom: 2rem;
       }
@@ -749,7 +784,12 @@
         const tdStyle = { padding: "0.5rem 0.625rem" };
 
         return h`
-          <div class="container">
+          <div class="results-layout">
+            <section class="pdf-panel" aria-label="Uploaded statement PDF">
+              <iframe src=${`/api/pdf/${requestId}`} title="Uploaded statement PDF"></iframe>
+            </section>
+            <section class="results-panel">
+              <div class="container">
             <div class="header">
               <h1>Extraction Results</h1>
               <p>Request ID: <code>${requestId}</code></p>
@@ -864,6 +904,8 @@
                 Parse Another Statement
               </button>
             </div>
+              </div>
+            </section>
           </div>
         `;
       }
