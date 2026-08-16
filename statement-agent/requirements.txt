@@ -5,5 +5,5 @@ mlflow[databricks]==3.2.0
 fastapi==0.116.1
 uvicorn==0.35.0
 psycopg[binary]==3.2.9
-databricks-sdk==0.63.0
+databricks-sdk==0.82.0
 python-multipart==0.0.20

@@ -440,7 +440,7 @@ class AppYamlTest(unittest.TestCase):
 
         PGHOST/PGDATABASE/PGPORT are hardcoded fallback values (the
         pg_version=17 database resource binding cannot inject them); the
-        API-derived host/user take precedence at connect time.
+        host is consumed directly and the user comes from WorkspaceClient.
         """
         names = set(self._env_names())
         for var in ("ENDPOINT_NAME", "PGSSLMODE", "PGHOST", "PGDATABASE", "PGPORT"):
@@ -473,7 +473,7 @@ class AppYamlTest(unittest.TestCase):
 
         pg_version=17 Lakebase projects are not registered in the Databricks
         Database Instances API, so the binding cannot inject connection env
-        vars; parameters are derived at runtime instead (see
+        vars; explicit fallback values are consumed at runtime instead (see
         ``_build_lakebase_stores``).  The fallback values live as env vars.
         """
         if self.parsed is not None:
