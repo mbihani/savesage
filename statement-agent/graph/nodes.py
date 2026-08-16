@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from dataclasses import replace as dc_replace
 from datetime import UTC, datetime
+import logging
 from typing import TYPE_CHECKING, Any
 
 from contracts.models import ExtractionResult, TraceEvent
@@ -32,6 +33,9 @@ from graph.validation import validate_payload
 
 if TYPE_CHECKING:  # pragma: no cover
     pass
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class NodeDeps:
@@ -238,6 +242,10 @@ def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
                 state.stage = Stage.PERSISTED
                 persisted = True
             except Exception as exc:
+                _LOGGER.exception(
+                    "Lakebase extraction persistence failed for request_id=%s",
+                    state.request_id,
+                )
                 state.mark_failure(Stage.PERSISTED, f"persist: {exc}")
                 persist_error = str(exc)
         # No store wired (e.g. Lakebase unavailable): persistence is SKIPPED, not

@@ -18,6 +18,7 @@ function-local scopes — importing them never requires those packages.
 """
 
 import json
+import logging
 import os
 import queue
 import threading
@@ -67,6 +68,7 @@ _MAX_REQUESTS = 50  # FIFO cap — each entry holds ~1-10 MB of PDF bytes
 # "attempted" (including the failure sentinel).
 _stores: Optional[tuple[Any, Any]] = None
 _trace_sink: Any = None
+_LOGGER = logging.getLogger("statement-agent.app")
 
 # Maximum number of traces the post-hoc judge will score in one evaluation.
 # Guards against a caller requesting an expensive sweep via the API.
@@ -253,6 +255,8 @@ async def _run_blocking(func: Any, *args: Any, timeout: float = _PERSIST_TIMEOUT
             loop.run_in_executor(None, func, *args), timeout=timeout,
         )
     except Exception:
+        _LOGGER.exception("Blocking persistence/telemetry call failed: %s",
+                          getattr(func, "__qualname__", repr(func)))
         return None
 
 
@@ -269,24 +273,35 @@ def _build_lakebase_stores() -> tuple[Any, Any]:
     function does not require them — only *calling* it does.
     """
     from databricks.sdk import WorkspaceClient
-    from db.config_ws3 import get_lakebase_settings
     from db.connection import OAuthConnectionFactory
-    from db.provision import resolve_runtime
-    from db.stores import LakebaseFeedbackStore, LakebaseResultStore
+    from db.stores import LakebaseFeedbackStore, LakebaseResultStore, init_tables
 
-    settings = get_lakebase_settings()
+    required = ("ENDPOINT_NAME", "PGHOST", "PGUSER", "PGDATABASE")
+    missing = [name for name in required if not os.environ.get(name)]
+    if missing:
+        raise RuntimeError(
+            "Lakebase database resource did not inject required environment "
+            f"variables: {', '.join(missing)}"
+        )
     client = WorkspaceClient()
-    _branch, endpoint, host = resolve_runtime(client, settings)
-    user = client.current_user.me().user_name
-    connect = OAuthConnectionFactory(client, endpoint, host, settings.database, user)
+    connect = OAuthConnectionFactory(
+        client,
+        os.environ["ENDPOINT_NAME"],
+        os.environ["PGHOST"],
+        os.environ["PGDATABASE"],
+        os.environ["PGUSER"],
+        port=int(os.environ.get("PGPORT", "5432")),
+        sslmode=os.environ.get("PGSSLMODE", "require"),
+    )
+    init_tables(connect)
     return LakebaseResultStore(connect), LakebaseFeedbackStore(connect)
 
 
 def _get_stores() -> tuple[Any, Any]:
     """Return cached Lakebase stores ``(result_store, feedback_store)``.
 
-    Lazily initialised on first call; on failure, caches ``(None, None)`` so
-    subsequent calls are fast no-ops rather than repeated failed attempts.
+    Lazily initialised on first call. Failures are logged and are not cached,
+    allowing a transient credential, endpoint, or database outage to recover.
     """
     global _stores
     if _stores is not None:
@@ -294,7 +309,8 @@ def _get_stores() -> tuple[Any, Any]:
     try:
         _stores = _build_lakebase_stores()
     except Exception:
-        _stores = (None, None)
+        _LOGGER.exception("Lakebase store initialization failed")
+        return (None, None)
     return _stores
 
 
