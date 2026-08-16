@@ -7,11 +7,24 @@ env:
   - name: JUDGE_ENDPOINT
     value: databricks-claude-opus-5
   # --- Workstream 3: Lakebase connection ---
-  # The database resource binding injects PGHOST/PGUSER/PGPORT/PGDATABASE
-  # automatically; ENDPOINT_NAME is consumed by the OAuthConnectionFactory
-  # to request a fresh per-connection credential token.
+  # pg_version=17 Lakebase projects are NOT registered in the Databricks
+  # Database Instances API, so the app ``database`` resource binding cannot
+  # inject PGHOST/PGUSER/PGPORT/PGDATABASE.  The app instead derives the host
+  # from the Lakebase endpoint status API (w.postgres.get_endpoint) and the
+  # user from the WorkspaceClient identity; see ``_build_lakebase_stores`` in
+  # app/main.py.  PGHOST/PGDATABASE/PGPORT are set here as explicit fallback
+  # values (PGHOST is informational — the API-derived host takes precedence
+  # at connect time; PGDATABASE/PGPORT are the real fallbacks).  ENDPOINT_NAME
+  # is consumed by the OAuthConnectionFactory to request a fresh
+  # per-connection credential token.
   - name: ENDPOINT_NAME
     value: projects/savesage-statement-agent/branches/production/endpoints/primary
+  - name: PGHOST
+    value: ep-long-mountain-d25gb0m7.database.us-east-1.cloud.databricks.com
+  - name: PGDATABASE
+    value: databricks_postgres
+  - name: PGPORT
+    value: '5432'
   - name: PGSSLMODE
     value: require
   # --- Workstream 4: MLflow tracing ---
@@ -27,21 +40,19 @@ env:
   - name: MLFLOW_EXPERIMENT_ID
     value: "967014443183055"
 # --- Bound resources ---
-# WS3: Lakebase Postgres (permission CAN_CONNECT_AND_CREATE so the app SP
-# can both connect and create the source tables on first boot).
 # WS4: MLflow experiment (CAN_EDIT so the agent can write traces and log
 # feedback assessments).  The experiment_id is the numeric ID from
 # `databricks experiments list`; replace it if deploying to a different
 # workspace.
+#
+# Note: the Lakebase Postgres ``database`` resource binding is intentionally
+# omitted — it does not work for pg_version=17 Lakebase projects (the project
+# is not registered in the Database Instances API, so the binding cannot
+# inject connection env vars).  Connection parameters are derived at runtime
+# instead; see ``_build_lakebase_stores`` in app/main.py.
 resources:
-  - name: savesage-statement-agent-mlflow
+  - name: savesage-mlflow
     description: "MLflow experiment for statement-agent tracing + field feedback"
     experiment:
       experiment_id: "967014443183055"
       permission: CAN_EDIT
-  - name: savesage-lakebase
-    description: "Lakebase Postgres for statement results + field feedback"
-    database:
-      instance_name: "savesage-statement-agent"
-      database_name: "databricks_postgres"
-      permission: CAN_CONNECT_AND_CREATE

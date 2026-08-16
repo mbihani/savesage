@@ -70,6 +70,13 @@ _stores: Optional[tuple[Any, Any]] = None
 # Last error from a Lakebase store-init attempt, surfaced via the /health
 # endpoint for diagnostics.  ``None`` means "no attempt has failed".
 _last_store_error: Optional[str] = None
+# Connection parameters most recently derived from the Lakebase endpoint
+# status API / ``WorkspaceClient`` identity by ``_build_lakebase_stores``.
+# Surfaced via the /health endpoint for diagnostics; ``None`` until a
+# derivation attempt has produced them (so a partial failure still shows
+# whatever was resolved before the error).
+_derived_host: Optional[str] = None
+_derived_user: Optional[str] = None
 _trace_sink: Any = None
 _LOGGER = logging.getLogger("statement-agent.app")
 
@@ -279,27 +286,52 @@ def _build_lakebase_stores() -> tuple[Any, Any]:
     catch and degrade to in-memory.  ``databricks-sdk`` and ``psycopg`` are
     imported function-local inside the dependency modules, so importing this
     function does not require them — only *calling* it does.
+
+    Connection parameters are derived from the Lakebase endpoint status API
+    and the ``WorkspaceClient`` identity rather than read from resource
+    binding env vars: ``pg_version=17`` Lakebase projects are not registered
+    in the Databricks Database Instances API, so the app ``database`` resource
+    binding cannot inject ``PGHOST``/``PGUSER``/``PGDATABASE``/``PGPORT``.
+    Only ``ENDPOINT_NAME`` (set in ``app.yaml``) is required from the
+    environment; ``PGDATABASE``/``PGPORT`` may be supplied as env-var overrides
+    (the ``app.yaml`` fallback values are ``databricks_postgres``/``5432``).
     """
+    global _derived_host, _derived_user
     from databricks.sdk import WorkspaceClient
     from db.connection import OAuthConnectionFactory
     from db.stores import LakebaseFeedbackStore, LakebaseResultStore, init_tables
 
-    required = ("ENDPOINT_NAME", "PGHOST", "PGUSER", "PGDATABASE")
-    missing = [name for name in required if not os.environ.get(name)]
-    if missing:
+    if not os.environ.get("ENDPOINT_NAME"):
         raise RuntimeError(
-            "Lakebase database resource did not inject required environment "
-            f"variables: {', '.join(missing)}"
+            "ENDPOINT_NAME environment variable is required for the Lakebase "
+            "connection (set in app.yaml)"
         )
     client = WorkspaceClient()
+    # Derive the Postgres host from the endpoint status API — the database
+    # resource binding does not inject it for pg_version=17 Lakebase projects.
+    endpoint = client.postgres.get_endpoint(name=os.environ["ENDPOINT_NAME"])
+    if not endpoint.status or not endpoint.status.hosts:
+        raise RuntimeError(
+            f"Lakebase endpoint {os.environ['ENDPOINT_NAME']!r} has no ready "
+            f"host (status={endpoint.status.as_dict() if endpoint.status else None})")
+    host = endpoint.status.hosts.host
+    # Prefer the configured service-principal client id as the connecting
+    # user (the working permissions-app pattern); fall back to the current
+    # workspace user when no SP client id is configured (local dev).
+    user = client.config.client_id or client.current_user.me().user_name
+    # Surface the derived parameters for /health diagnostics before the
+    # connection attempt that may still fail (and reset them on each call so
+    # a later re-derivation overwrites a stale value).
+    _derived_host = host
+    _derived_user = user
+    database = os.environ.get("PGDATABASE", "databricks_postgres")
+    port = int(os.environ.get("PGPORT", "5432"))
+    sslmode = os.environ.get("PGSSLMODE", "require")
+    _LOGGER.info(
+        "Lakebase connection: host=%s, user=%s, db=%s", host, user, database)
     connect = OAuthConnectionFactory(
-        client,
-        os.environ["ENDPOINT_NAME"],
-        os.environ["PGHOST"],
-        os.environ["PGDATABASE"],
-        os.environ["PGUSER"],
-        port=int(os.environ.get("PGPORT", "5432")),
-        sslmode=os.environ.get("PGSSLMODE", "require"),
+        client, os.environ["ENDPOINT_NAME"], host, database, user,
+        port=port, sslmode=sslmode,
     )
     init_tables(connect)
     return LakebaseResultStore(connect), LakebaseFeedbackStore(connect)
@@ -585,10 +617,13 @@ def create_app():
     @app.get("/health")
     def health() -> dict[str, Any]:
         import os
+        # PGHOST/PGUSER/PGDATABASE/PGPORT are no longer required env vars —
+        # the host and user are derived from the Lakebase API / WorkspaceClient
+        # (see _build_lakebase_stores).  Only ENDPOINT_NAME (required) and
+        # PGSSLMODE (override) remain env-var diagnostics here.
         env_status = {
             name: "set" if os.environ.get(name) else "MISSING"
-            for name in ("ENDPOINT_NAME", "PGHOST", "PGUSER", "PGDATABASE",
-                         "PGPORT", "PGSSLMODE")
+            for name in ("ENDPOINT_NAME", "PGSSLMODE")
         }
         psycopg_ok = True
         try:
@@ -601,6 +636,8 @@ def create_app():
             "last_store_error": _last_store_error,
             "env_vars": env_status,
             "psycopg_available": psycopg_ok,
+            "endpoint_derived_host": _derived_host,
+            "derived_user": _derived_user,
         }
 
     # -- POST /api/parse -------------------------------------------------
