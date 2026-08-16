@@ -20,7 +20,7 @@ class ContractTest(unittest.TestCase):
         calls = (
             (ExtractionAdapter.extract, (None, None)),
             (JudgeAdapter.judge, (None, None, None)),
-            (ResultStore.save_extraction, (None, None)),
+            (ResultStore.save_extraction, (None, None, None)),
             (ResultStore.save_verdict, (None, None)),
             (ResultStore.get_extraction, (None, "request")),
             (ResultStore.get_verdict, (None, "request")),

@@ -52,7 +52,7 @@ class FakesTest(unittest.TestCase):
         store = InMemoryResultStore()
         from contracts.models import ExtractionResult
         result = ExtractionResult(request_id="r1", payload={}, model_id="m", latency_ms=1.0)
-        store.save_extraction(result)
+        store.save_extraction(result, Bank.HDFC)
         self.assertIs(store.get_extraction("r1"), result)
         self.assertIsNone(store.get_extraction("missing"))
 
@@ -132,9 +132,9 @@ class NodeUnitTest(unittest.TestCase):
         saved: list = []
 
         class CapturingStore(InMemoryResultStore):
-            def save_extraction(self, result):
+            def save_extraction(self, result, bank):
                 saved.append(result)
-                super().save_extraction(result)
+                super().save_extraction(result, bank)
 
         store = CapturingStore()
         deps = self._deps(extraction=FakeExtractionAdapter(), store=store)
@@ -156,9 +156,9 @@ class NodeUnitTest(unittest.TestCase):
         saved: list = []
 
         class CapturingStore(InMemoryResultStore):
-            def save_extraction(self, result):
+            def save_extraction(self, result, bank):
                 saved.append(result)
-                super().save_extraction(result)
+                super().save_extraction(result, bank)
 
         def add_unknown_key(payload):
             payload["statementMeta"]["unexpectedExtra"] = "x"  # additionalProperties
@@ -268,7 +268,7 @@ class NodeUnitTest(unittest.TestCase):
         from graph.nodes import extract_node, finalize_node, judge_node, persist_node, route_node, validate_node
 
         class FailingStore(InMemoryResultStore):
-            def save_extraction(self, result):
+            def save_extraction(self, result, bank):
                 raise RuntimeError("database is down")
 
         judge = FakeJudgeAdapter()
@@ -291,7 +291,7 @@ class NodeUnitTest(unittest.TestCase):
         from graph.nodes import extract_node, finalize_node, persist_node, route_node, validate_node
 
         class FailingStore(InMemoryResultStore):
-            def save_extraction(self, result):
+            def save_extraction(self, result, bank):
                 raise IOError("disk full")
 
         deps = self._deps(extraction=FakeExtractionAdapter(), store=FailingStore())

@@ -260,7 +260,7 @@ def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
     if state.extraction is not None:
         if deps.result_store is not None:
             try:
-                deps.result_store.save_extraction(state.extraction)
+                deps.result_store.save_extraction(state.extraction, state.request.bank)
                 state.stage = Stage.PERSISTED
                 persisted = True
             except Exception as exc:
