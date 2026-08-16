@@ -107,6 +107,10 @@ class RequestContext:
         # Result snapshots for /api/results (populated after the graph completes).
         self.extraction_data: Optional[dict[str, Any]] = None
         self.complete_data: Optional[dict[str, Any]] = None
+        # Original upload retained so the results view can display it alongside
+        # the extracted fields for the lifetime of this process.
+        self.pdf_bytes: Optional[bytes] = None
+        self.pdf_filename: str = "statement.pdf"
         # In-memory feedback list (fallback when Lakebase feedback store is down).
         self.feedback: list[dict[str, Any]] = []
 
@@ -516,7 +520,7 @@ def create_app():
     from pathlib import Path as _Path
 
     from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
-    from fastapi.responses import JSONResponse, StreamingResponse
+    from fastapi.responses import JSONResponse, Response, StreamingResponse
     from fastapi.staticfiles import StaticFiles
 
     app = FastAPI(title="SaveSage Statement Agent")
@@ -541,6 +545,8 @@ def create_app():
 
         request_id = _new_request_id()
         ctx = RequestContext(request_id)
+        ctx.pdf_bytes = pdf_bytes
+        ctx.pdf_filename = file.filename or "statement.pdf"
         _REQUESTS[request_id] = ctx
 
         thread = threading.Thread(
@@ -551,6 +557,14 @@ def create_app():
         thread.start()
 
         return {"request_id": request_id}
+
+    # -- GET /api/pdf/{request_id} ---------------------------------------
+    @app.get("/api/pdf/{request_id}")
+    async def get_pdf(request_id: str):
+        ctx = _REQUESTS.get(request_id)
+        if ctx is None or ctx.pdf_bytes is None:
+            return JSONResponse(status_code=404, content={"detail": "PDF not found"})
+        return Response(content=ctx.pdf_bytes, media_type="application/pdf")
 
     # -- GET /api/parse/{request_id}/stream (SSE) -------------------------
     @app.get("/api/parse/{request_id}/stream")
