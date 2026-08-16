@@ -520,7 +520,7 @@ def _run_judge_evaluation_bg(sample_size: int) -> None:
         _judge_result_cache = {
             "count_judged": 0,
             "count_errors": 1,
-            "errors": [{"error": "evaluation failed"}],
+            "errors": [{"error": f"{type(exc).__name__}: {exc}"}],
             "overall_strict": None,
             "overall_narration_forgiven": None,
             "per_field": {},
