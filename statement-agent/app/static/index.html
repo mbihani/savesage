@@ -743,11 +743,22 @@
               </span>
             </div>
 
+            ${complete?.validation_errors?.length > 0 && h`
+              <div class="card" style=${{ marginTop: "1rem" }}>
+                <div class="section-title" style=${{ marginTop: 0 }}>Validation Errors (${complete.validation_errors.length})</div>
+                <ul style=${{ paddingLeft: "1.25rem", color: "var(--text-muted)", fontSize: "0.8125rem" }}>
+                  ${complete.validation_errors.map((err, i) => h`
+                    <li key=${i} style=${{ marginBottom: "0.25rem" }}>⚠ ${err}</li>
+                  `)}
+                </ul>
+              </div>
+            `}
+
             ${extraction && h`
               <div class="card" style=${{ marginTop: "1rem" }}>
                 <div class="section-title" style=${{ marginTop: 0 }}>Extraction Summary</div>
                 <p style=${{ color: "var(--text-muted)", fontSize: "0.875rem" }}>
-                  Model: ${extraction.model_id || "—"} · Schema ${extraction.schema_valid ? "valid" : "invalid"}
+                  Model: ${extraction.model_id || "—"} · Schema ${(complete?.schema_valid ?? extraction?.schema_valid) ? "valid" : "invalid"}
                 </p>
                 <p style=${{ color: "var(--text-muted)", fontSize: "0.8125rem", marginTop: "0.5rem" }}>
                   The judge runs asynchronously as a post-hoc evaluation over
