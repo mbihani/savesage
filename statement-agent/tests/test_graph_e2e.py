@@ -1,11 +1,11 @@
-"""Graph end-to-end test through the compiled LangGraph (skip-if-langgraph-absent).
+"""Graph end-to-end test through the parse pipeline (stdlib-only, no langgraph).
 
-LangGraph cannot be installed on this machine (pypi is blackholed), so this test
-is skipped locally. It runs at deploy/on a machine with langgraph installed and
-proves the full route->extract->validate->persist->finalize path against
-the in-memory fake ports. The judge no longer runs inline — it is a post-hoc
-evaluation over MLflow traces (see judge/scorer.py). The non-skipped tests in
-test_graph_fakes.py cover the node logic without langgraph.
+``run_graph`` executes nodes directly (see ``graph/graph.py``) so these tests
+run without langgraph installed — they prove the full
+route->extract->validate->persist->finalize path against the in-memory fake
+ports. The judge no longer runs inline — it is a post-hoc evaluation over
+MLflow traces (see ``judge/scorer.py``). The node-logic tests in
+``test_graph_fakes.py`` cover the individual nodes without the pipeline.
 """
 
 import unittest
@@ -21,14 +21,7 @@ from graph.fakes import (
 from graph.nodes import NodeDeps
 from graph.state import GraphState, Outcome
 
-try:
-    import langgraph  # noqa: F401
-    _HAS_LANGGRAPH = True
-except ImportError:
-    _HAS_LANGGRAPH = False
 
-
-@unittest.skipUnless(_HAS_LANGGRAPH, "langgraph not installed (pypi blackholed locally)")
 class GraphE2ETest(unittest.TestCase):
     def _run(self, deps: NodeDeps, bank: Bank = Bank.HDFC) -> GraphState:
         from graph.graph import run_graph

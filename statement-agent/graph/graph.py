@@ -72,14 +72,27 @@ def build_graph(deps: NodeDeps) -> Any:
 
 
 def run_graph(deps: NodeDeps, state: GraphState) -> GraphState:
-    """Build and invoke the graph once, returning the final state.
+    """Execute the parse pipeline once, returning the final state.
 
-    This is the convenience entry point used by the skill and the CLI. It builds
-    the compiled graph, invokes it with `state`, and returns the (mutated) state.
-    LangGraph returns a dict-like update; because our nodes mutate and return the
-    same ``GraphState`` instance, the returned object IS the input state.
+    This is the convenience entry point used by the skill and the CLI. It runs
+    each node in order — ``route -> extract -> validate -> persist -> finalize``
+    — passing the *same* ``state`` object to every node so mutations persist.
 
-    After the graph completes (or raises), a root ``"parse"`` TraceEvent is
+    We execute nodes directly instead of calling ``graph.invoke()`` (the
+    compiled LangGraph) because LangGraph's ``StateGraph.invoke()`` returns a
+    plain ``dict`` — *not* the ``GraphState`` dataclass instance we passed in.
+    LangGraph rebuilds fresh ``GraphState`` instances from its internal dict
+    for each node call, so node mutations land on those copies and never reach
+    the original ``state`` object. That left ``state.outcome`` as ``None`` (the
+    SSE "complete" event carried ``outcome: null`` → frontend showed "UNKNOWN")
+    and broke extraction-item streaming, since the progress sink holds a ref to
+    the original ``state`` and could never see ``state.extraction``. The graph is
+    linear with no conditional edges, parallelism, or checkpointing, so direct
+    execution is functionally identical to the compiled graph — but the shared
+    ``state`` object keeps all mutations. ``build_graph()`` is retained for
+    future LangGraph integration and separate compiled-graph testing.
+
+    After the pipeline completes (or raises), a root ``"parse"`` TraceEvent is
     emitted in a ``finally`` block. This is the root event that
     :class:`harness.tracing.SpanTreeBuilder` flushes on — without it the span
     tree never flushes, ``_end_run()`` is never called, and the MLflow run
@@ -90,10 +103,11 @@ def run_graph(deps: NodeDeps, state: GraphState) -> GraphState:
     start = datetime.now(UTC)
     graph_error: str | None = None
     try:
-        graph = build_graph(deps)
-        result = graph.invoke(state)
-        if isinstance(result, GraphState):
-            return result
+        # Run nodes directly rather than via graph.invoke(). See the docstring
+        # for why: LangGraph returns a dict, not our GraphState instance, so
+        # node mutations never reach the original state object we hold a ref to.
+        for _name, fn in _NODES:
+            fn(state, deps)
         return state
     except Exception as exc:
         graph_error = f"{type(exc).__name__}: {exc}"
