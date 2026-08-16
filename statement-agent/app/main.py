@@ -72,6 +72,13 @@ _trace_sink: Any = None
 # Guards against a caller requesting an expensive sweep via the API.
 MAX_SAMPLE_SIZE = 50
 
+# Max seconds to wait for a best-effort persistence/telemetry call (Lakebase
+# or MLflow) inside an ``async`` route handler before giving up and falling
+# back to in-memory storage.  Bounds the blocking call so a hung connection
+# can never freeze the single uvicorn event loop — which is what made the
+# Apps proxy return 502 on feedback submit.
+_PERSIST_TIMEOUT = 5.0
+
 # Cache for the most recent judge evaluation result (populated by
 # ``POST /api/run-judge`` and returned by ``GET /api/judge-results``).
 # Process-scoped: a restart clears it, which is fine for a demo.
@@ -226,6 +233,27 @@ def _validate_feedback_body(body: dict[str, Any]) -> dict[str, Any]:
 def _queue_get(q: queue.Queue, timeout: float) -> Any:
     """Blocking ``Queue.get`` with timeout — helper for ``run_in_executor``."""
     return q.get(block=True, timeout=timeout)
+
+
+async def _run_blocking(func: Any, *args: Any, timeout: float = _PERSIST_TIMEOUT) -> Any:
+    """Run a blocking callable in a worker thread with a bounded wait.
+
+    Returns the callable's result, or ``None`` on exception/timeout.  Used for
+    best-effort persistence/telemetry (Lakebase, MLflow) inside ``async`` route
+    handlers so a hung network call can never block the single uvicorn event
+    loop — the mechanism behind the proxy 502 on feedback submit.  The
+    orphaned thread is not cancelled on timeout (Python cannot kill threads),
+    but the handler returns immediately with an in-memory fallback.
+    """
+    import asyncio
+
+    loop = asyncio.get_running_loop()
+    try:
+        return await asyncio.wait_for(
+            loop.run_in_executor(None, func, *args), timeout=timeout,
+        )
+    except Exception:
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -624,34 +652,48 @@ def create_app():
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc))
 
-        from contracts.models import FieldFeedback
+        # Build the feedback dataclass.  Guarded so a constructor or
+        # __post_init__ validation failure degrades to in-memory storage
+        # rather than surfacing as an unhandled 500/502.  The path is
+        # pre-validated above, but this is defence-in-depth.
+        fb = None
+        try:
+            from contracts.models import FieldFeedback
 
-        fb = FieldFeedback(
-            request_id=request_id,
-            field_path=v["field_path"],
-            original_value=v["original_value"],
-            corrected_value=v["corrected_value"] if not v["accepted"] else None,
-            accepted=v["accepted"],
-            actor=v["actor"],
-            timestamp=datetime.now(UTC),
-        )
+            fb = FieldFeedback(
+                request_id=request_id,
+                field_path=v["field_path"],
+                original_value=v["original_value"],
+                corrected_value=v["corrected_value"] if not v["accepted"] else None,
+                accepted=v["accepted"],
+                actor=v["actor"],
+                timestamp=datetime.now(UTC),
+            )
+        except Exception:
+            fb = None
 
-        # Persist to Lakebase (best-effort — telemetry/persistence must
-        # never break the customer UI).
-        _result_store, feedback_store = _get_stores()
-        if feedback_store is not None:
-            try:
-                feedback_store.append_feedback(fb)
-            except Exception:
-                pass
+        # Persist to Lakebase + log to MLflow — both best-effort.  Each blocking
+        # call runs in a worker thread with a bounded wait (``_run_blocking``)
+        # so a hung Lakebase credential or MLflow request can never freeze the
+        # single uvicorn event loop — the mechanism behind the proxy 502 on
+        # feedback submit.  Even if both fail, we fall back to in-memory below.
+        try:
+            stores = await _run_blocking(_get_stores)
+            if stores is not None:
+                _result_store, feedback_store = stores
+            else:
+                _result_store, feedback_store = None, None
+        except Exception:
+            _result_store, feedback_store = None, None
+        if feedback_store is not None and fb is not None:
+            await _run_blocking(feedback_store.append_feedback, fb)
 
-        # Log to MLflow (best-effort).
-        sink = _get_trace_sink()
-        if sink is not None:
-            try:
-                sink.log_field_feedback(fb)
-            except Exception:
-                pass
+        try:
+            sink = await _run_blocking(_get_trace_sink)
+        except Exception:
+            sink = None
+        if sink is not None and fb is not None:
+            await _run_blocking(sink.log_field_feedback, fb)
 
         # Store in-memory for /api/results fallback.
         ctx = _REQUESTS.get(request_id)
@@ -680,18 +722,30 @@ def create_app():
         verdict: Optional[dict[str, Any]] = None
         feedback_list: list[dict[str, Any]] = []
 
-        # Try Lakebase first (durable persistence).
-        result_store, feedback_store = _get_stores()
+        # Try Lakebase first (durable persistence).  Blocking calls run in a
+        # worker thread with a bounded wait (``_run_blocking``) so a hung
+        # connection can never freeze the single uvicorn event loop (the same
+        # 502 mechanism as feedback submit).  ``_run_blocking`` returns None
+        # on exception/timeout, which simply falls back to in-memory below.
+        try:
+            stores = await _run_blocking(_get_stores)
+            if stores is not None:
+                result_store, feedback_store = stores
+            else:
+                result_store, feedback_store = None, None
+        except Exception:
+            result_store, feedback_store = None, None
+
         if result_store is not None:
             try:
-                stored = result_store.get_extraction(request_id)
+                stored = await _run_blocking(result_store.get_extraction, request_id)
                 if stored is not None:
                     extraction = {
                         "payload": stored.payload,
                         "model_id": stored.model_id,
                         "schema_valid": stored.schema_valid,
                     }
-                stored_v = result_store.get_verdict(request_id)
+                stored_v = await _run_blocking(result_store.get_verdict, request_id)
                 if stored_v is not None:
                     verdict = {
                         "comparisons": [
@@ -705,16 +759,18 @@ def create_app():
 
         if feedback_store is not None:
             try:
-                for f in feedback_store.list_feedback(request_id):
-                    ts = f.timestamp
-                    feedback_list.append({
-                        "field_path": f.field_path,
-                        "accepted": f.accepted,
-                        "original_value": f.original_value,
-                        "corrected_value": f.corrected_value,
-                        "actor": f.actor,
-                        "timestamp": ts.isoformat() if hasattr(ts, "isoformat") else str(ts),
-                    })
+                rows = await _run_blocking(feedback_store.list_feedback, request_id)
+                if rows:
+                    for f in rows:
+                        ts = f.timestamp
+                        feedback_list.append({
+                            "field_path": f.field_path,
+                            "accepted": f.accepted,
+                            "original_value": f.original_value,
+                            "corrected_value": f.corrected_value,
+                            "actor": f.actor,
+                            "timestamp": ts.isoformat() if hasattr(ts, "isoformat") else str(ts),
+                        })
             except Exception:
                 pass
 

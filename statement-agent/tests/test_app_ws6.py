@@ -18,6 +18,7 @@ from app.main import (
     _comparison_to_dict,
     _new_request_id,
     _ProgressTraceSink,
+    _run_blocking,
     _sse_event,
     _validate_feedback_body,
 )
@@ -886,6 +887,81 @@ class PersistArtifactTest(unittest.TestCase):
         persist_node(state, deps)
         # Should not raise, stage should be PERSISTED.
         self.assertEqual(state.stage.value, "PERSISTED")
+
+
+# ---------------------------------------------------------------------------
+# _run_blocking — bounded best-effort execution (502 fix)
+# ---------------------------------------------------------------------------
+
+class RunBlockingTest(unittest.TestCase):
+    """The ``_run_blocking`` helper bounds best-effort blocking calls so a hung
+    Lakebase/MLflow call can never freeze the single uvicorn event loop — the
+    mechanism behind the proxy 502 on feedback submit."""
+
+    def test_returns_result_on_success(self) -> None:
+        """A fast callable's return value is passed through."""
+        import asyncio
+
+        self.assertEqual(asyncio.run(_run_blocking(lambda: 42)), 42)
+
+    def test_passes_args(self) -> None:
+        """Positional args are forwarded to the callable."""
+        import asyncio
+
+        def add(a: int, b: int) -> int:
+            return a + b
+
+        self.assertEqual(asyncio.run(_run_blocking(add, 3, 4)), 7)
+
+    def test_returns_none_on_exception(self) -> None:
+        """An exception inside the callable is swallowed → None (best-effort)."""
+        import asyncio
+
+        def boom() -> None:
+            raise RuntimeError("lakebase down")
+
+        self.assertIsNone(asyncio.run(_run_blocking(boom)))
+
+    def test_returns_none_on_timeout(self) -> None:
+        """A callable that exceeds the timeout returns None instead of hanging.
+
+        This is the crux of the 502 fix: a hung Lakebase credential/connect must
+        not block the event loop.  We use an Event the coroutine releases right
+        after the timeout fires so the orphaned worker thread exits promptly
+        and the test does not stall on executor shutdown.
+        """
+        import asyncio
+        import threading
+
+        release = threading.Event()
+
+        def hang() -> None:
+            release.wait(timeout=30.0)
+
+        async def go() -> None:
+            # Returns None after the timeout — does NOT wait for the 30s hang.
+            self.assertIsNone(await _run_blocking(hang, timeout=0.1))
+            release.set()  # free the orphaned thread before executor shutdown
+
+        asyncio.run(go())
+
+    def test_timeout_returns_well_before_full_duration(self) -> None:
+        """The helper returns within ~timeout, not the callable's full runtime."""
+        import asyncio
+        import time
+
+        def slow() -> str:
+            import time as _t
+            _t.sleep(0.4)
+            return "late"
+
+        async def go() -> float:
+            start = time.monotonic()
+            self.assertIsNone(await _run_blocking(slow, timeout=0.1))
+            return time.monotonic() - start
+
+        elapsed = asyncio.run(go())
+        self.assertLess(elapsed, 0.5)
 
 
 if __name__ == "__main__":
