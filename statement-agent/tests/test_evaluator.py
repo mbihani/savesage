@@ -173,7 +173,7 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        card_fb = next(f for f in feedbacks if f.name == "judge.cardDisplayName")
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
         comps = _comparisons(card_fb)
         self.assertEqual(len(comps), 1)
         # PII field omitted (None) — NOT the cleartext value.
@@ -187,7 +187,7 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        desc_fb = next(f for f in feedbacks if f.name == "judge.transactions.description")
+        desc_fb = next(f for f in feedbacks if f.name == "judge_transactions_description")
         comps = _comparisons(desc_fb)
         self.assertEqual(len(comps), 1)
         self.assertIsNone(comps[0]["expected"])
@@ -204,19 +204,19 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         by_name = {f.name: f for f in feedbacks[:7]}
 
         # lastFourDigit retained raw.
-        last4_comps = _comparisons(by_name["judge.lastFourDigit"])
+        last4_comps = _comparisons(by_name["judge_lastFourDigit"])
         self.assertEqual(last4_comps[0]["expected"], "1234")
 
         # amount retained raw.
-        amt_comps = _comparisons(by_name["judge.transactions.amount"])
+        amt_comps = _comparisons(by_name["judge_transactions_amount"])
         self.assertEqual(amt_comps[0]["expected"], 150.0)
 
         # date retained raw.
-        date_comps = _comparisons(by_name["judge.transactions.date"])
+        date_comps = _comparisons(by_name["judge_transactions_date"])
         self.assertEqual(date_comps[0]["expected"], "2026-01-01")
 
         # points retained raw.
-        pts_comps = _comparisons(by_name["judge.pointsEarnedThisCycle"])
+        pts_comps = _comparisons(by_name["judge_pointsEarnedThisCycle"])
         self.assertEqual(pts_comps[0]["expected"], 100)
 
     def test_pii_fields_hmac_with_key_configured(self):
@@ -228,7 +228,7 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
                    return_value=b"test-hmac-key"):
             feedbacks = build_field_feedbacks(self.verdict, self.metrics)
 
-        card_fb = next(f for f in feedbacks if f.name == "judge.cardDisplayName")
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
         comps = _comparisons(card_fb)
         # HMAC'd — a non-empty string, NOT the cleartext, NOT None.
         self.assertIsNotNone(comps[0]["expected"])
@@ -241,10 +241,10 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        card_fb = next(f for f in feedbacks if f.name == "judge.cardDisplayName")
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
         self.assertEqual(card_fb.metadata["field_path"],
                          "cards[].cardMeta.cardDisplayName")
-        self.assertEqual(card_fb.metadata["n_comparisons"], 1)
+        self.assertEqual(card_fb.metadata["n_comparisons"], "1")
 
     def test_source_is_llm_judge_with_model_id(self):
         """Each Feedback source is AssessmentSource(LLM_JUDGE, judge_model_id)."""
@@ -282,9 +282,9 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         # The transaction fields have empty comparisons + "not_scored" value
         # (Feedback rejects None; the sentinel preserves 7 rows per trace
         # while genai.evaluate's aggregation skips it).
-        txn_date = next(f for f in feedbacks if f.name == "judge.transactions.date")
+        txn_date = next(f for f in feedbacks if f.name == "judge_transactions_date")
         self.assertEqual(txn_date.value, "not_scored")
-        self.assertEqual(txn_date.metadata["n_comparisons"], 0)
+        self.assertEqual(txn_date.metadata["n_comparisons"], "0")
         # The comparisons metadata is a JSON string (Databricks-flat form);
         # an empty field serialises to "[]".
         self.assertEqual(_comparisons(txn_date), [])
@@ -501,12 +501,12 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        card_fb = next(f for f in feedbacks if f.name == "judge.cardDisplayName")
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
         for c in _comparisons(card_fb):
             self.assertIsNone(c["expected"])
             self.assertIsNone(c["actual"])
         desc_fb = next(
-            f for f in feedbacks if f.name == "judge.transactions.description"
+            f for f in feedbacks if f.name == "judge_transactions_description"
         )
         for c in _comparisons(desc_fb):
             self.assertIsNone(c["expected"])
@@ -526,7 +526,7 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
                    return_value=b"test-hmac-key"):
             feedbacks = build_field_feedbacks(self.verdict, self.metrics)
 
-        card_fb = next(f for f in feedbacks if f.name == "judge.cardDisplayName")
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
         for c in _comparisons(card_fb):
             self.assertIsNotNone(c["expected"])
             self.assertIsInstance(c["expected"], str)
@@ -544,18 +544,18 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         by_name = {f.name: f for f in feedbacks[:7]}
 
         # lastFourDigit: DISAGREE, both non-null, retained raw.
-        last4 = _comparisons(by_name["judge.lastFourDigit"])[0]
+        last4 = _comparisons(by_name["judge_lastFourDigit"])[0]
         self.assertEqual(last4["expected"], "1234")
         self.assertEqual(last4["actual"], "5678")
 
         # transactions[].amount: row0 non-null retained; row1 UNMATCHED_ROW
         # expected=None retained raw (not omitted — amount is a KEEP leaf).
-        amt_comps = _comparisons(by_name["judge.transactions.amount"])
+        amt_comps = _comparisons(by_name["judge_transactions_amount"])
         self.assertEqual(amt_comps[0]["expected"], 150.0)
         self.assertIsNone(amt_comps[1]["expected"])  # UNMATCHED_ROW leaf
 
         # transactions[].date: row1 UNMATCHED_ROW actual=None retained raw.
-        date_comps = _comparisons(by_name["judge.transactions.date"])
+        date_comps = _comparisons(by_name["judge_transactions_date"])
         self.assertEqual(date_comps[0]["expected"], "2026-01-01")
         self.assertIsNone(date_comps[1]["actual"])  # UNMATCHED_ROW leaf
 
@@ -568,39 +568,39 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         by_name = {f.name: f for f in feedbacks[:7]}
         # transactions[].date has 2 comparisons (AGREE + UNMATCHED_ROW).
         self.assertEqual(
-            by_name["judge.transactions.date"].metadata["field_path"],
+            by_name["judge_transactions_date"].metadata["field_path"],
             "transactions[].date",
         )
         self.assertEqual(
-            by_name["judge.transactions.date"].metadata["n_comparisons"], 2,
+            by_name["judge_transactions_date"].metadata["n_comparisons"], "2",
         )
         # cardDisplayName has 1.
         self.assertEqual(
-            by_name["judge.cardDisplayName"].metadata["n_comparisons"], 1,
+            by_name["judge_cardDisplayName"].metadata["n_comparisons"], "1",
         )
 
     def test_metadata_is_flat_stringable_for_databricks_store(self):
-        """The Databricks tracking store validates ``Feedback.metadata`` as a
-        flat ``dict[str, str]`` (OSS file store is lenient).  The per-field
-        metadata must therefore carry only JSON-primitive values — the nested
-        ``comparisons`` list must be flattened to a JSON STRING so a strict
-        backend accepts it.  This is the most likely root cause of the
-        production failure (zero assessments persisted on Databricks while
-        the all-AGREE fixture passed locally)."""
+        """Every assessment metadata VALUE is a STRING.  The Databricks
+        tracking store persists nested-list assessment metadata fine (proven
+        live), but the live probe stringified every metadata value before
+        9/9 assessments persisted — so every value is stringified defensively
+        (``n_comparisons`` str()'d; the redacted ``comparisons`` list
+        json.dumps'd to a JSON string).  The structured list remains in the
+        ``verdict_comparisons.json`` artifact (``log_dict`` accepts arbitrary
+        JSON)."""
         from judge.evaluator import build_field_feedbacks, COMPARISONS_METADATA_KEY
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
         for f in feedbacks:
             meta = f.metadata or {}
             for key, value in meta.items():
-                # Every metadata value must be a JSON primitive (str/int/float/
-                # bool/None) — NOT a list/dict that a strict backend rejects.
-                self.assertNotIsInstance(
-                    value, (list, dict),
-                    msg=f"{f.name}.metadata[{key!r}] is nested ({type(value).__name__})",
+                # Every metadata value must be a str (the live-probe form).
+                self.assertIsInstance(
+                    value, str,
+                    msg=f"{f.name}.metadata[{key!r}] is {type(value).__name__}, not str",
                 )
         # The redacted comparisons are still recoverable as a JSON string.
-        card_fb = next(f for f in feedbacks if f.name == "judge.cardDisplayName")
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
         comps_json = card_fb.metadata[COMPARISONS_METADATA_KEY]
         self.assertIsInstance(comps_json, str)
         decoded = json.loads(comps_json)
@@ -608,6 +608,88 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         self.assertEqual(len(decoded), 1)
         self.assertEqual(decoded[0]["field_path"],
                          "cards[].cardMeta.cardDisplayName")
+
+    def test_no_assessment_name_contains_a_dot(self):
+        """REGRESSION GUARD FOR THE REAL ROOT CAUSE: the Databricks tracking
+        store REJECTS any assessment whose name contains a '.' (RestException
+        INVALID_PARAMETER_VALUE: 'assessment_name' must not contain ".").
+        Proven live: the earlier dotted ``judge.<field>`` names caused 0/9
+        assessments to persist (zero judge assessments ever appeared in
+        production), while dot-free ``judge_<field>`` + stringified metadata
+        persisted 9/9.  This test pins that NO name returned by
+        build_field_feedbacks (per-field OR overall) ever contains a dot —
+        checked for BOTH the mixed-outcome verdict AND the all-ABSENT
+        JUDGE_ERROR verdict — so a future rename back to a dotted form
+        fails the gate."""
+        from judge.comparison import judge_error_comparisons
+        from judge.evaluator import build_field_feedbacks
+
+        def _assert_no_dots(feedbacks):
+            self.assertEqual(len(feedbacks), 9)
+            for f in feedbacks:
+                self.assertNotIn(
+                    ".", f.name,
+                    msg=f"assessment name {f.name!r} contains a dot — "
+                        "Databricks rejects dotted assessment names "
+                        "(INVALID_PARAMETER_VALUE)",
+                )
+
+        # Mixed-outcome verdict (UNMATCHED_ROW / ABSENT_IN_PDF / DISAGREE +
+        # None leaves).
+        _assert_no_dots(build_field_feedbacks(self.verdict, self.metrics))
+
+        # JUDGE_ERROR verdict (all ABSENT_IN_PDF with None leaves).
+        error_comps = judge_error_comparisons("opus returned unusable json")
+        error_verdict = JudgeVerdict(
+            request_id="req-test",
+            judge_model_id="databricks-claude-opus-5",
+            comparisons=error_comps,
+            latency_ms=50.0,
+            summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+        _assert_no_dots(
+            build_field_feedbacks(error_verdict, verdict_to_metrics(error_verdict))
+        )
+
+    def test_every_metadata_value_is_a_str(self):
+        """REGRESSION GUARD: every metadata VALUE on every assessment is a
+        ``str``.  The Databricks tracking store persists nested-list
+        assessment metadata fine (proven live), but the live probe
+        stringified every metadata value before 9/9 assessments persisted
+        (non-str values — int counts, nested lists — are risky).  So
+        ``n_comparisons`` / ``n_scored`` / ``n_correct`` are str()'d and the
+        redacted ``comparisons`` list is json.dumps'd to a JSON STRING.  This
+        test pins that every metadata value is a str — checked for BOTH the
+        mixed-outcome verdict AND the all-ABSENT JUDGE_ERROR verdict."""
+        from judge.comparison import judge_error_comparisons
+        from judge.evaluator import build_field_feedbacks
+
+        def _assert_all_str(feedbacks):
+            self.assertEqual(len(feedbacks), 9)
+            for f in feedbacks:
+                meta = f.metadata or {}
+                for key, value in meta.items():
+                    self.assertIsInstance(
+                        value, str,
+                        msg=f"{f.name}.metadata[{key!r}] is "
+                            f"{type(value).__name__}, not str",
+                    )
+
+        # Mixed-outcome verdict.
+        _assert_all_str(build_field_feedbacks(self.verdict, self.metrics))
+
+        # JUDGE_ERROR verdict.
+        error_comps = judge_error_comparisons("opus returned unusable json")
+        error_verdict = JudgeVerdict(
+            request_id="req-test",
+            judge_model_id="databricks-claude-opus-5",
+            comparisons=error_comps,
+            latency_ms=50.0,
+            summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+        _assert_all_str(
+            build_field_feedbacks(error_verdict, verdict_to_metrics(error_verdict))
+        )
 
     def test_judge_error_verdict_does_not_raise(self):
         """A JUDGE_ERROR verdict (Opus returned an unusable response) is all

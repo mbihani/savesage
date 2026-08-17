@@ -1883,7 +1883,7 @@ class RunGenaiEvaluationTest(unittest.TestCase):
         self.assertEqual(len(assessments), 27)
         # 7 per-field names × 3 traces = 21 per-field assessments.
         per_field = [a for a in assessments
-                     if not a.name.startswith("judge.overall")]
+                     if not a.name.startswith("judge_overall")]
         self.assertEqual(len(per_field), 21)
         # Each of the 7 field names appears exactly 3 times.
         from collections import Counter
@@ -1968,7 +1968,7 @@ class RunGenaiEvaluationTest(unittest.TestCase):
             run_judge_evaluation(sample_size=3, result_store=store)
 
         assessments = self.fake_mlflow.genai.assessments
-        card_fb = next(a for a in assessments if a.name == "judge.cardDisplayName")
+        card_fb = next(a for a in assessments if a.name == "judge_cardDisplayName")
         # The comparisons metadata is a JSON STRING (Databricks tracking
         # store validates Feedback.metadata as flat dict[str, str]; a nested
         # list is rejected — see judge/evaluator.py COMPARISONS_METADATA_KEY).
