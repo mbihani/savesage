@@ -37,7 +37,7 @@ from contracts.ports import ExtractionAdapter
 from harness.auth import acquire_token
 from harness.policy import RetryPolicy
 from harness.transports import extraction_payload
-from rules.routing import PROMPT_BY_BANK
+from rules.routing import PROMPT_BY_BANK, load_schema_for_bank
 
 # Re-exported so the wiring layer can build a default policy without importing
 # harness.policy separately (keeps the adapter the single integration point).
@@ -206,18 +206,20 @@ class LunaExtractionAdapter(ExtractionAdapter):
         return req
 
     def extract(self, request: ParseRequest) -> ExtractionResult:
-        """Invoke Luna with the bank's prompt and the shared GT schema.
+        """Invoke Luna with the bank's prompt and the bank's per-bank schema.
 
-        Uses :func:`graph.routing.resolve_prompt` for the prompt (function-local
-        import to keep this module importable in isolation tests that monkeypatch
-        the prompt). The retry policy's ``max_attempts`` bounds the call; the
-        ``retry_statuses`` set decides what is retried. The timeout is the
-        policy's ``timeout_seconds`` (single source -- no settings timeout).
+        Uses :func:`graph.routing.resolve_prompt` for the prompt and
+        :func:`rules.routing.load_schema_for_bank` for the schema (both keyed on
+        the request's detected bank, mirroring each other). The function-local
+        prompt import keeps this module importable in isolation tests that
+        monkeypatch the prompt. The retry policy's ``max_attempts`` bounds the
+        call; the ``retry_statuses`` set decides what is retried. The timeout is
+        the policy's ``timeout_seconds`` (single source -- no settings timeout).
         """
         from graph.routing import resolve_prompt  # function-local; see docstring
 
         prompt = resolve_prompt(request.bank)
-        schema = _load_schema()
+        schema = load_schema_for_bank(request.bank)
         req = self._build_request(request, prompt, schema)
         timeout = self._policy.timeout_seconds
 
@@ -268,19 +270,8 @@ class LunaExtractionAdapter(ExtractionAdapter):
         return body
 
 
-_SCHEMA_CACHE: dict[str, Any] | None = None
-
-
-def _load_schema() -> dict[str, Any]:
-    global _SCHEMA_CACHE
-    if _SCHEMA_CACHE is None:
-        from pathlib import Path
-
-        schema_path = Path(__file__).resolve().parents[1] / "schema" / "gt_schema.json"
-        _SCHEMA_CACHE = json.loads(schema_path.read_text(encoding="utf-8"))
-    return _SCHEMA_CACHE
-
-
-# Kept for parity with the wiring helper; the prompt map is the source of truth
-# in rules.routing but re-exporting here avoids a second import in callers.
+# Kept for parity with the wiring helper; the prompt + schema maps are the
+# source of truth in rules.routing but re-exporting here avoids a second import
+# in callers.
 _ = PROMPT_BY_BANK
+_ = load_schema_for_bank

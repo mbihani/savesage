@@ -1,0 +1,324 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "statementMeta",
+    "statementLevelSummary",
+    "cards",
+    "transactions",
+    "rewards"
+  ],
+  "properties": {
+    "statementMeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuerName",
+        "statementDate",
+        "dueDate",
+        "statementPeriodStart",
+        "statementPeriodEnd",
+        "rawStatementId"
+      ],
+      "properties": {
+        "issuerName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "statementDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dueDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "statementPeriodStart": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "statementPeriodEnd": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rawStatementId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "statementLevelSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "totalAmountDue",
+        "totalMinimumAmountDue",
+        "totalCreditLimit",
+        "availableCreditLimit"
+      ],
+      "properties": {
+        "totalAmountDue": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "totalMinimumAmountDue": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "totalCreditLimit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "availableCreditLimit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cardMeta",
+          "bigPicture"
+        ],
+        "properties": {
+          "cardMeta": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cardDisplayName",
+              "productFamily",
+              "lastFourDigit",
+              "network",
+              "isPrimaryCard"
+            ],
+            "properties": {
+              "cardDisplayName": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "productFamily": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The SBI product / co-brand family name, i.e. cardDisplayName with the issuer words 'SBI', 'Card', 'Credit Card' and the cardholder's name removed: e.g. 'CASHBACK', 'Club Vistara PRIME', 'BPCL OCTANE', 'Tata Neu Infinity', 'IRCTC Platinum', 'OLA Money', 'Flipkart'. Take it from the product name in the page-1 statement header or the product line; never from a promotional offer, a fee table or a transaction narration, and never from the cardholder name. Null only when no product name is printed anywhere. NEVER infer it from the card number, its leading digits, or the payment network."
+              },
+              "lastFourDigit": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "network": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "isPrimaryCard": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          },
+          "bigPicture": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cardCreditLimit",
+              "cardAvailableCreditLimit"
+            ],
+            "properties": {
+              "cardCreditLimit": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "cardAvailableCreditLimit": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "transactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "description",
+          "amount",
+          "direction",
+          "txnType",
+          "rewardPointsOnThisTransaction",
+          "currency"
+        ],
+        "properties": {
+          "date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "amount": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "direction": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "DEBIT",
+              "CREDIT",
+              null
+            ]
+          },
+          "txnType": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "PURCHASE",
+              "PAYMENT",
+              "REFUND",
+              "REVERSAL",
+              "CASHBACK",
+              "FEE",
+              "TAX",
+              "INTEREST",
+              "EMI",
+              "CASH_ADVANCE",
+              "UPI",
+              null
+            ],
+            "description": "The kind of transaction this row is, from the closed vocabulary in the prompt: PURCHASE, PAYMENT, REFUND, REVERSAL, CASHBACK, FEE, TAX, INTEREST, EMI, CASH_ADVANCE, UPI. Classify from the printed narration and the row's role: SBI prints 'PAYMENT RECEIVED ...' (PAYMENT), 'IGST DB @ 18.00%' and other tax lines (TAX), 'ANNUAL FEE CHARGED' / 'FUEL SURCHARGE WAIVER EXCL TAX' style fee and waiver lines (FEE), 'FP EMI nn/nn' Flexipay instalments (EMI), 'CARD CASHBACK CREDIT' (CASHBACK). Use null when the row's kind is not determinable from what is printed; never guess a type to avoid a null."
+          },
+          "rewardPointsOnThisTransaction": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "currency": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "rewards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "programType",
+        "openingPoints",
+        "pointsEarnedThisCycle",
+        "pointsRedeemedThisCycle",
+        "closingPoints",
+        "pointsExpiringNext30Days",
+        "pointsExpiringNext60Days",
+        "bonusPointsThisCycle"
+      ],
+      "properties": {
+        "programType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "openingPoints": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pointsEarnedThisCycle": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pointsRedeemedThisCycle": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "closingPoints": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pointsExpiringNext30Days": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "The number of reward points printed as expiring within the next 30 days. On SBI statements this appears ONLY as a 'Points Expiry Details' cell inside the four-cell reward strip, and on this corpus its printed value is the word 'NONE', which means zero points are expiring and must be emitted as 0. If a figure is printed instead, copy it verbatim, including a printed 0. Null when no expiry label is printed at all, which is the case on the large majority of SBI statements -- the cashback, 'Points Earned' and NeuCoins layouts print no expiry cell whatsoever. Never computed, never carried over from another field, and never inferred from a points balance."
+        },
+        "pointsExpiringNext60Days": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "The number of reward points printed as expiring within the next 60 days, taken only from a cell that distinctly says 60 days. SBI statements on this corpus print NO 60-day expiry figure anywhere, so null is the expected answer. Do NOT copy the 30-day figure into this field, do not derive it from a 'Points Expiry Details' cell that names no period, and do not compute it from a points balance. Populate it only when a 60-day figure is explicitly printed."
+        },
+        "bonusPointsThisCycle": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

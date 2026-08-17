@@ -29,7 +29,7 @@ from contracts.ports import (
 )
 from graph.routing import get_prompt_version, resolve_prompt
 from graph.state import GraphState, Outcome, Stage
-from graph.validation import validate_payload
+from graph.validation import load_schema_for_bank, validate_payload
 
 if TYPE_CHECKING:  # pragma: no cover
     pass
@@ -225,7 +225,12 @@ def validate_node(state: GraphState, deps: NodeDeps) -> GraphState:
     """
     if state.outcome is Outcome.EXTRACTION_FAILED or state.extraction is None:
         return state
-    report = validate_payload(state.extraction.payload)
+    # Per-bank schema resolution: validate against the schema that was actually
+    # sent to the model for this request's detected bank (mirrors the per-bank
+    # prompt routing in route_node). Falls back to load_gt_schema() if a bank
+    # somehow has no schema, but SCHEMA_BY_BANK covers every Bank enum value.
+    schema = load_schema_for_bank(state.request.bank)
+    report = validate_payload(state.extraction.payload, schema)
     state.schema_valid = report.schema_valid
     state.validation_errors = report.all_errors
     # An internal validation error (validator bug, not a bad payload) must
