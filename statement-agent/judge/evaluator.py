@@ -19,8 +19,8 @@ from the trace's ``mlflow.sourceRun`` metadata, reuses
 :func:`judge.scorer._judge_and_persist` (the shared download→Opus→compare→
 persist core) so Opus is called EXACTLY ONCE per trace, then returns 7
 per-field ``Feedback`` objects (one per judged field:
-``judge.cardDisplayName``, ``judge.transactions.amount``, …) plus 2 overall
-(``judge.overall.strict`` / ``judge.overall.forgiven``).  Do NOT write 7
+``judge_cardDisplayName``, ``judge_transactions_amount``, …) plus 2 overall
+(``judge_overall_strict`` / ``judge_overall_forgiven``).  Do NOT write 7
 separate scorer functions — that would call Opus 7×.
 
 PII REDACTION — reuse the EXACT field-aware policy from
@@ -61,21 +61,43 @@ from judge.scorer import JUDGED_FIELDS
 _LOGGER = logging.getLogger("statement-agent.evaluator")
 
 # Per-field assessment names — one row per field in the Assessments tab.
-# Short, stable names (``judge.cardDisplayName``, ``judge.transactions.amount``)
-# so each field is its own row.  Ordered to mirror :data:`JUDGED_FIELDS`.
+# Short, stable, DOT-FREE names (``judge_cardDisplayName``,
+# ``judge_transactions.amount``) so each field is its own row.  Ordered to
+# mirror :data:`JUDGED_FIELDS`.
+#
+# DOTS ARE FORBIDDEN in assessment names: the Databricks tracking store
+# REJECTS any assessment whose name contains a '.' with
+# ``RestException INVALID_PARAMETER_VALUE: 'assessment_name' must not
+# contain "."`` — proven live (dotted names → 0/9 assessments persist; the
+# pre-existing dot-free ``field_feedback`` assessments persisted fine).  The
+# earlier ``judge.<field>`` dotted names are why ZERO judge assessments ever
+# appeared in production.  Use underscores everywhere.
 FIELD_ASSESSMENT_NAMES: dict[str, str] = {
-    "cards[].cardMeta.cardDisplayName": "judge.cardDisplayName",
-    "cards[].cardMeta.lastFourDigit": "judge.lastFourDigit",
-    "rewards.pointsEarnedThisCycle": "judge.pointsEarnedThisCycle",
-    "rewards.closingPoints": "judge.closingPoints",
-    "transactions[].date": "judge.transactions.date",
-    "transactions[].description": "judge.transactions.description",
-    "transactions[].amount": "judge.transactions.amount",
+    "cards[].cardMeta.cardDisplayName": "judge_cardDisplayName",
+    "cards[].cardMeta.lastFourDigit": "judge_lastFourDigit",
+    "rewards.pointsEarnedThisCycle": "judge_pointsEarnedThisCycle",
+    "rewards.closingPoints": "judge_closingPoints",
+    "transactions[].date": "judge_transactions_date",
+    "transactions[].description": "judge_transactions_description",
+    "transactions[].amount": "judge_transactions_amount",
 }
 
-# Overall assessment names (additive to the 7 per-field ones).
-OVERALL_STRICT_NAME = "judge.overall.strict"
-OVERALL_FORGIVEN_NAME = "judge.overall.forgiven"
+# Overall assessment names (additive to the 7 per-field ones).  DOT-FREE —
+# see the FIELD_ASSESSMENT_NAMES note for why dots are forbidden.
+OVERALL_STRICT_NAME = "judge_overall_strict"
+OVERALL_FORGIVEN_NAME = "judge_overall_forgiven"
+
+# Metadata key carrying the PII-redacted per-comparison details.  The
+# Databricks tracking store persists nested-list assessment metadata fine
+# (proven live), BUT every metadata VALUE must be a STRING — non-str values
+# (int counts, nested lists) are risky and the live probe stringified every
+# value before 9/9 assessments persisted.  So the redacted comparisons list
+# is serialised to a JSON STRING under this key (stringifying the nested
+# list), and the integer counts (n_comparisons etc.) are str()'d.  The
+# ``verdict_comparisons.json`` artifact (logged via ``MlflowClient.log_dict``
+# in ``_judge_and_persist``) keeps the structured list — that path accepts
+# arbitrary JSON.
+COMPARISONS_METADATA_KEY = "comparisons"
 
 
 def _field_key(field_path: str) -> str:
@@ -88,8 +110,8 @@ def build_field_feedbacks(
 ) -> list[Any]:
     """Build 7 per-field ``Feedback`` objects + 2 overall from a ``JudgeVerdict``.
 
-    One ``Feedback`` per judged field (``judge.cardDisplayName`` etc.), plus
-    ``judge.overall.strict`` and ``judge.overall.forgiven``.  Each per-field
+    One ``Feedback`` per judged field (``judge_cardDisplayName`` etc.), plus
+    ``judge_overall_strict`` and ``judge_overall_forgiven``.  Each per-field
     assessment's ``value`` is the per-field strict accuracy (float or ``None``);
     its ``metadata`` carries the field path, comparison count, and the
     PII-REDACTED per-comparison details (reusing
@@ -111,6 +133,7 @@ def build_field_feedbacks(
     module stays stdlib-importable for the test gate.  Returns a list of
     ``mlflow.entities.assessment.Feedback`` objects.
     """
+    import json
     from collections import defaultdict
 
     from mlflow.entities import AssessmentSource, Feedback
@@ -144,6 +167,11 @@ def build_field_feedbacks(
         name = FIELD_ASSESSMENT_NAMES[field_path]
         accuracy = metrics.get(f"judge.{_field_key(field_path)}")
         comps = grouped.get(field_path, [])
+        # Redacted per-comparison details (HMAC/omit PII, no rationale).
+        # ``_redact_comparisons`` is None-leaf-safe for every ComparisonOutcome
+        # (UNMATCHED_ROW / ABSENT_IN_PDF / DISAGREE can carry None expected,
+        # actual, card_index, row indices, similarity — read defensively).
+        redacted = _redact_comparisons(comps)
         feedbacks.append(
             Feedback(
                 name=name,
@@ -151,10 +179,16 @@ def build_field_feedbacks(
                 source=source,
                 rationale=None,  # OMITTED — PII vector (Opus free-text)
                 metadata={
+                    # Every metadata VALUE is stringified: the Databricks
+                    # tracking store persists nested-list metadata fine, but
+                    # the live probe stringified every value before 9/9
+                    # assessments persisted (non-str values are risky).  So
+                    # ``n_comparisons`` is str()'d and the redacted comparisons
+                    # list is json.dumps'd to a JSON STRING.  The structured
+                    # list remains in the verdict_comparisons.json artifact.
                     "field_path": field_path,
-                    "n_comparisons": len(comps),
-                    # Redacted per-comparison details (HMAC/omit PII, no rationale).
-                    "comparisons": _redact_comparisons(comps),
+                    "n_comparisons": str(len(comps)),
+                    COMPARISONS_METADATA_KEY: json.dumps(redacted, default=str),
                 },
             )
         )
@@ -167,8 +201,9 @@ def build_field_feedbacks(
             source=source,
             rationale=None,
             metadata={
-                "n_scored": int(metrics.get("judge.scored", 0)),
-                "n_correct": int(metrics.get("judge.correct", 0)),
+                # Stringified — see the per-field metadata note above.
+                "n_scored": str(int(metrics.get("judge.scored", 0))),
+                "n_correct": str(int(metrics.get("judge.correct", 0))),
             },
         )
     )
@@ -243,8 +278,15 @@ def make_judge_scorer(
             raise ValueError("trace has no mlflow.sourceRun metadata")
 
         try:
-            verdict, meta, metrics, status = _judge_and_persist(
-                run_id, result_store
+            # log_assessments=False → genai.evaluate's harness logs the
+            # scorer's returned Feedbacks itself (and accounts for
+            # assessment errors itself).  The 5th return value
+            # (assessment_errors) is therefore always empty here; unpack
+            # it for signature parity with the on-demand path.
+            verdict, meta, metrics, status, _assessment_errors = (
+                _judge_and_persist(
+                    run_id, result_store, log_assessments=False,
+                )
             )
         except Exception as exc:  # noqa: BLE001 - re-raise for genai.evaluate
             results_collector.append(
@@ -272,7 +314,7 @@ def _log_supplementary_metrics_and_tags(
     aggregation to the evaluation run.
 
     genai.evaluate aggregates the per-field Feedback VALUES into ``mean``
-    metrics (e.g. ``judge.cardDisplayName/mean``).  Counts, per-field means
+    metrics (e.g. ``judge_cardDisplayName/mean``).  Counts, per-field means
     (keyed by the full field path), and the per-bank breakdown are NOT
     derivable from assessment values alone — they are logged here directly
     via ``MlflowClient`` (explicit ``run_id`` — works after the genai.evaluate

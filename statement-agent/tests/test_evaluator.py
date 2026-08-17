@@ -89,6 +89,14 @@ def _full_verdict(request_id: str = "req-test") -> JudgeVerdict:
     )
 
 
+def _comparisons(feedback: Any) -> list[dict[str, Any]]:
+    """Decode the JSON-string ``comparisons`` metadata a per-field Feedback
+    carries back into a list of dicts (the Databricks-flat-metadata form)."""
+    from judge.evaluator import COMPARISONS_METADATA_KEY
+
+    return json.loads(feedback.metadata[COMPARISONS_METADATA_KEY])
+
+
 # ---------------------------------------------------------------------------
 # Pure-logic tests for build_field_feedbacks
 # ---------------------------------------------------------------------------
@@ -165,8 +173,8 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        card_fb = next(f for f in feedbacks if f.name == "judge.cardDisplayName")
-        comps = card_fb.metadata["comparisons"]
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
+        comps = _comparisons(card_fb)
         self.assertEqual(len(comps), 1)
         # PII field omitted (None) — NOT the cleartext value.
         self.assertIsNone(comps[0]["expected"])
@@ -179,8 +187,8 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        desc_fb = next(f for f in feedbacks if f.name == "judge.transactions.description")
-        comps = desc_fb.metadata["comparisons"]
+        desc_fb = next(f for f in feedbacks if f.name == "judge_transactions_description")
+        comps = _comparisons(desc_fb)
         self.assertEqual(len(comps), 1)
         self.assertIsNone(comps[0]["expected"])
         self.assertIsNone(comps[0]["actual"])
@@ -196,19 +204,19 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         by_name = {f.name: f for f in feedbacks[:7]}
 
         # lastFourDigit retained raw.
-        last4_comps = by_name["judge.lastFourDigit"].metadata["comparisons"]
+        last4_comps = _comparisons(by_name["judge_lastFourDigit"])
         self.assertEqual(last4_comps[0]["expected"], "1234")
 
         # amount retained raw.
-        amt_comps = by_name["judge.transactions.amount"].metadata["comparisons"]
+        amt_comps = _comparisons(by_name["judge_transactions_amount"])
         self.assertEqual(amt_comps[0]["expected"], 150.0)
 
         # date retained raw.
-        date_comps = by_name["judge.transactions.date"].metadata["comparisons"]
+        date_comps = _comparisons(by_name["judge_transactions_date"])
         self.assertEqual(date_comps[0]["expected"], "2026-01-01")
 
         # points retained raw.
-        pts_comps = by_name["judge.pointsEarnedThisCycle"].metadata["comparisons"]
+        pts_comps = _comparisons(by_name["judge_pointsEarnedThisCycle"])
         self.assertEqual(pts_comps[0]["expected"], 100)
 
     def test_pii_fields_hmac_with_key_configured(self):
@@ -220,8 +228,8 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
                    return_value=b"test-hmac-key"):
             feedbacks = build_field_feedbacks(self.verdict, self.metrics)
 
-        card_fb = next(f for f in feedbacks if f.name == "judge.cardDisplayName")
-        comps = card_fb.metadata["comparisons"]
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
+        comps = _comparisons(card_fb)
         # HMAC'd — a non-empty string, NOT the cleartext, NOT None.
         self.assertIsNotNone(comps[0]["expected"])
         self.assertNotEqual(comps[0]["expected"], "Platinum Card")
@@ -233,10 +241,10 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        card_fb = next(f for f in feedbacks if f.name == "judge.cardDisplayName")
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
         self.assertEqual(card_fb.metadata["field_path"],
                          "cards[].cardMeta.cardDisplayName")
-        self.assertEqual(card_fb.metadata["n_comparisons"], 1)
+        self.assertEqual(card_fb.metadata["n_comparisons"], "1")
 
     def test_source_is_llm_judge_with_model_id(self):
         """Each Feedback source is AssessmentSource(LLM_JUDGE, judge_model_id)."""
@@ -274,10 +282,439 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         # The transaction fields have empty comparisons + "not_scored" value
         # (Feedback rejects None; the sentinel preserves 7 rows per trace
         # while genai.evaluate's aggregation skips it).
-        txn_date = next(f for f in feedbacks if f.name == "judge.transactions.date")
+        txn_date = next(f for f in feedbacks if f.name == "judge_transactions_date")
         self.assertEqual(txn_date.value, "not_scored")
-        self.assertEqual(txn_date.metadata["n_comparisons"], 0)
-        self.assertEqual(txn_date.metadata["comparisons"], [])
+        self.assertEqual(txn_date.metadata["n_comparisons"], "0")
+        # The comparisons metadata is a JSON string (Databricks-flat form);
+        # an empty field serialises to "[]".
+        self.assertEqual(_comparisons(txn_date), [])
+
+
+def _mixed_outcome_verdict(request_id: str = "req-abc123def456") -> JudgeVerdict:
+    """A verdict mirroring what judge/comparison.py produces on a REAL parse:
+    every non-AGREE outcome (UNMATCHED_ROW, ABSENT_IN_PDF, DISAGREE) is
+    present, including the None leaves those outcomes produce in practice.
+
+    Specifically (see judge/comparison.py build_comparisons):
+
+    * UNMATCHED_ROW for a PDF row with no extraction match sets
+      ``actual=None``, ``actual_row_index=None``, ``similarity=None``.
+    * UNMATCHED_ROW for an extraction row with no PDF match sets
+      ``expected=None``, ``expected_row_index=None``, ``similarity=None``.
+    * ABSENT_IN_PDF sets ``expected=None`` (PDF has no value for that field).
+    * DISAGREE keeps both expected/actual non-null but unequal.
+
+    Every judged field has at least one SCORED comparison (AGREE/UNMATCHED_ROW/
+    DISAGREE — ABSENT_IN_PDF is excluded from the denominator), so every
+    per-field accuracy is a non-None float (the requirement for the assessment
+    to carry a value mlflow.genai.evaluate aggregates into a ``/mean`` metric).
+    """
+    return JudgeVerdict(
+        request_id=request_id,
+        judge_model_id="databricks-claude-opus-5",
+        comparisons=(
+            # cardDisplayName: AGREE (scored).
+            FieldComparison(
+                "cards[].cardMeta.cardDisplayName", "Platinum", "Platinum",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+            ),
+            # lastFourDigit: DISAGREE (scored; both non-null, unequal).
+            FieldComparison(
+                "cards[].cardMeta.lastFourDigit", "1234", "5678",
+                ComparisonOutcome.DISAGREE, FieldScope.SCALAR, MatchMethod.DIRECT,
+                card_index=0,
+            ),
+            # pointsEarnedThisCycle: AGREE.
+            FieldComparison(
+                "rewards.pointsEarnedThisCycle", 100, 100,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            # closingPoints: AGREE (scored — keeps closingPoints off "not_scored").
+            FieldComparison(
+                "rewards.closingPoints", 500, 500,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            # transactions[].date: row0 AGREE (scored) +
+            # row1 UNMATCHED_ROW (PDF row with no extraction match: actual=None,
+            # actual_row_index=None, similarity=None).
+            FieldComparison(
+                "transactions[].date", "2026-01-01", "2026-01-01",
+                ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                expected_row_index=0, actual_row_index=0, similarity=1.0,
+            ),
+            FieldComparison(
+                "transactions[].date", "2026-01-02", None,
+                ComparisonOutcome.UNMATCHED_ROW, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1, expected_row_index=1,
+            ),
+            # transactions[].description: row0 AGREE +
+            # row1 ABSENT_IN_PDF (matched row whose PDF description is null:
+            # expected=None).
+            FieldComparison(
+                "transactions[].description", "UPI-Amazon Pay", "UPI-Amazon Pay",
+                ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                expected_row_index=0, actual_row_index=0, similarity=1.0,
+            ),
+            FieldComparison(
+                "transactions[].description", None, "BigBazaar Groceries",
+                ComparisonOutcome.ABSENT_IN_PDF, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                expected_row_index=1, actual_row_index=1, similarity=0.9,
+            ),
+            # transactions[].amount: row0 AGREE +
+            # row1 UNMATCHED_ROW (extraction row with no PDF match: expected=None,
+            # expected_row_index=None, similarity=None).
+            FieldComparison(
+                "transactions[].amount", 150.0, 150.0,
+                ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                expected_row_index=0, actual_row_index=0, similarity=1.0,
+            ),
+            FieldComparison(
+                "transactions[].amount", None, 99.0,
+                ComparisonOutcome.UNMATCHED_ROW, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1, actual_row_index=3,
+            ),
+        ),
+        latency_ms=50.0,
+        summary=json.dumps({"status": "OK"}),
+    )
+
+
+class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
+    """Bug 1 — real verdicts carry UNMATCHED_ROW / ABSENT_IN_PDF / DISAGREE
+    comparisons whose leaves (expected, actual, card_index,
+    expected_row_index, actual_row_index, similarity) can be None.  The
+    redaction / feedback-building path must NEVER raise on those, must still
+    return one float-valued Feedback per field name (value in [0,1]) plus the
+    two overall feedbacks, and must preserve the PII redaction PR #43 added
+    (HMAC/omit cardDisplayName + description; drop rationale).
+
+    These are the fixtures the scorer actually encounters in production:
+    ``_full_verdict`` (all-AGREE) was the only one previously tested, so the
+    None-leaf code paths in ``_redact_comparisons`` were never exercised.
+    """
+
+    def setUp(self):
+        self.verdict = _mixed_outcome_verdict()
+        self.metrics = verdict_to_metrics(self.verdict)
+
+    def test_does_not_raise_on_mixed_outcomes_with_none_leaves(self):
+        """REPRODUCTION: build_field_feedbacks must not raise on a verdict
+        containing UNMATCHED_ROW / ABSENT_IN_PDF / DISAGREE comparisons with
+        None leaves (actual=None, actual_row_index=None, similarity=None,
+        expected=None).  This is the production verdict shape — the all-AGREE
+        ``_full_verdict`` was the only one tested before."""
+        from judge.evaluator import build_field_feedbacks
+
+        # Must not raise — with and without an HMAC key (both redaction paths).
+        build_field_feedbacks(self.verdict, self.metrics)
+        with patch("judge.scorer._resolve_feedback_hmac_key",
+                   return_value=b"test-hmac-key"):
+            build_field_feedbacks(self.verdict, self.metrics)
+
+    def test_returns_exactly_9_feedbacks_with_correct_names(self):
+        """Returns 9 Feedbacks (7 per-field + 2 overall); the 7 per-field
+        names match FIELD_ASSESSMENT_NAMES exactly (one row per field)."""
+        from judge.evaluator import (
+            FIELD_ASSESSMENT_NAMES,
+            OVERALL_FORGIVEN_NAME,
+            OVERALL_STRICT_NAME,
+            build_field_feedbacks,
+        )
+
+        feedbacks = build_field_feedbacks(self.verdict, self.metrics)
+        self.assertEqual(len(feedbacks), 9)
+        per_field_names = [f.name for f in feedbacks[:7]]
+        # Exact names, exact order (mirrors JUDGED_FIELDS order).
+        expected_names = [FIELD_ASSESSMENT_NAMES[p] for p in JUDGED_FIELDS]
+        self.assertEqual(per_field_names, expected_names)
+        # All seven distinct.
+        self.assertEqual(len(set(per_field_names)), 7)
+        # Two overall.
+        self.assertEqual(feedbacks[7].name, OVERALL_STRICT_NAME)
+        self.assertEqual(feedbacks[8].name, OVERALL_FORGIVEN_NAME)
+
+    def test_each_per_field_value_is_non_none_float_in_unit_interval(self):
+        """Every per-field Feedback carries a non-None float value in [0,1]
+        — a value mlflow.genai.evaluate aggregates into a ``/mean`` metric
+        (a None or string sentinel is skipped by ``_cast_assessment_value_
+        to_float``).  Every field here has >=1 scored comparison so its
+        accuracy is a real float, not "not_scored"."""
+        from judge.evaluator import build_field_feedbacks
+
+        feedbacks = build_field_feedbacks(self.verdict, self.metrics)
+        for f in feedbacks[:7]:
+            self.assertIsInstance(f.value, float, msg=f"{f.name} value not float")
+            self.assertIsNotNone(f.value, msg=f"{f.name} value is None")
+            self.assertGreaterEqual(f.value, 0.0, msg=f"{f.name} < 0")
+            self.assertLessEqual(f.value, 1.0, msg=f"{f.name} > 1")
+
+    def test_per_field_values_match_metrics(self):
+        """Each per-field Feedback value equals the per-field strict accuracy
+        computed by verdict_to_metrics for this mixed-outcome verdict."""
+        from judge.evaluator import FIELD_ASSESSMENT_NAMES, build_field_feedbacks
+
+        feedbacks = build_field_feedbacks(self.verdict, self.metrics)
+        by_name = {f.name: f for f in feedbacks[:7]}
+        for field_path, name in FIELD_ASSESSMENT_NAMES.items():
+            field_key = field_path.replace("[]", "").replace(".", "_")
+            expected_acc = self.metrics[f"judge.{field_key}"]
+            self.assertEqual(by_name[name].value, expected_acc,
+                             f"value mismatch for {name}")
+
+    def test_overall_strict_and_forgiven_are_non_none_floats(self):
+        """The 2 overall Feedbacks carry non-None float strict + forgiven
+        accuracy for this verdict (it has scored comparisons)."""
+        from judge.evaluator import (
+            OVERALL_FORGIVEN_NAME,
+            OVERALL_STRICT_NAME,
+            build_field_feedbacks,
+        )
+
+        feedbacks = build_field_feedbacks(self.verdict, self.metrics)
+        overall = {f.name: f for f in feedbacks[7:]}
+        for name in (OVERALL_STRICT_NAME, OVERALL_FORGIVEN_NAME):
+            self.assertIsInstance(overall[name].value, float, msg=name)
+            self.assertIsNotNone(overall[name].value, msg=name)
+        self.assertEqual(overall[OVERALL_STRICT_NAME].value,
+                         self.metrics["judge.accuracy"])
+        self.assertEqual(overall[OVERALL_FORGIVEN_NAME].value,
+                         self.metrics["judge.accuracy_forgiven"])
+
+    def test_rationale_is_none_on_every_feedback(self):
+        """The free-text rationale is DROPPED (None) on every Feedback — PII
+        vector (Opus free-text).  Preserved from PR #43; not regressed by
+        the None-leaf hardening."""
+        from judge.evaluator import build_field_feedbacks
+
+        feedbacks = build_field_feedbacks(self.verdict, self.metrics)
+        for f in feedbacks:
+            self.assertIsNone(f.rationale)
+
+    def test_pii_fields_omitted_without_hmac_key(self):
+        """Without an HMAC key, cardDisplayName + description expected/actual
+        are OMITTED (None) in the per-field Feedback metadata — never the
+        cleartext.  The None-leaf hardening must not regress this."""
+        from judge.evaluator import build_field_feedbacks
+
+        feedbacks = build_field_feedbacks(self.verdict, self.metrics)
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
+        for c in _comparisons(card_fb):
+            self.assertIsNone(c["expected"])
+            self.assertIsNone(c["actual"])
+        desc_fb = next(
+            f for f in feedbacks if f.name == "judge_transactions_description"
+        )
+        for c in _comparisons(desc_fb):
+            self.assertIsNone(c["expected"])
+            self.assertIsNone(c["actual"])
+        # No cleartext PII anywhere in the per-field metadata.
+        self.assertNotIn("Platinum", json.dumps(card_fb.metadata))
+        self.assertNotIn("UPI-Amazon", json.dumps(desc_fb.metadata))
+        self.assertNotIn("BigBazaar", json.dumps(desc_fb.metadata))
+
+    def test_pii_fields_hmac_with_key_configured(self):
+        """With an HMAC key, PII fields become keyed HMAC (not None, not
+        cleartext) — including on the UNMATCHED_ROW / ABSENT_IN_PDF rows
+        whose other leaf is None."""
+        from judge.evaluator import build_field_feedbacks
+
+        with patch("judge.scorer._resolve_feedback_hmac_key",
+                   return_value=b"test-hmac-key"):
+            feedbacks = build_field_feedbacks(self.verdict, self.metrics)
+
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
+        for c in _comparisons(card_fb):
+            self.assertIsNotNone(c["expected"])
+            self.assertIsInstance(c["expected"], str)
+            self.assertTrue(c["expected"].startswith("hmac:"))
+            self.assertNotIn("Platinum", str(c["expected"]))
+
+    def test_non_pii_fields_retained_raw_including_none_leaves(self):
+        """Non-PII fields (lastFourDigit, amount, date, points) are retained
+        raw — including the None leaf on the UNMATCHED_ROW / ABSENT rows
+        (None is a valid raw value for those leaves; redaction passes it
+        through).  Documented trade-off (not individually identifying)."""
+        from judge.evaluator import build_field_feedbacks
+
+        feedbacks = build_field_feedbacks(self.verdict, self.metrics)
+        by_name = {f.name: f for f in feedbacks[:7]}
+
+        # lastFourDigit: DISAGREE, both non-null, retained raw.
+        last4 = _comparisons(by_name["judge_lastFourDigit"])[0]
+        self.assertEqual(last4["expected"], "1234")
+        self.assertEqual(last4["actual"], "5678")
+
+        # transactions[].amount: row0 non-null retained; row1 UNMATCHED_ROW
+        # expected=None retained raw (not omitted — amount is a KEEP leaf).
+        amt_comps = _comparisons(by_name["judge_transactions_amount"])
+        self.assertEqual(amt_comps[0]["expected"], 150.0)
+        self.assertIsNone(amt_comps[1]["expected"])  # UNMATCHED_ROW leaf
+
+        # transactions[].date: row1 UNMATCHED_ROW actual=None retained raw.
+        date_comps = _comparisons(by_name["judge_transactions_date"])
+        self.assertEqual(date_comps[0]["expected"], "2026-01-01")
+        self.assertIsNone(date_comps[1]["actual"])  # UNMATCHED_ROW leaf
+
+    def test_metadata_carries_field_path_and_comparison_count(self):
+        """Each per-field Feedback metadata carries the field_path and the
+        count of comparisons for that field (including the None-leaf rows)."""
+        from judge.evaluator import build_field_feedbacks
+
+        feedbacks = build_field_feedbacks(self.verdict, self.metrics)
+        by_name = {f.name: f for f in feedbacks[:7]}
+        # transactions[].date has 2 comparisons (AGREE + UNMATCHED_ROW).
+        self.assertEqual(
+            by_name["judge_transactions_date"].metadata["field_path"],
+            "transactions[].date",
+        )
+        self.assertEqual(
+            by_name["judge_transactions_date"].metadata["n_comparisons"], "2",
+        )
+        # cardDisplayName has 1.
+        self.assertEqual(
+            by_name["judge_cardDisplayName"].metadata["n_comparisons"], "1",
+        )
+
+    def test_metadata_is_flat_stringable_for_databricks_store(self):
+        """Every assessment metadata VALUE is a STRING.  The Databricks
+        tracking store persists nested-list assessment metadata fine (proven
+        live), but the live probe stringified every metadata value before
+        9/9 assessments persisted — so every value is stringified defensively
+        (``n_comparisons`` str()'d; the redacted ``comparisons`` list
+        json.dumps'd to a JSON string).  The structured list remains in the
+        ``verdict_comparisons.json`` artifact (``log_dict`` accepts arbitrary
+        JSON)."""
+        from judge.evaluator import build_field_feedbacks, COMPARISONS_METADATA_KEY
+
+        feedbacks = build_field_feedbacks(self.verdict, self.metrics)
+        for f in feedbacks:
+            meta = f.metadata or {}
+            for key, value in meta.items():
+                # Every metadata value must be a str (the live-probe form).
+                self.assertIsInstance(
+                    value, str,
+                    msg=f"{f.name}.metadata[{key!r}] is {type(value).__name__}, not str",
+                )
+        # The redacted comparisons are still recoverable as a JSON string.
+        card_fb = next(f for f in feedbacks if f.name == "judge_cardDisplayName")
+        comps_json = card_fb.metadata[COMPARISONS_METADATA_KEY]
+        self.assertIsInstance(comps_json, str)
+        decoded = json.loads(comps_json)
+        self.assertIsInstance(decoded, list)
+        self.assertEqual(len(decoded), 1)
+        self.assertEqual(decoded[0]["field_path"],
+                         "cards[].cardMeta.cardDisplayName")
+
+    def test_no_assessment_name_contains_a_dot(self):
+        """REGRESSION GUARD FOR THE REAL ROOT CAUSE: the Databricks tracking
+        store REJECTS any assessment whose name contains a '.' (RestException
+        INVALID_PARAMETER_VALUE: 'assessment_name' must not contain ".").
+        Proven live: the earlier dotted ``judge.<field>`` names caused 0/9
+        assessments to persist (zero judge assessments ever appeared in
+        production), while dot-free ``judge_<field>`` + stringified metadata
+        persisted 9/9.  This test pins that NO name returned by
+        build_field_feedbacks (per-field OR overall) ever contains a dot —
+        checked for BOTH the mixed-outcome verdict AND the all-ABSENT
+        JUDGE_ERROR verdict — so a future rename back to a dotted form
+        fails the gate."""
+        from judge.comparison import judge_error_comparisons
+        from judge.evaluator import build_field_feedbacks
+
+        def _assert_no_dots(feedbacks):
+            self.assertEqual(len(feedbacks), 9)
+            for f in feedbacks:
+                self.assertNotIn(
+                    ".", f.name,
+                    msg=f"assessment name {f.name!r} contains a dot — "
+                        "Databricks rejects dotted assessment names "
+                        "(INVALID_PARAMETER_VALUE)",
+                )
+
+        # Mixed-outcome verdict (UNMATCHED_ROW / ABSENT_IN_PDF / DISAGREE +
+        # None leaves).
+        _assert_no_dots(build_field_feedbacks(self.verdict, self.metrics))
+
+        # JUDGE_ERROR verdict (all ABSENT_IN_PDF with None leaves).
+        error_comps = judge_error_comparisons("opus returned unusable json")
+        error_verdict = JudgeVerdict(
+            request_id="req-test",
+            judge_model_id="databricks-claude-opus-5",
+            comparisons=error_comps,
+            latency_ms=50.0,
+            summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+        _assert_no_dots(
+            build_field_feedbacks(error_verdict, verdict_to_metrics(error_verdict))
+        )
+
+    def test_every_metadata_value_is_a_str(self):
+        """REGRESSION GUARD: every metadata VALUE on every assessment is a
+        ``str``.  The Databricks tracking store persists nested-list
+        assessment metadata fine (proven live), but the live probe
+        stringified every metadata value before 9/9 assessments persisted
+        (non-str values — int counts, nested lists — are risky).  So
+        ``n_comparisons`` / ``n_scored`` / ``n_correct`` are str()'d and the
+        redacted ``comparisons`` list is json.dumps'd to a JSON STRING.  This
+        test pins that every metadata value is a str — checked for BOTH the
+        mixed-outcome verdict AND the all-ABSENT JUDGE_ERROR verdict."""
+        from judge.comparison import judge_error_comparisons
+        from judge.evaluator import build_field_feedbacks
+
+        def _assert_all_str(feedbacks):
+            self.assertEqual(len(feedbacks), 9)
+            for f in feedbacks:
+                meta = f.metadata or {}
+                for key, value in meta.items():
+                    self.assertIsInstance(
+                        value, str,
+                        msg=f"{f.name}.metadata[{key!r}] is "
+                            f"{type(value).__name__}, not str",
+                    )
+
+        # Mixed-outcome verdict.
+        _assert_all_str(build_field_feedbacks(self.verdict, self.metrics))
+
+        # JUDGE_ERROR verdict.
+        error_comps = judge_error_comparisons("opus returned unusable json")
+        error_verdict = JudgeVerdict(
+            request_id="req-test",
+            judge_model_id="databricks-claude-opus-5",
+            comparisons=error_comps,
+            latency_ms=50.0,
+            summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+        _assert_all_str(
+            build_field_feedbacks(error_verdict, verdict_to_metrics(error_verdict))
+        )
+
+    def test_judge_error_verdict_does_not_raise(self):
+        """A JUDGE_ERROR verdict (Opus returned an unusable response) is all
+        ABSENT_IN_PDF sentinels with expected=None/actual=None.  The builder
+        must not raise on it either, and must still return 9 Feedbacks."""
+        from judge.comparison import judge_error_comparisons
+        from judge.evaluator import build_field_feedbacks
+
+        comps = judge_error_comparisons("opus returned unusable json")
+        verdict = JudgeVerdict(
+            request_id="req-test",
+            judge_model_id="databricks-claude-opus-5",
+            comparisons=comps,
+            latency_ms=50.0,
+            summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+        metrics = verdict_to_metrics(verdict)
+        feedbacks = build_field_feedbacks(verdict, metrics)
+        self.assertEqual(len(feedbacks), 9)
+        # Every field is all-ABSENT_IN_PDF → no scored comparisons → accuracy
+        # None → the builder emits the "not_scored" sentinel (Feedback rejects
+        # value=None; the sentinel preserves 7 rows while genai.evaluate's
+        # aggregation skips it via _cast_assessment_value_to_float).
+        for f in feedbacks[:7]:
+            self.assertEqual(f.value, "not_scored")
 
 
 # ---------------------------------------------------------------------------
