@@ -484,17 +484,27 @@ def score_trace(run_id: str, result_store: Any = None) -> dict[str, Any]:
     2. Reconstruct a ``ParseRequest`` and ``ExtractionResult``.
     3. Call ``OpusJudgeAdapter.judge()`` → ``JudgeVerdict`` (Opus + comparisons).
     4. Compute metrics via ``verdict_to_metrics``.
-    5. Log metrics + tag ``judged=true`` on the SAME MLflow run.
+    5. Log metrics on the SAME MLflow run.
     6. Persist the verdict to Lakebase (best-effort) so ``GET /api/results``
-       can surface the per-field expected/actual/outcome inline.
-    7. Return a per-trace result dict.
+       can surface the per-field expected/actual/outcome inline — preserved
+       regardless of the assessment-persistence outcome.
+    7. Log the 9 per-field + overall assessments onto the ORIGINAL parse
+       trace (Bug 2).  Returns ``(n_logged, errors)``.
+    8. Tag the run ``judged=true`` ONLY when the verdict is OK AND all 9
+       assessments persisted; otherwise ``judged=error`` (re-judgeable) and
+       the status is promoted to ``ASSESSMENT_ERROR`` (Bug 3 invariant).
+    9. Return a per-trace result dict.
 
     ``result_store`` is an optional :class:`contracts.ports.ResultStore`. When
     ``None`` the scorer builds its own lazily (best-effort; ``None`` if the
     Lakebase env is absent). Tests inject a fake to assert save behaviour.
 
-    Returns ``{"run_id": ..., "status": "OK"|"ERROR", ...}`` — never raises
-    (errors are captured in the ``status``/``error`` fields).
+    Returns ``{"run_id": ..., "status": "OK"|"JUDGE_ERROR"|"ASSESSMENT_ERROR"|
+    "ERROR", ...}`` — never raises (errors are captured in the ``status``/
+    ``error`` fields).  ``ASSESSMENT_ERROR`` means the verdict was OK but the
+    9 assessments did NOT all persist: the run is left ``judged=error``
+    (re-judgeable) and the sanitized failure detail is in ``error`` /
+    ``assessment_error``.
     """
     try:
         return _score_trace_impl(run_id, result_store)
@@ -520,9 +530,9 @@ def _sanitize_error(exc: Exception) -> str:
 
 def _log_field_assessments(
     trace_id: str, verdict: Any, metrics: dict[str, Any]
-) -> None:
-    """Log the 7 per-field + 2 overall ``judge.<field>`` assessments onto the
-    ORIGINAL parse trace via ``mlflow.log_assessment``.
+) -> tuple[int, list[str]]:
+    """Log the 7 per-field + 2 overall assessments onto the ORIGINAL parse
+    trace via ``mlflow.log_assessment``.  Returns ``(n_logged, errors)``.
 
     This is the ON-DEMAND single-trace assessment path (Bug 2).  It reuses
     :func:`judge.evaluator.build_field_feedbacks` — the SAME verdict →
@@ -542,41 +552,59 @@ def _log_field_assessments(
     would NOT carry the assessments.  Logging directly onto the original
     trace_id keeps the assessment on the trace the user actually sees.
 
-    Best-effort: never raises (a failure to log an assessment MUST NOT
-    abort the judge run — the metrics + Lakebase verdict above are already
-    recorded).  Only called for ``status == "OK"`` (a JUDGE_ERROR verdict
-    carries no usable ground truth, so its assessments would be the
-    all-ABSENT_IN_PDF "not_scored" sentinels — not useful on the trace).
+    RETURNS ``(n_logged, errors)`` so the caller (:func:`_judge_and_persist`)
+    can enforce the Bug 3 invariant: a run is tagged ``judged=true`` ONLY
+    when ALL 9 assessments persisted.  On ANY failure (``build_field_feed
+    backs`` raises, a ``log_assessment`` raises, or the count is short),
+    ``errors`` is non-empty and the caller leaves the run RE-JUDGEABLE
+    (``judged=error``) and SURFACES the failure — it is NOT silently
+    swallowed into OK.  This function still attempts ALL 9 even when one
+    fails (so the persist count is as complete as possible), then reports
+    the aggregate failure.  Error messages are SANITIZED (exception type
+    name + assessment name only — no ``str(exc)``, no PII).
 
-    Opus is NOT called here — ``verdict`` is the SINGLE Opus call's output
-    already produced by :func:`_judge_and_persist`.
+    Only called for ``status == "OK"`` (a JUDGE_ERROR verdict carries no
+    usable ground truth, so its assessments would be the all-ABSENT_IN_PDF
+    "not_scored" sentinels — not useful on the trace).  Opus is NOT called
+    here — ``verdict`` is the SINGLE Opus call's output already produced by
+    :func:`_judge_and_persist`.
     """
     import mlflow
 
     from judge.evaluator import build_field_feedbacks
 
+    errors: list[str] = []
     try:
         feedbacks = build_field_feedbacks(verdict, metrics)
-    except Exception:  # noqa: BLE001 - never abort the run
+    except Exception as exc:  # noqa: BLE001 - surfaced via return, not swallowed
         _LOGGER.warning(
-            "build_field_assessments failed for trace %s; assessments not "
-            "logged", trace_id, exc_info=True,
+            "build_field_feedbacks failed for trace %s; 0/%d assessments "
+            "logged", trace_id, len(JUDGED_FIELDS) + 2, exc_info=True,
         )
-        return
+        return 0, [f"build_field_feedbacks failed: {type(exc).__name__}"]
+
+    n_logged = 0
     for fb in feedbacks:
         fb.trace_id = trace_id
         try:
             mlflow.log_assessment(trace_id=trace_id, assessment=fb)
-        except Exception:  # noqa: BLE001 - one bad assessment never aborts the rest
+            n_logged += 1
+        except Exception:  # noqa: BLE001 - attempt all 9, report aggregate
             _LOGGER.warning(
                 "log_assessment failed for %s on trace %s",
                 getattr(fb, "name", "?"), trace_id, exc_info=True,
             )
+            errors.append(
+                f"log_assessment failed: {getattr(fb, 'name', '?')}"
+            )
+    if n_logged < len(feedbacks):
+        errors.append(f"only {n_logged}/{len(feedbacks)} assessments persisted")
+    return n_logged, errors
 
 
 def _judge_and_persist(
     run_id: str, result_store: Any = None, *, log_assessments: bool = True
-) -> tuple[Any, dict[str, Any], dict[str, Any], str]:
+) -> tuple[Any, dict[str, Any], dict[str, Any], str, list[str]]:
     """Shared scoring core used by BOTH the single-trace on-demand path
     (:func:`score_trace`) and the genai.evaluate batch scorer.
 
@@ -586,23 +614,33 @@ def _judge_and_persist(
     3. Call ``OpusJudgeAdapter.judge()`` → ``JudgeVerdict`` (Opus + comparisons).
        This is the SINGLE Opus call per trace — both callers reuse it.
     4. Compute metrics via ``verdict_to_metrics``.
-    5. Log metrics + tag ``judged=true``/``judged=error`` on the SAME MLflow run.
+    5. Log metrics on the SAME MLflow run.
     6. Persist the verdict to Lakebase (best-effort) so ``GET /api/results``
-       can surface the per-field expected/actual/outcome inline.
+       can surface the per-field expected/actual/outcome inline — preserved
+       regardless of the assessment-persistence outcome (step 8).
     7. Log the PII-redacted ``verdict_comparisons.json`` artifact on the run
        (best-effort).
-    8. When ``log_assessments`` is True (the on-demand path), log the 7
-       per-field + 2 overall ``judge.<field>`` assessments onto the ORIGINAL
-       parse trace via :func:`_log_field_assessments` (best-effort).  The
-       batch genai.evaluate path sets ``log_assessments=False`` because
+    8. When ``log_assessments`` is True (the on-demand path), log the 9
+       per-field + overall assessments onto the ORIGINAL parse trace via
+       :func:`_log_field_assessments`, which returns ``(n_logged, errors)``.
+       The batch genai.evaluate path sets ``log_assessments=False`` because
        ``genai.evaluate``'s harness logs the scorer's returned Feedbacks
-       itself — logging them here too would double-write.
+       itself — and accounts for assessment errors itself.
+    9. Tag the run ``judged=true`` ONLY when the verdict is OK AND (on the
+       on-demand path) all 9 assessments persisted; otherwise
+       ``judged=error`` (re-judgeable) and the status is promoted to
+       ``ASSESSMENT_ERROR`` (Bug 3 invariant).  The tag is set AFTER the
+       assessment writes so it reflects whether they actually persisted.
 
-    Returns ``(verdict, meta, metrics, status)`` where ``meta`` is the parsed
-    ``extraction.json`` dict (carrying ``request_id``, ``bank``, etc.) and
-    ``status`` is ``"OK"`` or ``"JUDGE_ERROR"``.  Raises on failure — callers
-    wrap it in their own error handling (``score_trace`` → ERROR dict; the
-    genai scorer re-raises so genai.evaluate logs an error assessment).
+    Returns ``(verdict, meta, metrics, status, assessment_errors)`` where
+    ``meta`` is the parsed ``extraction.json`` dict (carrying ``request_id``,
+    ``bank``, etc.), ``status`` is ``"OK"``, ``"JUDGE_ERROR"``, or
+    ``"ASSESSMENT_ERROR"`` (OK verdict + assessment-persistence failure, on-
+    demand path only), and ``assessment_errors`` is a list of sanitized
+    error strings (empty unless the on-demand assessment writes were
+    incomplete).  Raises on failure — callers wrap it in their own error
+    handling (``score_trace`` → ERROR dict; the genai scorer re-raises so
+    genai.evaluate logs an error assessment).
     """
     import mlflow
     from mlflow.tracking import MlflowClient
@@ -657,16 +695,13 @@ def _judge_and_persist(
         if value is not None:
             client.log_metric(run_id, key, float(value))
 
-    # 7. Tag the run. Only tag judged=true on OK status so JUDGE_ERROR traces
-    # can be retried in the next evaluation. JUDGE_ERROR gets judged=error so
-    # it's distinguishable but still retriable. The status is parsed once here
-    # and reused for the Lakebase persist decision below.
+    # 7. Parse the verdict status once and reuse it.  Only ``OK`` (Opus
+    # produced a usable verdict) and ``JUDGE_ERROR`` (Opus returned an
+    # unusable response) come from the adapter.  The on-demand path may
+    # later promote ``OK`` → ``ASSESSMENT_ERROR`` (step 10) when the 9
+    # assessments do NOT all persist — see step 10 for the invariant.
     summary = json.loads(verdict.summary) if verdict.summary else {}
     status = summary.get("status", "OK")
-    if status == "OK":
-        client.set_tag(run_id, "judged", "true")
-    else:
-        client.set_tag(run_id, "judged", "error")
 
     # 8. Persist the verdict to Lakebase so ``GET /api/results`` can surface
     # the per-field expected/actual/outcome inline on the per-parse Results
@@ -678,6 +713,9 @@ def _judge_and_persist(
     # The verdict's ``request_id`` is set by the adapter from
     # ``request.request_id`` (== ``meta['request_id']``), so the upsert keys
     # the verdict into the same ``statement_results`` row as the extraction.
+    # PRESERVED REGARDLESS of the assessment-persistence outcome (step 9):
+    # the verdict is valid when status == "OK"; an assessment-write failure
+    # is a separate concern and MUST NOT roll back the inline verdict.
     if status == "OK":
         store = result_store if result_store is not None else _get_result_store()
         if store is not None:
@@ -716,22 +754,67 @@ def _judge_and_persist(
             "log_dict of verdict comparisons failed for %s", run_id, exc_info=True,
         )
 
-    # 10. On-demand path only: log the 7 per-field + 2 overall judge.<field>
-    # assessments onto the ORIGINAL parse trace (Bug 2).  Skipped for the
-    # batch genai.evaluate path (``log_assessments=False``) because genai.
-    # evaluate's harness logs the scorer's returned Feedbacks itself.  Only
-    # for OK status — a JUDGE_ERROR verdict's assessments would all be the
-    # "not_scored" sentinel (no usable ground truth).  Best-effort: never
-    # aborts the run (the metrics + Lakebase verdict above are recorded).
-    # Opus is NOT called here — ``verdict`` is the single Opus call's output.
+    # 10. On-demand path only: log the 9 assessments onto the ORIGINAL parse
+    # trace (Bug 2).  Skipped for the batch genai.evaluate path
+    # (``log_assessments=False``) because genai.evaluate's harness logs the
+    # scorer's returned Feedbacks itself — and accounts for assessment
+    # errors itself.  Only for OK status — a JUDGE_ERROR verdict's
+    # assessments would all be the "not_scored" sentinel (no usable ground
+    # truth).  Opus is NOT called here — ``verdict`` is the single Opus
+    # call's output.
+    #
+    # BUG 3 INVARIANT (cross-review fix): the assessments are logged BEFORE
+    # the ``judged=true`` tag is set (step 11), and the tag is set to
+    # ``judged=true`` ONLY when ALL 9 assessments persisted.  Any assessment
+    # failure (trace-id resolution fails, ``build_field_feedbacks`` fails, a
+    # ``log_assessment`` raises, or the count is short) leaves the run
+    # RE-JUDGEABLE (``judged=error`` — the batch sampler keeps runs where
+    # ``judged != 'true'``) and the failure is SURFACED (logged + reflected
+    # in the returned status), NOT silently swallowed into OK.  Error
+    # messages are SANITIZED (exception type name + assessment name only —
+    # no ``str(exc)``, no PII).
+    assessment_errors: list[str] = []
     if log_assessments and status == "OK":
         trace = _resolve_trace_for_run(run_id)
-        if trace is not None:
+        if trace is None:
+            assessment_errors.append(
+                f"trace resolution failed: no trace for run {run_id}"
+            )
+        else:
             trace_id = getattr(getattr(trace, "info", None), "trace_id", None)
-            if trace_id is not None:
-                _log_field_assessments(trace_id, verdict, metrics)
+            if trace_id is None:
+                assessment_errors.append("trace has no trace_id")
+            else:
+                _n_logged, assessment_errors = _log_field_assessments(
+                    trace_id, verdict, metrics,
+                )
 
-    return verdict, meta, metrics, status
+    # 11. Tag the run — AFTER the assessment writes (step 10) so the tag
+    # decision reflects whether the assessments actually persisted.
+    # ``judged=true`` ONLY when the verdict is OK AND (on the on-demand
+    # path) all 9 assessments persisted.  Any assessment failure →
+    # ``judged=error`` so the run stays RE-JUDGEABLE (the batch sampler
+    # keeps runs where ``judged != 'true'``), and the status is promoted to
+    # ``ASSESSMENT_ERROR`` so the failure is SURFACED in the returned
+    # status, not silently swallowed into OK.  JUDGE_ERROR verdicts are
+    # tagged ``judged=error`` (unchanged).  The batch path
+    # (``log_assessments=False``) keeps the existing behaviour: its
+    # ``assessment_errors`` is always empty, so the tag is based on the
+    # verdict status alone (genai.evaluate writes + accounts for
+    # assessments/errors itself).
+    if status == "OK" and not assessment_errors:
+        client.set_tag(run_id, "judged", "true")
+    else:
+        client.set_tag(run_id, "judged", "error")
+        if status == "OK" and assessment_errors:
+            status = "ASSESSMENT_ERROR"
+            _LOGGER.warning(
+                "assessment persistence incomplete for run %s; run left "
+                "re-judgeable (judged=error): %s", run_id,
+                "; ".join(assessment_errors),
+            )
+
+    return verdict, meta, metrics, status, assessment_errors
 
 
 def _build_result_dict(
@@ -765,8 +848,18 @@ def _build_result_dict(
 
 
 def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
-    verdict, meta, metrics, status = _judge_and_persist(run_id, result_store)
-    return _build_result_dict(run_id, meta, metrics, status)
+    verdict, meta, metrics, status, assessment_errors = _judge_and_persist(
+        run_id, result_store,
+    )
+    result = _build_result_dict(run_id, meta, metrics, status)
+    if assessment_errors:
+        # Surface the assessment-persistence failure in the result dict so
+        # the on-demand caller (app/main.py) reports it to the UI (the
+        # ``else`` branch reads ``result["error"]``).  Sanitized — no PII.
+        detail = "; ".join(assessment_errors)
+        result["assessment_error"] = detail
+        result["error"] = detail
+    return result
 
 
 def _resolve_trace_for_run(run_id: str) -> Any:
@@ -976,9 +1069,11 @@ def _aggregate_results(results: list[dict[str, Any]]) -> dict[str, Any]:
     """Build the aggregate summary from per-trace results.
 
     Only ``status == "OK"`` traces are scored. ``JUDGE_ERROR`` (Opus returned
-    an unusable response) and ``ERROR`` (exception during scoring) are both
-    counted as errors — JUDGE_ERROR traces are tagged ``judged=error`` (not
-    ``judged=true``) so they can be retried in the next evaluation.
+    an unusable response), ``ERROR`` (exception during scoring), and
+    ``ASSESSMENT_ERROR`` (OK verdict but the 9 assessments did not all
+    persist on the on-demand path) are all counted as errors — each is tagged
+    ``judged=error`` (not ``judged=true``) so the run stays RE-JUDGEABLE in
+    the next evaluation.
     """
     scored = [r for r in results if r.get("status") == "OK"]
     errors = [
@@ -987,7 +1082,8 @@ def _aggregate_results(results: list[dict[str, Any]]) -> dict[str, Any]:
             "error": r.get("error") or f"JUDGE_ERROR: {r.get('status')}",
             "status": r.get("status"),
         }
-        for r in results if r.get("status") in ("ERROR", "JUDGE_ERROR")
+        for r in results
+        if r.get("status") in ("ERROR", "JUDGE_ERROR", "ASSESSMENT_ERROR")
     ]
 
     # Overall strict / narration-forgiven (average over scored traces).

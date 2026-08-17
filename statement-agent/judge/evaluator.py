@@ -278,8 +278,15 @@ def make_judge_scorer(
             raise ValueError("trace has no mlflow.sourceRun metadata")
 
         try:
-            verdict, meta, metrics, status = _judge_and_persist(
-                run_id, result_store, log_assessments=False,
+            # log_assessments=False → genai.evaluate's harness logs the
+            # scorer's returned Feedbacks itself (and accounts for
+            # assessment errors itself).  The 5th return value
+            # (assessment_errors) is therefore always empty here; unpack
+            # it for signature parity with the on-demand path.
+            verdict, meta, metrics, status, _assessment_errors = (
+                _judge_and_persist(
+                    run_id, result_store, log_assessments=False,
+                )
             )
         except Exception as exc:  # noqa: BLE001 - re-raise for genai.evaluate
             results_collector.append(
