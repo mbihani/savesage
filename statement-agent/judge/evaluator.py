@@ -77,6 +77,17 @@ FIELD_ASSESSMENT_NAMES: dict[str, str] = {
 OVERALL_STRICT_NAME = "judge.overall.strict"
 OVERALL_FORGIVEN_NAME = "judge.overall.forgiven"
 
+# Metadata key carrying the PII-redacted per-comparison details.  The
+# Databricks tracking store validates ``Feedback.metadata`` as a flat
+# ``dict[str, str]`` (OSS file store is lenient and accepts nested lists),
+# so the redacted comparisons are serialised to a JSON STRING under this key
+# rather than stored as a nested list.  The ``verdict_comparisons.json``
+# artifact (logged via ``MlflowClient.log_dict`` in ``_judge_and_persist``)
+# keeps the structured list — that path accepts arbitrary JSON.  This split
+# lets the assessment row render in the Assessments tab on Databricks while
+# the full structured detail remains available in the artifact.
+COMPARISONS_METADATA_KEY = "comparisons"
+
 
 def _field_key(field_path: str) -> str:
     """Map a judged field path to its flat metric key (mirrors scorer)."""
@@ -111,6 +122,7 @@ def build_field_feedbacks(
     module stays stdlib-importable for the test gate.  Returns a list of
     ``mlflow.entities.assessment.Feedback`` objects.
     """
+    import json
     from collections import defaultdict
 
     from mlflow.entities import AssessmentSource, Feedback
@@ -144,6 +156,11 @@ def build_field_feedbacks(
         name = FIELD_ASSESSMENT_NAMES[field_path]
         accuracy = metrics.get(f"judge.{_field_key(field_path)}")
         comps = grouped.get(field_path, [])
+        # Redacted per-comparison details (HMAC/omit PII, no rationale).
+        # ``_redact_comparisons`` is None-leaf-safe for every ComparisonOutcome
+        # (UNMATCHED_ROW / ABSENT_IN_PDF / DISAGREE can carry None expected,
+        # actual, card_index, row indices, similarity — read defensively).
+        redacted = _redact_comparisons(comps)
         feedbacks.append(
             Feedback(
                 name=name,
@@ -153,8 +170,16 @@ def build_field_feedbacks(
                 metadata={
                     "field_path": field_path,
                     "n_comparisons": len(comps),
-                    # Redacted per-comparison details (HMAC/omit PII, no rationale).
-                    "comparisons": _redact_comparisons(comps),
+                    # The Databricks tracking store validates Feedback.metadata
+                    # as a flat dict[str, str] — a nested list is REJECTED at
+                    # log_assessment time, so the scorer returns only
+                    # SCORER_ERROR feedbacks (valueless) and ZERO per-field
+                    # assessments persist (the production symptom).  Serialise
+                    # the redacted comparisons to a JSON STRING so a strict
+                    # backend accepts them; the structured list remains in the
+                    # verdict_comparisons.json artifact (logged via log_dict,
+                    # which accepts arbitrary JSON).
+                    COMPARISONS_METADATA_KEY: json.dumps(redacted, default=str),
                 },
             )
         )
@@ -244,7 +269,7 @@ def make_judge_scorer(
 
         try:
             verdict, meta, metrics, status = _judge_and_persist(
-                run_id, result_store
+                run_id, result_store, log_assessments=False,
             )
         except Exception as exc:  # noqa: BLE001 - re-raise for genai.evaluate
             results_collector.append(

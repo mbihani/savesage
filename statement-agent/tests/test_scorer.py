@@ -361,6 +361,9 @@ class _FakeMLflowModule:
         self._started_runs: list[str] = []
         # Fake genai module (evaluate + scorer) for the genai.evaluate path.
         self.genai = _FakeGenaiModule(self)
+        # Assessments logged via mlflow.log_assessment (the on-demand path's
+        # per-field assessment writer).  Each entry is (trace_id, assessment).
+        self.logged_assessments: list[tuple] = []
 
     def set_tracking_uri(self, uri):
         """No-op — the scorer calls this to ensure databricks tracking."""
@@ -392,6 +395,16 @@ class _FakeMLflowModule:
                 pass
 
         return _ctx()
+
+    def log_assessment(self, trace_id, assessment):
+        """Fake ``mlflow.log_assessment`` — capture (trace_id, assessment).
+
+        The on-demand path (:func:`judge.scorer._log_field_assessments`) logs
+        the 7 per-field + 2 overall ``judge.<field>`` Feedbacks onto the
+        original parse trace via this.  Captured so tests can assert the
+        assessments landed on the right trace_id.
+        """
+        self.logged_assessments.append((trace_id, assessment))
 
     def search_runs(self, experiment_ids=None, filter_string=None,
                     max_results=100, order_by=None, **kwargs):
@@ -704,6 +717,163 @@ class ScoreTraceTest(unittest.TestCase):
         self.assertEqual(per_field["rewards_pointsEarnedThisCycle"], 1.0)
         self.assertEqual(per_field["rewards_closingPoints"], 1.0)
 
+    def test_score_trace_logs_per_field_assessments_on_original_trace(self):
+        """Bug 2 — the on-demand single-trace path (score_trace) MUST write
+        the 7 per-field + 2 overall ``judge.<field>`` assessments onto the
+        ORIGINAL parse trace (the one the Results view links to), so an
+        on-demand-judged trace ends up with assessments — not just metrics +
+        a Lakebase verdict.  Reuses build_field_feedbacks (the SAME builder
+        the batch genai.evaluate scorer uses) so there is ONE assessment-
+        construction code path; only the persistence differs (direct
+        mlflow.log_assessment on the original trace_id here)."""
+        from judge.scorer import score_trace
+
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json", json.dumps(_make_extraction_meta()).encode()
+        )
+        # Register the parse trace linked to this run (so _resolve_trace_for_run
+        # finds it and the assessments land on its trace_id).
+        self.fake_mlflow.set_traces([_make_fake_trace("req-test", "run-on-demand")])
+
+        verdict = _make_verdict()
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            result = score_trace("run-on-demand")
+
+        self.assertEqual(result["status"], "OK")
+
+        # The 9 assessments (7 per-field + 2 overall) were logged via
+        # mlflow.log_assessment onto the original parse trace_id.
+        logged = self.fake_mlflow.logged_assessments
+        self.assertEqual(len(logged), 9)
+        # Every assessment landed on the original parse trace_id (tr-req-test),
+        # not a clone or the eval run.
+        for trace_id, _fb in logged:
+            self.assertEqual(trace_id, "tr-req-test")
+        # The 7 per-field assessment names are exactly FIELD_ASSESSMENT_NAMES.
+        from judge.evaluator import (
+            FIELD_ASSESSMENT_NAMES,
+            OVERALL_FORGIVEN_NAME,
+            OVERALL_STRICT_NAME,
+        )
+        names = {fb.name for _tid, fb in logged}
+        self.assertEqual(
+            names & set(FIELD_ASSESSMENT_NAMES.values()),
+            set(FIELD_ASSESSMENT_NAMES.values()),
+        )
+        self.assertIn(OVERALL_STRICT_NAME, names)
+        self.assertIn(OVERALL_FORGIVEN_NAME, names)
+
+    def test_score_trace_assessment_logging_calls_opus_once(self):
+        """Bug 2 constraint — the on-demand assessment path does NOT call Opus
+        a second time: assessments are built from the SAME verdict the single
+        _judge_and_persist Opus call already produced."""
+        from judge.scorer import score_trace
+
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json", json.dumps(_make_extraction_meta()).encode()
+        )
+        self.fake_mlflow.set_traces([_make_fake_trace("req-test", "run-once")])
+
+        opus_calls = [0]
+        verdict = _make_verdict()
+
+        def _counting_judge(request, extraction):
+            opus_calls[0] += 1
+            return verdict
+
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.side_effect = _counting_judge
+            score_trace("run-once")
+
+        # Exactly ONE Opus call — the assessment logging reuses its verdict.
+        self.assertEqual(opus_calls[0], 1)
+        # And the 9 assessments were still logged.
+        self.assertEqual(len(self.fake_mlflow.logged_assessments), 9)
+
+    def test_score_trace_still_persists_lakebase_verdict_with_assessments(self):
+        """Bug 2 — the existing Lakebase verdict write is preserved alongside
+        the new assessment logging (both happen on the on-demand path)."""
+        from judge.scorer import score_trace
+
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json", json.dumps(_make_extraction_meta()).encode()
+        )
+        self.fake_mlflow.set_traces([_make_fake_trace("req-test", "run-lb")])
+
+        saved = []
+
+        class _FakeStore:
+            def save_verdict(self, v):
+                saved.append(v)
+
+        verdict = _make_verdict()
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            score_trace("run-lb", result_store=_FakeStore())
+
+        # Lakebase verdict persisted (existing behaviour preserved).
+        self.assertEqual(len(saved), 1)
+        self.assertEqual(saved[0].request_id, "req-test")
+        # AND the 9 assessments logged (new behaviour).
+        self.assertEqual(len(self.fake_mlflow.logged_assessments), 9)
+
+    def test_score_trace_no_trace_still_ok_no_assessments(self):
+        """When the parse run has NO resolvable trace (aged out / search
+        unavailable), score_trace still succeeds (metrics + Lakebase verdict),
+        and logs NO assessments (there is no trace_id to log onto).  This is
+        the graceful-degradation path — the run is not left assessment-less
+        by an error, it is left assessment-less because there is no trace."""
+        from judge.scorer import score_trace
+
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json", json.dumps(_make_extraction_meta()).encode()
+        )
+        # No trace registered for this run.
+        self.fake_mlflow.set_traces([])
+
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = _make_verdict()
+            result = score_trace("run-no-trace")
+
+        self.assertEqual(result["status"], "OK")
+        # No assessments (no trace to log onto) — but no error either.
+        self.assertEqual(len(self.fake_mlflow.logged_assessments), 0)
+
+    def test_score_trace_judge_error_logs_no_assessments(self):
+        """A JUDGE_ERROR verdict does NOT log per-field assessments — they
+        would all be the 'not_scored' sentinel (no usable ground truth), so
+        logging them adds noise without signal.  The run is still tagged
+        judged=error (retriable) and the verdict is not persisted to Lakebase."""
+        from judge.scorer import score_trace
+
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json", json.dumps(_make_extraction_meta()).encode()
+        )
+        self.fake_mlflow.set_traces([_make_fake_trace("req-test", "run-jerr")])
+
+        # A JUDGE_ERROR verdict (all ABSENT_IN_PDF sentinels).
+        from judge.comparison import judge_error_comparisons
+        verdict = JudgeVerdict(
+            request_id="req-test",
+            judge_model_id="databricks-claude-opus-5",
+            comparisons=judge_error_comparisons("opus unusable"),
+            latency_ms=50.0,
+            summary=json.dumps({"status": "JUDGE_ERROR"}),
+        )
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = verdict
+            result = score_trace("run-jerr")
+
+        self.assertEqual(result["status"], "JUDGE_ERROR")
+        # No assessments logged for JUDGE_ERROR.
+        self.assertEqual(len(self.fake_mlflow.logged_assessments), 0)
+
     def test_score_trace_judge_error_tags_error_not_true(self):
         """A JUDGE_ERROR verdict is tagged judged=error (not judged=true) so it can be retried."""
         from judge.scorer import score_trace
@@ -735,6 +905,80 @@ class ScoreTraceTest(unittest.TestCase):
         # Tagged judged=error, NOT judged=true — so it stays retriable.
         self.assertIn(("judged", "error", "run-judge-err"), self.fake_mlflow.set_tags)
         self.assertNotIn(("judged", "true", "run-judge-err"), self.fake_mlflow.set_tags)
+
+    def test_on_demand_judged_trace_has_both_tag_and_assessments(self):
+        """Bug 3 — the intended FINAL STATE of an on-demand-judged trace:
+        the run is tagged ``judged=true`` AND its parse trace carries the 9
+        per-field + overall assessments.  Before this fix the on-demand path
+        tagged the run ``judged=true`` but wrote NO assessments (score_trace
+        only wrote metrics + Lakebase verdict), so the batch sampler — which
+        skips ``judged=true`` runs — would skip it forever, leaving the trace
+        in a 'tagged but assessment-less' state.  With Bug 2's fix the
+        on-demand path itself writes the assessments, so the two paths are
+        consistent: a ``judged=true`` run always has assessments (either
+        written by on-demand directly, or it is not yet judged=true)."""
+        from judge.scorer import score_trace
+
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json", json.dumps(_make_extraction_meta()).encode()
+        )
+        self.fake_mlflow.set_traces([_make_fake_trace("req-test", "run-final")])
+
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.return_value = _make_verdict()
+            score_trace("run-final")
+
+        # FINAL STATE 1: run tagged judged=true (the on-demand path did this
+        # before too — preserved).
+        self.assertIn(("judged", "true", "run-final"), self.fake_mlflow.set_tags)
+        # FINAL STATE 2: the parse trace carries the 9 assessments (NEW —
+        # the on-demand path now writes them, so the run is not left tagged
+        # but assessment-less).
+        self.assertEqual(len(self.fake_mlflow.logged_assessments), 9)
+        for trace_id, _fb in self.fake_mlflow.logged_assessments:
+            self.assertEqual(trace_id, "tr-req-test")
+
+    def test_batch_sampler_skips_judged_true_runs(self):
+        """Bug 3 — the batch sampler filters OUT ``judged=true`` runs, so an
+        on-demand-judged run (which now carries assessments) is correctly
+        skipped by the batch (no duplicate Opus call / duplicate assessments).
+        This is the existing sampler behaviour; this test pins it as the
+        intended consistency contract between the two paths."""
+        from judge.scorer import run_judge_evaluation
+
+        # Two runs: one already judged=true (on-demand), one unjudged.
+        self.fake_mlflow.set_search_runs_result(
+            ["run-judged", "run-fresh"],
+            judged_tags={"run-judged": "true", "run-fresh": None},
+        )
+        # Both runs have artifacts + a trace; the fresh one gets judged.
+        self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4")
+        self.fake_mlflow.artifacts.register(
+            "extraction.json", json.dumps(_make_extraction_meta()).encode(),
+        )
+        self.fake_mlflow.set_traces([
+            _make_fake_trace("req-judged", "run-judged"),
+            _make_fake_trace("req-fresh", "run-fresh"),
+        ])
+
+        opus_calls = [0]
+
+        def _counting_judge(request, extraction):
+            opus_calls[0] += 1
+            return _make_verdict(request.request_id)
+
+        with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
+            MockAdapter.return_value.judge.side_effect = _counting_judge
+            run_judge_evaluation(sample_size=10)
+
+        # Only the FRESH run was judged — the judged=true run was skipped
+        # (exactly ONE Opus call, not two).  The artifact meta's request_id
+        # is shared across runs (artifacts are registered globally in the
+        # fake), so we assert the CALL COUNT, not which request_id — what
+        # matters is the judged=true run did not trigger a second Opus call
+        # or duplicate assessments.
+        self.assertEqual(opus_calls[0], 1)
 
 
 # ---------------------------------------------------------------------------
@@ -1725,7 +1969,10 @@ class RunGenaiEvaluationTest(unittest.TestCase):
 
         assessments = self.fake_mlflow.genai.assessments
         card_fb = next(a for a in assessments if a.name == "judge.cardDisplayName")
-        comps = card_fb.metadata["comparisons"]
+        # The comparisons metadata is a JSON STRING (Databricks tracking
+        # store validates Feedback.metadata as flat dict[str, str]; a nested
+        # list is rejected — see judge/evaluator.py COMPARISONS_METADATA_KEY).
+        comps = json.loads(card_fb.metadata["comparisons"])
         # PII omitted (None) without HMAC key — NOT the cleartext.
         self.assertIsNone(comps[0]["expected"])
         self.assertIsNone(comps[0]["actual"])

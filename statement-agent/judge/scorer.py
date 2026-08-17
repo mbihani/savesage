@@ -426,21 +426,37 @@ def _redact_comparisons(comparisons: Any) -> list[dict[str, Any]]:
     cleartext — including on JUDGE_ERROR paths. The ``outcome`` and
     ``similarity`` already convey the verdict signal in the artifact. The
     ``field_path`` and row indices are NOT PII and are carried verbatim.
+
+    NONE-LEAF SAFETY (Bug 1): real verdicts contain UNMATCHED_ROW /
+    ABSENT_IN_PDF / DISAGREE comparisons whose leaves (expected, actual,
+    card_index, expected_row_index, actual_row_index, similarity) can be
+    None — see judge/comparison.py ``build_comparisons``.  Every leaf is
+    read defensively (``getattr`` with a None default) so the redaction
+    never raises on a None leaf for ANY outcome, and ``outcome`` is normalised
+    whether it arrives as a ``ComparisonOutcome`` enum or a raw string.
     """
     from harness.tracing_feedback import redact_feedback_value
 
     hmac_key = _resolve_feedback_hmac_key()
     out: list[dict[str, Any]] = []
     for c in comparisons:
+        field_path = getattr(c, "field_path", None)
+        expected = getattr(c, "expected", None)
+        actual = getattr(c, "actual", None)
+        outcome = getattr(c, "outcome", None)
+        # ``outcome`` may be a ComparisonOutcome enum (.value) or a raw string
+        # (e.g. a comparison reconstructed from stored JSON).  Normalise to the
+        # string value; fall back to the object itself if neither applies.
+        outcome_val = getattr(outcome, "value", outcome)
         out.append({
-            "field_path": c.field_path,
-            "expected": redact_feedback_value(c.field_path, c.expected, hmac_key=hmac_key),
-            "actual": redact_feedback_value(c.field_path, c.actual, hmac_key=hmac_key),
-            "outcome": c.outcome.value,
-            "card_index": c.card_index,
-            "expected_row_index": c.expected_row_index,
-            "actual_row_index": c.actual_row_index,
-            "similarity": c.similarity,
+            "field_path": field_path,
+            "expected": redact_feedback_value(field_path, expected, hmac_key=hmac_key),
+            "actual": redact_feedback_value(field_path, actual, hmac_key=hmac_key),
+            "outcome": outcome_val,
+            "card_index": getattr(c, "card_index", None),
+            "expected_row_index": getattr(c, "expected_row_index", None),
+            "actual_row_index": getattr(c, "actual_row_index", None),
+            "similarity": getattr(c, "similarity", None),
             # rationale OMITTED — see module docstring (PII vector).
         })
     return out
@@ -502,8 +518,64 @@ def _sanitize_error(exc: Exception) -> str:
     return exc_name
 
 
+def _log_field_assessments(
+    trace_id: str, verdict: Any, metrics: dict[str, Any]
+) -> None:
+    """Log the 7 per-field + 2 overall ``judge.<field>`` assessments onto the
+    ORIGINAL parse trace via ``mlflow.log_assessment``.
+
+    This is the ON-DEMAND single-trace assessment path (Bug 2).  It reuses
+    :func:`judge.evaluator.build_field_feedbacks` — the SAME verdict →
+    Feedback builder the batch ``genai.evaluate`` scorer uses — so there is
+    ONE construction code path for the per-field assessments (not two
+    divergent ones).  The only difference is the PERSISTENCE layer:
+
+    * batch path: the ``@scorer`` returns the Feedback list and
+      ``genai.evaluate``'s harness logs them onto (a clone of) the trace;
+    * on-demand path: this function logs them DIRECTLY onto the original
+      parse trace via ``mlflow.log_assessment(trace_id=<original>, ...)``.
+
+    A full ``genai.evaluate`` run over one trace is impractical on-demand:
+    on the Databricks tracking store ``genai.evaluate`` CLONES the parse
+    trace (the store has no trace↔run link) and logs assessments to the
+    clone, so the original trace — the one the Results view links to —
+    would NOT carry the assessments.  Logging directly onto the original
+    trace_id keeps the assessment on the trace the user actually sees.
+
+    Best-effort: never raises (a failure to log an assessment MUST NOT
+    abort the judge run — the metrics + Lakebase verdict above are already
+    recorded).  Only called for ``status == "OK"`` (a JUDGE_ERROR verdict
+    carries no usable ground truth, so its assessments would be the
+    all-ABSENT_IN_PDF "not_scored" sentinels — not useful on the trace).
+
+    Opus is NOT called here — ``verdict`` is the SINGLE Opus call's output
+    already produced by :func:`_judge_and_persist`.
+    """
+    import mlflow
+
+    from judge.evaluator import build_field_feedbacks
+
+    try:
+        feedbacks = build_field_feedbacks(verdict, metrics)
+    except Exception:  # noqa: BLE001 - never abort the run
+        _LOGGER.warning(
+            "build_field_assessments failed for trace %s; assessments not "
+            "logged", trace_id, exc_info=True,
+        )
+        return
+    for fb in feedbacks:
+        fb.trace_id = trace_id
+        try:
+            mlflow.log_assessment(trace_id=trace_id, assessment=fb)
+        except Exception:  # noqa: BLE001 - one bad assessment never aborts the rest
+            _LOGGER.warning(
+                "log_assessment failed for %s on trace %s",
+                getattr(fb, "name", "?"), trace_id, exc_info=True,
+            )
+
+
 def _judge_and_persist(
-    run_id: str, result_store: Any = None
+    run_id: str, result_store: Any = None, *, log_assessments: bool = True
 ) -> tuple[Any, dict[str, Any], dict[str, Any], str]:
     """Shared scoring core used by BOTH the single-trace on-demand path
     (:func:`score_trace`) and the genai.evaluate batch scorer.
@@ -519,6 +591,12 @@ def _judge_and_persist(
        can surface the per-field expected/actual/outcome inline.
     7. Log the PII-redacted ``verdict_comparisons.json`` artifact on the run
        (best-effort).
+    8. When ``log_assessments`` is True (the on-demand path), log the 7
+       per-field + 2 overall ``judge.<field>`` assessments onto the ORIGINAL
+       parse trace via :func:`_log_field_assessments` (best-effort).  The
+       batch genai.evaluate path sets ``log_assessments=False`` because
+       ``genai.evaluate``'s harness logs the scorer's returned Feedbacks
+       itself — logging them here too would double-write.
 
     Returns ``(verdict, meta, metrics, status)`` where ``meta`` is the parsed
     ``extraction.json`` dict (carrying ``request_id``, ``bank``, etc.) and
@@ -637,6 +715,21 @@ def _judge_and_persist(
         _LOGGER.warning(
             "log_dict of verdict comparisons failed for %s", run_id, exc_info=True,
         )
+
+    # 10. On-demand path only: log the 7 per-field + 2 overall judge.<field>
+    # assessments onto the ORIGINAL parse trace (Bug 2).  Skipped for the
+    # batch genai.evaluate path (``log_assessments=False``) because genai.
+    # evaluate's harness logs the scorer's returned Feedbacks itself.  Only
+    # for OK status — a JUDGE_ERROR verdict's assessments would all be the
+    # "not_scored" sentinel (no usable ground truth).  Best-effort: never
+    # aborts the run (the metrics + Lakebase verdict above are recorded).
+    # Opus is NOT called here — ``verdict`` is the single Opus call's output.
+    if log_assessments and status == "OK":
+        trace = _resolve_trace_for_run(run_id)
+        if trace is not None:
+            trace_id = getattr(getattr(trace, "info", None), "trace_id", None)
+            if trace_id is not None:
+                _log_field_assessments(trace_id, verdict, metrics)
 
     return verdict, meta, metrics, status
 
