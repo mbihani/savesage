@@ -94,8 +94,12 @@ ICICI_BANK_RULES (this corpus is ICICI Bank; these override anything above on co
   26,958.20, Tax on Over-limit Fee 99.00, Overdue of previous statement 1,200.00) and hardcoded
   specimen dates; it belongs to no real cardholder. Never use any figure from it for closingPoints,
   for any statementLevelSummary field, or as a transaction.
-  On this bank "Closing Balance" ALWAYS refers to that money specimen. It is never a points balance,
-  so it must NEVER populate closingPoints.
+  The "Closing Balance" INSIDE that Minimum-Amount-Due worked example is a MONEY specimen: never use
+  it for closingPoints. This does NOT apply to a "Closing Balance" printed INSIDE a rewards strip
+  (see ICICI_REWARDS_LAYOUTS Layout 5, the Mine Cash strip), which is a genuine rewards balance and
+  DOES populate closingPoints. Distinguish the two by location: the money specimen sits in the
+  numbered SL.No worked-example table; the rewards balance sits under a rewards heading beside
+  "Earned" / "Redeemed" cells.
 - network — EVIDENCE-FIRST, DEFAULT NULL. ICICI statements do NOT state the card's own network.
   Return a network ONLY when the statement visibly prints THIS card's own network as its own label or
   logo caption in or beside that card's own section. If you cannot point to such a printed label for
@@ -245,19 +249,35 @@ ICICI_REWARDS_LAYOUTS (authoritative for rewards.*; bind every value to its own 
     programType = "Reward Points".  "PAYBACK" is the loyalty programme's BRAND name — never emit it as
     programType, and never emit the PAYBACK account number as a points figure.
 
+  Layout 5 — heading "Mine Cash" (co-brand cash card), a FOUR-column strip. The labels sit on one
+  line and the four values share the line below, bound by COLUMN:
+      Opening Balance   |  Earned   |  Redeemed/Expired   |  Closing Balance
+      <value>           |  <value>  |  <value>            |  <value>
+    (the print may misspell "Opening Balace".)
+    openingPoints           = the "Opening Balance" value.
+    pointsEarnedThisCycle   = the "Earned" value.
+    pointsRedeemedThisCycle = the "Redeemed/Expired" value (this IS a printed cell — report it even
+                              when it is 0; do not null it).
+    closingPoints           = the "Closing Balance" value (a GENUINE rewards balance printed inside
+                              the Mine Cash strip — NOT the money specimen from the Minimum-Amount-Due
+                              worked example).
+    programType = "Cashback".  "Mine Cash" is the programme's BRAND name — never emit it as programType.
+
 - EARNED AND TRANSFERRED MAY LEGITIMATELY BE EQUAL. When the statement prints two SEPARATE cells and
   both happen to show the same number (a cycle in which everything earned was transferred out), report
   BOTH — that is the printed truth, not a duplicate. Only refuse to fill the second field when the
   statement prints just ONE cell; never copy a single printed cell into two different fields.
 - "Points Transferred", "transferred to", and "Earnings transfered to" all mean REDEEMED. They are
   pointsRedeemedThisCycle. They are never closingPoints.
-- closingPoints on ICICI: none of the four layouts above prints a closing or available POINTS balance.
-  "Total Points earned" and "Points earned on iShop" are CYCLE EARN figures, not a balance. So unless
-  the statement really does print a labelled points BALANCE, closingPoints = null. Do NOT compute it
-  from earned minus redeemed, do NOT copy the earned figure into it, and do NOT take the money
-  "Closing Balance" specimen from the Minimum-Amount-Due worked example.
-- openingPoints on ICICI: likewise not printed by any of these layouts → null unless an explicitly
-  labelled opening/brought-forward POINTS balance appears. Never the money "Previous Balance".
+- closingPoints on ICICI: Layouts 1–4 print no closing or available POINTS balance — "Total Points
+  earned" and "Points earned on iShop" are CYCLE EARN figures, not a balance — so on those layouts
+  closingPoints = null. The EXCEPTION is Layout 5 (Mine Cash), which DOES print a labelled "Closing
+  Balance" cell inside its rewards strip: there, closingPoints = that value. In every case, do NOT
+  compute closingPoints from earned minus redeemed, do NOT copy the earned figure into it, and do NOT
+  take the money "Closing Balance" specimen from the Minimum-Amount-Due worked example.
+- openingPoints on ICICI: null on Layouts 1–4 (no opening balance printed). The EXCEPTION is Layout 5
+  (Mine Cash), which prints a labelled "Opening Balance" cell: there, openingPoints = that value.
+  Never derive it, and never use the money "Previous Balance" from the Statement Summary.
 - No ICICI layout in this corpus prints a points-expiry figure → pointsExpiringNext30Days and
   pointsExpiringNext60Days are null. A terms-and-conditions sentence describing when points expire is
   a policy, not a value.
