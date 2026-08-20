@@ -2,8 +2,13 @@
 
 Stdlib-only so the validation tests run without langgraph. Two layers:
 
-1. *Schema conformance* -- a minimal hand-written validator over
-   ``schema/gt_schema.json``. ``jsonschema`` is a third-party package and cannot
+1. *Schema conformance* -- a minimal hand-written validator over a JSON schema.
+   The schema is per-bank: :func:`load_schema_for_bank` resolves the request's
+   detected bank to its ``schema/<bank>.json`` (a structural superset of the
+   shared ``schema/gt_schema.json`` with bank-specific descriptions layered in),
+   and :func:`validate_payload` accepts that schema via its optional ``schema``
+   arg. When no schema is passed, :func:`load_gt_schema` is the back-compat
+   default. ``jsonschema`` is a third-party package and cannot
    be installed on this machine (pypi is blackholed), so we implement just enough
    of the subset our single schema uses: ``type`` (incl. ``["x","null"]``
    unions), ``enum``, ``required``, ``additionalProperties: false``, ``items``,
@@ -28,10 +33,21 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from rules.routing import load_schema_for_bank  # re-exported for the node + tests
 from rules.validation import VALIDATION_RULES
 
 _SCHEMA_PATH = Path(__file__).resolve().parents[1] / "schema" / "gt_schema.json"
 _schema_cache: dict[str, Any] | None = None
+
+__all__ = [
+    "load_gt_schema",
+    "load_schema_for_bank",
+    "validate_schema_conformance",
+    "validate_rules",
+    "validate_payload",
+    "rule_names",
+    "ValidationReport",
+]
 
 _LAST_FOUR = re.compile(r"^\d{4}$")
 _DATE_DDMMYYYY = re.compile(r"^\d{2}/\d{2}/\d{4}$")
@@ -304,8 +320,15 @@ def validate_rules(payload: dict[str, Any]) -> list[str]:
     return errors
 
 
-def validate_payload(payload: Any) -> ValidationReport:
+def validate_payload(payload: Any, schema: dict[str, Any] | None = None) -> ValidationReport:
     """Full validation: schema conformance + GT rules. Never raises.
+
+    ``schema`` is the per-bank extraction schema to validate against. When
+    ``None`` (the default), the shared :func:`load_gt_schema` is used -- this
+    preserves back-compat for any caller that does not pass a bank's schema.
+    The validation node resolves the request's bank schema via
+    :func:`load_schema_for_bank` and passes it here so each extraction is
+    checked against the schema that was actually sent to the model.
 
     STRUCTURAL GUARANTEE: the non-raising contract holds STRUCTURALLY, not by
     exhaustive inspection of every coercion site. The entire body is wrapped so
@@ -326,7 +349,7 @@ def validate_payload(payload: Any) -> ValidationReport:
         rule_errors: list[str] = []
         schema_valid = False
         if isinstance(payload, dict):
-            schema_errors = validate_schema_conformance(payload)
+            schema_errors = validate_schema_conformance(payload, schema)
             schema_valid = not schema_errors
             if schema_valid:
                 rule_errors = validate_rules(payload)

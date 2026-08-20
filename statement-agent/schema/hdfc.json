@@ -1,0 +1,324 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "statementMeta",
+    "statementLevelSummary",
+    "cards",
+    "transactions",
+    "rewards"
+  ],
+  "properties": {
+    "statementMeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuerName",
+        "statementDate",
+        "dueDate",
+        "statementPeriodStart",
+        "statementPeriodEnd",
+        "rawStatementId"
+      ],
+      "properties": {
+        "issuerName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "statementDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dueDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "statementPeriodStart": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "statementPeriodEnd": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rawStatementId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "statementLevelSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "totalAmountDue",
+        "totalMinimumAmountDue",
+        "totalCreditLimit",
+        "availableCreditLimit"
+      ],
+      "properties": {
+        "totalAmountDue": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "totalMinimumAmountDue": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "totalCreditLimit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "availableCreditLimit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cardMeta",
+          "bigPicture"
+        ],
+        "properties": {
+          "cardMeta": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cardDisplayName",
+              "productFamily",
+              "lastFourDigit",
+              "network",
+              "isPrimaryCard"
+            ],
+            "properties": {
+              "cardDisplayName": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "productFamily": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The HDFC product / series name as printed on the statement, with the issuer name and the generic words 'Credit Card' removed: e.g. 'Swiggy', 'Millennia', 'MoneyBack+', 'Pixel Play', 'Tata Neu Infinity', 'Marriott Bonvoy', 'UPI RuPay'. Take it from the statement or card header product line, never from a promotional offer or a transaction narration. Null only when no product name is printed anywhere on the statement. NEVER infer it from the card BIN, the leading digit, or the network."
+              },
+              "lastFourDigit": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "network": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "isPrimaryCard": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "Whether this card is the primary card on the account - a question about account structure, not a word to transcribe. If the statement lists EXACTLY ONE card account (counted as distinct printed card numbers), that card is true, unless it is explicitly labelled 'Add-on', 'Add On', 'Additional', 'Supplementary' or 'Secondary', in which case false. If the statement lists MORE THAN ONE card account, use the printed per-card designation if there is one; if none is printed, null - never guess from listing order. The word 'primary' occurring elsewhere on the page (e.g. inside a postal address) is not a card designation."
+              }
+            }
+          },
+          "bigPicture": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cardCreditLimit",
+              "cardAvailableCreditLimit"
+            ],
+            "properties": {
+              "cardCreditLimit": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "cardAvailableCreditLimit": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "transactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "description",
+          "amount",
+          "direction",
+          "txnType",
+          "rewardPointsOnThisTransaction",
+          "currency"
+        ],
+        "properties": {
+          "date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "amount": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "direction": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "DEBIT",
+              "CREDIT",
+              null
+            ]
+          },
+          "txnType": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "PURCHASE",
+              "PAYMENT",
+              "REFUND",
+              "REVERSAL",
+              "CASHBACK",
+              "FEE",
+              "TAX",
+              "INTEREST",
+              "EMI",
+              "CASH_ADVANCE",
+              "UPI",
+              null
+            ]
+          },
+          "rewardPointsOnThisTransaction": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "currency": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "rewards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "programType",
+        "openingPoints",
+        "pointsEarnedThisCycle",
+        "pointsRedeemedThisCycle",
+        "closingPoints",
+        "pointsExpiringNext30Days",
+        "pointsExpiringNext60Days",
+        "bonusPointsThisCycle"
+      ],
+      "properties": {
+        "programType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "openingPoints": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pointsEarnedThisCycle": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pointsRedeemedThisCycle": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "closingPoints": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pointsExpiringNext30Days": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "The number printed against the reward-strip label 'POINTS EXPIRING IN 30 DAYS' (classic HDFC layout) or 'EXPIRING IN 30 DAYS' (Pixel Play layout). Copy the printed figure verbatim, INCLUDING a printed 0 - a printed zero is a real value, not a missing one. Null only when the statement prints no such label at all, which is the case on cashback and NeuCoins statements. Never computed or carried over from another field."
+        },
+        "pointsExpiringNext60Days": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "The number printed against the reward-strip label 'POINTS EXPIRING IN 60 DAYS', which the classic HDFC layout prints as a bare 'IN 60 DAYS' immediately after the 30-day figure, and the Pixel Play layout prints as 'EXPIRING IN 60 DAYS'. Copy the printed figure verbatim, INCLUDING a printed 0. Null only when the statement prints no such label at all. Never computed, and never copied from the 30-day figure unless the statement prints the same number for both."
+        },
+        "bonusPointsThisCycle": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}
