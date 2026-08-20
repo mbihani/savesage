@@ -22,3 +22,10 @@ glaring_misses.json
 diagnosis_*.json
 desc_defect_classes.json
 misses*.json
+
+# ICICI/eval per-statement artifacts (customer PII: card data, raw extractions)
+*/gemini/json*_arm*/
+*/gemini/json*_before_*/
+*/gemini/incumbent*.json
+*/gemini/pdf_oracle*.json
+*/gemini/logs/
