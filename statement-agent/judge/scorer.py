@@ -27,15 +27,47 @@ from typing import Any
 
 _LOGGER = logging.getLogger("statement-agent.scorer")
 
-# The seven judged fields, used for per-field metric reporting in the summary.
+# The 28 judged fields, used for per-field metric reporting in the summary.
+# This is a SECOND, independent definition of the judged set — it MUST contain
+# the same 28 paths as ``contracts.models.JUDGED_FIELDS`` (a sync test pins
+# this).  The ORDER drives per-field iteration (assessment order, per-field
+# metric order); ``contracts.models`` is an unordered frozenset (admission +
+# scope routing only).
 JUDGED_FIELDS = (
+    # Per-card cardMeta (4).
     "cards[].cardMeta.cardDisplayName",
     "cards[].cardMeta.lastFourDigit",
+    "cards[].cardMeta.productFamily",
+    "cards[].cardMeta.network",
+    # Per-card bigPicture (2).
+    "cards[].bigPicture.cardCreditLimit",
+    "cards[].bigPicture.cardAvailableCreditLimit",
+    # Top-level statementMeta (5).
+    "statementMeta.issuerName",
+    "statementMeta.statementDate",
+    "statementMeta.dueDate",
+    "statementMeta.statementPeriodStart",
+    "statementMeta.statementPeriodEnd",
+    # Top-level statementLevelSummary (4).
+    "statementLevelSummary.totalAmountDue",
+    "statementLevelSummary.totalMinimumAmountDue",
+    "statementLevelSummary.totalCreditLimit",
+    "statementLevelSummary.availableCreditLimit",
+    # Top-level rewards (8).
     "rewards.pointsEarnedThisCycle",
     "rewards.closingPoints",
+    "rewards.programType",
+    "rewards.openingPoints",
+    "rewards.pointsRedeemedThisCycle",
+    "rewards.pointsExpiringNext30Days",
+    "rewards.pointsExpiringNext60Days",
+    "rewards.bonusPointsThisCycle",
+    # Transaction rows (5).
     "transactions[].date",
     "transactions[].description",
     "transactions[].amount",
+    "transactions[].direction",
+    "transactions[].rewardPointsOnThisTransaction",
 )
 
 # Fallback MLflow experiment path used when neither the MLFLOW_EXPERIMENT_ID
@@ -502,7 +534,7 @@ def score_trace(run_id: str, result_store: Any = None) -> dict[str, Any]:
     Returns ``{"run_id": ..., "status": "OK"|"JUDGE_ERROR"|"ASSESSMENT_ERROR"|
     "ERROR", ...}`` — never raises (errors are captured in the ``status``/
     ``error`` fields).  ``ASSESSMENT_ERROR`` means the verdict was OK but the
-    9 assessments did NOT all persist: the run is left ``judged=error``
+    30 assessments did NOT all persist: the run is left ``judged=error``
     (re-judgeable) and the sanitized failure detail is in ``error`` /
     ``assessment_error``.
     """
@@ -531,7 +563,7 @@ def _sanitize_error(exc: Exception) -> str:
 def _log_field_assessments(
     trace_id: str, verdict: Any, metrics: dict[str, Any]
 ) -> tuple[int, list[str]]:
-    """Log the 7 per-field + 2 overall assessments onto the ORIGINAL parse
+    """Log the 28 per-field + 2 overall assessments onto the ORIGINAL parse
     trace via ``mlflow.log_assessment``.  Returns ``(n_logged, errors)``.
 
     This is the ON-DEMAND single-trace assessment path (Bug 2).  It reuses
@@ -554,11 +586,11 @@ def _log_field_assessments(
 
     RETURNS ``(n_logged, errors)`` so the caller (:func:`_judge_and_persist`)
     can enforce the Bug 3 invariant: a run is tagged ``judged=true`` ONLY
-    when ALL 9 assessments persisted.  On ANY failure (``build_field_feed
+    when ALL 30 assessments persisted.  On ANY failure (``build_field_feed
     backs`` raises, a ``log_assessment`` raises, or the count is short),
     ``errors`` is non-empty and the caller leaves the run RE-JUDGEABLE
     (``judged=error``) and SURFACES the failure — it is NOT silently
-    swallowed into OK.  This function still attempts ALL 9 even when one
+    swallowed into OK.  This function still attempts ALL 30 even when one
     fails (so the persist count is as complete as possible), then reports
     the aggregate failure.  Error messages are SANITIZED (exception type
     name + assessment name only — no ``str(exc)``, no PII).
@@ -627,7 +659,7 @@ def _judge_and_persist(
        ``genai.evaluate``'s harness logs the scorer's returned Feedbacks
        itself — and accounts for assessment errors itself.
     9. Tag the run ``judged=true`` ONLY when the verdict is OK AND (on the
-       on-demand path) all 9 assessments persisted; otherwise
+       on-demand path) all 30 assessments persisted; otherwise
        ``judged=error`` (re-judgeable) and the status is promoted to
        ``ASSESSMENT_ERROR`` (Bug 3 invariant).  The tag is set AFTER the
        assessment writes so it reflects whether they actually persisted.
@@ -754,7 +786,7 @@ def _judge_and_persist(
             "log_dict of verdict comparisons failed for %s", run_id, exc_info=True,
         )
 
-    # 10. On-demand path only: log the 9 assessments onto the ORIGINAL parse
+    # 10. On-demand path only: log the 30 assessments onto the ORIGINAL parse
     # trace (Bug 2).  Skipped for the batch genai.evaluate path
     # (``log_assessments=False``) because genai.evaluate's harness logs the
     # scorer's returned Feedbacks itself — and accounts for assessment
@@ -765,7 +797,7 @@ def _judge_and_persist(
     #
     # BUG 3 INVARIANT (cross-review fix): the assessments are logged BEFORE
     # the ``judged=true`` tag is set (step 11), and the tag is set to
-    # ``judged=true`` ONLY when ALL 9 assessments persisted.  Any assessment
+    # judged=true ONLY when ALL 30 assessments persisted.  Any assessment
     # failure (trace-id resolution fails, ``build_field_feedbacks`` fails, a
     # ``log_assessment`` raises, or the count is short) leaves the run
     # RE-JUDGEABLE (``judged=error`` — the batch sampler keeps runs where
@@ -792,7 +824,7 @@ def _judge_and_persist(
     # 11. Tag the run — AFTER the assessment writes (step 10) so the tag
     # decision reflects whether the assessments actually persisted.
     # ``judged=true`` ONLY when the verdict is OK AND (on the on-demand
-    # path) all 9 assessments persisted.  Any assessment failure →
+    # path) all 30 assessments persisted.  Any assessment failure →
     # ``judged=error`` so the run stays RE-JUDGEABLE (the batch sampler
     # keeps runs where ``judged != 'true'``), and the status is promoted to
     # ``ASSESSMENT_ERROR`` so the failure is SURFACED in the returned
@@ -990,7 +1022,7 @@ def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dic
     sample = random.sample(run_ids, min(sample_size, len(run_ids)))
 
     # 4. Resolve each sampled run's parse Trace for the genai.evaluate path.
-    # Runs WITH a trace go through genai.evaluate (one @scorer → 7 per-field
+    # Runs WITH a trace go through genai.evaluate (one @scorer → 28 per-field
     # trace-level assessments + aggregate metrics).  Runs WITHOUT a trace
     # (older run whose trace aged out, or search unavailable) fall back to
     # :func:`score_trace` (per-run metrics + save_verdict, no assessments).
@@ -1070,7 +1102,7 @@ def _aggregate_results(results: list[dict[str, Any]]) -> dict[str, Any]:
 
     Only ``status == "OK"`` traces are scored. ``JUDGE_ERROR`` (Opus returned
     an unusable response), ``ERROR`` (exception during scoring), and
-    ``ASSESSMENT_ERROR`` (OK verdict but the 9 assessments did not all
+    ``ASSESSMENT_ERROR`` (OK verdict but the 30 assessments did not all
     persist on the on-demand path) are all counted as errors — each is tagged
     ``judged=error`` (not ``judged=true``) so the run stays RE-JUDGEABLE in
     the next evaluation.
