@@ -12,7 +12,7 @@ that judges each already-logged parse trace and returns a LIST of per-field
 ``Feedback`` objects.  ``genai.evaluate`` logs those as ASSESSMENTS on the
 ORIGINAL parse trace (one row per field in the Assessments tab).
 
-SCORER DESIGN — one Opus call → list of 7 per-field Feedbacks
+SCORER DESIGN — one Opus call → list of 28 per-field Feedbacks
 
 A single ``@scorer`` (``judge_per_field``) resolves the sourceRun ``run_id``
 from the trace's ``mlflow.sourceRun`` metadata, reuses
@@ -73,16 +73,45 @@ _LOGGER = logging.getLogger("statement-agent.evaluator")
 # earlier ``judge.<field>`` dotted names are why ZERO judge assessments ever
 # appeared in production.  Use underscores everywhere.
 FIELD_ASSESSMENT_NAMES: dict[str, str] = {
+    # Per-card cardMeta (4).
     "cards[].cardMeta.cardDisplayName": "judge_cardDisplayName",
     "cards[].cardMeta.lastFourDigit": "judge_lastFourDigit",
+    "cards[].cardMeta.productFamily": "judge_cardProductFamily",
+    "cards[].cardMeta.network": "judge_cardNetwork",
+    # Per-card bigPicture (2).  Prefixed ``judge_card`` to stay distinct from
+    # the statementLevelSummary credit-limit fields (judge_stmt_* below).
+    "cards[].bigPicture.cardCreditLimit": "judge_cardCreditLimit",
+    "cards[].bigPicture.cardAvailableCreditLimit": "judge_cardAvailableCreditLimit",
+    # Top-level statementMeta (5).
+    "statementMeta.issuerName": "judge_issuerName",
+    "statementMeta.statementDate": "judge_statementDate",
+    "statementMeta.dueDate": "judge_dueDate",
+    "statementMeta.statementPeriodStart": "judge_statementPeriodStart",
+    "statementMeta.statementPeriodEnd": "judge_statementPeriodEnd",
+    # Top-level statementLevelSummary (4).  Prefixed ``judge_stmt`` so the two
+    # credit-limit names (card vs statement) never collide.
+    "statementLevelSummary.totalAmountDue": "judge_stmt_totalAmountDue",
+    "statementLevelSummary.totalMinimumAmountDue": "judge_stmt_totalMinimumAmountDue",
+    "statementLevelSummary.totalCreditLimit": "judge_stmt_totalCreditLimit",
+    "statementLevelSummary.availableCreditLimit": "judge_stmt_availableCreditLimit",
+    # Top-level rewards (8).
     "rewards.pointsEarnedThisCycle": "judge_pointsEarnedThisCycle",
     "rewards.closingPoints": "judge_closingPoints",
+    "rewards.programType": "judge_programType",
+    "rewards.openingPoints": "judge_openingPoints",
+    "rewards.pointsRedeemedThisCycle": "judge_pointsRedeemedThisCycle",
+    "rewards.pointsExpiringNext30Days": "judge_pointsExpiringNext30Days",
+    "rewards.pointsExpiringNext60Days": "judge_pointsExpiringNext60Days",
+    "rewards.bonusPointsThisCycle": "judge_bonusPointsThisCycle",
+    # Transaction rows (5).
     "transactions[].date": "judge_transactions_date",
     "transactions[].description": "judge_transactions_description",
     "transactions[].amount": "judge_transactions_amount",
+    "transactions[].direction": "judge_transactions_direction",
+    "transactions[].rewardPointsOnThisTransaction": "judge_transactions_rewardPointsOnThisTransaction",
 }
 
-# Overall assessment names (additive to the 7 per-field ones).  DOT-FREE —
+# Overall assessment names (additive to the 28 per-field ones).  DOT-FREE —
 # see the FIELD_ASSESSMENT_NAMES note for why dots are forbidden.
 OVERALL_STRICT_NAME = "judge_overall_strict"
 OVERALL_FORGIVEN_NAME = "judge_overall_forgiven"
@@ -108,7 +137,7 @@ def _field_key(field_path: str) -> str:
 def build_field_feedbacks(
     verdict: Any, metrics: dict[str, Any]
 ) -> list[Any]:
-    """Build 7 per-field ``Feedback`` objects + 2 overall from a ``JudgeVerdict``.
+    """Build 28 per-field ``Feedback`` objects + 2 overall from a ``JudgeVerdict``.
 
     One ``Feedback`` per judged field (``judge_cardDisplayName`` etc.), plus
     ``judge_overall_strict`` and ``judge_overall_forgiven``.  Each per-field
@@ -155,7 +184,7 @@ def build_field_feedbacks(
         either a value or an error).  When a field has no scored comparisons
         (accuracy ``None`` — e.g. transactions absent from the PDF), use the
         string sentinel ``"not_scored"`` so the field still produces a row in
-        the Assessments tab (7 per-field assessments per trace regardless),
+        the Assessments tab (28 per-field assessments per trace regardless),
         while genai.evaluate's aggregation skips it (``_cast_assessment_value
         _to_float`` returns ``None`` for unrecognised strings → excluded from
         the mean).
@@ -193,7 +222,7 @@ def build_field_feedbacks(
             )
         )
 
-    # Overall strict + narration-forgiven (additive to the 7 per-field).
+    # Overall strict + narration-forgiven (additive to the 28 per-field).
     feedbacks.append(
         Feedback(
             name=OVERALL_STRICT_NAME,
@@ -228,7 +257,7 @@ def make_judge_scorer(
     :func:`judge.scorer._judge_and_persist` (the SINGLE Opus call per trace),
     collects the per-trace result dict into ``results_collector`` (the
     side-channel :func:`run_judge_evaluation` aggregates via
-    :func:`_aggregate_results`), and returns the 7+2 per-field ``Feedback``
+    :func:`_aggregate_results`), and returns the 28+2 per-field ``Feedback``
     objects.  ``genai.evaluate`` logs those as trace-level assessments on the
     original parse trace.
 
@@ -246,7 +275,7 @@ def make_judge_scorer(
     @scorer(
         name="judge_per_field",
         description=(
-            "Opus-5 per-field judge: one Opus call → 7 per-field Feedback "
+            "Opus-5 per-field judge: one Opus call → 28 per-field Feedback "
             "assessments (one per judged field) + overall strict/forgiven."
         ),
     )

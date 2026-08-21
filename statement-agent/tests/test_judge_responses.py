@@ -60,7 +60,7 @@ class DegenerateJudgeResponseTest(unittest.TestCase):
         summary = json.loads(verdict.summary)
         self.assertEqual(summary["status"], "JUDGE_ERROR")
         self.assertIn(expected_fragment, summary["judge_error"])
-        self.assertEqual(len(verdict.comparisons), 7)
+        self.assertEqual(len(verdict.comparisons), 28)
         self.assertTrue(all(item.outcome is ComparisonOutcome.ABSENT_IN_PDF
                             and item.rationale == summary["judge_error"]
                             for item in verdict.comparisons))

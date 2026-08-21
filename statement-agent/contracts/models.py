@@ -70,23 +70,57 @@ class ExtractionResult:
     schema_valid: bool = False
 
 
+# The judged field roster.  These four definitions are the SINGLE source of
+# truth for which fields the judge admits: ``FieldComparison.__post_init__``
+# raises if a path is absent and routes scope (SCALAR vs TRANSACTION_ROW) by
+# which set it is in.  A SECOND, independent tuple in ``judge/scorer.py`` drives
+# per-field iteration order — the two MUST contain the same 28 paths (a sync
+# test pins this).  Assessment names live in a THIRD place
+# (``judge/evaluator.py`` FIELD_ASSESSMENT_NAMES); a dot-free + unique test
+# pins that.  See the WS6 expand-coverage note for the full mapping.
 JUDGED_SCALAR_FIELDS = frozenset({
+    # Per-card cardMeta (4).
     "cards[].cardMeta.cardDisplayName",
     "cards[].cardMeta.lastFourDigit",
+    "cards[].cardMeta.productFamily",
+    "cards[].cardMeta.network",
+    # Per-card bigPicture (2).
+    "cards[].bigPicture.cardCreditLimit",
+    "cards[].bigPicture.cardAvailableCreditLimit",
+    # Top-level statementMeta (5).
+    "statementMeta.issuerName",
+    "statementMeta.statementDate",
+    "statementMeta.dueDate",
+    "statementMeta.statementPeriodStart",
+    "statementMeta.statementPeriodEnd",
+    # Top-level statementLevelSummary (4).
+    "statementLevelSummary.totalAmountDue",
+    "statementLevelSummary.totalMinimumAmountDue",
+    "statementLevelSummary.totalCreditLimit",
+    "statementLevelSummary.availableCreditLimit",
+    # Top-level rewards (8: 2 original + 6 new).
     "rewards.pointsEarnedThisCycle",
     "rewards.closingPoints",
+    "rewards.programType",
+    "rewards.openingPoints",
+    "rewards.pointsRedeemedThisCycle",
+    "rewards.pointsExpiringNext30Days",
+    "rewards.pointsExpiringNext60Days",
+    "rewards.bonusPointsThisCycle",
 })
 JUDGED_TRANSACTION_FIELDS = frozenset({
     "transactions[].date",
     "transactions[].description",
     "transactions[].amount",
+    "transactions[].direction",
+    "transactions[].rewardPointsOnThisTransaction",
 })
 JUDGED_FIELDS = JUDGED_SCALAR_FIELDS | JUDGED_TRANSACTION_FIELDS
 
 
 @dataclass(frozen=True, slots=True)
 class FieldComparison:
-    """Agreement on one of exactly seven fields.
+    """Agreement on one of exactly 28 fields (23 scalar + 5 transaction-row).
 
     Scalar comparisons use `scope=SCALAR`; card fields may identify a card with
     `card_index`. Transaction fields use `scope=TRANSACTION_ROW` and carry the

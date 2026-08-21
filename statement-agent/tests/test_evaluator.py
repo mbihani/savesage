@@ -3,9 +3,9 @@
 Two layers:
 
 * ``BuildFieldFeedbacksTest`` — pure-logic unit tests for
-  :func:`build_field_feedbacks` (the verdict → 7 per-field Feedback objects
+  :func:`build_field_feedbacks` (the verdict → 28 per-field Feedback objects
   builder).  Uses the real ``mlflow.entities.Feedback`` (importable locally)
-  but no MLflow tracking store.  Verifies the SEVEN per-field assessment
+  but no MLflow tracking store.  Verifies the 28 per-field assessment
   names, their values, PII redaction (cardDisplayName/description HMAC'd or
   omitted, rationale dropped), and the two overall assessments.
 
@@ -37,16 +37,20 @@ from harness.tracing_judge import verdict_to_metrics
 
 
 # ---------------------------------------------------------------------------
-# Sample verdicts (all 7 judged fields, including PII + transaction rows)
+# Sample verdicts (all 28 judged fields, including PII + transaction rows)
 # ---------------------------------------------------------------------------
 
 def _full_verdict(request_id: str = "req-test") -> JudgeVerdict:
-    """A verdict carrying ALL 7 judged fields, including PII fields
-    (cardDisplayName, transaction description) and transaction-row fields."""
+    """A verdict carrying ALL 28 judged fields (23 scalar + 5 transaction-row),
+    including PII fields (cardDisplayName, transaction description).  Every
+    field has exactly one AGREE comparison so every per-field accuracy is a
+    float (the per-field-value tests iterate every FIELD_ASSESSMENT_NAMES
+    entry and look up the metric, so a missing field would KeyError)."""
     return JudgeVerdict(
         request_id=request_id,
         judge_model_id="databricks-claude-opus-5",
         comparisons=(
+            # Per-card cardMeta (4).
             FieldComparison(
                 "cards[].cardMeta.cardDisplayName", "Platinum Card",
                 "Platinum Card", ComparisonOutcome.AGREE,
@@ -57,6 +61,62 @@ def _full_verdict(request_id: str = "req-test") -> JudgeVerdict:
                 ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
             ),
             FieldComparison(
+                "cards[].cardMeta.productFamily", "Platinum", "Platinum",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+            ),
+            FieldComparison(
+                "cards[].cardMeta.network", "VISA", "VISA",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+            ),
+            # Per-card bigPicture (2).
+            FieldComparison(
+                "cards[].bigPicture.cardCreditLimit", 100000, 100000,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+            ),
+            FieldComparison(
+                "cards[].bigPicture.cardAvailableCreditLimit", 95000, 95000,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+            ),
+            # Top-level statementMeta (5).
+            FieldComparison(
+                "statementMeta.issuerName", "HDFC Bank", "HDFC Bank",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementMeta.statementDate", "2026-01-01", "2026-01-01",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementMeta.dueDate", "2026-02-01", "2026-02-01",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementMeta.statementPeriodStart", "2025-12-01", "2025-12-01",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementMeta.statementPeriodEnd", "2026-01-01", "2026-01-01",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            # Top-level statementLevelSummary (4).
+            FieldComparison(
+                "statementLevelSummary.totalAmountDue", 5000, 5000,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementLevelSummary.totalMinimumAmountDue", 250, 250,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementLevelSummary.totalCreditLimit", 100000, 100000,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementLevelSummary.availableCreditLimit", 95000, 95000,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            # Top-level rewards (8).
+            FieldComparison(
                 "rewards.pointsEarnedThisCycle", 100, 100,
                 ComparisonOutcome.AGREE, FieldScope.SCALAR,
             ),
@@ -64,6 +124,31 @@ def _full_verdict(request_id: str = "req-test") -> JudgeVerdict:
                 "rewards.closingPoints", 500, 500,
                 ComparisonOutcome.AGREE, FieldScope.SCALAR,
             ),
+            FieldComparison(
+                "rewards.programType", "Cashback", "Cashback",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.openingPoints", 400, 400,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.pointsRedeemedThisCycle", 50, 50,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.pointsExpiringNext30Days", 10, 10,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.pointsExpiringNext60Days", 20, 20,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.bonusPointsThisCycle", 30, 30,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            # Transaction rows (5) — one matched row.
             FieldComparison(
                 "transactions[].date", "2026-01-01", "2026-01-01",
                 ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
@@ -79,6 +164,18 @@ def _full_verdict(request_id: str = "req-test") -> JudgeVerdict:
             ),
             FieldComparison(
                 "transactions[].amount", 150.0, 150.0,
+                ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                expected_row_index=0, actual_row_index=0,
+            ),
+            FieldComparison(
+                "transactions[].direction", "DEBIT", "DEBIT",
+                ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                expected_row_index=0, actual_row_index=0,
+            ),
+            FieldComparison(
+                "transactions[].rewardPointsOnThisTransaction", 5, 5,
                 ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
                 MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
                 expected_row_index=0, actual_row_index=0,
@@ -102,37 +199,37 @@ def _comparisons(feedback: Any) -> list[dict[str, Any]]:
 # ---------------------------------------------------------------------------
 
 class BuildFieldFeedbacksTest(unittest.TestCase):
-    """Verifies the verdict → 7 per-field Feedback + 2 overall builder."""
+    """Verifies the verdict → 28 per-field Feedback + 2 overall builder."""
 
     def setUp(self):
         self.verdict = _full_verdict()
         self.metrics = verdict_to_metrics(self.verdict)
 
-    def test_returns_exactly_7_per_field_plus_2_overall(self):
-        """The builder returns exactly 9 Feedback objects: 7 per-field + 2 overall."""
+    def test_returns_exactly_28_per_field_plus_2_overall(self):
+        """The builder returns exactly 30 Feedback objects: 28 per-field + 2 overall."""
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        self.assertEqual(len(feedbacks), 9)
+        self.assertEqual(len(feedbacks), 30)
 
-    def test_seven_per_field_names_match_expected(self):
-        """Each of the 7 per-field Feedbacks has the correct assessment name."""
+    def test_all_per_field_names_match_expected(self):
+        """Each of the 28 per-field Feedbacks has the correct assessment name."""
         from judge.evaluator import FIELD_ASSESSMENT_NAMES, build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        per_field = feedbacks[:7]
+        per_field = feedbacks[:28]
         actual_names = {f.name for f in per_field}
         expected_names = set(FIELD_ASSESSMENT_NAMES.values())
         self.assertEqual(actual_names, expected_names)
         # Each name is distinct so each field is its own row in the tab.
-        self.assertEqual(len(actual_names), 7)
+        self.assertEqual(len(actual_names), 28)
 
     def test_per_field_values_are_accuracies(self):
         """Each per-field Feedback value equals the per-field strict accuracy."""
         from judge.evaluator import FIELD_ASSESSMENT_NAMES, build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        by_name = {f.name: f for f in feedbacks[:7]}
+        by_name = {f.name: f for f in feedbacks[:28]}
         for field_path, name in FIELD_ASSESSMENT_NAMES.items():
             field_key = field_path.replace("[]", "").replace(".", "_")
             expected_acc = self.metrics[f"judge.{field_key}"]
@@ -148,7 +245,7 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         )
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        overall = {f.name: f for f in feedbacks[7:]}
+        overall = {f.name: f for f in feedbacks[28:]}
         self.assertIn(OVERALL_STRICT_NAME, overall)
         self.assertIn(OVERALL_FORGIVEN_NAME, overall)
         self.assertEqual(overall[OVERALL_STRICT_NAME].value,
@@ -201,7 +298,7 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        by_name = {f.name: f for f in feedbacks[:7]}
+        by_name = {f.name: f for f in feedbacks[:28]}
 
         # lastFourDigit retained raw.
         last4_comps = _comparisons(by_name["judge_lastFourDigit"])
@@ -259,7 +356,7 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
     def test_missing_field_produces_empty_comparisons(self):
         """A field with no comparisons (e.g. transactions absent) still
         produces a Feedback with value=None and empty comparisons list —
-        7 assessments per trace regardless of which fields are present."""
+        28 assessments per trace regardless of which fields are present."""
         from judge.evaluator import build_field_feedbacks
 
         # A verdict with only scalar fields (no transactions).
@@ -277,10 +374,10 @@ class BuildFieldFeedbacksTest(unittest.TestCase):
         )
         metrics = verdict_to_metrics(verdict)
         feedbacks = build_field_feedbacks(verdict, metrics)
-        # Still 9 Feedbacks (7 per-field + 2 overall).
-        self.assertEqual(len(feedbacks), 9)
+        # Still 30 Feedbacks (28 per-field + 2 overall).
+        self.assertEqual(len(feedbacks), 30)
         # The transaction fields have empty comparisons + "not_scored" value
-        # (Feedback rejects None; the sentinel preserves 7 rows per trace
+        # (Feedback rejects None; the sentinel preserves 28 rows per trace
         # while genai.evaluate's aggregation skips it).
         txn_date = next(f for f in feedbacks if f.name == "judge_transactions_date")
         self.assertEqual(txn_date.value, "not_scored")
@@ -324,14 +421,93 @@ def _mixed_outcome_verdict(request_id: str = "req-abc123def456") -> JudgeVerdict
                 ComparisonOutcome.DISAGREE, FieldScope.SCALAR, MatchMethod.DIRECT,
                 card_index=0,
             ),
-            # pointsEarnedThisCycle: AGREE.
+            # cardMeta.productFamily / network: AGREE.
+            FieldComparison(
+                "cards[].cardMeta.productFamily", "Platinum", "Platinum",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+            ),
+            FieldComparison(
+                "cards[].cardMeta.network", "VISA", "VISA",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+            ),
+            # bigPicture.cardCreditLimit / cardAvailableCreditLimit: AGREE.
+            FieldComparison(
+                "cards[].bigPicture.cardCreditLimit", 100000, 100000,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+            ),
+            FieldComparison(
+                "cards[].bigPicture.cardAvailableCreditLimit", 95000, 95000,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR, card_index=0,
+            ),
+            # statementMeta (5): all AGREE.
+            FieldComparison(
+                "statementMeta.issuerName", "HDFC Bank", "HDFC Bank",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementMeta.statementDate", "2026-01-01", "2026-01-01",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementMeta.dueDate", "2026-02-01", "2026-02-01",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementMeta.statementPeriodStart", "2025-12-01", "2025-12-01",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementMeta.statementPeriodEnd", "2026-01-01", "2026-01-01",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            # statementLevelSummary (4): all AGREE.
+            FieldComparison(
+                "statementLevelSummary.totalAmountDue", 5000, 5000,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementLevelSummary.totalMinimumAmountDue", 250, 250,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementLevelSummary.totalCreditLimit", 100000, 100000,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "statementLevelSummary.availableCreditLimit", 95000, 95000,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            # rewards (8): all AGREE.
             FieldComparison(
                 "rewards.pointsEarnedThisCycle", 100, 100,
                 ComparisonOutcome.AGREE, FieldScope.SCALAR,
             ),
-            # closingPoints: AGREE (scored — keeps closingPoints off "not_scored").
             FieldComparison(
                 "rewards.closingPoints", 500, 500,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.programType", "Cashback", "Cashback",
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.openingPoints", 400, 400,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.pointsRedeemedThisCycle", 50, 50,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.pointsExpiringNext30Days", 10, 10,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.pointsExpiringNext60Days", 20, 20,
+                ComparisonOutcome.AGREE, FieldScope.SCALAR,
+            ),
+            FieldComparison(
+                "rewards.bonusPointsThisCycle", 30, 30,
                 ComparisonOutcome.AGREE, FieldScope.SCALAR,
             ),
             # transactions[].date: row0 AGREE (scored) +
@@ -377,6 +553,32 @@ def _mixed_outcome_verdict(request_id: str = "req-abc123def456") -> JudgeVerdict
                 ComparisonOutcome.UNMATCHED_ROW, FieldScope.TRANSACTION_ROW,
                 MatchMethod.DESCRIPTION_SIMILARITY_1TO1, actual_row_index=3,
             ),
+            # transactions[].direction: row0 AGREE +
+            # row1 UNMATCHED_ROW (PDF row with no extraction match).
+            FieldComparison(
+                "transactions[].direction", "DEBIT", "DEBIT",
+                ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                expected_row_index=0, actual_row_index=0, similarity=1.0,
+            ),
+            FieldComparison(
+                "transactions[].direction", "CREDIT", None,
+                ComparisonOutcome.UNMATCHED_ROW, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1, expected_row_index=1,
+            ),
+            # transactions[].rewardPointsOnThisTransaction: row0 AGREE +
+            # row1 UNMATCHED_ROW (PDF row with no extraction match).
+            FieldComparison(
+                "transactions[].rewardPointsOnThisTransaction", 5, 5,
+                ComparisonOutcome.AGREE, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
+                expected_row_index=0, actual_row_index=0, similarity=1.0,
+            ),
+            FieldComparison(
+                "transactions[].rewardPointsOnThisTransaction", 3, None,
+                ComparisonOutcome.UNMATCHED_ROW, FieldScope.TRANSACTION_ROW,
+                MatchMethod.DESCRIPTION_SIMILARITY_1TO1, expected_row_index=1,
+            ),
         ),
         latency_ms=50.0,
         summary=json.dumps({"status": "OK"}),
@@ -415,8 +617,8 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
                    return_value=b"test-hmac-key"):
             build_field_feedbacks(self.verdict, self.metrics)
 
-    def test_returns_exactly_9_feedbacks_with_correct_names(self):
-        """Returns 9 Feedbacks (7 per-field + 2 overall); the 7 per-field
+    def test_returns_exactly_30_feedbacks_with_correct_names(self):
+        """Returns 30 Feedbacks (28 per-field + 2 overall); the 28 per-field
         names match FIELD_ASSESSMENT_NAMES exactly (one row per field)."""
         from judge.evaluator import (
             FIELD_ASSESSMENT_NAMES,
@@ -426,16 +628,16 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         )
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        self.assertEqual(len(feedbacks), 9)
-        per_field_names = [f.name for f in feedbacks[:7]]
+        self.assertEqual(len(feedbacks), 30)
+        per_field_names = [f.name for f in feedbacks[:28]]
         # Exact names, exact order (mirrors JUDGED_FIELDS order).
         expected_names = [FIELD_ASSESSMENT_NAMES[p] for p in JUDGED_FIELDS]
         self.assertEqual(per_field_names, expected_names)
-        # All seven distinct.
-        self.assertEqual(len(set(per_field_names)), 7)
+        # All 28 distinct.
+        self.assertEqual(len(set(per_field_names)), 28)
         # Two overall.
-        self.assertEqual(feedbacks[7].name, OVERALL_STRICT_NAME)
-        self.assertEqual(feedbacks[8].name, OVERALL_FORGIVEN_NAME)
+        self.assertEqual(feedbacks[28].name, OVERALL_STRICT_NAME)
+        self.assertEqual(feedbacks[29].name, OVERALL_FORGIVEN_NAME)
 
     def test_each_per_field_value_is_non_none_float_in_unit_interval(self):
         """Every per-field Feedback carries a non-None float value in [0,1]
@@ -446,7 +648,7 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        for f in feedbacks[:7]:
+        for f in feedbacks[:28]:
             self.assertIsInstance(f.value, float, msg=f"{f.name} value not float")
             self.assertIsNotNone(f.value, msg=f"{f.name} value is None")
             self.assertGreaterEqual(f.value, 0.0, msg=f"{f.name} < 0")
@@ -458,7 +660,7 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         from judge.evaluator import FIELD_ASSESSMENT_NAMES, build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        by_name = {f.name: f for f in feedbacks[:7]}
+        by_name = {f.name: f for f in feedbacks[:28]}
         for field_path, name in FIELD_ASSESSMENT_NAMES.items():
             field_key = field_path.replace("[]", "").replace(".", "_")
             expected_acc = self.metrics[f"judge.{field_key}"]
@@ -475,7 +677,7 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         )
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        overall = {f.name: f for f in feedbacks[7:]}
+        overall = {f.name: f for f in feedbacks[28:]}
         for name in (OVERALL_STRICT_NAME, OVERALL_FORGIVEN_NAME):
             self.assertIsInstance(overall[name].value, float, msg=name)
             self.assertIsNotNone(overall[name].value, msg=name)
@@ -541,7 +743,7 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        by_name = {f.name: f for f in feedbacks[:7]}
+        by_name = {f.name: f for f in feedbacks[:28]}
 
         # lastFourDigit: DISAGREE, both non-null, retained raw.
         last4 = _comparisons(by_name["judge_lastFourDigit"])[0]
@@ -565,7 +767,7 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         feedbacks = build_field_feedbacks(self.verdict, self.metrics)
-        by_name = {f.name: f for f in feedbacks[:7]}
+        by_name = {f.name: f for f in feedbacks[:28]}
         # transactions[].date has 2 comparisons (AGREE + UNMATCHED_ROW).
         self.assertEqual(
             by_name["judge_transactions_date"].metadata["field_path"],
@@ -625,7 +827,7 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         def _assert_no_dots(feedbacks):
-            self.assertEqual(len(feedbacks), 9)
+            self.assertEqual(len(feedbacks), 30)
             for f in feedbacks:
                 self.assertNotIn(
                     ".", f.name,
@@ -665,7 +867,7 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         from judge.evaluator import build_field_feedbacks
 
         def _assert_all_str(feedbacks):
-            self.assertEqual(len(feedbacks), 9)
+            self.assertEqual(len(feedbacks), 30)
             for f in feedbacks:
                 meta = f.metadata or {}
                 for key, value in meta.items():
@@ -694,7 +896,7 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
     def test_judge_error_verdict_does_not_raise(self):
         """A JUDGE_ERROR verdict (Opus returned an unusable response) is all
         ABSENT_IN_PDF sentinels with expected=None/actual=None.  The builder
-        must not raise on it either, and must still return 9 Feedbacks."""
+        must not raise on it either, and must still return 30 Feedbacks."""
         from judge.comparison import judge_error_comparisons
         from judge.evaluator import build_field_feedbacks
 
@@ -708,12 +910,12 @@ class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
         )
         metrics = verdict_to_metrics(verdict)
         feedbacks = build_field_feedbacks(verdict, metrics)
-        self.assertEqual(len(feedbacks), 9)
+        self.assertEqual(len(feedbacks), 30)
         # Every field is all-ABSENT_IN_PDF → no scored comparisons → accuracy
         # None → the builder emits the "not_scored" sentinel (Feedback rejects
-        # value=None; the sentinel preserves 7 rows while genai.evaluate's
+        # value=None; the sentinel preserves 28 rows while genai.evaluate's
         # aggregation skips it via _cast_assessment_value_to_float).
-        for f in feedbacks[:7]:
+        for f in feedbacks[:28]:
             self.assertEqual(f.value, "not_scored")
 
 
@@ -889,7 +1091,7 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
         self.assertEqual(results[0]["run_id"], run_id)
         self.assertEqual(results[0]["bank"], "HDFC")
 
-        # The 7 per-field + 2 overall assessments were ACTUALLY attached to
+        # The 28 per-field + 2 overall assessments were ACTUALLY attached to
         # a trace in the experiment (read back via Trace.search_assessments —
         # the local file store supports the assessment API in mlflow 3.10.1).
         # NOTE: for the local FileStore, genai.evaluate CLONES the parse trace
@@ -903,10 +1105,10 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
         all_assessments: list = []
         for t in traces:
             all_assessments.extend(t.search_assessments())
-        # 7 per-field + 2 overall = 9 assessments.
-        self.assertEqual(len(all_assessments), 9)
+        # 28 per-field + 2 overall = 30 assessments.
+        self.assertEqual(len(all_assessments), 30)
         assessment_names = {a.name for a in all_assessments}
-        # All 7 per-field names present.
+        # All 28 per-field names present.
         self.assertEqual(
             assessment_names & set(FIELD_ASSESSMENT_NAMES.values()),
             set(FIELD_ASSESSMENT_NAMES.values()),
@@ -921,6 +1123,65 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
 
         result = run_genai_evaluation([], None, experiment_id=self._exp_id)
         self.assertIsNone(result)
+
+
+# ---------------------------------------------------------------------------
+# Assessment name constraints (dot-free + unique) — independent of any verdict
+# ---------------------------------------------------------------------------
+
+class AssessmentNameDotFreeAndUniqueTest(unittest.TestCase):
+    """HARD CONSTRAINT: the Databricks tracking store REJECTS any
+    assessment_name containing a '.' (RestException INVALID_PARAMETER_VALUE).
+    Names must also be UNIQUE across all 30 assessments (28 per-field + 2
+    overall) so each field is its own row in the assessment tab.
+
+    This test checks FIELD_ASSESSMENT_NAMES + the two overall names DIRECTLY
+    — independent of any verdict fixture — so a future rename to a dotted
+    form or a collision fails the gate immediately (before a live deploy).
+    """
+
+    def test_no_field_assessment_name_contains_a_dot(self):
+        """Every FIELD_ASSESSMENT_NAMES value is dot-free."""
+        from judge.evaluator import FIELD_ASSESSMENT_NAMES
+
+        for field_path, name in FIELD_ASSESSMENT_NAMES.items():
+            self.assertNotIn(
+                ".", name,
+                msg=f"assessment name {name!r} for {field_path} contains a dot — "
+                    "Databricks rejects dotted assessment names",
+            )
+
+    def test_all_field_assessment_names_unique(self):
+        """All 28 per-field assessment names are distinct."""
+        from judge.evaluator import FIELD_ASSESSMENT_NAMES
+
+        names = list(FIELD_ASSESSMENT_NAMES.values())
+        self.assertEqual(len(names), 28)
+        self.assertEqual(len(names), len(set(names)),
+                         msg="duplicate assessment names in FIELD_ASSESSMENT_NAMES")
+
+    def test_field_and_overall_names_all_unique(self):
+        """All 30 names (28 per-field + 2 overall) are distinct together."""
+        from judge.evaluator import (
+            FIELD_ASSESSMENT_NAMES,
+            OVERALL_FORGIVEN_NAME,
+            OVERALL_STRICT_NAME,
+        )
+
+        all_names = list(FIELD_ASSESSMENT_NAMES.values()) + [
+            OVERALL_STRICT_NAME, OVERALL_FORGIVEN_NAME,
+        ]
+        self.assertEqual(len(all_names), 30)
+        self.assertEqual(len(all_names), len(set(all_names)),
+                         msg="a per-field name collides with an overall name "
+                             "or another per-field name")
+
+    def test_overall_names_contain_no_dot(self):
+        """The two overall assessment names are dot-free."""
+        from judge.evaluator import OVERALL_FORGIVEN_NAME, OVERALL_STRICT_NAME
+
+        self.assertNotIn(".", OVERALL_STRICT_NAME)
+        self.assertNotIn(".", OVERALL_FORGIVEN_NAME)
 
 
 if __name__ == "__main__":

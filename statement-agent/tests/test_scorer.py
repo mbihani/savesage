@@ -403,7 +403,7 @@ class _FakeMLflowModule:
         """Fake ``mlflow.log_assessment`` — capture (trace_id, assessment).
 
         The on-demand path (:func:`judge.scorer._log_field_assessments`) logs
-        the 7 per-field + 2 overall ``judge.<field>`` Feedbacks onto the
+        the 28 per-field + 2 overall ``judge_<field>`` Feedbacks onto the
         original parse trace via this.  Captured so tests can assert the
         assessments landed on the right trace_id.  Raises when
         ``_log_assessment_raises`` is set (Bug 3 invariant test: an
@@ -630,17 +630,17 @@ class ScoreTraceTest(unittest.TestCase):
     def test_score_trace_full_flow(self):
         """Full score_trace: download PDF + extraction → opus → metrics →
         assessments → tag.  The on-demand path now requires a resolvable
-        parse trace to log the 9 assessments onto — without one the run is
+        parse trace to log the 30 assessments onto — without one the run is
         left re-judgeable (judged=error), not judged=true (Bug 3 invariant).
         So the full-flow happy path registers a trace and asserts judged=true
-        + the 9 assessments actually persisted."""
+        + the 30 assessments actually persisted."""
         from judge.scorer import score_trace
 
         # Register artifacts on the fake mlflow.
         meta = _make_extraction_meta()
         self.fake_mlflow.artifacts.register("statement.pdf", b"%PDF-1.4 fake pdf")
         self.fake_mlflow.artifacts.register("extraction.json", json.dumps(meta).encode())
-        # Register the parse trace linked to this run so the 9 assessments
+        # Register the parse trace linked to this run so the 30 assessments
         # land on its trace_id and the run reaches judged=true.
         self.fake_mlflow.set_traces([_make_fake_trace("req-test", "run-123")])
 
@@ -743,7 +743,7 @@ class ScoreTraceTest(unittest.TestCase):
 
     def test_score_trace_logs_per_field_assessments_on_original_trace(self):
         """Bug 2 — the on-demand single-trace path (score_trace) MUST write
-        the 7 per-field + 2 overall ``judge.<field>`` assessments onto the
+        the 28 per-field + 2 overall ``judge_<field>`` assessments onto the
         ORIGINAL parse trace (the one the Results view links to), so an
         on-demand-judged trace ends up with assessments — not just metrics +
         a Lakebase verdict.  Reuses build_field_feedbacks (the SAME builder
@@ -767,15 +767,15 @@ class ScoreTraceTest(unittest.TestCase):
 
         self.assertEqual(result["status"], "OK")
 
-        # The 9 assessments (7 per-field + 2 overall) were logged via
+        # The 30 assessments (28 per-field + 2 overall) were logged via
         # mlflow.log_assessment onto the original parse trace_id.
         logged = self.fake_mlflow.logged_assessments
-        self.assertEqual(len(logged), 9)
+        self.assertEqual(len(logged), 30)
         # Every assessment landed on the original parse trace_id (tr-req-test),
         # not a clone or the eval run.
         for trace_id, _fb in logged:
             self.assertEqual(trace_id, "tr-req-test")
-        # The 7 per-field assessment names are exactly FIELD_ASSESSMENT_NAMES.
+        # The 28 per-field assessment names are exactly FIELD_ASSESSMENT_NAMES.
         from judge.evaluator import (
             FIELD_ASSESSMENT_NAMES,
             OVERALL_FORGIVEN_NAME,
@@ -814,8 +814,8 @@ class ScoreTraceTest(unittest.TestCase):
 
         # Exactly ONE Opus call — the assessment logging reuses its verdict.
         self.assertEqual(opus_calls[0], 1)
-        # And the 9 assessments were still logged.
-        self.assertEqual(len(self.fake_mlflow.logged_assessments), 9)
+        # And the 30 assessments were still logged.
+        self.assertEqual(len(self.fake_mlflow.logged_assessments), 30)
 
     def test_score_trace_still_persists_lakebase_verdict_with_assessments(self):
         """Bug 2 — the existing Lakebase verdict write is preserved alongside
@@ -842,12 +842,12 @@ class ScoreTraceTest(unittest.TestCase):
         # Lakebase verdict persisted (existing behaviour preserved).
         self.assertEqual(len(saved), 1)
         self.assertEqual(saved[0].request_id, "req-test")
-        # AND the 9 assessments logged (new behaviour).
-        self.assertEqual(len(self.fake_mlflow.logged_assessments), 9)
+        # AND the 30 assessments logged (new behaviour).
+        self.assertEqual(len(self.fake_mlflow.logged_assessments), 30)
 
     def test_score_trace_no_trace_leaves_run_rejudgeable(self):
         """Bug 3 invariant — when the parse run has NO resolvable trace
-        (aged out / search unavailable), there is no trace_id to log the 9
+        (aged out / search unavailable), there is no trace_id to log the 30
         assessments onto.  The run MUST NOT be tagged ``judged=true`` (that
         would permanently strand it: no assessments AND the batch sampler
         skips ``judged=true`` runs forever).  Instead the failure is
@@ -890,9 +890,9 @@ class ScoreTraceTest(unittest.TestCase):
         SURFACED (status ``ASSESSMENT_ERROR``, error in the result) and the
         run is left RE-JUDGEABLE (``judged=error``).  The Lakebase verdict
         write is PRESERVED regardless (it succeeds independently).  Opus is
-        still called exactly ONCE.  The assessment writer attempts ALL 9
+        still called exactly ONCE.  The assessment writer attempts ALL 30
         even when some fail, so the persist count is as complete as
-        possible — but the final status/tag reflects that not all 9
+        possible — but the final status/tag reflects that not all 30
         persisted."""
         from judge.scorer import score_trace
 
@@ -938,7 +938,7 @@ class ScoreTraceTest(unittest.TestCase):
         # no second Opus call).
         self.assertEqual(opus_calls[0], 1)
         # Zero assessments persisted (every log_assessment raised).  The
-        # writer still attempted all 9 before reporting the aggregate failure.
+        # writer still attempted all 30 before reporting the aggregate failure.
         self.assertEqual(len(self.fake_mlflow.logged_assessments), 0)
 
     def test_score_trace_judge_error_logs_no_assessments(self):
@@ -1005,7 +1005,7 @@ class ScoreTraceTest(unittest.TestCase):
 
     def test_on_demand_judged_trace_has_both_tag_and_assessments(self):
         """Bug 3 — the intended FINAL STATE of an on-demand-judged trace:
-        the run is tagged ``judged=true`` AND its parse trace carries the 9
+        the run is tagged ``judged=true`` AND its parse trace carries the 30
         per-field + overall assessments.  Before this fix the on-demand path
         tagged the run ``judged=true`` but wrote NO assessments (score_trace
         only wrote metrics + Lakebase verdict), so the batch sampler — which
@@ -1029,10 +1029,10 @@ class ScoreTraceTest(unittest.TestCase):
         # FINAL STATE 1: run tagged judged=true (the on-demand path did this
         # before too — preserved).
         self.assertIn(("judged", "true", "run-final"), self.fake_mlflow.set_tags)
-        # FINAL STATE 2: the parse trace carries the 9 assessments (NEW —
+        # FINAL STATE 2: the parse trace carries the 30 assessments (NEW —
         # the on-demand path now writes them, so the run is not left tagged
         # but assessment-less).
-        self.assertEqual(len(self.fake_mlflow.logged_assessments), 9)
+        self.assertEqual(len(self.fake_mlflow.logged_assessments), 30)
         for trace_id, _fb in self.fake_mlflow.logged_assessments:
             self.assertEqual(trace_id, "tr-req-test")
 
@@ -1178,8 +1178,8 @@ class RunJudgeEvaluationTest(unittest.TestCase):
         self.assertEqual(result["overall_strict"], 1.0)
         self.assertEqual(result["overall_narration_forgiven"], 1.0)
 
-        # Per-field breakdown has all 7 fields.
-        self.assertEqual(len(result["per_field"]), 7)
+        # Per-field breakdown has all 28 fields.
+        self.assertEqual(len(result["per_field"]), 28)
 
         # Per-bank breakdown has HDFC.
         self.assertIn("HDFC", result["per_bank"])
@@ -1351,7 +1351,7 @@ class VerdictPersistTest(unittest.TestCase):
 
     def _register_artifacts(self, meta=None, *, run_id="run-123"):
         """Register artifacts + a parse trace linked to ``run_id`` so the
-        on-demand path (score_trace) can log the 9 assessments and reach
+        on-demand path (score_trace) can log the 30 assessments and reach
         judged=true.  The Bug 3 invariant requires a resolvable trace for
         judged=true; OK-asserting tests must register one."""
         meta = meta or _make_extraction_meta()
@@ -1408,7 +1408,7 @@ class VerdictPersistTest(unittest.TestCase):
         """A save_verdict that raises is caught; the trace still completes OK
         and its metrics are returned (best-effort guarantee).  The Lakebase
         failure is independent of assessment persistence, so the run still
-        reaches judged=true when the 9 assessments persist (Bug 3 invariant:
+        reaches judged=true when the 30 assessments persist (Bug 3 invariant:
         the tag reflects assessment success, NOT the Lakebase write)."""
         from judge.scorer import score_trace
         self._register_artifacts()
@@ -1939,7 +1939,7 @@ class ResolveRunIdTest(unittest.TestCase):
 class RunGenaiEvaluationTest(unittest.TestCase):
     """Tests for the genai.evaluate batch path: run_judge_evaluation resolves
     each sampled run's trace, drives ONE @scorer (single Opus call per trace),
-    and returns 7 per-field Feedback assessments per trace + the unchanged
+    and returns 28 per-field Feedback assessments per trace + the unchanged
     aggregate summary shape.
 
     Uses the fake mlflow.genai.evaluate which ASSERTS scorers were passed and
@@ -1974,7 +1974,7 @@ class RunGenaiEvaluationTest(unittest.TestCase):
 
     def test_genai_evaluate_called_with_scorers(self):
         """genai.evaluate is called with a non-empty scorers list (the fake
-        asserts this), and exactly one scorer is passed (not 7)."""
+        asserts this), and exactly one scorer is passed (not 28)."""
         from judge.scorer import run_judge_evaluation
 
         store = _FakeResultStore()
@@ -1987,9 +1987,9 @@ class RunGenaiEvaluationTest(unittest.TestCase):
         self.assertGreater(self.fake_mlflow.genai.evaluate_calls, 0)
         self.assertEqual(len(self.fake_mlflow.genai.scorers_passed), 1)
 
-    def test_opus_called_once_per_trace_not_seven_times(self):
+    def test_opus_called_once_per_trace_not_per_field(self):
         """Opus (OpusJudgeAdapter.judge) is called EXACTLY ONCE per trace —
-        not 7× (one scorer, not seven).  3 traces → 3 judge calls."""
+        not 28× (one scorer, not one per field).  3 traces → 3 judge calls."""
         from judge.scorer import run_judge_evaluation
 
         store = _FakeResultStore()
@@ -1999,13 +1999,13 @@ class RunGenaiEvaluationTest(unittest.TestCase):
             MockAdapter.return_value.judge.return_value = verdict
             run_judge_evaluation(sample_size=3, result_store=store)
 
-        # 3 traces → exactly 3 Opus calls (one per trace, NOT 7×3=21).
+        # 3 traces → exactly 3 Opus calls (one per trace, NOT 28×3=84).
         self.assertEqual(MockAdapter.return_value.judge.call_count, 3)
 
-    def test_seven_per_field_assessments_per_trace(self):
-        """The scorer returns 7 per-field + 2 overall Feedbacks per trace.
-        3 traces → 27 assessments collected by the fake genai.evaluate.
-        The 7 per-field names are the expected ones (3× each)."""
+    def test_all_per_field_assessments_per_trace(self):
+        """The scorer returns 28 per-field + 2 overall Feedbacks per trace.
+        3 traces → 90 assessments collected by the fake genai.evaluate.
+        The 28 per-field names are the expected ones (3× each)."""
         from judge.evaluator import FIELD_ASSESSMENT_NAMES
         from judge.scorer import run_judge_evaluation
 
@@ -2017,13 +2017,13 @@ class RunGenaiEvaluationTest(unittest.TestCase):
             run_judge_evaluation(sample_size=3, result_store=store)
 
         assessments = self.fake_mlflow.genai.assessments
-        # 3 traces × 9 Feedbacks (7 per-field + 2 overall) = 27.
-        self.assertEqual(len(assessments), 27)
-        # 7 per-field names × 3 traces = 21 per-field assessments.
+        # 3 traces × 30 Feedbacks (28 per-field + 2 overall) = 90.
+        self.assertEqual(len(assessments), 90)
+        # 28 per-field names × 3 traces = 84 per-field assessments.
         per_field = [a for a in assessments
                      if not a.name.startswith("judge_overall")]
-        self.assertEqual(len(per_field), 21)
-        # Each of the 7 field names appears exactly 3 times.
+        self.assertEqual(len(per_field), 84)
+        # Each of the 28 field names appears exactly 3 times.
         from collections import Counter
         name_counts = Counter(a.name for a in per_field)
         self.assertEqual(set(name_counts.keys()), set(FIELD_ASSESSMENT_NAMES.values()))
@@ -2047,7 +2047,7 @@ class RunGenaiEvaluationTest(unittest.TestCase):
     def test_aggregate_summary_shape_unchanged(self):
         """The aggregate summary shape consumed by the frontend is unchanged:
         count_judged, count_errors, overall_strict, overall_narration_forgiven,
-        per_field (7 fields), per_bank, eval_run_id."""
+        per_field (28 fields), per_bank, eval_run_id."""
         from judge.scorer import run_judge_evaluation
 
         store = _FakeResultStore()
@@ -2061,7 +2061,7 @@ class RunGenaiEvaluationTest(unittest.TestCase):
         self.assertEqual(result["count_errors"], 0)
         self.assertEqual(result["overall_strict"], 1.0)
         self.assertEqual(result["overall_narration_forgiven"], 1.0)
-        self.assertEqual(len(result["per_field"]), 7)
+        self.assertEqual(len(result["per_field"]), 28)
         self.assertIn("HDFC", result["per_bank"])
         self.assertEqual(result["per_bank"]["HDFC"]["count"], 3)
         # eval_run_id is set (from the fake genai.evaluate).
@@ -2120,7 +2120,7 @@ class RunGenaiEvaluationTest(unittest.TestCase):
 
     def test_runs_without_traces_fall_back_to_score_trace(self):
         """Runs without a trace (search_traces returns empty) fall back to
-        score_trace.  Bug 3 invariant: there is no trace_id to log the 9
+        score_trace.  Bug 3 invariant: there is no trace_id to log the 30
         assessments onto, so the run MUST NOT be tagged judged=true (that
         would strand it — no assessments AND the batch sampler skips
         judged=true runs forever).  Instead each run is left RE-JUDGEABLE
