@@ -1,9 +1,10 @@
 # Opus-5 statement judge
 
-Opus-5 reads the native PDF independently and returns ground truth for exactly four
-scalar paths (two per-card identity fields and two statement reward fields) and three
-per-transaction paths (date, description, amount). The candidate extraction is not
-shown to Opus; comparison and aggregation happen locally.
+Opus-5 reads the native PDF independently and returns ground truth for 28 judged
+fields: per-card identity and credit-limit fields, statement metadata, the statement
+summary box, the rewards summary, and five per-transaction paths (date, description,
+amount, direction, reward points). The candidate extraction is not shown to Opus;
+comparison and aggregation happen locally.
 
 Transactions are paired solely on normalized description similarity using strict 1:1,
 order-insensitive assignment. HDFC uses 0.55; ICICI uses 0.60. SBI and Axis default to
@@ -15,7 +16,7 @@ Dates, numbers, descriptions, and last-four values are normalized before correct
 is decided. Equal canonical values with different serialization are `FORMAT_ONLY` and
 are not charged. Null PDF ground truth is `ABSENT_IN_PDF`; missing or extra transaction
 rows are `UNMATCHED_ROW`. A refusal, truncated completion, or invalid JSON produces an
-explicit `JUDGE_ERROR` summary whose seven sentinel comparisons are all unscored
+explicit `JUDGE_ERROR` summary whose 28 sentinel comparisons are all unscored
 `ABSENT_IN_PDF`; judge failure is therefore never reported as extraction inaccuracy.
 The prompt explicitly handles image-only card art, HDFC's
 ITFRupee `C`, ICICI's backtick rupee glyph, truncated narrations, and static reward
@@ -52,7 +53,7 @@ Judge results land in the experiment two complementary ways:
    as of MLflow 3.0) to create ONE evaluation run named `judge-evaluation`,
    tagged `eval_run=true`. It carries a per-row `eval_results_table` artifact
    (one row per judged trace: `run_id`, `bank`, strict/forgiven accuracy, the
-   seven per-field accuracies) plus aggregate metrics from two **custom
+   28 per-field accuracies) plus aggregate metrics from two **custom
    scorers** (`mlflow.models.make_metric`): `judge.mean_strict_accuracy` and
    `judge.mean_narration_forgiven`. This run renders in the experiment's
    **Evaluations** tab — the aggregated cross-trace view the per-run metrics

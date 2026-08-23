@@ -80,6 +80,65 @@ class ContractTest(unittest.TestCase):
         self.assertEqual(len(scorer_fields), 28)
         self.assertEqual(len(models_fields), 28)
 
+    def test_parse_ground_truth_allow_list_covers_exactly_judged_fields(self) -> None:
+        """The judge ground-truth parser's allow-list (``judge.opus``) must
+        accept EXACTLY the 28 ``JUDGED_FIELDS`` leaves — no more, no less.
+
+        Before this change ``parse_ground_truth`` allow-listed only the
+        original 7 fields, so the 21 fields added in PR #47 were rejected and
+        every new metric stayed vacuously ABSENT_IN_PDF (the prompt emitted
+        only the 7 and the parser rejected the rest).  This bidirectional pin
+        groups the 28 judged paths into the parser's container/leaf structure
+        and asserts each allow-list equals the judged leaves for that
+        container, so the parser can never drift from the judged roster
+        again — in either direction."""
+        import json
+        from contracts.models import JUDGED_FIELDS
+        from judge import opus
+
+        card_meta: set[str] = set()
+        card_big: set[str] = set()
+        stmt_meta: set[str] = set()
+        stmt_sum: set[str] = set()
+        rewards: set[str] = set()
+        txns: set[str] = set()
+        for path in JUDGED_FIELDS:
+            clean = path.replace("[]", "")
+            parts = clean.split(".")
+            if parts[0] == "cards" and parts[1] == "cardMeta":
+                card_meta.add(parts[2])
+            elif parts[0] == "cards" and parts[1] == "bigPicture":
+                card_big.add(parts[2])
+            elif parts[0] == "statementMeta":
+                stmt_meta.add(parts[1])
+            elif parts[0] == "statementLevelSummary":
+                stmt_sum.add(parts[1])
+            elif parts[0] == "rewards":
+                rewards.add(parts[1])
+            elif parts[0] == "transactions":
+                txns.add(parts[1])
+        # Bidirectional: each parser allow-list is EXACTLY the judged leaves.
+        self.assertEqual(opus._CARD_META_KEYS, card_meta)
+        self.assertEqual(opus._CARD_BIGPICTURE_KEYS, card_big)
+        self.assertEqual(opus._STATEMENT_META_KEYS, stmt_meta)
+        self.assertEqual(opus._STATEMENT_SUMMARY_KEYS, stmt_sum)
+        self.assertEqual(opus._REWARD_KEYS, rewards)
+        self.assertEqual(opus._TRANSACTION_KEYS, txns)
+        self.assertEqual(
+            opus._TOP_LEVEL_KEYS,
+            {"cards", "rewards", "transactions", "statementMeta",
+             "statementLevelSummary"})
+        # And the full 28-field shape round-trips through the parser.
+        gt = {
+            "cards": [{"cardMeta": {k: "x" for k in card_meta},
+                       "bigPicture": {k: "x" for k in card_big}}],
+            "rewards": {k: "x" for k in rewards},
+            "transactions": [{k: "x" for k in txns}],
+            "statementMeta": {k: "x" for k in stmt_meta},
+            "statementLevelSummary": {k: "x" for k in stmt_sum},
+        }
+        opus.parse_ground_truth(json.dumps(gt))  # must not raise
+
 
 if __name__ == "__main__":
     unittest.main()

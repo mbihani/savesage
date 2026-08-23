@@ -42,6 +42,42 @@ def completion_reason(response: dict) -> str | None:
     return str(choices[0].get("finish_reason")) if choices and choices[0].get("finish_reason") is not None else None
 
 
+# Allowed keys for the judge ground-truth JSON shape.  These mirror the 28
+# judged field paths in ``contracts.models.JUDGED_FIELDS`` (a SECOND,
+# independent definition of the roster — ``judge/scorer.py`` and
+# ``judge/evaluator.py`` hold two others; sync tests pin all of them
+# together).  Keeping the parser's allow-list explicit here, rather than
+# deriving it, matches the repo's established pattern and lets the strict
+# validation below REJECT any key outside the 28-field roster — so an Opus
+# that drifts onto an unexpected field surfaces as a JUDGE_ERROR instead of
+# silently passing.  A sync test in ``tests/test_contracts.py`` asserts these
+# sets cover exactly the 28 ``JUDGED_FIELDS`` leaves, so the parser cannot
+# drift from the judged roster — the exact drift that left the 21 fields
+# added in PR #47 permanently ABSENT_IN_PDF (the prompt emitted only the
+# original 7 and this allow-list rejected the rest).
+_CARD_META_KEYS = frozenset(
+    {"cardDisplayName", "lastFourDigit", "productFamily", "network"})
+_CARD_BIGPICTURE_KEYS = frozenset(
+    {"cardCreditLimit", "cardAvailableCreditLimit"})
+_CARD_KEYS = frozenset({"cardMeta", "bigPicture"})
+_STATEMENT_META_KEYS = frozenset(
+    {"issuerName", "statementDate", "dueDate", "statementPeriodStart",
+     "statementPeriodEnd"})
+_STATEMENT_SUMMARY_KEYS = frozenset(
+    {"totalAmountDue", "totalMinimumAmountDue", "totalCreditLimit",
+     "availableCreditLimit"})
+_REWARD_KEYS = frozenset(
+    {"pointsEarnedThisCycle", "closingPoints", "programType", "openingPoints",
+     "pointsRedeemedThisCycle", "pointsExpiringNext30Days",
+     "pointsExpiringNext60Days", "bonusPointsThisCycle"})
+_TRANSACTION_KEYS = frozenset(
+    {"date", "description", "amount", "direction",
+     "rewardPointsOnThisTransaction"})
+_TOP_LEVEL_KEYS = frozenset(
+    {"cards", "rewards", "transactions", "statementMeta",
+     "statementLevelSummary"})
+
+
 def parse_ground_truth(text: str) -> dict:
     candidate = text.strip()
     if candidate.startswith("```"):
@@ -50,22 +86,37 @@ def parse_ground_truth(text: str) -> dict:
     parsed = json.loads(candidate)
     if not isinstance(parsed, dict):
         raise ValueError("judge ground truth must be a JSON object")
-    allowed = {"cards", "rewards", "transactions"}
-    if set(parsed) - allowed:
-        raise ValueError(f"judge returned unsupported top-level fields: {sorted(set(parsed) - allowed)}")
-    cards, rewards, transactions = parsed.get("cards", []), parsed.get("rewards", {}), parsed.get("transactions", [])
-    if not isinstance(cards, list) or not isinstance(rewards, dict) or not isinstance(transactions, list):
+    if set(parsed) - _TOP_LEVEL_KEYS:
+        raise ValueError(
+            f"judge returned unsupported top-level fields: "
+            f"{sorted(set(parsed) - _TOP_LEVEL_KEYS)}")
+    cards = parsed.get("cards", [])
+    rewards = parsed.get("rewards", {})
+    transactions = parsed.get("transactions", [])
+    statement_meta = parsed.get("statementMeta", {})
+    statement_level_summary = parsed.get("statementLevelSummary", {})
+    if (not isinstance(cards, list) or not isinstance(rewards, dict)
+            or not isinstance(transactions, list)
+            or not isinstance(statement_meta, dict)
+            or not isinstance(statement_level_summary, dict)):
         raise ValueError("judge ground-truth containers have invalid types")
     for card in cards:
-        if not isinstance(card, dict) or set(card) - {"cardMeta"}:
+        if not isinstance(card, dict) or set(card) - _CARD_KEYS:
             raise ValueError("judge returned unsupported card fields")
         meta = card.get("cardMeta", {})
-        if not isinstance(meta, dict) or set(meta) - {"cardDisplayName", "lastFourDigit"}:
+        if not isinstance(meta, dict) or set(meta) - _CARD_META_KEYS:
             raise ValueError("judge returned unsupported cardMeta fields")
-    if set(rewards) - {"pointsEarnedThisCycle", "closingPoints"}:
+        big_picture = card.get("bigPicture", {})
+        if not isinstance(big_picture, dict) or set(big_picture) - _CARD_BIGPICTURE_KEYS:
+            raise ValueError("judge returned unsupported bigPicture fields")
+    if set(rewards) - _REWARD_KEYS:
         raise ValueError("judge returned unsupported reward fields")
+    if set(statement_meta) - _STATEMENT_META_KEYS:
+        raise ValueError("judge returned unsupported statementMeta fields")
+    if set(statement_level_summary) - _STATEMENT_SUMMARY_KEYS:
+        raise ValueError("judge returned unsupported statementLevelSummary fields")
     for transaction in transactions:
-        if not isinstance(transaction, dict) or set(transaction) - {"date", "description", "amount"}:
+        if not isinstance(transaction, dict) or set(transaction) - _TRANSACTION_KEYS:
             raise ValueError("judge returned unsupported transaction fields")
     return parsed
 

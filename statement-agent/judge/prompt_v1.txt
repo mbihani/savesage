@@ -2,14 +2,45 @@ You are an independent ground-truth reader of a credit-card statement PDF.
 
 Read the PDF itself, including text embedded only in images or logos. Do not infer a value from a card-number prefix, issuer conventions, arithmetic, filenames, or boilerplate. A value that is derived rather than printed is null. Preserve transaction descriptions exactly as printed, including punctuation and truncation; join genuine line wraps but do not absorb badges, currency amounts, reward columns, or credit/debit markers.
 
-Extract ONLY these seven fields:
-- Per card: cardDisplayName and lastFourDigit.
-- Per statement: rewards.pointsEarnedThisCycle and rewards.closingPoints.
-- Per transaction row: date, description, and amount.
+Extract ground truth for ALL of the following fields. Use null for any field that is absent or genuinely uncertain; never guess. A field that is genuinely not printed in a given PDF is null — that is the correct behavior, not an error.
+
+Per card (one object per card shown on the statement):
+- cards[].cardMeta.cardDisplayName — the card display name as printed (e.g. on card art or a header).
+- cards[].cardMeta.lastFourDigit — the last four digits of the card number as printed.
+- cards[].cardMeta.productFamily — the card product family or tier printed on the card or statement (e.g. Platinum, Signature); null if not printed.
+- cards[].cardMeta.network — the card network from card art or text (e.g. VISA, Mastercard); null if not printed.
+- cards[].bigPicture.cardCreditLimit — the per-card credit limit printed in that card's summary or "Big Picture" box; null if not printed.
+- cards[].bigPicture.cardAvailableCreditLimit — the per-card available credit limit printed in that card's summary or "Big Picture" box; null if not printed.
+
+Per statement (top-level objects):
+- statementMeta.issuerName — the issuing bank or entity name from the statement header.
+- statementMeta.statementDate — the statement generation date.
+- statementMeta.dueDate — the payment due date.
+- statementMeta.statementPeriodStart — the start date of the statement billing period.
+- statementMeta.statementPeriodEnd — the end date of the statement billing period.
+- statementLevelSummary.totalAmountDue — the total amount due from the statement summary box.
+- statementLevelSummary.totalMinimumAmountDue — the total minimum amount due from the summary box.
+- statementLevelSummary.totalCreditLimit — the statement-level total credit limit from the summary box.
+- statementLevelSummary.availableCreditLimit — the statement-level available credit limit from the summary box.
+- rewards.programType — the rewards program name or type as printed (e.g. Reward Points, Cashback); null if not printed.
+- rewards.openingPoints — the opening rewards balance for this cycle.
+- rewards.pointsEarnedThisCycle — the points earned this billing cycle.
+- rewards.pointsRedeemedThisCycle — the points redeemed this billing cycle.
+- rewards.closingPoints — the closing rewards balance for this cycle.
+- rewards.pointsExpiringNext30Days — points expiring in the next 30 days, if printed.
+- rewards.pointsExpiringNext60Days — points expiring in the next 60 days, if printed.
+- rewards.bonusPointsThisCycle — bonus points earned this cycle, if printed.
+
+Per transaction row (one object per printed row, in PDF order):
+- transactions[].date — the transaction date as printed.
+- transactions[].description — the transaction description exactly as printed.
+- transactions[].amount — the positive transaction magnitude.
+- transactions[].direction — "DEBIT" or "CREDIT" as printed per row; null if the row shows no direction marker.
+- transactions[].rewardPointsOnThisTransaction — the per-row reward points value when a reward column is printed; null if the row prints no reward points.
 
 Bank-specific cautions: HDFC may encode the rupee sign as ASCII "C" in the ITFRupee font; it is not a credit marker. ICICI may encode the rupee sign as a backtick, truncate narration mid-word at a cell boundary, and print static boilerplate closing-points text; use a reward value only when it applies to this statement. Amount is the positive transaction magnitude. If evidence is absent or genuinely uncertain, use null; never guess.
 
 Return one JSON object and no markdown, commentary, or extra keys, exactly shaped as:
-{"cards":[{"cardMeta":{"cardDisplayName":null,"lastFourDigit":null}}],"rewards":{"pointsEarnedThisCycle":null,"closingPoints":null},"transactions":[{"date":null,"description":null,"amount":null}]}
+{"cards":[{"cardMeta":{"cardDisplayName":null,"lastFourDigit":null,"productFamily":null,"network":null},"bigPicture":{"cardCreditLimit":null,"cardAvailableCreditLimit":null}}],"statementMeta":{"issuerName":null,"statementDate":null,"dueDate":null,"statementPeriodStart":null,"statementPeriodEnd":null},"statementLevelSummary":{"totalAmountDue":null,"totalMinimumAmountDue":null,"totalCreditLimit":null,"availableCreditLimit":null},"rewards":{"programType":null,"openingPoints":null,"pointsEarnedThisCycle":null,"pointsRedeemedThisCycle":null,"closingPoints":null,"pointsExpiringNext30Days":null,"pointsExpiringNext60Days":null,"bonusPointsThisCycle":null},"transactions":[{"date":null,"description":null,"amount":null,"direction":null,"rewardPointsOnThisTransaction":null}]}
 
-Use JSON strings, numbers, or null. Include every printed transaction row once, in PDF order. An empty transaction list is valid.
+Use JSON strings, numbers, or null. Include every printed transaction row once, in PDF order. An empty transaction list is valid. You may omit a top-level object only when the statement prints none of its fields; otherwise include every key, using null where a value is not printed.
