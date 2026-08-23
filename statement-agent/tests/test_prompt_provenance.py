@@ -13,6 +13,17 @@ EXPECTED_SHA256 = {
     Bank.AXIS: "e8e90c6cf0fa68e7ddae91a4aa008ca32d65546811c79c10cc9025e4fd47cd9f",
 }
 
+# Judge ground-truth prompt (Opus-5).  Pinned separately from the bank
+# extractor prompts above — it is a single prompt, not bank-keyed, loaded by
+# harness/judge_adapter.py:PROMPT_PATH.  Mirrors the bank-prompt pattern: read
+# the bytes, assert non-empty, assert the SHA-256 matches.  Non-vacuous: a
+# prompt edit changes the hash and fails the assertion, directing the author
+# to update JUDGE_PROMPT_SHA256 here and the matching entry in
+# judge/PROVENANCE.md together.  The pin is what catches the drift that left
+# the 21 fields added in PR #47 permanently ABSENT_IN_PDF — an unpinned prompt
+# silently reverted to the 7-field shape and the parser rejected the rest.
+JUDGE_PROMPT_SHA256 = "7843143264e37995d18e5fd3eaf64e1fc9a562f4de76ac58681332b68decbd86"
+
 
 class PromptProvenanceTest(unittest.TestCase):
     def test_every_bank_resolves_to_nonempty_verified_prompt(self) -> None:
@@ -22,6 +33,23 @@ class PromptProvenanceTest(unittest.TestCase):
             content = path.read_bytes()
             self.assertGreater(len(content.strip()), 0, bank.value)
             self.assertEqual(hashlib.sha256(content).hexdigest(), expected_hash, bank.value)
+
+    def test_judge_ground_truth_prompt_matches_pinned_hash(self) -> None:
+        """The Opus-5 ground-truth prompt (judge/prompt_v1.txt) is pinned so a
+        silent edit surfaces as a test failure — the prompt drives which of the
+        28 judged fields Opus extracts, and an unpinned drift is what left the
+        21 fields added in PR #47 permanently ABSENT_IN_PDF.  Path resolution
+        mirrors ``harness/judge_adapter.PROMPT_PATH`` (parents[1] / "judge" /
+        "prompt_v1.txt") without importing the adapter, so the provenance test
+        stays free of the Opus HTTP/auth call chain."""
+        path = ROOT / "judge" / "prompt_v1.txt"
+        content = path.read_bytes()
+        self.assertGreater(len(content.strip()), 0, "judge prompt_v1.txt")
+        self.assertEqual(
+            hashlib.sha256(content).hexdigest(), JUDGE_PROMPT_SHA256,
+            "judge/prompt_v1.txt changed — update JUDGE_PROMPT_SHA256 and "
+            "judge/PROVENANCE.md together",
+        )
 
 
 if __name__ == "__main__":

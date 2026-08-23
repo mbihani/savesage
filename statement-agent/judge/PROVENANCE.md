@@ -30,3 +30,16 @@ bank scorers at the implementation base).
   ICICI/SBI `text`, `num`, and `date_norm` implementation inspected for parity.
 
 No legacy scorer file was edited.
+
+## Judge ground-truth prompt
+
+The Opus-5 ground-truth prompt (`judge/prompt_v1.txt`) is pinned by
+`tests/test_prompt_provenance.py` so a silent edit surfaces as a test
+failure. Its SHA-256 on this branch:
+
+- `judge/prompt_v1.txt` => `7843143264e37995d18e5fd3eaf64e1fc9a562f4de76ac58681332b68decbd86`
+
+The prompt extracts ground truth for all 28 judged fields (see
+`contracts.models.JUDGED_FIELDS`). Changing the prompt requires updating
+this hash and the pinned value in `tests/test_prompt_provenance.py`
+(`JUDGE_PROMPT_SHA256`) together.
