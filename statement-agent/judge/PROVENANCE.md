@@ -22,7 +22,7 @@ bank scorers at the implementation base).
   threshold. Its equal-score date tie-break is deliberately replaced by HDFC's
   relative-position tie-break so a scored field never influences pairing.
 - `sbi/score_lib_sbi.py:34` and `:49-63`: canonical imports and SBI's local date
-  wrapper. The seven-field judge deliberately uses the HDFC DD/MM/YYYY port named
+  wrapper. The 28-field judge deliberately uses the HDFC DD/MM/YYYY port named
   by the frozen contract rather than copying bank-specific wrappers.
 - `sbi/score_lib_sbi.py:329-362`: SBI description-only matcher and 0.60 threshold.
   Its equal-score date tie-break is likewise replaced by relative position.
