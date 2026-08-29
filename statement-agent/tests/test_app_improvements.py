@@ -247,6 +247,17 @@ class PromptSchemaEndpointTest(unittest.TestCase):
             )
         self.assertEqual(resp.status_code, 502)
 
+    def test_post_prompt_non_dict_schema_400(self) -> None:
+        """A schema that is valid JSON but not a dict (e.g. list, string,
+        null) must be rejected with 400."""
+        for bad_schema in ([], "hello", None, 42, True):
+            with self.subTest(schema=bad_schema):
+                resp = self.client.post(
+                    "/api/prompt/HDFC",
+                    json={"prompt": "p", "schema": bad_schema},
+                )
+                self.assertEqual(resp.status_code, 400)
+
 
 class ParseCustomEndpointTest(unittest.TestCase):
     """Test POST /api/parse-custom endpoint."""
@@ -322,6 +333,21 @@ class ParseCustomEndpointTest(unittest.TestCase):
             },
         )
         self.assertEqual(resp.status_code, 400)
+
+    def test_parse_custom_non_dict_schema_400(self) -> None:
+        """A schema_override that is valid JSON but not a dict (e.g. list,
+        string, null) must be rejected with 400."""
+        for bad_schema in ("[]", '"hello"', "null", "42", "true"):
+            with self.subTest(schema=bad_schema):
+                resp = self.client.post(
+                    "/api/parse-custom",
+                    files={"file": ("test.pdf", b"%PDF-1.4 fake", "application/pdf")},
+                    data={
+                        "bank": "HDFC",
+                        "schema_override": bad_schema,
+                    },
+                )
+                self.assertEqual(resp.status_code, 400)
 
     def test_parse_custom_for_generic_bank(self) -> None:
         """POST /api/parse-custom accepts GENERIC as a valid bank."""

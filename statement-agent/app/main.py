@@ -1210,6 +1210,11 @@ def create_app():
                 status_code=400,
                 detail="both 'prompt' and 'schema' are required",
             )
+        if not isinstance(schema, dict):
+            raise HTTPException(
+                status_code=400,
+                detail=f"schema must be a JSON object, got {type(schema).__name__}",
+            )
         from harness.dbfs import write_dbfs_text, prompt_dbfs_path, schema_dbfs_path
         prompt_ok = write_dbfs_text(prompt_dbfs_path(bank_enum.value), str(prompt))
         schema_ok = write_dbfs_text(
@@ -1256,6 +1261,11 @@ def create_app():
                 raise HTTPException(
                     status_code=400,
                     detail="schema_override is not valid JSON",
+                )
+            if not isinstance(custom_schema, dict):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"schema_override must be a JSON object, got {type(custom_schema).__name__}",
                 )
 
         custom_prompt: str | None = prompt_override if prompt_override else None
