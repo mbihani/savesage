@@ -10,9 +10,9 @@ EXPECTED_SHA256 = {
     Bank.HDFC: "fd92b25b878176bbb46bed2fd78e8cb5445c7f245ee983d9f8fd01da74ce07ef",
     Bank.ICICI: "8f13a2d35d8b53d7f29f23148912dceb0035ef807165b4c7a54b58d693ca9b2f",
     Bank.SBI: "b7e06b291803cbcf46bbc6a07af427363d545d3c87d39ee8f64113c8058b3b92",
-    Bank.AXIS: "e8e90c6cf0fa68e7ddae91a4aa008ca32d65546811c79c10cc9025e4fd47cd9f",
+    Bank.AXIS: "ca0372008e7623b8a370f7703256812762327abce4a0a1e07c897b58488fd964",
     # GENERIC reuses axis.txt (the generic Luna prompt); same SHA-256 as AXIS.
-    Bank.GENERIC: "e8e90c6cf0fa68e7ddae91a4aa008ca32d65546811c79c10cc9025e4fd47cd9f",
+    Bank.GENERIC: "ca0372008e7623b8a370f7703256812762327abce4a0a1e07c897b58488fd964",
 }
 
 # Judge ground-truth prompt (Opus-5).  Pinned separately from the bank

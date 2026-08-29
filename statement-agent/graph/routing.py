@@ -75,19 +75,20 @@ def detect_bank(text: str) -> str:
     (``"GENERIC"``) when nothing matches. The caller PASSES the bank in the
     normal flow; this is a utility for callers that only have raw text.
     """
+    text = str(text).strip().upper()
     if not text:
         return Bank.GENERIC.value
-    upper = text.upper()
     # Built-in banks (GENERIC is the fallback, not a pattern to match).
     for bank in Bank:
         if bank.value == Bank.GENERIC.value:
             continue
-        if bank.value in upper:
+        if bank.value in text:
             return bank.value
     # Dynamically added banks from the DBFS registry.
     for name in read_dbfs_registry():
-        if name and name.upper() in upper:
-            return name
+        normalized = name.strip().upper()
+        if normalized and normalized in text:
+            return normalized
     return Bank.GENERIC.value
 
 
@@ -103,7 +104,7 @@ def resolve_prompt(bank: Bank | str) -> str:
     :data:`Bank.GENERIC` (the generic Luna prompt).  Loads from disk each call
     (prompts are small) so a prompt edit is picked up without a restart.
     """
-    bank_str = bank.value if isinstance(bank, Bank) else str(bank)
+    bank_str = bank.value if isinstance(bank, Bank) else str(bank).strip().upper()
 
     # 1. Dynamic-bank DBFS override (works for both dynamic and built-in names).
     try:
