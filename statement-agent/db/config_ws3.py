@@ -8,7 +8,7 @@ from dataclasses import dataclass
 class RDSSettings:
     host: str = ""
     port: int = 5432
-    database: str = "postgres"
+    database: str = ""
     user: str = ""
     password: str = ""
     sslmode: str = "require"

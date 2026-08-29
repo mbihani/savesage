@@ -42,15 +42,18 @@ class RDSConnectionFactory:
         """Build a factory from ``RDS_*`` environment variables.
 
         Raises :class:`RuntimeError` with a clear message listing the missing
-        variables if any required value (``RDS_HOST``, ``RDS_USER``,
-        ``RDS_PASSWORD``) is absent.
+        variables if any required value (``RDS_HOST``, ``RDS_DATABASE``,
+        ``RDS_USER``, ``RDS_PASSWORD``) is absent.  Only ``RDS_PORT`` and
+        ``RDS_SSLMODE`` have defaults.
         """
         host = os.environ.get("RDS_HOST", "").strip()
+        database = os.environ.get("RDS_DATABASE", "").strip()
         user = os.environ.get("RDS_USER", "").strip()
         password = os.environ.get("RDS_PASSWORD", "")
         missing = [
             name for name, val in (
                 ("RDS_HOST", host),
+                ("RDS_DATABASE", database),
                 ("RDS_USER", user),
                 ("RDS_PASSWORD", password),
             )
@@ -64,7 +67,7 @@ class RDSConnectionFactory:
         return cls(
             host=host,
             port=int(os.environ.get("RDS_PORT", "5432")),
-            database=os.environ.get("RDS_DATABASE", "postgres"),
+            database=database,
             user=user,
             password=password,
             sslmode=os.environ.get("RDS_SSLMODE", "require"),

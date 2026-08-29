@@ -90,8 +90,20 @@ class LakebaseSqlTests(unittest.TestCase):
 
     def test_connection_factory_from_env_missing_var(self):
         """from_env raises RuntimeError when required vars are missing."""
-        with patch.dict(os.environ, {"RDS_HOST": "", "RDS_USER": "", "RDS_PASSWORD": ""}):
+        with patch.dict(os.environ, {
+            "RDS_HOST": "", "RDS_DATABASE": "", "RDS_USER": "", "RDS_PASSWORD": "",
+        }):
             with self.assertRaisesRegex(RuntimeError, "RDS connection requires"):
+                RDSConnectionFactory.from_env()
+
+    def test_connection_factory_from_env_missing_database(self):
+        """from_env raises RuntimeError when RDS_DATABASE is missing."""
+        env = {
+            "RDS_HOST": "db.example.com", "RDS_DATABASE": "",
+            "RDS_USER": "app", "RDS_PASSWORD": "secret",
+        }
+        with patch.dict(os.environ, env, clear=False):
+            with self.assertRaisesRegex(RuntimeError, "RDS_DATABASE"):
                 RDSConnectionFactory.from_env()
 
     def test_ddl_has_separate_tables_and_replica_identity(self):
