@@ -27,6 +27,7 @@ from harness.dbfs import (
     bank_schema_dbfs_path,
     read_dbfs_registry,
     registry_dbfs_path,
+    validate_bank_name,
 )
 from rules.routing import load_schema_for_bank
 
@@ -37,6 +38,14 @@ from rules.routing import load_schema_for_bank
 
 
 class DbfsPathTest(unittest.TestCase):
+    def test_validate_bank_name(self) -> None:
+        for invalid in ("../HDFC", "a/b", "a\\b", "", "   "):
+            with self.subTest(name=invalid), self.assertRaises(ValueError):
+                validate_bank_name(invalid)
+        self.assertEqual(validate_bank_name("kotak"), "KOTAK")
+        self.assertEqual(validate_bank_name("RBL_BANK"), "RBL_BANK")
+        self.assertEqual(validate_bank_name("AU-SMALL"), "AU-SMALL")
+
     def test_banks_dir_value(self) -> None:
         self.assertEqual(BANKS_DBFS_DIR, "/savesage-statement-agent/banks")
 
@@ -93,6 +102,11 @@ class DbfsRegistryTest(unittest.TestCase):
 
 
 class ResolvePromptDynamicTest(unittest.TestCase):
+    def test_dynamic_bank_name_is_normalized(self) -> None:
+        with patch("graph.routing.read_dbfs_text", return_value="prompt") as read:
+            self.assertEqual(resolve_prompt("  kotak "), "prompt")
+        read.assert_called_once_with(bank_prompt_dbfs_path("KOTAK"))
+
     def test_dynamic_bank_resolves_from_dbfs(self) -> None:
         """A bank not in the Bank enum resolves from its DBFS prompt file."""
         override = "KOTAK extraction prompt"
@@ -130,6 +144,12 @@ class ResolvePromptDynamicTest(unittest.TestCase):
 
 
 class LoadSchemaDynamicTest(unittest.TestCase):
+    def test_dynamic_bank_name_is_normalized(self) -> None:
+        schema = {"type": "object"}
+        with patch("rules.routing.read_dbfs_text", return_value=json.dumps(schema)) as read:
+            self.assertEqual(load_schema_for_bank(" kotak "), schema)
+        read.assert_called_once_with(bank_schema_dbfs_path("KOTAK"))
+
     def test_dynamic_bank_resolves_schema_from_dbfs(self) -> None:
         fake_schema = {"properties": {"issuerName": {}}, "type": "object"}
 
@@ -317,6 +337,22 @@ class BankEndpointsTest(unittest.TestCase):
             )
         self.assertEqual(resp.status_code, 409)
 
+    def test_post_banks_rejects_unsafe_name(self) -> None:
+        resp = self.client.post(
+            "/api/banks",
+            json={"name": "../HDFC", "prompt": "p", "schema": {"type": "object"}},
+        )
+        self.assertEqual(resp.status_code, 400)
+
+    def test_post_banks_rejects_empty_prompt(self) -> None:
+        for prompt in ("", "   \n"):
+            with self.subTest(prompt=prompt):
+                resp = self.client.post(
+                    "/api/banks",
+                    json={"name": "KOTAK", "prompt": prompt, "schema": {"type": "object"}},
+                )
+                self.assertEqual(resp.status_code, 400)
+
     def test_post_banks_rejects_duplicate_dynamic(self) -> None:
         with patch("harness.dbfs.read_dbfs_registry", return_value=["KOTAK"]):
             resp = self.client.post(
@@ -361,7 +397,9 @@ class BankEndpointsTest(unittest.TestCase):
 
     def test_post_schema_saves_to_dbfs(self) -> None:
         with patch("harness.dbfs.write_dbfs_text", return_value=True) as wr, \
-             patch("harness.dbfs.mkdirs_dbfs", return_value=True):
+             patch("harness.dbfs.mkdirs_dbfs", return_value=True), \
+             patch("harness.dbfs.read_dbfs_registry", return_value=[]), \
+             patch("harness.dbfs.write_dbfs_registry", return_value=True) as wreg:
             resp = self.client.post(
                 "/api/schema/kotak",
                 json={"schema": {"type": "object"}},
@@ -369,6 +407,7 @@ class BankEndpointsTest(unittest.TestCase):
         self.assertEqual(resp.status_code, 200, resp.text)
         self.assertEqual(resp.json()["bank"], "KOTAK")
         wr.assert_called_once()
+        wreg.assert_called_once_with(["KOTAK"])
 
     def test_post_schema_rejects_non_dict(self) -> None:
         for bad in ([], "hello", None, 42):
