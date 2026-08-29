@@ -31,7 +31,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
-from contracts.models import TraceEvent
+from contracts.models import TraceEvent, bank_name
 from graph.nodes import NodeDeps, finalize_node, extract_node, persist_node, route_node, validate_node
 from graph.state import GraphState
 
@@ -119,7 +119,7 @@ def run_graph(deps: NodeDeps, state: GraphState) -> GraphState:
                 # redacted by the PII scrubber since "filename" is a PII key).
                 root_inputs = {
                     "request_id": state.request_id,
-                    "bank": state.request.bank.value,
+                    "bank": bank_name(state.request.bank),
                     "filename": state.request.filename,
                 }
                 # Root span outputs: the full extraction payload when available,

@@ -4,7 +4,7 @@ import json
 from dataclasses import asdict
 from typing import Any
 
-from contracts.models import Bank, ExtractionResult, FieldFeedback, JudgeVerdict
+from contracts.models import Bank, ExtractionResult, FieldFeedback, JudgeVerdict, bank_name
 from contracts.ports import FeedbackStore, ResultStore
 from .connection import ConnectionFactory
 from .mapping import (extraction_from_row, feedback_from_row, feedback_values,
@@ -41,10 +41,10 @@ class _Store:
 
 
 class LakebaseResultStore(_Store, ResultStore):
-    def save_extraction(self, result: ExtractionResult, bank: Bank) -> None:
+    def save_extraction(self, result: ExtractionResult, bank: Bank | str) -> None:
         params = (result.request_id, json.dumps(result.payload), result.model_id,
                   result.latency_ms, json.dumps(asdict(result.token_usage)),
-                  result.raw_response_id, result.schema_valid, bank.value,
+                  result.raw_response_id, result.schema_valid, bank_name(bank),
                   *promoted_columns(result.payload)[1:])
         self._execute(UPSERT_EXTRACTION_SQL, params)
 

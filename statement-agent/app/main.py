@@ -316,6 +316,30 @@ async def _run_blocking(func: Any, *args: Any, timeout: float = _PERSIST_TIMEOUT
         return None
 
 
+def _coerce_schema(schema: Any) -> dict:
+    """Normalise a schema body value to a dict, raising :class:`HTTPException`.
+
+    Accepts a JSON object (dict) or a JSON string; anything else is a 400.
+    ``HTTPException`` is imported function-local so this module-level helper
+    stays importable in a stdlib-only environment (the contract-test gate).
+    """
+    from fastapi import HTTPException
+
+    if isinstance(schema, str):
+        try:
+            schema = json.loads(schema)
+        except json.JSONDecodeError as exc:
+            raise HTTPException(
+                status_code=400, detail=f"schema is not valid JSON: {exc}"
+            ) from exc
+    if not isinstance(schema, dict):
+        raise HTTPException(
+            status_code=400,
+            detail=f"schema must be a JSON object, got {type(schema).__name__}",
+        )
+    return schema
+
+
 # ---------------------------------------------------------------------------
 # Production port wiring (third-party imports deferred to call-time)
 # ---------------------------------------------------------------------------
@@ -538,13 +562,13 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str,
     """
     try:
         from contracts.models import ParseRequest as _PR
-        from graph.routing import try_bank
+        from graph.routing import coerce_request_bank
         from graph.state import GraphState
 
         request = _PR(
             pdf=pdf_bytes,
             filename=filename,
-            bank=try_bank(bank),
+            bank=coerce_request_bank(bank),
             request_id=ctx.request_id,
         )
         state = GraphState(request=request)
@@ -1167,13 +1191,24 @@ def create_app():
     async def save_prompt_schema(bank: str, body: dict = Body(...)):
         """Save the prompt text and schema JSON to DBFS for a bank.
 
-        Both ``prompt`` and ``schema`` must be present in the body. The
-        prompt is written to ``/savesage/prompts/<bank>.txt`` and the schema
-        to ``/savesage/schemas/<bank>.json``.  Unknown bank names save to
-        the GENERIC DBFS path.
+        Both ``prompt`` and ``schema`` must be present in the body. Writes to
+        the dynamic-bank DBFS layout
+        ``/savesage-statement-agent/banks/<BANK>/prompt.txt`` and
+        ``schema.json`` — the routing layer reads this path first, so the
+        override takes effect without a restart. For a bank not in the
+        built-in :class:`Bank` enum, the bank is also added to the DBFS
+        registry so ``GET /api/banks`` lists it. The bank name is upper-cased.
         """
-        from graph.routing import try_bank
-        bank_enum = try_bank(bank)
+        from harness.dbfs import (
+            bank_prompt_dbfs_path,
+            bank_schema_dbfs_path,
+            mkdirs_dbfs,
+            write_dbfs_text,
+        )
+
+        name = str(bank).strip().upper()
+        if not name:
+            raise HTTPException(status_code=400, detail="bank name must not be empty")
         prompt = body.get("prompt")
         schema = body.get("schema")
         if prompt is None or schema is None:
@@ -1181,15 +1216,11 @@ def create_app():
                 status_code=400,
                 detail="both 'prompt' and 'schema' are required",
             )
-        if not isinstance(schema, dict):
-            raise HTTPException(
-                status_code=400,
-                detail=f"schema must be a JSON object, got {type(schema).__name__}",
-            )
-        from harness.dbfs import write_dbfs_text, prompt_dbfs_path, schema_dbfs_path
-        prompt_ok = write_dbfs_text(prompt_dbfs_path(bank_enum.value), str(prompt))
+        schema = _coerce_schema(schema)
+        mkdirs_dbfs(f"/savesage-statement-agent/banks/{name}")
+        prompt_ok = write_dbfs_text(bank_prompt_dbfs_path(name), str(prompt))
         schema_ok = write_dbfs_text(
-            schema_dbfs_path(bank_enum.value),
+            bank_schema_dbfs_path(name),
             json.dumps(schema, indent=2, ensure_ascii=False),
         )
         if not prompt_ok or not schema_ok:
@@ -1197,7 +1228,133 @@ def create_app():
                 status_code=502,
                 detail="DBFS save failed (SDK unavailable or write error)",
             )
-        return {"status": "ok", "bank": bank_enum.value}
+        return {"status": "ok", "bank": name}
+
+    # -- GET /api/banks -------------------------------------------------
+    @app.get("/api/banks")
+    async def list_banks():
+        """Return every bank: built-in (from the :class:`Bank` enum) plus
+        dynamically added banks from the DBFS registry. Each entry is
+        ``{"name": "HDFC", "dynamic": false}`` (built-in) or
+        ``{"name": "KOTAK", "dynamic": true}`` (runtime-added).
+        """
+        from contracts.models import Bank
+        from harness.dbfs import read_dbfs_registry
+
+        builtin_names = [b.value for b in Bank]
+        builtin = [{"name": n, "dynamic": False} for n in builtin_names]
+        registry = read_dbfs_registry()
+        dynamic = [
+            {"name": n, "dynamic": True}
+            for n in registry
+            if n and n not in builtin_names
+        ]
+        return builtin + dynamic
+
+    # -- POST /api/banks ------------------------------------------------
+    @app.post("/api/banks")
+    async def create_bank(body: dict = Body(...)):
+        """Create a new (dynamic) bank with its prompt and schema.
+
+        Body: ``{"name": "KOTAK", "prompt": "...", "schema": {...}}`` (the
+        schema may also be a JSON string). Persists the prompt/schema to DBFS
+        and adds the bank to the registry. Rejects names that collide with a
+        built-in bank or an already-registered dynamic bank. Returns the
+        created bank entry.
+        """
+        from contracts.models import Bank
+        from harness.dbfs import (
+            bank_prompt_dbfs_path,
+            bank_schema_dbfs_path,
+            mkdirs_dbfs,
+            read_dbfs_registry,
+            write_dbfs_registry,
+            write_dbfs_text,
+        )
+
+        raw_name = body.get("name")
+        if not isinstance(raw_name, str) or not raw_name.strip():
+            raise HTTPException(status_code=400, detail="'name' is required")
+        name = raw_name.strip().upper()
+        prompt = body.get("prompt")
+        schema = body.get("schema")
+        if prompt is None or schema is None:
+            raise HTTPException(
+                status_code=400,
+                detail="both 'prompt' and 'schema' are required",
+            )
+        schema = _coerce_schema(schema)
+        builtin_names = {b.value for b in Bank}
+        if name in builtin_names:
+            raise HTTPException(
+                status_code=409,
+                detail=f"bank {name!r} already exists as a built-in bank",
+            )
+        registry = read_dbfs_registry()
+        if name in registry:
+            raise HTTPException(
+                status_code=409,
+                detail=f"bank {name!r} already exists as a dynamic bank",
+            )
+        mkdirs_dbfs(f"/savesage-statement-agent/banks/{name}")
+        prompt_ok = write_dbfs_text(bank_prompt_dbfs_path(name), str(prompt))
+        schema_ok = write_dbfs_text(
+            bank_schema_dbfs_path(name),
+            json.dumps(schema, indent=2, ensure_ascii=False),
+        )
+        if not prompt_ok or not schema_ok:
+            raise HTTPException(
+                status_code=502,
+                detail="DBFS save failed (SDK unavailable or write error)",
+            )
+        registry.append(name)
+        if not write_dbfs_registry(registry):
+            raise HTTPException(
+                status_code=502,
+                detail="bank files saved but registry update failed",
+            )
+        return {"name": name, "dynamic": True}
+
+    # -- GET /api/schema/{bank} -----------------------------------------
+    @app.get("/api/schema/{bank}")
+    async def get_schema(bank: str):
+        """Return the schema JSON for a bank (built-in or dynamic).
+
+        Resolves via :func:`rules.routing.load_schema_for_bank`, which checks
+        the DBFS override first and falls back to the bundled schema.
+        """
+        from rules.routing import load_schema_for_bank
+        return load_schema_for_bank(bank)
+
+    # -- POST /api/schema/{bank} ----------------------------------------
+    @app.post("/api/schema/{bank}")
+    async def save_schema(bank: str, body: dict = Body(...)):
+        """Save a schema to DBFS for the given bank (built-in or dynamic).
+
+        Body: ``{"schema": {...}}`` (a JSON object) or ``{"schema": "{...}"}``
+        (a JSON string). The bank name is upper-cased; a non-built-in bank is
+        added to the registry so it is discoverable by ``GET /api/banks``.
+        """
+        from harness.dbfs import (
+            bank_schema_dbfs_path,
+            mkdirs_dbfs,
+            write_dbfs_text,
+        )
+
+        name = str(bank).strip().upper()
+        if not name:
+            raise HTTPException(status_code=400, detail="bank name must not be empty")
+        schema = _coerce_schema(body.get("schema"))
+        mkdirs_dbfs(f"/savesage-statement-agent/banks/{name}")
+        if not write_dbfs_text(
+            bank_schema_dbfs_path(name),
+            json.dumps(schema, indent=2, ensure_ascii=False),
+        ):
+            raise HTTPException(
+                status_code=502,
+                detail="DBFS save failed (SDK unavailable or write error)",
+            )
+        return {"status": "ok", "bank": name}
 
     # -- POST /api/parse-custom -----------------------------------------
     @app.post("/api/parse-custom")

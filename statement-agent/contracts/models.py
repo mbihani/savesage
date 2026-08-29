@@ -18,6 +18,14 @@ class Bank(str, Enum):
     GENERIC = "GENERIC"
 
 
+def bank_name(bank: "Bank | str") -> str:
+    """Return the canonical bank name string for a ``Bank`` enum or a plain
+    string (a dynamically added bank). ``str(Bank.HDFC)`` is ``"Bank.HDFC"`` on
+    Python 3.11+ (not ``"HDFC"``), so the enum's ``.value`` is used explicitly.
+    """
+    return bank.value if isinstance(bank, Bank) else str(bank)
+
+
 class ComparisonOutcome(str, Enum):
     AGREE = "AGREE"
     DISAGREE = "DISAGREE"
@@ -43,11 +51,18 @@ class FeedbackDisposition(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class ParseRequest:
-    """One PDF extraction request; `pdf` is raw bytes or a filesystem Path."""
+    """One PDF extraction request; `pdf` is raw bytes or a filesystem Path.
+
+    ``bank`` is a :class:`Bank` enum for the built-in banks, or a plain string
+    (the upper-cased name) for a dynamically added bank. Both resolve through
+    :func:`graph.routing.resolve_prompt` / :func:`rules.routing.load_schema_for_bank`,
+    which check the DBFS override first; use :func:`bank_name` to get the
+    canonical name string for tracing/storage.
+    """
 
     pdf: PdfSource
     filename: str
-    bank: Bank
+    bank: Bank | str
     request_id: str
 
 

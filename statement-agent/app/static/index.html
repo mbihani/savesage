@@ -325,14 +325,16 @@
       }
       .ps-panel-head:hover { background: var(--accent-soft); }
       .ps-panel-body { padding: 0 1rem 1rem; }
-      .ps-panel-body label {
+      .ps-panel-body label,
+      .modal-body label {
         display: block;
         font-size: 0.8125rem;
         font-weight: 600;
         margin-bottom: 0.375rem;
         margin-top: 0.75rem;
       }
-      .ps-panel-body textarea {
+      .ps-panel-body textarea,
+      .modal-body textarea {
         width: 100%;
         min-height: 120px;
         padding: 0.625rem;
@@ -345,7 +347,8 @@
         resize: vertical;
         line-height: 1.5;
       }
-      .ps-panel-body textarea:focus {
+      .ps-panel-body textarea:focus,
+      .modal-body textarea:focus {
         outline: none;
         border-color: var(--accent);
         box-shadow: 0 0 0 3px var(--accent-soft);
@@ -357,6 +360,66 @@
       }
       .ps-status.ok { color: var(--agree); }
       .ps-status.error { color: var(--disagree); }
+
+      /* Add-bank modal — frosted glass overlay */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        animation: fadein 0.15s ease;
+      }
+      .modal-card {
+        width: 100%;
+        max-width: 640px;
+        max-height: 90vh;
+        overflow: auto;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        box-shadow: var(--shadow), var(--glass-highlight);
+      }
+      .modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        font-weight: 600;
+        font-size: 0.9375rem;
+      }
+      .modal-close {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1.125rem;
+        cursor: pointer;
+        padding: 0.125rem 0.5rem;
+        line-height: 1;
+      }
+      .modal-close:hover { color: var(--text); }
+      .modal-body { padding: 1rem 1.25rem 1.25rem; }
+      .bank-input-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: stretch;
+      }
+      .bank-input-row input { flex: 1; }
+      .btn-add-bank {
+        white-space: nowrap;
+        background: var(--neutral-soft);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .btn-add-bank:hover:not(:disabled) { background: var(--accent-soft); }
 
       /* Error/alert — translucent glass tint */
       .alert {
@@ -503,6 +566,38 @@
         return resp.json();
       }
 
+      async function fetchBanks() {
+        const resp = await fetch("/api/banks");
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        return resp.json();
+      }
+
+      async function createBank(name, prompt, schema) {
+        const resp = await fetch("/api/banks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, prompt, schema }),
+        });
+        if (!resp.ok) {
+          const e = await resp.json().catch(() => ({}));
+          throw new Error(e.detail || `HTTP ${resp.status}`);
+        }
+        return resp.json();
+      }
+
+      async function saveSchema(bank, schema) {
+        const resp = await fetch(`/api/schema/${bank}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ schema }),
+        });
+        if (!resp.ok) {
+          const e = await resp.json().catch(() => ({}));
+          throw new Error(e.detail || `HTTP ${resp.status}`);
+        }
+        return resp.json();
+      }
+
       async function startParseCustom(file, bank, promptOverride, schemaOverride) {
         const fd = new FormData();
         fd.append("file", file);
@@ -521,13 +616,10 @@
        * Constants
        * =================================================================== */
 
-      const BANKS = [
-        { value: "HDFC", label: "HDFC" },
-        { value: "ICICI", label: "ICICI" },
-        { value: "SBI", label: "SBI" },
-        { value: "AXIS", label: "AXIS" },
-        { value: "GENERIC", label: "Other (Generic)" },
-      ];
+      // Bank list is fetched dynamically from GET /api/banks (built-in banks
+      // plus any dynamically added banks persisted to DBFS). BUILT_IN_BANKS is
+      // a fallback so the dropdown is usable before the fetch resolves.
+      const BUILT_IN_BANKS = ["HDFC", "ICICI", "SBI", "AXIS", "GENERIC"];
       const STAGES = ["route", "extract", "validate", "persist", "finalize"];
 
       /* Template paths for the 28 judged fields (mirrors contracts/models.py
@@ -581,12 +673,105 @@
        * UploadView
        * =================================================================== */
 
+      function AddBankModal({ onClose, onCreated }) {
+        const [name, setName] = useState("");
+        const [prompt, setPrompt] = useState("");
+        const [schema, setSchema] = useState("");
+        const [saving, setSaving] = useState(false);
+        const [error, setError] = useState(null);
+
+        const handleSave = async () => {
+          setError(null);
+          if (!name.trim()) { setError("Bank name is required"); return; }
+          if (!prompt.trim()) { setError("Prompt is required"); return; }
+          let schemaObj;
+          try {
+            schemaObj = JSON.parse(schema);
+          } catch (e) {
+            setError("Schema must be valid JSON");
+            return;
+          }
+          if (typeof schemaObj !== "object" || schemaObj === null || Array.isArray(schemaObj)) {
+            setError("Schema must be a JSON object");
+            return;
+          }
+          setSaving(true);
+          try {
+            const data = await createBank(name, prompt, schemaObj);
+            onCreated(data.name);
+            onClose();
+          } catch (e) {
+            setError(e.message);
+          } finally {
+            setSaving(false);
+          }
+        };
+
+        return h`
+          <div class="modal-overlay" onClick=${(e) => { if (e.target === e.currentTarget) onClose(); }}>
+            <div class="modal-card">
+              <div class="modal-head">
+                <span>➕ Add New Bank</span>
+                <button class="modal-close" onClick=${onClose}>✕</button>
+              </div>
+              <div class="modal-body">
+                <label>Bank Name</label>
+                <input
+                  type="text"
+                  value=${name}
+                  onChange=${(e) => setName(e.target.value)}
+                  placeholder="e.g. KOTAK"
+                  style=${{ width: "100%", padding: "0.5rem", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)" }}
+                />
+                <label>Prompt</label>
+                <textarea
+                  value=${prompt}
+                  onChange=${(e) => setPrompt(e.target.value)}
+                  spellCheck=${false}
+                  placeholder="Extraction prompt for this bank…"
+                ></textarea>
+                <label>Schema JSON</label>
+                <textarea
+                  value=${schema}
+                  onChange=${(e) => setSchema(e.target.value)}
+                  spellCheck=${false}
+                  style=${{ minHeight: "200px" }}
+                  placeholder='{"properties": {…}, "type": "object"}'
+                ></textarea>
+                ${error && h`<div class="alert alert-error">${error}</div>`}
+                <div class="ps-actions">
+                  <button class="btn btn-sm btn-primary" onClick=${handleSave} disabled=${saving}>
+                    ${saving ? "Saving…" : "💾 Create Bank"}
+                  </button>
+                  <button class="btn btn-sm" onClick=${onClose}>Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
       function UploadView({ onStart }) {
         const [bank, setBank] = useState("HDFC");
         const [file, setFile] = useState(null);
         const [error, setError] = useState(null);
         const [loading, setLoading] = useState(false);
+        const [banks, setBanks] = useState(
+          BUILT_IN_BANKS.map((n) => ({ name: n, dynamic: false }))
+        );
+        const [showAddBank, setShowAddBank] = useState(false);
         const inputRef = useRef(null);
+
+        const reloadBanks = useCallback(async () => {
+          try {
+            const list = await fetchBanks();
+            if (Array.isArray(list) && list.length) setBanks(list);
+          } catch (e) {
+            // keep the built-in fallback if the API is unreachable
+          }
+        }, []);
+
+        useEffect(() => { reloadBanks(); }, [reloadBanks]);
 
         const handleDrop = useCallback((e) => {
           e.preventDefault();
@@ -623,15 +808,20 @@
             <div class="card">
               <div class="field">
                 <label>Bank</label>
-                <input
-                  type="text"
-                  list="bank-list"
-                  value=${bank}
-                  onChange=${(e) => setBank(e.target.value)}
-                  placeholder="Select or type a bank name"
-                />
+                <div class="bank-input-row">
+                  <input
+                    type="text"
+                    list="bank-list"
+                    value=${bank}
+                    onChange=${(e) => setBank(e.target.value)}
+                    placeholder="Select or type a bank name"
+                  />
+                  <button class="btn btn-sm btn-add-bank" onClick=${() => setShowAddBank(true)}>
+                    ➕ Add New Bank
+                  </button>
+                </div>
                 <datalist id="bank-list">
-                  ${BANKS.map((b) => h`<option key=${b.value} value=${b.value}>${b.label}</option>`)}
+                  ${banks.map((b) => h`<option key=${b.name} value=${b.name}>${b.name}${b.dynamic ? " (custom)" : ""}</option>`)}
                 </datalist>
               </div>
               <div class="field">
@@ -659,6 +849,10 @@
               ${error && h`<div class="alert alert-error">${error}</div>`}
             </div>
           </div>
+          ${showAddBank && h`<${AddBankModal}
+            onClose=${() => setShowAddBank(false)}
+            onCreated=${(name) => { setBank(name); reloadBanks(); }}
+          />`}
         `;
       }
 

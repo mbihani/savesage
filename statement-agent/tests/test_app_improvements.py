@@ -240,17 +240,22 @@ class PromptSchemaEndpointTest(unittest.TestCase):
         resp = self.client.post("/api/prompt/HDFC", json={"prompt": "only"})
         self.assertEqual(resp.status_code, 400)
 
-    def test_post_prompt_unknown_bank_saves_generic(self) -> None:
-        """Unknown bank names save to the GENERIC DBFS path, not a 400."""
+    def test_post_prompt_unknown_bank_saves_to_own_path(self) -> None:
+        """Unknown bank names save to their own (upper-cased) DBFS path under
+        the dynamic-bank layout, not a 400 and not the GENERIC path. The bank
+        is not registered here (registration is POST /api/banks' job), but the
+        override resolves because the routing layer checks the new path first.
+        """
         with patch("harness.dbfs.write_dbfs_text", return_value=True) as mock_write:
             resp = self.client.post(
-                "/api/prompt/UNKNOWN",
+                "/api/prompt/unknown",
                 json={"prompt": "p", "schema": {"type": "object"}},
             )
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
         self.assertEqual(data["status"], "ok")
-        self.assertEqual(data["bank"], "GENERIC")
+        self.assertEqual(data["bank"], "UNKNOWN")
+        # write_dbfs_text called twice: prompt + schema (no registry write here)
         self.assertEqual(mock_write.call_count, 2)
 
     def test_post_prompt_dbfs_failure_502(self) -> None:
