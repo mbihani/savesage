@@ -210,9 +210,17 @@ class PromptSchemaEndpointTest(unittest.TestCase):
         self.assertEqual(gen["prompt"], axis["prompt"])
         self.assertEqual(gen["schema"], axis["schema"])
 
-    def test_get_prompt_unknown_bank_400(self) -> None:
+    def test_get_prompt_unknown_bank_falls_back_to_generic(self) -> None:
+        """Unknown bank names return the GENERIC prompt/schema, not a 400."""
         resp = self.client.get("/api/prompt/UNKNOWN_BANK")
-        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertGreater(len(data["prompt"].strip()), 0)
+        self.assertIsInstance(data["schema"], dict)
+        # Should match the GENERIC prompt/schema.
+        generic = self.client.get("/api/prompt/GENERIC").json()
+        self.assertEqual(data["prompt"], generic["prompt"])
+        self.assertEqual(data["schema"], generic["schema"])
 
     def test_post_prompt_schema_saves_to_dbfs(self) -> None:
         """POST /api/prompt/{bank} writes prompt+schema to DBFS."""
@@ -232,12 +240,18 @@ class PromptSchemaEndpointTest(unittest.TestCase):
         resp = self.client.post("/api/prompt/HDFC", json={"prompt": "only"})
         self.assertEqual(resp.status_code, 400)
 
-    def test_post_prompt_unknown_bank_400(self) -> None:
-        resp = self.client.post(
-            "/api/prompt/UNKNOWN",
-            json={"prompt": "p", "schema": {}},
-        )
-        self.assertEqual(resp.status_code, 400)
+    def test_post_prompt_unknown_bank_saves_generic(self) -> None:
+        """Unknown bank names save to the GENERIC DBFS path, not a 400."""
+        with patch("harness.dbfs.write_dbfs_text", return_value=True) as mock_write:
+            resp = self.client.post(
+                "/api/prompt/UNKNOWN",
+                json={"prompt": "p", "schema": {"type": "object"}},
+            )
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["status"], "ok")
+        self.assertEqual(data["bank"], "GENERIC")
+        self.assertEqual(mock_write.call_count, 2)
 
     def test_post_prompt_dbfs_failure_502(self) -> None:
         with patch("harness.dbfs.write_dbfs_text", return_value=False):
@@ -307,13 +321,16 @@ class ParseCustomEndpointTest(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn("request_id", resp.json())
 
-    def test_parse_custom_unknown_bank_400(self) -> None:
-        resp = self.client.post(
-            "/api/parse-custom",
-            files={"file": ("test.pdf", b"%PDF-1.4 fake", "application/pdf")},
-            data={"bank": "UNKNOWN"},
-        )
-        self.assertEqual(resp.status_code, 400)
+    def test_parse_custom_unknown_bank_accepted(self) -> None:
+        """Unknown bank names are accepted (GENERIC fallback), not 400."""
+        with patch("app.main._run_parse"):
+            resp = self.client.post(
+                "/api/parse-custom",
+                files={"file": ("test.pdf", b"%PDF-1.4 fake", "application/pdf")},
+                data={"bank": "UNKNOWN"},
+            )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("request_id", resp.json())
 
     def test_parse_custom_empty_file_400(self) -> None:
         resp = self.client.post(

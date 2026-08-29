@@ -290,6 +290,14 @@ class RunParamsMetricsTest(unittest.TestCase):
         self.assertEqual(fake.params.get("outcome"), "SUCCESS")
         self.assertEqual(fake.params.get("model_id"), "fake-luna")
 
+    def test_bank_tag_logged_alongside_param(self):
+        """Bank is set as BOTH a run param and a run tag — the tag shows as
+        a column in the MLflow experiments table and is picked up by the trace
+        sync job's _run_value(run, 'tags', 'bank') fallback."""
+        fake, _ = _run_graph_with_sink(_RecordingMLflow())
+        self.assertEqual(fake.params.get("bank"), "HDFC")
+        self.assertEqual(fake.tags.get("bank"), "HDFC")
+
     def test_metrics_logged_on_run(self):
         fake, _ = _run_graph_with_sink(_RecordingMLflow())
         self.assertIn("n_transactions", fake.metrics)

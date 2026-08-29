@@ -27,7 +27,6 @@ from datetime import UTC, datetime
 from typing import Any, Optional
 
 from contracts.models import (
-    Bank,
     FieldComparison,
     FieldFeedback,
     TraceEvent,
@@ -538,13 +537,14 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str,
     ``route_node`` skips re-resolution and the trace carries the actual prompt.
     """
     try:
-        from contracts.models import Bank as _Bank, ParseRequest as _PR
+        from contracts.models import ParseRequest as _PR
+        from graph.routing import try_bank
         from graph.state import GraphState
 
         request = _PR(
             pdf=pdf_bytes,
             filename=filename,
-            bank=_Bank(bank),
+            bank=try_bank(bank),
             request_id=ctx.request_id,
         )
         state = GraphState(request=request)
@@ -730,11 +730,6 @@ def create_app():
     # -- POST /api/parse -------------------------------------------------
     @app.post("/api/parse")
     async def parse(file: UploadFile = File(...), bank: str = Form(...)):
-        try:
-            Bank(bank)
-        except ValueError:
-            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
-
         pdf_bytes = await file.read()
         if not pdf_bytes:
             raise HTTPException(status_code=400, detail="empty file")
@@ -1157,16 +1152,14 @@ def create_app():
         """Return the prompt text and schema JSON for a bank.
 
         Loads from DBFS override if it exists, else from the bundled file
-        (PROMPT_BY_BANK / SCHEMA_BY_BANK).
+        (PROMPT_BY_BANK / SCHEMA_BY_BANK).  Unknown bank names fall back to
+        the GENERIC prompt/schema (handled by resolve_prompt /
+        load_schema_for_bank).
         """
-        try:
-            bank_enum = Bank(bank)
-        except ValueError:
-            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
         from graph.routing import resolve_prompt
         from rules.routing import load_schema_for_bank
-        prompt = resolve_prompt(bank_enum)
-        schema = load_schema_for_bank(bank_enum)
+        prompt = resolve_prompt(bank)
+        schema = load_schema_for_bank(bank)
         return {"prompt": prompt, "schema": schema}
 
     # -- POST /api/prompt/{bank} ----------------------------------------
@@ -1176,12 +1169,11 @@ def create_app():
 
         Both ``prompt`` and ``schema`` must be present in the body. The
         prompt is written to ``/savesage/prompts/<bank>.txt`` and the schema
-        to ``/savesage/schemas/<bank>.json``.
+        to ``/savesage/schemas/<bank>.json``.  Unknown bank names save to
+        the GENERIC DBFS path.
         """
-        try:
-            bank_enum = Bank(bank)
-        except ValueError:
-            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
+        from graph.routing import try_bank
+        bank_enum = try_bank(bank)
         prompt = body.get("prompt")
         schema = body.get("schema")
         if prompt is None or schema is None:
@@ -1222,12 +1214,8 @@ def create_app():
         If an override is absent, the bank default is used. Returns the
         same ``{"request_id": ...}`` shape; the frontend consumes SSE
         from the same ``/api/parse/{request_id}/stream`` endpoint.
+        Unknown bank names are accepted (GENERIC fallback).
         """
-        try:
-            Bank(bank)
-        except ValueError:
-            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
-
         pdf_bytes = await file.read()
         if not pdf_bytes:
             raise HTTPException(status_code=400, detail="empty file")

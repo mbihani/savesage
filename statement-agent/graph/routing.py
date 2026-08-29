@@ -25,19 +25,37 @@ class RoutingError(RuntimeError):
     """Raised when a bank cannot be resolved to a non-empty prompt."""
 
 
-def resolve_prompt(bank: Bank) -> str:
+def try_bank(bank: Bank | str) -> Bank:
+    """Normalise ``bank`` to a :class:`Bank` enum, falling back to GENERIC.
+
+    Accepts a :class:`Bank` enum (returned as-is) or an arbitrary string.
+    Known bank strings (``"HDFC"``, ``"ICICI"``, …) map to their enum; any
+    unknown string maps to :data:`Bank.GENERIC` so the generic prompt/schema
+    is used.  This lets the UI and API accept arbitrary bank names without
+    changing the closed :class:`Bank` enum.
+    """
+    if isinstance(bank, Bank):
+        return bank
+    try:
+        return Bank(bank)
+    except (ValueError, TypeError):
+        return Bank.GENERIC
+
+
+def resolve_prompt(bank: Bank | str) -> str:
     """Return the non-empty prompt text for ``bank``.
 
-    Checks a DBFS override first (``/savesage/prompts/<bank>.txt``); if the
-    SDK is unavailable or the file does not exist, falls back to the bundled
-    file. Loads from disk each call (prompts are small) so a prompt edit —
-    whether on DBFS or the bundled file — is picked up without a process
-    restart. Raises :class:`RoutingError` if the bank is unknown or the
-    prompt file is empty/missing -- a bank with no prompt is a configuration
-    defect, not something to silently route around.
+    Accepts a :class:`Bank` enum or an arbitrary string; unknown strings
+    fall back to :data:`Bank.GENERIC` (the generic Luna prompt) instead of
+    raising :class:`RoutingError`.  Checks a DBFS override first
+    (``/savesage/prompts/<bank>.txt``); if the SDK is unavailable or the
+    file does not exist, falls back to the bundled file.  Loads from disk
+    each call (prompts are small) so a prompt edit — whether on DBFS or
+    the bundled file — is picked up without a process restart.  Raises
+    :class:`RoutingError` if the prompt file is empty/missing.
     """
-    # DBFS override (best-effort; None when SDK unavailable, file missing,
-    # or bank is not a valid Bank enum with a .value attribute).
+    bank = try_bank(bank)
+    # DBFS override (best-effort; None when SDK unavailable or file missing).
     try:
         dbfs_text = read_dbfs_text(prompt_dbfs_path(bank.value))
         if dbfs_text and dbfs_text.strip():
