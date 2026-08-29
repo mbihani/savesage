@@ -6,52 +6,75 @@
     <title>SaveSage Statement Agent</title>
     <style>
       :root {
-        --bg: #f7f8fa;
-        --surface: #ffffff;
-        --border: #e2e6ec;
+        --bg: rgba(255, 255, 255, 0.22);
+        --surface: rgba(255, 255, 255, 0.55);
+        --border: rgba(255, 255, 255, 0.18);
         --text: #1a1f2e;
-        --text-muted: #68748d;
+        --text-muted: #5a6378;
         --accent: #4b6bfb;
-        --accent-soft: #eef1ff;
+        --accent-soft: rgba(75, 107, 251, 0.12);
         --agree: #16a34a;
-        --agree-soft: #e8f7ef;
+        --agree-soft: rgba(22, 163, 74, 0.12);
         --disagree: #dc2626;
-        --disagree-soft: #fde8e8;
+        --disagree-soft: rgba(220, 38, 38, 0.12);
         --format: #d97706;
-        --format-soft: #fef3e0;
+        --format-soft: rgba(217, 119, 6, 0.12);
         --neutral: #6b7280;
-        --neutral-soft: #f3f4f6;
-        --radius: 12px;
-        --shadow: 0 1px 3px rgba(0,0,0,0.08);
+        --neutral-soft: rgba(107, 114, 128, 0.1);
+        --radius: 14px;
+        --shadow: 0 8px 32px rgba(31, 38, 135, 0.12), 0 2px 8px rgba(31, 38, 135, 0.08);
+        --glass-blur: 16px;
+        --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.45);
         --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
       }
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #0f1117;
-          --surface: #1a1d27;
-          --border: #2a2f3c;
+          --bg: rgba(255, 255, 255, 0.04);
+          --surface: rgba(255, 255, 255, 0.07);
+          --border: rgba(255, 255, 255, 0.1);
           --text: #e8eaed;
           --text-muted: #9ba3b4;
           --accent: #7c8ffb;
-          --accent-soft: #1e2333;
+          --accent-soft: rgba(124, 143, 251, 0.15);
           --agree: #22c55e;
-          --agree-soft: #16291f;
+          --agree-soft: rgba(34, 197, 94, 0.15);
           --disagree: #f87171;
-          --disagree-soft: #2e1818;
+          --disagree-soft: rgba(248, 113, 113, 0.15);
           --format: #fbbf24;
-          --format-soft: #2a2310;
+          --format-soft: rgba(251, 191, 36, 0.15);
           --neutral: #9ca3af;
-          --neutral-soft: #1f222b;
-          --shadow: 0 1px 3px rgba(0,0,0,0.3);
+          --neutral-soft: rgba(156, 163, 175, 0.12);
+          --shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+          --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
       }
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: var(--bg);
         color: var(--text);
         line-height: 1.5;
         -webkit-font-smoothing: antialiased;
+        background: linear-gradient(-45deg, #6366f1, #8b5cf6, #ec4899, #3b82f6);
+        background-size: 400% 400%;
+        background-attachment: fixed;
+        animation: gradient-shift 18s ease infinite;
+      }
+      /* SVG feTurbulence noise texture overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+        opacity: 0.035;
+        pointer-events: none;
+        z-index: 0;
+      }
+      #root { position: relative; z-index: 1; }
+      @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
       }
       .container {
         max-width: 760px;
@@ -77,7 +100,9 @@
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius);
-        box-shadow: var(--shadow);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        box-shadow: var(--shadow), var(--glass-highlight);
       }
       .pdf-panel iframe { display: block; width: 100%; height: 100%; border: none; }
       .results-panel { flex: 1 1 55%; min-width: 0; }
@@ -107,13 +132,15 @@
         margin-top: 0.25rem;
       }
 
-      /* Cards */
+      /* Cards — frosted glass surface */
       .card {
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius);
         padding: 1.5rem;
-        box-shadow: var(--shadow);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        box-shadow: var(--shadow), var(--glass-highlight);
       }
       .card + .card { margin-top: 1rem; }
 
@@ -130,7 +157,7 @@
         padding: 0.625rem 0.75rem;
         border: 1px solid var(--border);
         border-radius: 8px;
-        background: var(--surface);
+        background: var(--bg);
         color: var(--text);
         font-size: 0.9375rem;
         transition: border-color 0.15s;
@@ -147,6 +174,7 @@
         text-align: center;
         cursor: pointer;
         transition: border-color 0.15s, background 0.15s;
+        background: var(--bg);
       }
       .file-drop:hover { border-color: var(--accent); background: var(--accent-soft); }
       .file-drop.has-file { border-style: solid; border-color: var(--agree); }
@@ -159,7 +187,7 @@
         align-items: center;
         gap: 0.375rem;
         padding: 0.625rem 1.25rem;
-        border: none;
+        border: 1px solid var(--border);
         border-radius: 8px;
         font-size: 0.9375rem;
         font-weight: 600;
@@ -167,7 +195,7 @@
         transition: opacity 0.15s, background 0.15s;
       }
       .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-      .btn-primary { background: var(--accent); color: #fff; }
+      .btn-primary { background: var(--accent); color: #fff; border-color: transparent; }
       .btn-primary:hover:not(:disabled) { opacity: 0.9; }
       .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
       .btn-accept { background: var(--agree-soft); color: var(--agree); border: 1px solid var(--agree); }
@@ -184,6 +212,7 @@
         padding: 0.75rem 1rem;
         border-radius: 8px;
         background: var(--neutral-soft);
+        border: 1px solid var(--border);
         font-size: 0.9375rem;
         transition: background 0.2s;
       }
@@ -210,6 +239,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.03em;
+        border: 1px solid var(--border);
       }
       .verdict-AGREE { background: var(--agree-soft); color: var(--agree); }
       .verdict-DISAGREE { background: var(--disagree-soft); color: var(--disagree); }
@@ -229,13 +259,14 @@
       }
       @keyframes spin { to { transform: rotate(360deg); } }
 
-      /* Results table */
+      /* Results table — nested glass row */
       .field-row {
         padding: 1rem;
         border-radius: 8px;
-        background: var(--surface);
+        background: var(--bg);
         border: 1px solid var(--border);
         margin-bottom: 0.75rem;
+        box-shadow: var(--glass-highlight);
       }
       .field-row-head {
         display: flex;
@@ -255,6 +286,7 @@
         padding: 0.625rem;
         border-radius: 6px;
         background: var(--bg);
+        border: 1px solid var(--border);
       }
       .field-val-label {
         font-size: 0.6875rem;
@@ -285,18 +317,22 @@
         font-weight: 700;
         background: var(--accent-soft);
         color: var(--accent);
+        border: 1px solid var(--border);
         margin-left: 0.375rem;
         vertical-align: middle;
         cursor: help;
       }
 
-      /* Prompt & Schema editor panel */
+      /* Prompt & Schema editor panel — frosted glass */
       .ps-panel {
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius);
         margin-top: 1rem;
         overflow: hidden;
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        box-shadow: var(--shadow), var(--glass-highlight);
       }
       .ps-panel-head {
         display: flex;
@@ -343,17 +379,20 @@
       .ps-status.ok { color: var(--agree); }
       .ps-status.error { color: var(--disagree); }
 
-      /* Error/alert */
+      /* Error/alert — translucent glass tint */
       .alert {
         padding: 0.75rem 1rem;
         border-radius: 8px;
         font-size: 0.875rem;
         margin-top: 1rem;
+        border: 1px solid var(--border);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
       }
       .alert-error { background: var(--disagree-soft); color: var(--disagree); }
       .alert-info { background: var(--accent-soft); color: var(--accent); }
 
-      /* Summary banner */
+      /* Summary banner — translucent glass tint */
       .summary-banner {
         display: flex;
         align-items: center;
@@ -362,6 +401,10 @@
         border-radius: var(--radius);
         margin-bottom: 1.5rem;
         font-size: 0.9375rem;
+        border: 1px solid var(--border);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: var(--glass-highlight);
       }
       .summary-banner.SUCCESS { background: var(--agree-soft); color: var(--agree); }
       .summary-banner.PARTIAL { background: var(--format-soft); color: var(--format); }
@@ -383,6 +426,7 @@
         padding: 0.5rem 0.75rem;
         border-radius: 6px;
         background: var(--bg);
+        border: 1px solid var(--border);
         margin-bottom: 0.375rem;
         font-size: 0.8125rem;
         animation: fadein 0.2s ease;
