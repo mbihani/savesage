@@ -20,7 +20,6 @@ from harness.dbfs import (
     bank_schema_dbfs_path,
     read_dbfs_registry,
     read_dbfs_text,
-    schema_dbfs_path,
 )
 
 _AGENT_DIR = Path(__file__).resolve().parents[1]
@@ -52,11 +51,11 @@ def load_schema_for_bank(bank: Bank | str) -> dict:
 
     Accepts a :class:`Bank` enum or an arbitrary string. Resolution order:
 
-    1. **Dynamic-bank DBFS file** ``/savesage-statement-agent/banks/<bank>/schema.json``
+    1. **Shared bank config** ``banks/<BANK>/schema.json``
        — checked first for *any* bank name (covers dynamically added banks
        AND built-in banks whose schema was overridden via the new API).
-    2. **Built-in banks** (names in the :class:`Bank` enum): legacy DBFS
-       override ``/savesage/schemas/<bank>.json`` → bundled ``schema/<bank>.json``.
+    2. **Built-in banks** fall back to bundled ``schema/<bank>.json`` when
+       startup seeding did not succeed.
     3. **A bank registered as dynamic but whose DBFS schema file is missing**:
        raises a clear :class:`RuntimeError` so the misconfiguration is loud.
     4. **A completely unknown bank** (not built-in, not in the registry):
@@ -68,7 +67,7 @@ def load_schema_for_bank(bank: Bank | str) -> dict:
     """
     bank_str = bank.value if isinstance(bank, Bank) else str(bank).strip().upper()
 
-    # 1. Dynamic-bank DBFS override (works for both dynamic and built-in names).
+    # 1. Shared bank config (works for both dynamic and built-in names).
     dbfs_text = read_dbfs_text(bank_schema_dbfs_path(bank_str))
     if dbfs_text:
         try:
@@ -76,18 +75,12 @@ def load_schema_for_bank(bank: Bank | str) -> dict:
         except json.JSONDecodeError:
             pass  # corrupt override — fall through to the next source
 
-    # 2. Built-in bank: legacy DBFS override → bundled file.
+    # 2. Built-in bank: bundled fallback when startup seeding did not succeed.
     try:
         bank_enum = Bank(bank_str)
     except (ValueError, TypeError):
         bank_enum = None
     if bank_enum is not None:
-        legacy = read_dbfs_text(schema_dbfs_path(bank_enum.value))
-        if legacy:
-            try:
-                return json.loads(legacy)
-            except json.JSONDecodeError:
-                pass  # fall back to bundled file
         return json.loads(SCHEMA_BY_BANK[bank_enum].read_text(encoding="utf-8"))
 
     # 3. Registered dynamic bank whose DBFS schema is missing/corrupt → loud error.

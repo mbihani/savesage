@@ -1,4 +1,4 @@
-"""Workspace Files read/write helpers for prompt/schema overrides.
+"""Workspace Files read/write helpers for bank prompt/schema configs.
 
 Imports ``databricks-sdk`` function-local so this module is importable in a
 stdlib-only environment (the contract-test gate). Each function returns
@@ -8,15 +8,8 @@ error — so callers fall back to the bundled file.
 The directory ``/Workspace/savesage-bank-configs/`` must exist, and the app
 service principal must have ``CAN_MANAGE`` permission on it.
 
-Two Workspace Files layouts coexist:
-
-* **Built-in bank overrides** (legacy, kept for back-compat with prompts/schemas
-  saved before dynamic banks existed):
-  ``/Workspace/savesage-bank-configs/prompts/<BANK>.txt`` and
-  ``/Workspace/savesage-bank-configs/schemas/<BANK>.json``.
-* **Dynamic banks** (added at runtime via the UI/API): one directory per bank
-  holding its prompt, schema, and a top-level registry listing every dynamic
-  bank name::
+Built-in and dynamic banks share one layout: one directory per bank holding
+its prompt and schema, plus a top-level registry listing every dynamic bank::
 
       /Workspace/savesage-bank-configs/banks/registry.json
       /Workspace/savesage-bank-configs/banks/<BANK>/prompt.txt
@@ -30,12 +23,8 @@ import re
 
 _LOGGER = logging.getLogger(__name__)
 
-# Workspace Files directories for built-in bank prompt/schema overrides.
-PROMPT_DBFS_DIR = "/Workspace/savesage-bank-configs/prompts"
-SCHEMA_DBFS_DIR = "/Workspace/savesage-bank-configs/schemas"
-
-# Workspace Files root for dynamically added banks (one subdirectory per bank,
-# plus a top-level registry.json listing every dynamic bank name).
+# Workspace Files root for all bank configs (one subdirectory per bank, plus a
+# top-level registry.json listing every dynamic bank name).
 BANKS_DBFS_DIR = "/Workspace/savesage-bank-configs/banks"
 
 _BANK_NAME_RE = re.compile(r"^[A-Z0-9_-]+$")
@@ -109,21 +98,6 @@ def write_dbfs_text(dbfs_path: str, content: str) -> bool:
         return False
 
 
-def prompt_dbfs_path(bank_value: str) -> str:
-    """Return the DBFS path for a bank's prompt override."""
-    return f"{PROMPT_DBFS_DIR}/{validate_bank_name(bank_value)}.txt"
-
-
-def schema_dbfs_path(bank_value: str) -> str:
-    """Return the DBFS path for a built-in bank's schema override."""
-    return f"{SCHEMA_DBFS_DIR}/{validate_bank_name(bank_value)}.json"
-
-
-# ---------------------------------------------------------------------------
-# Dynamic-bank helpers (the Workspace Files banks/<BANK>/ layout).
-# ---------------------------------------------------------------------------
-
-
 def bank_dbfs_dir(bank_value: str) -> str:
     """Return the DBFS directory for a path-safe canonical bank name."""
     return f"{BANKS_DBFS_DIR}/{validate_bank_name(bank_value)}"
@@ -170,6 +144,40 @@ def mkdirs_dbfs(dbfs_path: str) -> bool:
             type(exc).__name__,
             exc,
         )
+        return False
+
+
+def seed_builtin_configs() -> bool:
+    """Seed missing built-in bank configs into the shared banks directory.
+
+    Existing files are never overwritten. Failures are non-fatal to callers:
+    ``False`` is returned and routing can still use the bundled assets.
+    """
+    from contracts.models import Bank
+    from rules.routing import PROMPT_BY_BANK, SCHEMA_BY_BANK
+
+    try:
+        if not mkdirs_dbfs(BANKS_DBFS_DIR):
+            return False
+        for bank in Bank:
+            directory = bank_dbfs_dir(bank.value)
+            if not mkdirs_dbfs(directory):
+                return False
+
+            prompt_path = bank_prompt_dbfs_path(bank.value)
+            if read_dbfs_text(prompt_path) is None:
+                prompt = PROMPT_BY_BANK[bank].read_text(encoding="utf-8")
+                if not write_dbfs_text(prompt_path, prompt):
+                    return False
+
+            schema_path = bank_schema_dbfs_path(bank.value)
+            if read_dbfs_text(schema_path) is None:
+                schema = SCHEMA_BY_BANK[bank].read_text(encoding="utf-8")
+                if not write_dbfs_text(schema_path, schema):
+                    return False
+        return True
+    except Exception as exc:  # noqa: BLE001 -- startup seeding is best-effort
+        _LOGGER.warning("Built-in bank config seeding failed: %s", exc)
         return False
 
 
