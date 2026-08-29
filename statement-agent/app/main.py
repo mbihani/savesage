@@ -499,7 +499,9 @@ class _ProgressTraceSink(TraceSink):
         })
 
 
-def _build_deps(ctx: RequestContext, state: Any = None) -> Any:
+def _build_deps(ctx: RequestContext, state: Any = None,
+                prompt_override: str | None = None,
+                schema_override: dict | None = None) -> Any:
     """Build production :class:`NodeDeps` with real ports wired.
 
     Degrades gracefully: if a port cannot be constructed (Lakebase down,
@@ -511,11 +513,19 @@ def _build_deps(ctx: RequestContext, state: Any = None) -> Any:
     ``state`` is the live :class:`GraphState` — passed to
     :class:`_ProgressTraceSink` so it can push per-item SSE events
     when the extract node completes.
+
+    ``prompt_override`` / ``schema_override`` are passed to the extraction
+    adapter when the caller wants to use custom values instead of the bank
+    defaults (the ``/api/parse-custom`` endpoint). ``None`` means use the
+    bank default (the normal ``/api/parse`` path).
     """
     from graph.nodes import NodeDeps
     from harness.extraction_adapter import LunaExtractionAdapter
 
-    extraction = LunaExtractionAdapter()
+    extraction = LunaExtractionAdapter(
+        prompt_override=prompt_override,
+        schema_override=schema_override,
+    )
 
     result_store, feedback_store = _get_stores()
     trace_sink = _ProgressTraceSink(_get_trace_sink(), ctx, state)
@@ -528,7 +538,9 @@ def _build_deps(ctx: RequestContext, state: Any = None) -> Any:
     )
 
 
-def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) -> None:
+def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str,
+               prompt_override: str | None = None,
+               schema_override: dict | None = None) -> None:
     """Background-thread entry point: run the LangGraph parse pipeline.
 
     Pushes SSE events into ``ctx.events`` as each node completes (via the
@@ -540,6 +552,11 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
     After the graph returns, this function stores the extraction snapshot on
     ``ctx`` for the ``GET /api/results`` fallback and pushes the terminal
     ``complete`` (or ``error``) event.
+
+    ``prompt_override`` / ``schema_override`` let the ``/api/parse-custom``
+    endpoint run extraction with custom values instead of the bank defaults.
+    When ``prompt_override`` is set, ``state.prompt`` is pre-set so
+    ``route_node`` skips re-resolution and the trace carries the actual prompt.
     """
     try:
         from contracts.models import Bank as _Bank, ParseRequest as _PR
@@ -552,6 +569,10 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
             request_id=ctx.request_id,
         )
         state = GraphState(request=request)
+        # Pre-set the prompt so route_node does not overwrite it with the
+        # bank default when a custom prompt is provided.
+        if prompt_override is not None:
+            state.prompt = prompt_override
 
         ctx.push("start", {
             "request_id": ctx.request_id,
@@ -560,7 +581,9 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str) 
             "stages": list(PIPELINE_STAGES),
         })
 
-        deps = _build_deps(ctx, state)
+        deps = _build_deps(ctx, state,
+                           prompt_override=prompt_override,
+                           schema_override=schema_override)
 
         from graph.graph import run_graph
         final_state = run_graph(deps, state)
@@ -1148,6 +1171,113 @@ def create_app():
         return _single_judge_status.get(
             request_id, {"status": "idle", "request_id": request_id},
         )
+
+    # -- GET /api/prompt/{bank} ------------------------------------------
+    @app.get("/api/prompt/{bank}")
+    async def get_prompt_schema(bank: str):
+        """Return the prompt text and schema JSON for a bank.
+
+        Loads from DBFS override if it exists, else from the bundled file
+        (PROMPT_BY_BANK / SCHEMA_BY_BANK).
+        """
+        try:
+            bank_enum = Bank(bank)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
+        from graph.routing import resolve_prompt
+        from rules.routing import load_schema_for_bank
+        prompt = resolve_prompt(bank_enum)
+        schema = load_schema_for_bank(bank_enum)
+        return {"prompt": prompt, "schema": schema}
+
+    # -- POST /api/prompt/{bank} ----------------------------------------
+    @app.post("/api/prompt/{bank}")
+    async def save_prompt_schema(bank: str, body: dict = Body(...)):
+        """Save the prompt text and schema JSON to DBFS for a bank.
+
+        Both ``prompt`` and ``schema`` must be present in the body. The
+        prompt is written to ``/savesage/prompts/<bank>.txt`` and the schema
+        to ``/savesage/schemas/<bank>.json``.
+        """
+        try:
+            bank_enum = Bank(bank)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
+        prompt = body.get("prompt")
+        schema = body.get("schema")
+        if prompt is None or schema is None:
+            raise HTTPException(
+                status_code=400,
+                detail="both 'prompt' and 'schema' are required",
+            )
+        from harness.dbfs import write_dbfs_text, prompt_dbfs_path, schema_dbfs_path
+        prompt_ok = write_dbfs_text(prompt_dbfs_path(bank_enum.value), str(prompt))
+        schema_ok = write_dbfs_text(
+            schema_dbfs_path(bank_enum.value),
+            json.dumps(schema, indent=2, ensure_ascii=False),
+        )
+        if not prompt_ok or not schema_ok:
+            raise HTTPException(
+                status_code=502,
+                detail="DBFS save failed (SDK unavailable or write error)",
+            )
+        return {"status": "ok", "bank": bank_enum.value}
+
+    # -- POST /api/parse-custom -----------------------------------------
+    @app.post("/api/parse-custom")
+    async def parse_custom(
+        file: UploadFile = File(...),
+        bank: str = Form(...),
+        prompt_override: str = Form(None),
+        schema_override: str = Form(None),
+    ):
+        """Run extraction with a custom prompt/schema instead of bank defaults.
+
+        Accepts the same multipart form as ``/api/parse`` plus optional
+        ``prompt_override`` (text) and ``schema_override`` (JSON string).
+        If an override is absent, the bank default is used. Returns the
+        same ``{"request_id": ...}`` shape; the frontend consumes SSE
+        from the same ``/api/parse/{request_id}/stream`` endpoint.
+        """
+        try:
+            Bank(bank)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
+
+        pdf_bytes = await file.read()
+        if not pdf_bytes:
+            raise HTTPException(status_code=400, detail="empty file")
+
+        custom_schema: dict | None = None
+        if schema_override:
+            try:
+                custom_schema = json.loads(schema_override)
+            except json.JSONDecodeError:
+                raise HTTPException(
+                    status_code=400,
+                    detail="schema_override is not valid JSON",
+                )
+
+        custom_prompt: str | None = prompt_override if prompt_override else None
+
+        request_id = _new_request_id()
+        ctx = RequestContext(request_id)
+        ctx.pdf_bytes = pdf_bytes
+        ctx.pdf_filename = file.filename or "statement.pdf"
+        _REQUESTS[request_id] = ctx
+        while len(_REQUESTS) > _MAX_REQUESTS:
+            oldest = next(iter(_REQUESTS))
+            _REQUESTS.pop(oldest, None)
+
+        thread = threading.Thread(
+            target=_run_parse,
+            args=(ctx, pdf_bytes, file.filename or "statement.pdf", bank,
+                  custom_prompt, custom_schema),
+            daemon=True,
+        )
+        thread.start()
+
+        return {"request_id": request_id}
 
     # -- Static files (catch-all, mounted AFTER API routes) --------------
     if static_dir.exists():

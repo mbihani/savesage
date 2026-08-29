@@ -311,7 +311,7 @@ class FrontendVerdictInlineTest(unittest.TestCase):
 
     def test_resultsview_accepts_verdict_prop(self):
         self.assertIn(
-            "function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh })",
+            "function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh, bank, savedFile, onRerun })",
             self.html,
         )
 
@@ -336,13 +336,13 @@ class FrontendVerdictInlineTest(unittest.TestCase):
 
     def test_fieldrow_accepts_verdict_prop(self):
         self.assertIn(
-            "function FieldRow({ requestId, fieldPath, label, value, verdict })",
+            "function FieldRow({ requestId, fieldPath, label, value, verdict, judged })",
             self.html,
         )
 
     def test_txncell_accepts_verdict_prop(self):
         self.assertIn(
-            "function TxnCell({ requestId, fieldPath, value, verdict })",
+            "function TxnCell({ requestId, fieldPath, value, verdict, judged })",
             self.html,
         )
 
@@ -352,8 +352,9 @@ class FrontendVerdictInlineTest(unittest.TestCase):
         self.assertIn('"verdict verdict-" + verdict.outcome', self.html)
 
     def test_verdict_passed_to_card_fields(self):
+        # Card fields now use the FR helper which passes verdict=${verdictByPath[fp]}.
         self.assertIn(
-            "verdict=${verdictByPath[`cards.${i}.cardMeta.cardDisplayName`]}",
+            "verdict=${verdictByPath[fp]}",
             self.html,
         )
 

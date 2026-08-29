@@ -15,6 +15,7 @@ class Bank(str, Enum):
     ICICI = "ICICI"
     SBI = "SBI"
     AXIS = "AXIS"
+    GENERIC = "GENERIC"
 
 
 class ComparisonOutcome(str, Enum):

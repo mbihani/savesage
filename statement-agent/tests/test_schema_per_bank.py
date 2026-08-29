@@ -77,7 +77,7 @@ def _gt():
 
 
 def _bank_schema(bank):
-    return json.loads((SCHEMA_DIR / f"{bank.value.lower()}.json").read_text(encoding="utf-8"))
+    return json.loads(SCHEMA_BY_BANK[bank].read_text(encoding="utf-8"))
 
 
 # --------------------------------------------------------------------------- #

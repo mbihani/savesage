@@ -152,9 +152,16 @@ def _extract_telemetry(state: GraphState) -> dict[str, Any]:
 
 
 def route_node(state: GraphState, deps: NodeDeps) -> GraphState:
-    """Resolve the bank to its prompt. Never raises; a routing failure is terminal."""
+    """Resolve the bank to its prompt. Never raises; a routing failure is terminal.
+
+    When ``state.prompt`` is already set (e.g. a custom prompt override passed
+    by the ``/api/parse-custom`` endpoint), the resolution is skipped — the
+    pre-set prompt is used directly and version-tagged. This lets the custom
+    parse path trace the ACTUAL prompt sent, not the bank default.
+    """
     try:
-        state.prompt = resolve_prompt(state.request.bank)
+        if state.prompt is None:
+            state.prompt = resolve_prompt(state.request.bank)
         # Stable version id for the resolved prompt; stored on state so the
         # extract span and the MLflow run can be tagged without recomputing.
         # Pass the ALREADY-RESOLVED ``state.prompt`` (not the bank) so the

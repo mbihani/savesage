@@ -276,6 +276,73 @@
         margin-top: 0.5rem;
       }
 
+      /* Judged-field badge */
+      .judged-badge {
+        display: inline-block;
+        padding: 0.0625rem 0.3125rem;
+        border-radius: 3px;
+        font-size: 0.625rem;
+        font-weight: 700;
+        background: var(--accent-soft);
+        color: var(--accent);
+        margin-left: 0.375rem;
+        vertical-align: middle;
+        cursor: help;
+      }
+
+      /* Prompt & Schema editor panel */
+      .ps-panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-top: 1rem;
+        overflow: hidden;
+      }
+      .ps-panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        user-select: none;
+        font-weight: 700;
+        font-size: 0.9375rem;
+      }
+      .ps-panel-head:hover { background: var(--accent-soft); }
+      .ps-panel-body { padding: 0 1rem 1rem; }
+      .ps-panel-body label {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        margin-bottom: 0.375rem;
+        margin-top: 0.75rem;
+      }
+      .ps-panel-body textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 0.625rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 0.8125rem;
+        resize: vertical;
+        line-height: 1.5;
+      }
+      .ps-panel-body textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+      }
+      .ps-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+      .ps-status {
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+      }
+      .ps-status.ok { color: var(--agree); }
+      .ps-status.error { color: var(--disagree); }
+
       /* Error/alert */
       .alert {
         padding: 0.75rem 1rem;
@@ -391,12 +458,95 @@
         return resp.json();
       }
 
+      async function getPromptSchema(bank) {
+        const resp = await fetch(`/api/prompt/${bank}`);
+        if (!resp.ok) {
+          const e = await resp.json().catch(() => ({}));
+          throw new Error(e.detail || `HTTP ${resp.status}`);
+        }
+        return resp.json();
+      }
+
+      async function savePromptSchema(bank, prompt, schema) {
+        const resp = await fetch(`/api/prompt/${bank}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt, schema }),
+        });
+        if (!resp.ok) {
+          const e = await resp.json().catch(() => ({}));
+          throw new Error(e.detail || `HTTP ${resp.status}`);
+        }
+        return resp.json();
+      }
+
+      async function startParseCustom(file, bank, promptOverride, schemaOverride) {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("bank", bank);
+        if (promptOverride) fd.append("prompt_override", promptOverride);
+        if (schemaOverride) fd.append("schema_override", schemaOverride);
+        const resp = await fetch("/api/parse-custom", { method: "POST", body: fd });
+        if (!resp.ok) {
+          const e = await resp.json().catch(() => ({}));
+          throw new Error(e.detail || `HTTP ${resp.status}`);
+        }
+        return resp.json();
+      }
+
       /* ===================================================================
        * Constants
        * =================================================================== */
 
-      const BANKS = ["HDFC", "ICICI", "SBI", "AXIS"];
+      const BANKS = [
+        { value: "HDFC", label: "HDFC" },
+        { value: "ICICI", label: "ICICI" },
+        { value: "SBI", label: "SBI" },
+        { value: "AXIS", label: "AXIS" },
+        { value: "GENERIC", label: "Other (Generic)" },
+      ];
       const STAGES = ["route", "extract", "validate", "persist", "finalize"];
+
+      /* Template paths for the 28 judged fields (mirrors contracts/models.py
+       * JUDGED_FIELDS). Used to show a "J" badge next to each judged field. */
+      const JUDGED_FIELDS = new Set([
+        "cards[].cardMeta.cardDisplayName",
+        "cards[].cardMeta.lastFourDigit",
+        "cards[].cardMeta.productFamily",
+        "cards[].cardMeta.network",
+        "cards[].bigPicture.cardCreditLimit",
+        "cards[].bigPicture.cardAvailableCreditLimit",
+        "statementMeta.issuerName",
+        "statementMeta.statementDate",
+        "statementMeta.dueDate",
+        "statementMeta.statementPeriodStart",
+        "statementMeta.statementPeriodEnd",
+        "statementLevelSummary.totalAmountDue",
+        "statementLevelSummary.totalMinimumAmountDue",
+        "statementLevelSummary.totalCreditLimit",
+        "statementLevelSummary.availableCreditLimit",
+        "rewards.pointsEarnedThisCycle",
+        "rewards.closingPoints",
+        "rewards.programType",
+        "rewards.openingPoints",
+        "rewards.pointsRedeemedThisCycle",
+        "rewards.pointsExpiringNext30Days",
+        "rewards.pointsExpiringNext60Days",
+        "rewards.bonusPointsThisCycle",
+        "transactions[].date",
+        "transactions[].description",
+        "transactions[].amount",
+        "transactions[].direction",
+        "transactions[].rewardPointsOnThisTransaction",
+      ]);
+
+      function isJudged(templatePath) {
+        return JUDGED_FIELDS.has(templatePath);
+      }
+
+      function judgedBadge() {
+        return h`<span class="judged-badge" title="Judge evaluates this field">J</span>`;
+      }
 
       function fmtVal(v) {
         if (v === null || v === undefined) return "—";
@@ -434,7 +584,7 @@
           setError(null);
           try {
             const { request_id } = await startParse(file, bank);
-            onStart(request_id);
+            onStart(request_id, file, bank);
           } catch (e) {
             setError(e.message);
             setLoading(false);
@@ -451,7 +601,7 @@
               <div class="field">
                 <label>Bank</label>
                 <select value=${bank} onChange=${(e) => setBank(e.target.value)}>
-                  ${BANKS.map((b) => h`<option key=${b} value=${b}>${b}</option>`)}
+                  ${BANKS.map((b) => h`<option key=${b.value} value=${b.value}>${b.label}</option>`)}
                 </select>
               </div>
               <div class="field">
@@ -693,14 +843,15 @@
         };
       }
 
-      /* Full-card feedback row — used for card fields and reward scalars. */
-      function FieldRow({ requestId, fieldPath, label, value, verdict }) {
+      /* Full-card feedback row — used for card fields, reward scalars, and
+       * statementMeta/statementLevelSummary fields. */
+      function FieldRow({ requestId, fieldPath, label, value, verdict, judged }) {
         const fb = useFeedback(requestId, fieldPath, value);
 
         return h`
           <div class="field-row">
             <div class="field-row-head">
-              <span class="field-label">${label}</span>
+              <span class="field-label">${label}${judged ? judgedBadge() : ""}</span>
             </div>
             <div class="field-val-box">
               <div class="field-val-label">Extracted Value</div>
@@ -749,11 +900,12 @@
       }
 
       /* Compact inline feedback cell — used inside the transactions table. */
-      function TxnCell({ requestId, fieldPath, value, verdict }) {
+      function TxnCell({ requestId, fieldPath, value, verdict, judged }) {
         const fb = useFeedback(requestId, fieldPath, value);
 
         return h`
           <div style=${{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "100px" }}>
+            ${judged ? judgedBadge() : ""}
             ${fb.submitted
               ? h`<span class="feedback-note" style=${{ fontSize: "0.75rem" }}>
                   ${fb.submitted === "accept" ? "✓ Accepted" : "✓ Corrected"}
@@ -858,7 +1010,105 @@
         return { judging, error, start };
       }
 
-      function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh }) {
+      /* Prompt & Schema editor panel — collapsible, below extraction results. */
+      function PromptSchemaPanel({ bank, savedFile, onRerun }) {
+        const [expanded, setExpanded] = useState(false);
+        const [promptText, setPromptText] = useState("");
+        const [schemaText, setSchemaText] = useState("");
+        const [loading, setLoading] = useState(false);
+        const [saving, setSaving] = useState(false);
+        const [rerunning, setRerunning] = useState(false);
+        const [status, setStatus] = useState(null);
+        const loadedRef = useRef(false);
+
+        const handleExpand = async () => {
+          const next = !expanded;
+          setExpanded(next);
+          if (next && !loadedRef.current) {
+            setLoading(true);
+            try {
+              const data = await getPromptSchema(bank);
+              setPromptText(data.prompt || "");
+              setSchemaText(JSON.stringify(data.schema, null, 2));
+              loadedRef.current = true;
+            } catch (e) {
+              setStatus({ type: "error", msg: e.message });
+            }
+            setLoading(false);
+          }
+        };
+
+        const handleSave = async () => {
+          setSaving(true);
+          setStatus(null);
+          try {
+            const schema = JSON.parse(schemaText);
+            await savePromptSchema(bank, promptText, schema);
+            setStatus({ type: "ok", msg: "Saved to DBFS ✓" });
+          } catch (e) {
+            setStatus({ type: "error", msg: e.message });
+          }
+          setSaving(false);
+        };
+
+        const handleRerun = async () => {
+          setRerunning(true);
+          setStatus(null);
+          try {
+            const schema = JSON.parse(schemaText);
+            const { request_id } = await startParseCustom(savedFile, bank, promptText, JSON.stringify(schema));
+            onRerun(request_id);
+          } catch (e) {
+            setStatus({ type: "error", msg: e.message });
+            setRerunning(false);
+          }
+        };
+
+        return h`
+          <div class="ps-panel">
+            <div class="ps-panel-head" onClick=${handleExpand}>
+              <span>📝 Prompt & Schema</span>
+              <span style=${{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                ${expanded ? "▾ click to collapse" : "▸ click to expand"}
+              </span>
+            </div>
+            ${expanded && h`
+              <div class="ps-panel-body">
+                ${loading ? h`<p style=${{ color: "var(--text-muted)", fontSize: "0.875rem" }}>Loading…</p>` : h`
+                  <div>
+                    <label>Prompt (editable text)</label>
+                    <textarea
+                      value=${promptText}
+                      onChange=${(e) => setPromptText(e.target.value)}
+                      spellCheck=${false}
+                    />
+                  </div>
+                  <div>
+                    <label>Schema JSON (editable)</label>
+                    <textarea
+                      value=${schemaText}
+                      onChange=${(e) => setSchemaText(e.target.value)}
+                      spellCheck=${false}
+                      style=${{ minHeight: "200px" }}
+                    />
+                  </div>
+                  <div class="ps-actions">
+                    <button class="btn btn-sm btn-primary" onClick=${handleSave} disabled=${saving}>
+                      ${saving ? "Saving…" : "💾 Save to DBFS"}
+                    </button>
+                    <button class="btn btn-sm btn-primary" onClick=${handleRerun} disabled=${rerunning || !savedFile}>
+                      ${rerunning ? "Starting…" : "🔄 Re-run with custom prompt/schema"}
+                    </button>
+                  </div>
+                  ${status && h`<div class=${"ps-status " + status.type}>${status.msg}</div>`}
+                `}
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh, bank, savedFile, onRerun }) {
         const outcome = complete?.outcome || "UNKNOWN";
         const bannerClass =
           outcome === "SUCCESS" ? "SUCCESS" :
@@ -874,25 +1124,14 @@
         const cards = (payload?.cards || []);
         const rewards = payload?.rewards;
         const transactions = (payload?.transactions || []);
+        const statementMeta = payload?.statementMeta;
+        const statementLevelSummary = payload?.statementLevelSummary;
 
         // On-demand single-trace judge — renders inline verdicts immediately.
         const judge = useSingleJudge(requestId, onVerdictRefresh);
 
         // Build a per-field verdict lookup from the post-hoc judge's
         // comparisons so each rendered field can show its judge badge inline.
-        // The API returns comparisons via _comparison_to_dict, which emits a
-        // canonical ``feedback_path`` (e.g. ``cards.0.cardMeta.cardDisplayName``,
-        // ``transactions.3.amount``) keyed by actual_row_index for matched
-        // rows. We key the lookup by that exact path.
-        //
-        // UNMATCHED_ROW comes in two flavours (both outcome=UNMATCHED_ROW):
-        //  (1) actual_row_index=null  — Opus saw a PDF row Luna did NOT extract
-        //      (no rendered row to attach to) → grouped into unmatchedPdfRows.
-        //  (2) actual_row_index set   — Luna extracted a row Opus did NOT see
-        //      in the PDF → maps to the rendered Luna row, shown inline.
-        // So only actual_row_index=null UNMATCHED_ROW comparisons are split out
-        // into the "seen in PDF, not extracted" section; the rest key into
-        // verdictByPath by their feedback_path.
         const comparisons = verdict?.comparisons || [];
         const verdictByPath = {};
         const unmatchedPdfComparisons = [];
@@ -903,8 +1142,7 @@
             verdictByPath[c.feedback_path] = c;
           }
         }
-        // Group the "seen in PDF, not extracted" comparisons (3 per row:
-        // date/description/amount) by expected_row_index into one row each.
+        // Group the "seen in PDF, not extracted" comparisons by expected_row_index.
         const unmatchedPdfRows = [];
         const unmatchedByRow = {};
         for (const c of unmatchedPdfComparisons) {
@@ -924,6 +1162,16 @@
           fontSize: "0.75rem", textTransform: "uppercase", color: "var(--text-muted)",
         };
         const tdStyle = { padding: "0.5rem 0.625rem" };
+
+        // Helper to render a FieldRow with the standard props + judged badge.
+        const FR = (fp, label, val, tmpl) => h`<${FieldRow}
+          requestId=${requestId}
+          fieldPath=${fp}
+          label=${label}
+          value=${val}
+          verdict=${verdictByPath[fp]}
+          judged=${isJudged(tmpl)}
+        />`;
 
         return h`
           <div class="results-layout">
@@ -968,25 +1216,40 @@
               </div>
             `}
 
+            ${statementMeta && h`
+              <div class="section-title">Statement Metadata</div>
+              <div class="card">
+                ${FR("statementMeta.issuerName", "Issuer Name", statementMeta.issuerName, "statementMeta.issuerName")}
+                ${FR("statementMeta.statementDate", "Statement Date", statementMeta.statementDate, "statementMeta.statementDate")}
+                ${FR("statementMeta.dueDate", "Due Date", statementMeta.dueDate, "statementMeta.dueDate")}
+                ${FR("statementMeta.statementPeriodStart", "Statement Period Start", statementMeta.statementPeriodStart, "statementMeta.statementPeriodStart")}
+                ${FR("statementMeta.statementPeriodEnd", "Statement Period End", statementMeta.statementPeriodEnd, "statementMeta.statementPeriodEnd")}
+                ${FR("statementMeta.rawStatementId", "Raw Statement ID", statementMeta.rawStatementId, "statementMeta.rawStatementId")}
+              </div>
+            `}
+
+            ${statementLevelSummary && h`
+              <div class="section-title">Statement Level Summary</div>
+              <div class="card">
+                ${FR("statementLevelSummary.totalAmountDue", "Total Amount Due", statementLevelSummary.totalAmountDue, "statementLevelSummary.totalAmountDue")}
+                ${FR("statementLevelSummary.totalMinimumAmountDue", "Total Minimum Amount Due", statementLevelSummary.totalMinimumAmountDue, "statementLevelSummary.totalMinimumAmountDue")}
+                ${FR("statementLevelSummary.totalCreditLimit", "Total Credit Limit", statementLevelSummary.totalCreditLimit, "statementLevelSummary.totalCreditLimit")}
+                ${FR("statementLevelSummary.availableCreditLimit", "Available Credit Limit", statementLevelSummary.availableCreditLimit, "statementLevelSummary.availableCreditLimit")}
+              </div>
+            `}
+
             ${cards.some(Boolean) && h`
               <div class="section-title">Cards (${cards.filter(Boolean).length})</div>
               ${cards.map((card, i) => card && h`
                 <div class="card" key=${"card-" + i}>
                   <div class="section-title" style=${{ marginTop: 0, fontSize: "1rem" }}>Card ${i + 1}</div>
-                  <${FieldRow}
-                    requestId=${requestId}
-                    fieldPath=${`cards.${i}.cardMeta.cardDisplayName`}
-                    label="Card Name"
-                    value=${card?.cardMeta?.cardDisplayName}
-                    verdict=${verdictByPath[`cards.${i}.cardMeta.cardDisplayName`]}
-                  />
-                  <${FieldRow}
-                    requestId=${requestId}
-                    fieldPath=${`cards.${i}.cardMeta.lastFourDigit`}
-                    label="Last 4 Digits"
-                    value=${card?.cardMeta?.lastFourDigit}
-                    verdict=${verdictByPath[`cards.${i}.cardMeta.lastFourDigit`]}
-                  />
+                  ${FR(`cards.${i}.cardMeta.cardDisplayName`, "Card Name", card?.cardMeta?.cardDisplayName, "cards[].cardMeta.cardDisplayName")}
+                  ${FR(`cards.${i}.cardMeta.productFamily`, "Product Family", card?.cardMeta?.productFamily, "cards[].cardMeta.productFamily")}
+                  ${FR(`cards.${i}.cardMeta.lastFourDigit`, "Last 4 Digits", card?.cardMeta?.lastFourDigit, "cards[].cardMeta.lastFourDigit")}
+                  ${FR(`cards.${i}.cardMeta.network`, "Network", card?.cardMeta?.network, "cards[].cardMeta.network")}
+                  ${FR(`cards.${i}.cardMeta.isPrimaryCard`, "Is Primary Card", card?.cardMeta?.isPrimaryCard, "cards[].cardMeta.isPrimaryCard")}
+                  ${FR(`cards.${i}.bigPicture.cardCreditLimit`, "Card Credit Limit", card?.bigPicture?.cardCreditLimit, "cards[].bigPicture.cardCreditLimit")}
+                  ${FR(`cards.${i}.bigPicture.cardAvailableCreditLimit`, "Card Available Credit Limit", card?.bigPicture?.cardAvailableCreditLimit, "cards[].bigPicture.cardAvailableCreditLimit")}
                 </div>
               `)}
             `}
@@ -994,20 +1257,14 @@
             ${rewards && h`
               <div class="section-title">Rewards</div>
               <div class="card">
-                <${FieldRow}
-                  requestId=${requestId}
-                  fieldPath="rewards.pointsEarnedThisCycle"
-                  label="Points Earned This Cycle"
-                  value=${rewards.pointsEarnedThisCycle}
-                  verdict=${verdictByPath["rewards.pointsEarnedThisCycle"]}
-                />
-                <${FieldRow}
-                  requestId=${requestId}
-                  fieldPath="rewards.closingPoints"
-                  label="Closing Points"
-                  value=${rewards.closingPoints}
-                  verdict=${verdictByPath["rewards.closingPoints"]}
-                />
+                ${FR("rewards.programType", "Program Type", rewards.programType, "rewards.programType")}
+                ${FR("rewards.openingPoints", "Opening Points", rewards.openingPoints, "rewards.openingPoints")}
+                ${FR("rewards.pointsEarnedThisCycle", "Points Earned This Cycle", rewards.pointsEarnedThisCycle, "rewards.pointsEarnedThisCycle")}
+                ${FR("rewards.pointsRedeemedThisCycle", "Points Redeemed This Cycle", rewards.pointsRedeemedThisCycle, "rewards.pointsRedeemedThisCycle")}
+                ${FR("rewards.closingPoints", "Closing Points", rewards.closingPoints, "rewards.closingPoints")}
+                ${FR("rewards.pointsExpiringNext30Days", "Points Expiring Next 30 Days", rewards.pointsExpiringNext30Days, "rewards.pointsExpiringNext30Days")}
+                ${FR("rewards.pointsExpiringNext60Days", "Points Expiring Next 60 Days", rewards.pointsExpiringNext60Days, "rewards.pointsExpiringNext60Days")}
+                ${FR("rewards.bonusPointsThisCycle", "Bonus Points This Cycle", rewards.bonusPointsThisCycle, "rewards.bonusPointsThisCycle")}
               </div>
             `}
 
@@ -1022,6 +1279,8 @@
                         <th style=${thStyle}>Date</th>
                         <th style=${thStyle}>Description</th>
                         <th style=${thStyle}>Amount</th>
+                        <th style=${thStyle}>Direction</th>
+                        <th style=${thStyle}>Reward Pts</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1029,13 +1288,19 @@
                         <tr key=${"txn-" + i} style=${{ borderBottom: "1px solid var(--border)" }}>
                           <td style=${{ ...tdStyle, color: "var(--text-muted)", whiteSpace: "nowrap" }}>${i + 1}</td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.date`} value=${txn?.date} verdict=${verdictByPath[`transactions.${i}.date`]} />
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.date`} value=${txn?.date} verdict=${verdictByPath[`transactions.${i}.date`]} judged=${isJudged("transactions[].date")} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.description`} value=${txn?.description} verdict=${verdictByPath[`transactions.${i}.description`]} />
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.description`} value=${txn?.description} verdict=${verdictByPath[`transactions.${i}.description`]} judged=${isJudged("transactions[].description")} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.amount`} value=${txn?.amount} verdict=${verdictByPath[`transactions.${i}.amount`]} />
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.amount`} value=${txn?.amount} verdict=${verdictByPath[`transactions.${i}.amount`]} judged=${isJudged("transactions[].amount")} />
+                          </td>
+                          <td style=${tdStyle}>
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.direction`} value=${txn?.direction} verdict=${verdictByPath[`transactions.${i}.direction`]} judged=${isJudged("transactions[].direction")} />
+                          </td>
+                          <td style=${tdStyle}>
+                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.rewardPointsOnThisTransaction`} value=${txn?.rewardPointsOnThisTransaction} verdict=${verdictByPath[`transactions.${i}.rewardPointsOnThisTransaction`]} judged=${isJudged("transactions[].rewardPointsOnThisTransaction")} />
                           </td>
                         </tr>
                       `)}
@@ -1076,6 +1341,10 @@
                   </table>
                 </div>
               </div>
+            `}
+
+            ${extraction && bank && h`
+              <${PromptSchemaPanel} bank=${bank} savedFile=${savedFile} onRerun=${onRerun} />
             `}
 
             <div style=${{ marginTop: "1.5rem", display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
@@ -1304,9 +1573,21 @@
         const [view, setView] = useState("upload");
         const [requestId, setRequestId] = useState(null);
         const [results, setResults] = useState(null);
+        const [savedFile, setSavedFile] = useState(null);
+        const [bank, setBank] = useState(null);
 
-        const handleStart = (reqId) => {
+        const handleStart = (reqId, file, bankVal) => {
           setRequestId(reqId);
+          setSavedFile(file || null);
+          setBank(bankVal || null);
+          setView("processing");
+        };
+
+        // Called by PromptSchemaPanel's Re-run button — starts a new parse
+        // with a custom prompt/schema and switches to processing view.
+        const handleRerun = (reqId) => {
+          setRequestId(reqId);
+          setResults(null);
           setView("processing");
         };
 
@@ -1398,6 +1679,9 @@
               verdict=${results?.verdict}
               complete=${results?.complete}
               onVerdictRefresh=${handleVerdictRefresh}
+              bank=${bank}
+              savedFile=${savedFile}
+              onRerun=${handleRerun}
             />`}
             ${view === "judge" && h`<${JudgeEvaluationView} />`}
           </div>
