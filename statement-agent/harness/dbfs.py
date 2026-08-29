@@ -125,7 +125,7 @@ def mkdirs_dbfs(dbfs_path: str) -> bool:
     created, and ``False`` only on a genuine failure (SDK missing,
     permission denied, network error). Idempotency is layered: a
     ``get_metadata`` probe returns ``True`` immediately for an existing
-    path, and ``create_directory`` tolerates the "already exists" error
+    directory, and ``create_directory`` tolerates the "already exists" error
     some Databricks backends raise for an existing directory even though
     the API is documented as ``mkdir -p``. Needed because
     :func:`write_dbfs_text` does not create intermediate directories, so a
@@ -150,12 +150,17 @@ def mkdirs_dbfs(dbfs_path: str) -> bool:
         )
         return False
 
-    # Fast path: if the path already exists there is nothing to create. A
-    # successful ``get_metadata`` proves the path resolves (whether it is a
-    # directory or a file); for the mkdirs use case that is sufficient.
+    # Fast path: if the directory already exists there is nothing to create.
+    # An existing file at this path must not be treated as a directory.
     try:
-        client.files.get_metadata(dbfs_path)
-        return True
+        metadata = client.files.get_metadata(dbfs_path)
+        if getattr(metadata, "resource_type", None) == "DIRECTORY":
+            return True
+        _LOGGER.error(
+            "Workspace Files mkdir failed for %s: existing path is not a directory",
+            dbfs_path,
+        )
+        return False
     except Exception as exc:  # noqa: BLE001 — existence probe, never raises
         # ``NotFound`` — or a backend that answers HEAD for files only — means
         # the path does not exist yet, so fall through to create it. Any other
@@ -185,8 +190,6 @@ def mkdirs_dbfs(dbfs_path: str) -> bool:
             already_exists = isinstance(exc, (AlreadyExists, ResourceAlreadyExists))
         except ImportError:
             pass
-        if not already_exists and "already exist" in str(exc).lower():
-            already_exists = True
         if already_exists:
             return True
         _LOGGER.error(
