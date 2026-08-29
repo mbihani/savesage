@@ -224,7 +224,9 @@ class PromptSchemaEndpointTest(unittest.TestCase):
 
     def test_post_prompt_schema_saves_to_dbfs(self) -> None:
         """POST /api/prompt/{bank} writes prompt+schema to DBFS."""
-        with patch("harness.dbfs.write_dbfs_text", return_value=True) as mock_write:
+        with patch("harness.dbfs.write_dbfs_text", return_value=True) as mock_write, \
+             patch("harness.dbfs.read_dbfs_registry", return_value=[]), \
+             patch("harness.dbfs.write_dbfs_registry", return_value=True) as registry_write:
             resp = self.client.post(
                 "/api/prompt/HDFC",
                 json={"prompt": "test prompt", "schema": {"type": "object"}},
@@ -243,10 +245,11 @@ class PromptSchemaEndpointTest(unittest.TestCase):
     def test_post_prompt_unknown_bank_saves_to_own_path(self) -> None:
         """Unknown bank names save to their own (upper-cased) DBFS path under
         the dynamic-bank layout, not a 400 and not the GENERIC path. The bank
-        is not registered here (registration is POST /api/banks' job), but the
-        override resolves because the routing layer checks the new path first.
+        is registered so it is discoverable through GET /api/banks.
         """
-        with patch("harness.dbfs.write_dbfs_text", return_value=True) as mock_write:
+        with patch("harness.dbfs.write_dbfs_text", return_value=True) as mock_write, \
+             patch("harness.dbfs.read_dbfs_registry", return_value=[]), \
+             patch("harness.dbfs.write_dbfs_registry", return_value=True) as registry_write:
             resp = self.client.post(
                 "/api/prompt/unknown",
                 json={"prompt": "p", "schema": {"type": "object"}},
@@ -255,8 +258,9 @@ class PromptSchemaEndpointTest(unittest.TestCase):
         data = resp.json()
         self.assertEqual(data["status"], "ok")
         self.assertEqual(data["bank"], "UNKNOWN")
-        # write_dbfs_text called twice: prompt + schema (no registry write here)
+        # write_dbfs_text called twice: prompt + schema; registry is updated.
         self.assertEqual(mock_write.call_count, 2)
+        registry_write.assert_called_once_with(["UNKNOWN"])
 
     def test_post_prompt_dbfs_failure_502(self) -> None:
         with patch("harness.dbfs.write_dbfs_text", return_value=False):

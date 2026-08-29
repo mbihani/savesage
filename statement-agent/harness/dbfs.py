@@ -23,6 +23,7 @@ import base64
 import io
 import json
 import logging
+import re
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,6 +34,22 @@ SCHEMA_DBFS_DIR = "/savesage/schemas"
 # DBFS root for dynamically added banks (one subdirectory per bank, plus a
 # top-level registry.json listing every dynamic bank name).
 BANKS_DBFS_DIR = "/savesage-statement-agent/banks"
+
+_BANK_NAME_RE = re.compile(r"^[A-Z0-9_-]+$")
+
+
+def validate_bank_name(name: str) -> str:
+    """Return a canonical, path-safe bank name or raise ``ValueError``."""
+    if not isinstance(name, str):
+        raise ValueError("bank name must be a string")
+    normalized = name.strip().upper()
+    if not normalized:
+        raise ValueError("bank name must not be empty")
+    if ".." in normalized or not _BANK_NAME_RE.fullmatch(normalized):
+        raise ValueError(
+            "bank name may contain only letters, numbers, underscores, and hyphens"
+        )
+    return normalized
 
 
 def read_dbfs_text(dbfs_path: str) -> str | None:
@@ -84,12 +101,12 @@ def write_dbfs_text(dbfs_path: str, content: str) -> bool:
 
 def prompt_dbfs_path(bank_value: str) -> str:
     """Return the DBFS path for a bank's prompt override."""
-    return f"{PROMPT_DBFS_DIR}/{bank_value}.txt"
+    return f"{PROMPT_DBFS_DIR}/{validate_bank_name(bank_value)}.txt"
 
 
 def schema_dbfs_path(bank_value: str) -> str:
     """Return the DBFS path for a built-in bank's schema override."""
-    return f"{SCHEMA_DBFS_DIR}/{bank_value}.json"
+    return f"{SCHEMA_DBFS_DIR}/{validate_bank_name(bank_value)}.json"
 
 
 # ---------------------------------------------------------------------------
@@ -97,14 +114,19 @@ def schema_dbfs_path(bank_value: str) -> str:
 # ---------------------------------------------------------------------------
 
 
+def bank_dbfs_dir(bank_value: str) -> str:
+    """Return the DBFS directory for a path-safe canonical bank name."""
+    return f"{BANKS_DBFS_DIR}/{validate_bank_name(bank_value)}"
+
+
 def bank_prompt_dbfs_path(bank_value: str) -> str:
     """Return the DBFS path for a (dynamic or overridden) bank's prompt."""
-    return f"{BANKS_DBFS_DIR}/{bank_value}/prompt.txt"
+    return f"{bank_dbfs_dir(bank_value)}/prompt.txt"
 
 
 def bank_schema_dbfs_path(bank_value: str) -> str:
     """Return the DBFS path for a (dynamic or overridden) bank's schema."""
-    return f"{BANKS_DBFS_DIR}/{bank_value}/schema.json"
+    return f"{bank_dbfs_dir(bank_value)}/schema.json"
 
 
 def registry_dbfs_path() -> str:
@@ -149,7 +171,15 @@ def read_dbfs_registry() -> list[str]:
         return []
     if not isinstance(data, list):
         return []
-    return [str(name) for name in data if isinstance(name, str)]
+    names = []
+    for name in data:
+        if not isinstance(name, str):
+            continue
+        try:
+            names.append(validate_bank_name(name))
+        except ValueError:
+            _LOGGER.warning("Ignoring unsafe bank name in DBFS registry: %r", name)
+    return names
 
 
 def write_dbfs_registry(names: list[str]) -> bool:

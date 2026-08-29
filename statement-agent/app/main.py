@@ -1199,16 +1199,22 @@ def create_app():
         built-in :class:`Bank` enum, the bank is also added to the DBFS
         registry so ``GET /api/banks`` lists it. The bank name is upper-cased.
         """
+        from contracts.models import Bank
         from harness.dbfs import (
+            bank_dbfs_dir,
             bank_prompt_dbfs_path,
             bank_schema_dbfs_path,
             mkdirs_dbfs,
+            read_dbfs_registry,
+            validate_bank_name,
+            write_dbfs_registry,
             write_dbfs_text,
         )
 
-        name = str(bank).strip().upper()
-        if not name:
-            raise HTTPException(status_code=400, detail="bank name must not be empty")
+        try:
+            name = validate_bank_name(bank)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
         prompt = body.get("prompt")
         schema = body.get("schema")
         if prompt is None or schema is None:
@@ -1217,7 +1223,7 @@ def create_app():
                 detail="both 'prompt' and 'schema' are required",
             )
         schema = _coerce_schema(schema)
-        mkdirs_dbfs(f"/savesage-statement-agent/banks/{name}")
+        mkdirs_dbfs(bank_dbfs_dir(name))
         prompt_ok = write_dbfs_text(bank_prompt_dbfs_path(name), str(prompt))
         schema_ok = write_dbfs_text(
             bank_schema_dbfs_path(name),
@@ -1228,6 +1234,17 @@ def create_app():
                 status_code=502,
                 detail="DBFS save failed (SDK unavailable or write error)",
             )
+        if name not in {item.value for item in Bank}:
+            registry = read_dbfs_registry()
+            if name not in registry:
+                # Best-effort demo registry: concurrent read-modify-write calls
+                # can race, which is acceptable for this single-user app.
+                registry.append(name)
+                if not write_dbfs_registry(registry):
+                    raise HTTPException(
+                        status_code=502,
+                        detail="bank files saved but registry update failed",
+                    )
         return {"status": "ok", "bank": name}
 
     # -- GET /api/banks -------------------------------------------------
@@ -1266,16 +1283,18 @@ def create_app():
         from harness.dbfs import (
             bank_prompt_dbfs_path,
             bank_schema_dbfs_path,
+            bank_dbfs_dir,
             mkdirs_dbfs,
             read_dbfs_registry,
+            validate_bank_name,
             write_dbfs_registry,
             write_dbfs_text,
         )
 
-        raw_name = body.get("name")
-        if not isinstance(raw_name, str) or not raw_name.strip():
-            raise HTTPException(status_code=400, detail="'name' is required")
-        name = raw_name.strip().upper()
+        try:
+            name = validate_bank_name(body.get("name"))
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
         prompt = body.get("prompt")
         schema = body.get("schema")
         if prompt is None or schema is None:
@@ -1283,6 +1302,8 @@ def create_app():
                 status_code=400,
                 detail="both 'prompt' and 'schema' are required",
             )
+        if not isinstance(prompt, str) or not prompt.strip():
+            raise HTTPException(status_code=400, detail="'prompt' must not be empty")
         schema = _coerce_schema(schema)
         builtin_names = {b.value for b in Bank}
         if name in builtin_names:
@@ -1296,7 +1317,7 @@ def create_app():
                 status_code=409,
                 detail=f"bank {name!r} already exists as a dynamic bank",
             )
-        mkdirs_dbfs(f"/savesage-statement-agent/banks/{name}")
+        mkdirs_dbfs(bank_dbfs_dir(name))
         prompt_ok = write_dbfs_text(bank_prompt_dbfs_path(name), str(prompt))
         schema_ok = write_dbfs_text(
             bank_schema_dbfs_path(name),
@@ -1308,6 +1329,8 @@ def create_app():
                 detail="DBFS save failed (SDK unavailable or write error)",
             )
         registry.append(name)
+        # Best-effort demo registry: concurrent read-modify-write calls can
+        # race, which is acceptable for this single-user app.
         if not write_dbfs_registry(registry):
             raise HTTPException(
                 status_code=502,
@@ -1335,17 +1358,23 @@ def create_app():
         (a JSON string). The bank name is upper-cased; a non-built-in bank is
         added to the registry so it is discoverable by ``GET /api/banks``.
         """
+        from contracts.models import Bank
         from harness.dbfs import (
+            bank_dbfs_dir,
             bank_schema_dbfs_path,
             mkdirs_dbfs,
+            read_dbfs_registry,
+            validate_bank_name,
+            write_dbfs_registry,
             write_dbfs_text,
         )
 
-        name = str(bank).strip().upper()
-        if not name:
-            raise HTTPException(status_code=400, detail="bank name must not be empty")
+        try:
+            name = validate_bank_name(bank)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
         schema = _coerce_schema(body.get("schema"))
-        mkdirs_dbfs(f"/savesage-statement-agent/banks/{name}")
+        mkdirs_dbfs(bank_dbfs_dir(name))
         if not write_dbfs_text(
             bank_schema_dbfs_path(name),
             json.dumps(schema, indent=2, ensure_ascii=False),
@@ -1354,6 +1383,17 @@ def create_app():
                 status_code=502,
                 detail="DBFS save failed (SDK unavailable or write error)",
             )
+        if name not in {item.value for item in Bank}:
+            registry = read_dbfs_registry()
+            if name not in registry:
+                # Best-effort demo registry: concurrent read-modify-write calls
+                # can race, which is acceptable for this single-user app.
+                registry.append(name)
+                if not write_dbfs_registry(registry):
+                    raise HTTPException(
+                        status_code=502,
+                        detail="bank files saved but registry update failed",
+                    )
         return {"status": "ok", "bank": name}
 
     # -- POST /api/parse-custom -----------------------------------------

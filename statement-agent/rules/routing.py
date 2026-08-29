@@ -66,7 +66,7 @@ def load_schema_for_bank(bank: Bank | str) -> dict:
     Reads from disk each call (schemas are small, ~4-10KB) so a schema edit —
     whether on DBFS or the bundled file — is picked up without a process restart.
     """
-    bank_str = bank.value if isinstance(bank, Bank) else str(bank)
+    bank_str = bank.value if isinstance(bank, Bank) else str(bank).strip().upper()
 
     # 1. Dynamic-bank DBFS override (works for both dynamic and built-in names).
     dbfs_text = read_dbfs_text(bank_schema_dbfs_path(bank_str))
