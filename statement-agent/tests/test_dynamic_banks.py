@@ -387,6 +387,42 @@ class BankEndpointsTest(unittest.TestCase):
                 json={"name": "RBL", "prompt": "p", "schema": {"type": "object"}},
             )
         self.assertEqual(resp.status_code, 502)
+        self.assertEqual(
+            resp.json()["detail"],
+            "Failed to save bank configuration. Check app logs for details.",
+        )
+
+    def test_post_banks_directory_failure_502(self) -> None:
+        with patch("harness.dbfs.read_dbfs_registry", return_value=[]), \
+             patch("harness.dbfs.write_dbfs_text") as write, \
+             patch("harness.dbfs.mkdirs_dbfs", return_value=False):
+            resp = self.client.post(
+                "/api/banks",
+                json={"name": "RBL", "prompt": "p", "schema": {"type": "object"}},
+            )
+        self.assertEqual(resp.status_code, 502)
+        self.assertEqual(
+            resp.json()["detail"],
+            "Failed to create bank config directory. Contact an admin to ensure "
+            "/Workspace/savesage-bank-configs/banks/ exists and the app service "
+            "principal has CAN_MANAGE permission.",
+        )
+        write.assert_not_called()
+
+    def test_post_banks_registry_failure_502(self) -> None:
+        with patch("harness.dbfs.read_dbfs_registry", return_value=[]), \
+             patch("harness.dbfs.write_dbfs_text", return_value=True), \
+             patch("harness.dbfs.write_dbfs_registry", return_value=False), \
+             patch("harness.dbfs.mkdirs_dbfs", return_value=True):
+            resp = self.client.post(
+                "/api/banks",
+                json={"name": "RBL", "prompt": "p", "schema": {"type": "object"}},
+            )
+        self.assertEqual(resp.status_code, 502)
+        self.assertEqual(
+            resp.json()["detail"],
+            "Bank files saved but registry update failed.",
+        )
 
     def test_get_schema_returns_schema(self) -> None:
         fake = {"properties": {"x": {}}, "type": "object"}

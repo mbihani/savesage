@@ -1223,7 +1223,11 @@ def create_app():
                 detail="both 'prompt' and 'schema' are required",
             )
         schema = _coerce_schema(schema)
-        mkdirs_dbfs(bank_dbfs_dir(name))
+        if not mkdirs_dbfs(bank_dbfs_dir(name)):
+            raise HTTPException(
+                status_code=502,
+                detail="Failed to create bank config directory. Contact an admin to ensure /Workspace/savesage-bank-configs/banks/ exists and the app service principal has CAN_MANAGE permission.",
+            )
         prompt_ok = write_dbfs_text(bank_prompt_dbfs_path(name), str(prompt))
         schema_ok = write_dbfs_text(
             bank_schema_dbfs_path(name),
@@ -1232,7 +1236,7 @@ def create_app():
         if not prompt_ok or not schema_ok:
             raise HTTPException(
                 status_code=502,
-                detail="DBFS save failed (SDK unavailable or write error)",
+                detail="Failed to save bank configuration. Check app logs for details.",
             )
         if name not in {item.value for item in Bank}:
             registry = read_dbfs_registry()
@@ -1243,7 +1247,7 @@ def create_app():
                 if not write_dbfs_registry(registry):
                     raise HTTPException(
                         status_code=502,
-                        detail="bank files saved but registry update failed",
+                        detail="Bank files saved but registry update failed.",
                     )
         return {"status": "ok", "bank": name}
 
@@ -1317,7 +1321,11 @@ def create_app():
                 status_code=409,
                 detail=f"bank {name!r} already exists as a dynamic bank",
             )
-        mkdirs_dbfs(bank_dbfs_dir(name))
+        if not mkdirs_dbfs(bank_dbfs_dir(name)):
+            raise HTTPException(
+                status_code=502,
+                detail="Failed to create bank config directory. Contact an admin to ensure /Workspace/savesage-bank-configs/banks/ exists and the app service principal has CAN_MANAGE permission.",
+            )
         prompt_ok = write_dbfs_text(bank_prompt_dbfs_path(name), str(prompt))
         schema_ok = write_dbfs_text(
             bank_schema_dbfs_path(name),
@@ -1326,7 +1334,7 @@ def create_app():
         if not prompt_ok or not schema_ok:
             raise HTTPException(
                 status_code=502,
-                detail="DBFS save failed (SDK unavailable or write error)",
+                detail="Failed to save bank configuration. Check app logs for details.",
             )
         registry.append(name)
         # Best-effort demo registry: concurrent read-modify-write calls can
@@ -1334,7 +1342,7 @@ def create_app():
         if not write_dbfs_registry(registry):
             raise HTTPException(
                 status_code=502,
-                detail="bank files saved but registry update failed",
+                detail="Bank files saved but registry update failed.",
             )
         return {"name": name, "dynamic": True}
 
@@ -1374,14 +1382,18 @@ def create_app():
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
         schema = _coerce_schema(body.get("schema"))
-        mkdirs_dbfs(bank_dbfs_dir(name))
+        if not mkdirs_dbfs(bank_dbfs_dir(name)):
+            raise HTTPException(
+                status_code=502,
+                detail="Failed to create bank config directory. Contact an admin to ensure /Workspace/savesage-bank-configs/banks/ exists and the app service principal has CAN_MANAGE permission.",
+            )
         if not write_dbfs_text(
             bank_schema_dbfs_path(name),
             json.dumps(schema, indent=2, ensure_ascii=False),
         ):
             raise HTTPException(
                 status_code=502,
-                detail="DBFS save failed (SDK unavailable or write error)",
+                detail="Failed to save bank configuration. Check app logs for details.",
             )
         if name not in {item.value for item in Bank}:
             registry = read_dbfs_registry()
@@ -1392,7 +1404,7 @@ def create_app():
                 if not write_dbfs_registry(registry):
                     raise HTTPException(
                         status_code=502,
-                        detail="bank files saved but registry update failed",
+                        detail="Bank files saved but registry update failed.",
                     )
         return {"status": "ok", "bank": name}
 
