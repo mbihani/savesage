@@ -171,6 +171,10 @@ class PromptSchemaEndpointTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         try:
+            import httpx  # noqa: F401
+        except ImportError:
+            raise unittest.SkipTest("httpx not installed")
+        try:
             from fastapi.testclient import TestClient
         except ImportError:
             try:
@@ -249,6 +253,10 @@ class ParseCustomEndpointTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        try:
+            import httpx  # noqa: F401
+        except ImportError:
+            raise unittest.SkipTest("httpx not installed")
         try:
             from fastapi.testclient import TestClient
         except ImportError:
