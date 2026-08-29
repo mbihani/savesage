@@ -77,11 +77,14 @@ def _to_int(value: Any) -> int | None:
         return None
 
 
-def _trace_row(trace: Any, client: Any) -> dict[str, Any]:
+def _trace_row(trace: Any, client: Any) -> dict[str, Any] | None:
     info, metadata, values = _trace_values(trace)
     trace_id = getattr(info, "trace_id", None) or getattr(info, "request_id", None)
     run_id = metadata.get("mlflow.sourceRun")
-    run = client.get_run(run_id) if run_id else None
+    try:
+        run = client.get_run(run_id) if run_id else None
+    except Exception:
+        return None
 
     timestamp_ms = (
         getattr(info, "timestamp_ms", None)
@@ -89,8 +92,8 @@ def _trace_row(trace: Any, client: Any) -> dict[str, Any]:
         or getattr(info, "start_time_ms", None)
     )
     duration_ms = (
-        getattr(info, "execution_duration_ms", None)
-        or getattr(info, "duration_ms", None)
+        getattr(info, "execution_time_ms", None)
+        or getattr(info, "execution_duration", None)
     )
     judged_raw = _run_value(run, "tags", "judged") if run else None
 
@@ -109,7 +112,7 @@ def _trace_row(trace: Any, client: Any) -> dict[str, Any]:
         "bank": values.get("bank") or _run_value(run, "params", "bank"),
         "outcome": values.get("outcome") or _run_value(run, "params", "outcome"),
         "schema_valid": _to_bool(values.get("schema_valid")),
-        "judged": _to_bool(judged_raw),
+        "judged": str(judged_raw).strip().lower() if judged_raw is not None else None,
         "judge_score": _to_float(_run_value(run, "metrics", "judge.accuracy")),
         "run_id": run_id,
     }
@@ -125,6 +128,7 @@ def _search_recent_traces(client: Any, experiment_id: str, start_ms: int) -> lis
             max_results=1000,
             page_token=page_token,
             order_by=["timestamp_ms ASC"],
+            include_spans=False,
         )
         traces.extend(page)
         page_token = getattr(page, "token", None)
@@ -171,7 +175,7 @@ def main() -> int:
           bank STRING,
           outcome STRING,
           schema_valid BOOLEAN,
-          judged BOOLEAN,
+          judged STRING,
           judge_score DOUBLE,
           run_id STRING
         ) USING DELTA
@@ -181,7 +185,7 @@ def main() -> int:
         print("No MLflow traces found in the requested time window; nothing to sync.")
         return 0
 
-    rows = [_trace_row(trace, client) for trace in traces]
+    rows = [row for trace in traces if (row := _trace_row(trace, client)) is not None]
     rows = [row for row in rows if row["trace_id"] not in {"None", ""}]
     schema = StructType([
         StructField("trace_id", StringType(), False),
@@ -195,7 +199,7 @@ def main() -> int:
         StructField("bank", StringType()),
         StructField("outcome", StringType()),
         StructField("schema_valid", BooleanType()),
-        StructField("judged", BooleanType()),
+        StructField("judged", StringType()),
         StructField("judge_score", DoubleType()),
         StructField("run_id", StringType()),
     ])

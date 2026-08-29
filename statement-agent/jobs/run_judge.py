@@ -38,9 +38,7 @@ def main() -> int:
     import mlflow
 
     # run_judge_evaluation owns sampling, artifact download, Opus invocation,
-    # comparison, metric logging, and the per-trace error boundary. Importing
-    # verdict_to_metrics here also pins this job to the canonical metric mapping.
-    from harness.tracing_judge import verdict_to_metrics  # noqa: F401
+    # comparison, metric logging, and the per-trace error boundary.
     from judge.scorer import run_judge_evaluation
 
     mlflow.set_tracking_uri("databricks")
@@ -57,6 +55,7 @@ def main() -> int:
             f"Judge completed with {len(summary['errors'])} trace error(s); "
             "other traces were processed successfully."
         )
+        return 1
     return 0
 
 
