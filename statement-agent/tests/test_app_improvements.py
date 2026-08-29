@@ -28,10 +28,9 @@ from rules.routing import (
     load_schema_for_bank,
 )
 from harness.dbfs import (
-    prompt_dbfs_path,
-    schema_dbfs_path,
-    PROMPT_DBFS_DIR,
-    SCHEMA_DBFS_DIR,
+    BANKS_DBFS_DIR,
+    bank_prompt_dbfs_path,
+    bank_schema_dbfs_path,
 )
 
 
@@ -93,16 +92,16 @@ class DbfsOverrideTest(unittest.TestCase):
     """resolve_prompt and load_schema_for_bank check DBFS before bundled files."""
 
     def test_prompt_dbfs_path_format(self) -> None:
-        path = prompt_dbfs_path("HDFC")
-        self.assertEqual(path, f"{PROMPT_DBFS_DIR}/HDFC.txt")
+        path = bank_prompt_dbfs_path("HDFC")
+        self.assertEqual(path, f"{BANKS_DBFS_DIR}/HDFC/prompt.txt")
 
     def test_schema_dbfs_path_format(self) -> None:
-        path = schema_dbfs_path("ICICI")
-        self.assertEqual(path, f"{SCHEMA_DBFS_DIR}/ICICI.json")
+        path = bank_schema_dbfs_path("ICICI")
+        self.assertEqual(path, f"{BANKS_DBFS_DIR}/ICICI/schema.json")
 
     def test_prompt_dbfs_path_for_generic(self) -> None:
-        path = prompt_dbfs_path("GENERIC")
-        self.assertEqual(path, f"{PROMPT_DBFS_DIR}/GENERIC.txt")
+        path = bank_prompt_dbfs_path("GENERIC")
+        self.assertEqual(path, f"{BANKS_DBFS_DIR}/GENERIC/prompt.txt")
 
     def test_resolve_prompt_falls_back_when_dbfs_empty(self) -> None:
         """When read_dbfs_text returns None (no SDK or no file), the bundled
@@ -398,25 +397,27 @@ class DbfsHelperTest(unittest.TestCase):
         from harness.dbfs import read_dbfs_text
         # databricks-sdk is not installed locally; the function-local import
         # raises ImportError and the function returns None.
-        result = read_dbfs_text("/Workspace/savesage-bank-configs/prompts/HDFC.txt")
+        result = read_dbfs_text(bank_prompt_dbfs_path("HDFC"))
         self.assertIsNone(result)
 
     def test_write_dbfs_text_returns_false_without_sdk(self) -> None:
         from harness.dbfs import write_dbfs_text
         result = write_dbfs_text(
-            "/Workspace/savesage-bank-configs/prompts/HDFC.txt", "content"
+            bank_prompt_dbfs_path("HDFC"), "content"
         )
         self.assertFalse(result)
 
     def test_dbfs_dirs_are_absolute_paths(self) -> None:
-        self.assertTrue(PROMPT_DBFS_DIR.startswith("/"))
-        self.assertTrue(SCHEMA_DBFS_DIR.startswith("/"))
+        self.assertTrue(BANKS_DBFS_DIR.startswith("/"))
 
     def test_prompt_dbfs_dir_value(self) -> None:
-        self.assertEqual(PROMPT_DBFS_DIR, "/Workspace/savesage-bank-configs/prompts")
+        self.assertEqual(BANKS_DBFS_DIR, "/Workspace/savesage-bank-configs/banks")
 
     def test_schema_dbfs_dir_value(self) -> None:
-        self.assertEqual(SCHEMA_DBFS_DIR, "/Workspace/savesage-bank-configs/schemas")
+        self.assertEqual(
+            bank_schema_dbfs_path("HDFC"),
+            "/Workspace/savesage-bank-configs/banks/HDFC/schema.json",
+        )
 
 
 if __name__ == "__main__":

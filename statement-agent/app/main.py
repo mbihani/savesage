@@ -1175,7 +1175,7 @@ def create_app():
     async def get_prompt_schema(bank: str):
         """Return the prompt text and schema JSON for a bank.
 
-        Loads from DBFS override if it exists, else from the bundled file
+        Loads from the shared bank config if it exists, else from the bundled file
         (PROMPT_BY_BANK / SCHEMA_BY_BANK).  Unknown bank names fall back to
         the GENERIC prompt/schema (handled by resolve_prompt /
         load_schema_for_bank).
@@ -1192,8 +1192,8 @@ def create_app():
         """Save the prompt text and schema JSON to DBFS for a bank.
 
         Both ``prompt`` and ``schema`` must be present in the body. Writes to
-        the dynamic-bank DBFS layout
-        ``/savesage-statement-agent/banks/<BANK>/prompt.txt`` and
+        the shared bank config layout
+        ``/Workspace/savesage-bank-configs/banks/<BANK>/prompt.txt`` and
         ``schema.json`` — the routing layer reads this path first, so the
         override takes effect without a restart. For a bank not in the
         built-in :class:`Bank` enum, the bank is also added to the DBFS
@@ -1468,6 +1468,16 @@ def create_app():
     # -- Static files (catch-all, mounted AFTER API routes) --------------
     if static_dir.exists():
         app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
+
+    try:
+        from harness.dbfs import seed_builtin_configs
+
+        if not seed_builtin_configs():
+            _LOGGER.warning(
+                "Built-in bank configs were not seeded; using bundled fallbacks"
+            )
+    except Exception as exc:  # noqa: BLE001 -- seeding must never block startup
+        _LOGGER.warning("Built-in bank config seeding failed: %s", exc)
 
     return app
 

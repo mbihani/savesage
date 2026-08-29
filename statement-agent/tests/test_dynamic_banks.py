@@ -17,7 +17,7 @@ Two layers are covered:
 
 import json
 import unittest
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 from contracts.models import Bank, bank_name
 from graph.routing import RoutingError, coerce_request_bank, detect_bank, resolve_prompt
@@ -27,6 +27,7 @@ from harness.dbfs import (
     bank_schema_dbfs_path,
     read_dbfs_registry,
     registry_dbfs_path,
+    seed_builtin_configs,
     validate_bank_name,
 )
 from rules.routing import load_schema_for_bank
@@ -94,6 +95,37 @@ class DbfsRegistryTest(unittest.TestCase):
     def test_read_registry_tolerates_missing_file(self) -> None:
         with patch("harness.dbfs.read_dbfs_text", return_value=None):
             self.assertEqual(read_dbfs_registry(), [])
+
+
+class SeedBuiltinConfigsTest(unittest.TestCase):
+    def test_writes_missing_configs_to_each_bank_directory(self) -> None:
+        with patch("harness.dbfs.mkdirs_dbfs", return_value=True) as mkdirs, \
+             patch("harness.dbfs.read_dbfs_text", return_value=None), \
+             patch("harness.dbfs.write_dbfs_text", return_value=True) as write:
+            self.assertTrue(seed_builtin_configs())
+
+        self.assertEqual(
+            mkdirs.call_args_list,
+            [call(BANKS_DBFS_DIR)]
+            + [call(f"{BANKS_DBFS_DIR}/{bank.value}") for bank in Bank],
+        )
+        written_paths = {args[0] for args, _kwargs in write.call_args_list}
+        expected_paths = {
+            path
+            for bank in Bank
+            for path in (
+                bank_prompt_dbfs_path(bank.value),
+                bank_schema_dbfs_path(bank.value),
+            )
+        }
+        self.assertEqual(written_paths, expected_paths)
+
+    def test_skips_existing_configs(self) -> None:
+        with patch("harness.dbfs.mkdirs_dbfs", return_value=True), \
+             patch("harness.dbfs.read_dbfs_text", return_value="existing"), \
+             patch("harness.dbfs.write_dbfs_text") as write:
+            self.assertTrue(seed_builtin_configs())
+        write.assert_not_called()
 
 
 # ---------------------------------------------------------------------------

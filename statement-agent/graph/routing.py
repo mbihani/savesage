@@ -19,7 +19,6 @@ import hashlib
 from contracts.models import Bank
 from harness.dbfs import (
     bank_prompt_dbfs_path,
-    prompt_dbfs_path,
     read_dbfs_registry,
     read_dbfs_text,
 )
@@ -96,17 +95,16 @@ def resolve_prompt(bank: Bank | str) -> str:
     """Return the non-empty prompt text for ``bank``.
 
     Accepts a :class:`Bank` enum or an arbitrary string. Resolution order:
-    (1) dynamic-bank DBFS file ``/savesage-statement-agent/banks/<bank>/prompt.txt``
-    for any bank name; (2) built-in banks fall back to the legacy DBFS override
-    ``/savesage/prompts/<bank>.txt`` then the bundled ``prompts/<bank>.txt``;
-    (3) a registered dynamic bank whose prompt file is missing raises
+    (1) shared config file ``banks/<BANK>/prompt.txt`` for any bank name;
+    (2) built-in banks fall back to their bundled prompt if startup seeding did
+    not succeed; (3) a registered dynamic bank whose prompt file is missing raises
     :class:`RoutingError`; (4) a completely unknown bank falls back to
     :data:`Bank.GENERIC` (the generic Luna prompt).  Loads from disk each call
     (prompts are small) so a prompt edit is picked up without a restart.
     """
     bank_str = bank.value if isinstance(bank, Bank) else str(bank).strip().upper()
 
-    # 1. Dynamic-bank DBFS override (works for both dynamic and built-in names).
+    # 1. Shared bank config (works for both dynamic and built-in names).
     try:
         dbfs_text = read_dbfs_text(bank_prompt_dbfs_path(bank_str))
         if dbfs_text and dbfs_text.strip():
@@ -114,18 +112,12 @@ def resolve_prompt(bank: Bank | str) -> str:
     except (AttributeError, TypeError):
         pass  # bank is not a string-like; fall through to the built-in path
 
-    # 2. Built-in bank: legacy DBFS override -> bundled file.
+    # 2. Built-in bank: bundled fallback when startup seeding did not succeed.
     try:
         bank_enum = Bank(bank_str)
     except (ValueError, TypeError):
         bank_enum = None
     if bank_enum is not None:
-        try:
-            dbfs_text = read_dbfs_text(prompt_dbfs_path(bank_enum.value))
-            if dbfs_text and dbfs_text.strip():
-                return dbfs_text
-        except (AttributeError, TypeError):
-            pass
         try:
             path = PROMPT_BY_BANK[bank_enum]
         except KeyError as exc:  # pragma: no cover - exhaustive enum, defensive
