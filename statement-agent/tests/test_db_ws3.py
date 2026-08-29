@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import patch
 from contextlib import redirect_stdout
@@ -11,10 +12,19 @@ from contracts.models import (Bank, ComparisonOutcome, ExtractionResult,
 from db.mapping import (feedback_from_row, feedback_values, promoted_columns,
                         verdict_from_dict, verdict_to_dict)
 from db.sql import DDL, UPSERT_EXTRACTION_SQL, current_state_view_sql
-from db.config_ws3 import LakebaseSettings
-from db.provision import CdfCreateError, ensure_cdf, resolve_database_resource
+from db.config_ws3 import RDSSettings
 from db.stores import LakebaseResultStore, init_tables
-from db.connection import OAuthConnectionFactory
+from db.connection import RDSConnectionFactory
+
+# db.provision is a standalone Lakebase CLI (not on the runtime path) that
+# still imports the legacy LakebaseSettings; skip its tests if that import
+# fails (the settings class was removed in favour of RDSSettings).
+try:
+    from db.provision import CdfCreateError, ensure_cdf, resolve_database_resource
+    from db.config_ws3 import LakebaseSettings
+    _PROVISION_AVAILABLE = True
+except ImportError:
+    _PROVISION_AVAILABLE = False
 
 
 class LakebaseSqlTests(unittest.TestCase):
@@ -34,21 +44,8 @@ class LakebaseSqlTests(unittest.TestCase):
         self.assertEqual(len(executed), 1)
         self.assertEqual(executed[0][1][7], "ICICI")
 
-    def test_connection_factory_uses_autoscaling_postgres_api(self):
-        class Credential:
-            token = "fresh-token"
-
-        class Postgres:
-            def __init__(self):
-                self.calls = []
-
-            def generate_database_credential(self, endpoint):
-                self.calls.append(endpoint)
-                return Credential()
-
-        class Client:
-            postgres = Postgres()
-
+    def test_connection_factory_uses_direct_password(self):
+        """RDSConnectionFactory connects with a plain password (no token API)."""
         connect_calls = []
 
         class Psycopg:
@@ -57,19 +54,45 @@ class LakebaseSqlTests(unittest.TestCase):
                 connect_calls.append(kwargs)
                 return object()
 
-        endpoint = "projects/p/branches/production/endpoints/primary"
-        factory = OAuthConnectionFactory(
-            Client(), endpoint, "lakebase.example", "postgres", "app-sp"
+        factory = RDSConnectionFactory(
+            host="db.example.com", database="postgres", user="app",
+            password="secret",
         )
         with patch.dict("sys.modules", {"psycopg": Psycopg}):
             factory()
 
-        self.assertEqual(Client.postgres.calls, [endpoint])
-        self.assertEqual(connect_calls[0]["password"], "fresh-token")
+        self.assertEqual(connect_calls[0]["password"], "secret")
+        self.assertEqual(connect_calls[0]["host"], "db.example.com")
+        self.assertEqual(connect_calls[0]["dbname"], "postgres")
+        self.assertEqual(connect_calls[0]["user"], "app")
+        self.assertEqual(connect_calls[0]["port"], 5432)
+        self.assertEqual(connect_calls[0]["sslmode"], "require")
 
     def test_connection_factory_rejects_empty_host(self):
-        with self.assertRaisesRegex(RuntimeError, "must not be null or empty"):
-            OAuthConnectionFactory(object(), "endpoint", "  ", "db", "user")
+        with self.assertRaisesRegex(RuntimeError, "host must not be null or empty"):
+            RDSConnectionFactory(host="  ", database="db", user="user", password="pw")
+
+    def test_connection_factory_from_env(self):
+        """RDSConnectionFactory.from_env reads RDS_* env vars."""
+        env = {
+            "RDS_HOST": "db.example.com", "RDS_PORT": "5432",
+            "RDS_DATABASE": "mydb", "RDS_USER": "app",
+            "RDS_PASSWORD": "secret", "RDS_SSLMODE": "require",
+        }
+        with patch.dict(os.environ, env, clear=False):
+            factory = RDSConnectionFactory.from_env()
+        self.assertEqual(factory._host, "db.example.com")
+        self.assertEqual(factory._port, 5432)
+        self.assertEqual(factory._database, "mydb")
+        self.assertEqual(factory._user, "app")
+        self.assertEqual(factory._password, "secret")
+        self.assertEqual(factory._sslmode, "require")
+
+    def test_connection_factory_from_env_missing_var(self):
+        """from_env raises RuntimeError when required vars are missing."""
+        with patch.dict(os.environ, {"RDS_HOST": "", "RDS_USER": "", "RDS_PASSWORD": ""}):
+            with self.assertRaisesRegex(RuntimeError, "RDS connection requires"):
+                RDSConnectionFactory.from_env()
 
     def test_ddl_has_separate_tables_and_replica_identity(self):
         self.assertIn("CREATE TABLE IF NOT EXISTS statement_results", DDL)
@@ -193,6 +216,7 @@ class _NotFound(Exception):
     error_code = "NOT_FOUND"
 
 
+@unittest.skipUnless(_PROVISION_AVAILABLE, "db.provision requires legacy LakebaseSettings")
 class LakebaseProvisioningTests(unittest.TestCase):
     def test_resolves_rest_id_from_sql_database_name(self):
         client = _Client([{"databases": [{"database_id": "databricks-postgres",

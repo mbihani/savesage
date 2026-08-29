@@ -435,15 +435,11 @@ class AppYamlTest(unittest.TestCase):
             with self.subTest(var=var):
                 self.assertIn(var, names)
 
-    def test_lakebase_env_vars(self) -> None:
-        """WS3 env vars for the Lakebase connection.
-
-        PGHOST/PGDATABASE/PGPORT are hardcoded fallback values (the
-        pg_version=17 database resource binding cannot inject them); the
-        host is consumed directly and the user comes from WorkspaceClient.
-        """
+    def test_rds_env_vars(self) -> None:
+        """RDS Postgres connection env vars (replaces Lakebase)."""
         names = set(self._env_names())
-        for var in ("ENDPOINT_NAME", "PGSSLMODE", "PGHOST", "PGDATABASE", "PGPORT"):
+        for var in ("RDS_HOST", "RDS_PORT", "RDS_DATABASE", "RDS_USER",
+                    "RDS_PASSWORD", "RDS_SSLMODE"):
             with self.subTest(var=var):
                 self.assertIn(var, names)
 
@@ -468,13 +464,12 @@ class AppYamlTest(unittest.TestCase):
             self.assertIn("experiment", self.text)
             self.assertIn("CAN_EDIT", self.text)
 
-    def test_lakebase_no_database_resource(self) -> None:
-        """The Lakebase database resource binding is removed.
+    def test_no_database_resource(self) -> None:
+        """No database resource binding (direct RDS connection via env vars).
 
-        pg_version=17 Lakebase projects are not registered in the Databricks
-        Database Instances API, so the binding cannot inject connection env
-        vars; explicit fallback values are consumed at runtime instead (see
-        ``_build_lakebase_stores``).  The fallback values live as env vars.
+        The app connects to RDS Postgres directly using ``RDS_*`` env vars
+        (see ``_build_rds_stores`` in app/main.py); no Databricks ``database``
+        resource binding is needed.
         """
         if self.parsed is not None:
             resources = {r["name"]: r for r in self.parsed.get("resources", [])}
