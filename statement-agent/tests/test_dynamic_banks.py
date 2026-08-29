@@ -47,24 +47,24 @@ class DbfsPathTest(unittest.TestCase):
         self.assertEqual(validate_bank_name("AU-SMALL"), "AU-SMALL")
 
     def test_banks_dir_value(self) -> None:
-        self.assertEqual(BANKS_DBFS_DIR, "/savesage-statement-agent/banks")
+        self.assertEqual(BANKS_DBFS_DIR, "/Workspace/savesage-bank-configs/banks")
 
     def test_bank_prompt_dbfs_path(self) -> None:
         self.assertEqual(
             bank_prompt_dbfs_path("KOTAK"),
-            "/savesage-statement-agent/banks/KOTAK/prompt.txt",
+            "/Workspace/savesage-bank-configs/banks/KOTAK/prompt.txt",
         )
 
     def test_bank_schema_dbfs_path(self) -> None:
         self.assertEqual(
             bank_schema_dbfs_path("RBL"),
-            "/savesage-statement-agent/banks/RBL/schema.json",
+            "/Workspace/savesage-bank-configs/banks/RBL/schema.json",
         )
 
     def test_registry_dbfs_path(self) -> None:
         self.assertEqual(
             registry_dbfs_path(),
-            "/savesage-statement-agent/banks/registry.json",
+            "/Workspace/savesage-bank-configs/banks/registry.json",
         )
 
     def test_paths_are_absolute(self) -> None:
