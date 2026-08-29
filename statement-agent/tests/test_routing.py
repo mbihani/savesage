@@ -8,7 +8,7 @@ from graph.routing import (
     get_prompt_version,
     resolve_prompt,
     resolve_prompt_for_all_banks,
-    RoutingError,
+    try_bank,
 )
 from graph.state import GraphState, Outcome, Stage
 
@@ -35,11 +35,23 @@ class RoutingTest(unittest.TestCase):
         for bank, prompt in all_prompts.items():
             self.assertGreater(len(prompt.strip()), 0, bank.value)
 
-    def test_unknown_bank_raises(self) -> None:
-        # Bank is a closed enum; a value outside it cannot be constructed via
-        # Bank(...), so simulate a broken routing table by passing a non-Bank.
-        with self.assertRaises((KeyError, RoutingError, TypeError)):
-            resolve_prompt("NOT_A_BANK")  # type: ignore[arg-type]
+    def test_unknown_bank_falls_back_to_generic(self) -> None:
+        # Unknown bank strings fall back to the GENERIC prompt instead of
+        # raising RoutingError, so the UI/API can accept arbitrary bank names.
+        prompt = resolve_prompt("NOT_A_BANK")
+        generic = resolve_prompt(Bank.GENERIC)
+        self.assertEqual(prompt, generic)
+
+    def test_try_bank_known_string(self) -> None:
+        self.assertIs(try_bank("HDFC"), Bank.HDFC)
+        self.assertIs(try_bank("ICICI"), Bank.ICICI)
+
+    def test_try_bank_enum_returned_as_is(self) -> None:
+        self.assertIs(try_bank(Bank.SBI), Bank.SBI)
+
+    def test_try_bank_unknown_falls_back_to_generic(self) -> None:
+        self.assertIs(try_bank("NOT_A_BANK"), Bank.GENERIC)
+        self.assertIs(try_bank("Some New Bank"), Bank.GENERIC)
 
 
 class PromptVersionTest(unittest.TestCase):

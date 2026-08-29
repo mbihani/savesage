@@ -4,7 +4,7 @@ Wires the real ports into the LangGraph parse pipeline:
 
 * ``ExtractionAdapter`` → :class:`harness.extraction_adapter.LunaExtractionAdapter`
 * ``JudgeAdapter`` → :class:`harness.judge_adapter.OpusJudgeAdapter`
-* ``ResultStore`` + ``FeedbackStore`` → :mod:`db.stores` (Lakebase/psycopg)
+* ``ResultStore`` + ``FeedbackStore`` → :mod:`db.stores` (RDS/psycopg)
 * ``TraceSink`` → :class:`harness.tracing.MLflowTraceSink`, wrapped by
   :class:`_ProgressTraceSink` which mirrors per-node trace events into the SSE
   stream.
@@ -27,7 +27,6 @@ from datetime import UTC, datetime
 from typing import Any, Optional
 
 from contracts.models import (
-    Bank,
     FieldComparison,
     FieldFeedback,
     TraceEvent,
@@ -67,14 +66,13 @@ _MAX_REQUESTS = 50  # FIFO cap — each entry holds ~1-10 MB of PDF bytes
 # per request.  ``None`` means "not yet attempted"; a tuple/store means
 # "attempted" (including the failure sentinel).
 _stores: Optional[tuple[Any, Any]] = None
-# Last error from a Lakebase store-init attempt, surfaced via the /health
+# Last error from an RDS store-init attempt, surfaced via the /health
 # endpoint for diagnostics.  ``None`` means "no attempt has failed".
 _last_store_error: Optional[str] = None
-# Connection parameters most recently resolved from the environment /
-# ``WorkspaceClient`` identity by ``_build_lakebase_stores``.
-# Surfaced via the /health endpoint for diagnostics; ``None`` until a
-# derivation attempt has produced them (so a partial failure still shows
-# whatever was resolved before the error).
+# Connection parameters most recently resolved from the ``RDS_*`` env vars
+# by ``_build_rds_stores``.  Surfaced via the /health endpoint for
+# diagnostics; ``None`` until a derivation attempt has produced them (so a
+# partial failure still shows whatever was resolved before the error).
 _derived_host: Optional[str] = None
 _derived_user: Optional[str] = None
 _trace_sink: Any = None
@@ -96,16 +94,16 @@ def _is_valid_request_id(request_id: str) -> bool:
     """Return True iff ``request_id`` matches the canonical ``req-<12hex>`` form."""
     return bool(_REQUEST_ID_RE.match(request_id or ""))
 
-# Max seconds to wait for a best-effort persistence/telemetry call (Lakebase
+# Max seconds to wait for a best-effort persistence/telemetry call (RDS
 # or MLflow) inside an ``async`` route handler before giving up and falling
 # back to in-memory storage.  Bounds the blocking call so a hung connection
 # can never freeze the single uvicorn event loop — which is what made the
-# Apps proxy return 502 on feedback submit.  The initial Lakebase cold-start
-# requires WorkspaceClient init + generate_database_credential API call +
-# psycopg.connect with SSL + DDL (advisory lock + CREATE TABLE IF NOT EXISTS
-# x2 + CREATE INDEX + ALTER TABLE x2); 5 s was too tight and silently timed
-# out, so all results fell back to in-memory storage and never persisted.
-# 15 s gives the cold-start room while still bounding a genuinely hung call.
+# Apps proxy return 502 on feedback submit.  The initial RDS cold-start
+# requires psycopg.connect with SSL + DDL (advisory lock + CREATE TABLE IF
+# NOT EXISTS x2 + CREATE INDEX + ALTER TABLE x2); 5 s was too tight and
+# silently timed out, so all results fell back to in-memory storage and
+# never persisted.  15 s gives the cold-start room while still bounding a
+# genuinely hung call.
 _PERSIST_TIMEOUT = 15.0
 
 # Cache for the most recent judge evaluation result (populated by
@@ -159,7 +157,7 @@ class RequestContext:
     The background graph thread pushes events into ``events`` (a stdlib
     ``queue.Queue``, thread-safe); the async SSE endpoint reads from it via
     ``run_in_executor``.  After the graph completes, ``extraction_data`` is
-    available for the ``GET /api/results`` fallback when Lakebase is
+    available for the ``GET /api/results`` fallback when RDS is
     unreachable. The judge no longer runs inline, so there is no
     ``verdict_data`` — judge results come from the post-hoc evaluation API.
     """
@@ -178,7 +176,7 @@ class RequestContext:
         # the extracted fields for the lifetime of this process.
         self.pdf_bytes: Optional[bytes] = None
         self.pdf_filename: str = "statement.pdf"
-        # In-memory feedback list (fallback when Lakebase feedback store is down).
+        # In-memory feedback list (fallback when RDS feedback store is down).
         self.feedback: list[dict[str, Any]] = []
 
     def push(self, event_type: str, data: dict[str, Any]) -> None:
@@ -299,7 +297,7 @@ async def _run_blocking(func: Any, *args: Any, timeout: float = _PERSIST_TIMEOUT
     """Run a blocking callable in a worker thread with a bounded wait.
 
     Returns the callable's result, or ``None`` on exception/timeout.  Used for
-    best-effort persistence/telemetry (Lakebase, MLflow) inside ``async`` route
+    best-effort persistence/telemetry (RDS, MLflow) inside ``async`` route
     handlers so a hung network call can never block the single uvicorn event
     loop — the mechanism behind the proxy 502 on feedback submit.  The
     orphaned thread is not cancelled on timeout (Python cannot kill threads),
@@ -322,75 +320,55 @@ async def _run_blocking(func: Any, *args: Any, timeout: float = _PERSIST_TIMEOUT
 # Production port wiring (third-party imports deferred to call-time)
 # ---------------------------------------------------------------------------
 
-def _build_lakebase_stores() -> tuple[Any, Any]:
-    """Build Lakebase-backed ``ResultStore`` + ``FeedbackStore``.
+def _build_rds_stores() -> tuple[Any, Any]:
+    """Build RDS-backed ``ResultStore`` + ``FeedbackStore``.
 
     Returns ``(result_store, feedback_store)``.  Raises on failure; callers
-    catch and degrade to in-memory.  ``databricks-sdk`` and ``psycopg`` are
-    imported function-local inside the dependency modules, so importing this
-    function does not require them — only *calling* it does.
+    catch and degrade to in-memory.  ``psycopg`` is imported function-local
+    inside the dependency modules, so importing this function does not require
+    it — only *calling* it does.
 
-    Connection parameters come from the explicit Lakebase fallbacks in
-    ``app.yaml`` and the ``WorkspaceClient`` identity.  In particular, host
-    lookup does not require an endpoint API call; ``WorkspaceClient.postgres``
-    is used only for the fresh per-connection credential.
+    Connection parameters come from the ``RDS_*`` environment variables in
+    ``app.yaml`` — a plain direct Postgres connection with username/password,
+    no ``WorkspaceClient`` or endpoint API call.
     """
     global _derived_host, _derived_user
-    from databricks.sdk import WorkspaceClient
-    from db.connection import OAuthConnectionFactory
+    from db.connection import RDSConnectionFactory
     from db.stores import LakebaseFeedbackStore, LakebaseResultStore, init_tables
 
-    if not os.environ.get("ENDPOINT_NAME"):
+    if not os.environ.get("RDS_HOST"):
         raise RuntimeError(
-            "ENDPOINT_NAME environment variable is required for the Lakebase "
+            "RDS_HOST environment variable is required for the RDS "
             "connection (set in app.yaml)"
         )
-    client = WorkspaceClient()
-    # PGHOST is explicit because pg_version=17 Lakebase projects are not
-    # registered in the Database Instances API and cannot be looked up there.
-    host = (os.environ.get("PGHOST") or "").strip()
-    if not host:
-        raise RuntimeError(
-            "PGHOST environment variable must contain a Lakebase host "
-            "(set it in app.yaml)"
-        )
-    # Prefer the configured service-principal client id as the connecting
-    # user (the working permissions-app pattern); fall back to the current
-    # workspace user when no SP client id is configured (local dev).
-    user = client.config.client_id or client.current_user.me().user_name
-    # Surface the derived parameters for /health diagnostics before the
+    # Surface the connection parameters for /health diagnostics before the
     # connection attempt that may still fail (and reset them on each call so
     # a later re-derivation overwrites a stale value).
-    _derived_host = host
-    _derived_user = user
-    database = os.environ.get("PGDATABASE", "databricks_postgres")
-    port = int(os.environ.get("PGPORT", "5432"))
-    sslmode = os.environ.get("PGSSLMODE", "require")
+    _derived_host = os.environ.get("RDS_HOST", "")
+    _derived_user = os.environ.get("RDS_USER", "")
     _LOGGER.info(
-        "Lakebase connection: host=%s, user=%s, db=%s", host, user, database)
-    connect = OAuthConnectionFactory(
-        client, os.environ["ENDPOINT_NAME"], host, database, user,
-        port=port, sslmode=sslmode,
-    )
+        "RDS connection: host=%s, user=%s, db=%s",
+        _derived_host, _derived_user, os.environ.get("RDS_DATABASE", "postgres"))
+    connect = RDSConnectionFactory.from_env()
     init_tables(connect)
     return LakebaseResultStore(connect), LakebaseFeedbackStore(connect)
 
 
 def _get_stores() -> tuple[Any, Any]:
-    """Return cached Lakebase stores ``(result_store, feedback_store)``.
+    """Return cached RDS stores ``(result_store, feedback_store)``.
 
     Lazily initialised on first call. Failures are logged and are not cached,
-    allowing a transient credential, endpoint, or database outage to recover.
+    allowing a transient credential or database outage to recover.
     """
     global _last_store_error, _stores
     if _stores is not None:
         return _stores
     try:
-        _stores = _build_lakebase_stores()
+        _stores = _build_rds_stores()
         _last_store_error = None
     except Exception as exc:
         _last_store_error = f"{type(exc).__name__}: {exc}"
-        _LOGGER.exception("Lakebase store initialization failed")
+        _LOGGER.exception("RDS store initialization failed")
         return (None, None)
     return _stores
 
@@ -504,7 +482,7 @@ def _build_deps(ctx: RequestContext, state: Any = None,
                 schema_override: dict | None = None) -> Any:
     """Build production :class:`NodeDeps` with real ports wired.
 
-    Degrades gracefully: if a port cannot be constructed (Lakebase down,
+    Degrades gracefully: if a port cannot be constructed (RDS down,
     MLflow unavailable), the graph skips that stage rather than failing the
     entire parse. The judge no longer runs inline — it is a post-hoc
     evaluation over MLflow traces (see ``judge/scorer.py``), so no judge
@@ -559,13 +537,14 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str,
     ``route_node`` skips re-resolution and the trace carries the actual prompt.
     """
     try:
-        from contracts.models import Bank as _Bank, ParseRequest as _PR
+        from contracts.models import ParseRequest as _PR
+        from graph.routing import try_bank
         from graph.state import GraphState
 
         request = _PR(
             pdf=pdf_bytes,
             filename=filename,
-            bank=_Bank(bank),
+            bank=try_bank(bank),
             request_id=ctx.request_id,
         )
         state = GraphState(request=request)
@@ -634,10 +613,10 @@ def _run_judge_evaluation_bg(sample_size: int) -> None:
     global _judge_result_cache, _judge_running
     try:
         from judge.scorer import run_judge_evaluation
-        # Thread the app's cached Lakebase result store into the scorer so each
+        # Thread the app's cached RDS result store into the scorer so each
         # OK verdict is persisted inline (best-effort) and surfaces on the
         # per-parse Results view. _get_stores()[0] is the result store or None
-        # when Lakebase is unavailable; None lets the scorer build its own.
+        # when RDS is unavailable; None lets the scorer build its own.
         result_store = _get_stores()[0]
         result = run_judge_evaluation(sample_size=sample_size, result_store=result_store)
         _judge_result_cache = result
@@ -665,9 +644,9 @@ def _run_single_judge_bg(request_id: str, run_id: str) -> None:
     Judges JUST the one MLflow run for ``request_id`` (already resolved to
     ``run_id`` by the caller) by delegating to :func:`judge.scorer.score_trace`
     — which reuses the existing scoring logic AND persists the verdict to
-    Lakebase (best-effort) so ``GET /api/results`` surfaces it inline.
+    RDS (best-effort) so ``GET /api/results`` surfaces it inline.
 
-    The ``result_store`` is the app's cached Lakebase store (same one the
+    The ``result_store`` is the app's cached RDS store (same one the
     batch path threads through ``_run_judge_evaluation_bg``); ``None`` lets
     the scorer build its own.  Force-rejudge is inherent: ``score_trace``
     does NOT check the ``judged`` tag (only the batch sampler skips already-
@@ -727,11 +706,11 @@ def create_app():
     @app.get("/health")
     def health() -> dict[str, Any]:
         import os
-        # PGHOST and ENDPOINT_NAME are required explicit Lakebase fallbacks;
-        # the user is resolved from the WorkspaceClient identity.
+        # RDS_HOST/RDS_USER/RDS_PASSWORD are required for the direct RDS
+        # Postgres connection (set in app.yaml).
         env_status = {
             name: "set" if os.environ.get(name) else "MISSING"
-            for name in ("ENDPOINT_NAME", "PGHOST", "PGSSLMODE")
+            for name in ("RDS_HOST", "RDS_USER", "RDS_PASSWORD", "RDS_SSLMODE")
         }
         psycopg_ok = True
         try:
@@ -744,18 +723,13 @@ def create_app():
             "last_store_error": _last_store_error,
             "env_vars": env_status,
             "psycopg_available": psycopg_ok,
-            "endpoint_derived_host": _derived_host,
-            "derived_user": _derived_user,
+            "rds_host": _derived_host,
+            "rds_user": _derived_user,
         }
 
     # -- POST /api/parse -------------------------------------------------
     @app.post("/api/parse")
     async def parse(file: UploadFile = File(...), bank: str = Form(...)):
-        try:
-            Bank(bank)
-        except ValueError:
-            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
-
         pdf_bytes = await file.read()
         if not pdf_bytes:
             raise HTTPException(status_code=400, detail="empty file")
@@ -861,9 +835,9 @@ def create_app():
         except Exception:
             fb = None
 
-        # Persist to Lakebase + log to MLflow — both best-effort.  Each blocking
+        # Persist to RDS + log to MLflow — both best-effort.  Each blocking
         # call runs in a worker thread with a bounded wait (``_run_blocking``)
-        # so a hung Lakebase credential or MLflow request can never freeze the
+        # so a hung RDS connection or MLflow request can never freeze the
         # single uvicorn event loop — the mechanism behind the proxy 502 on
         # feedback submit.  Even if both fail, we fall back to in-memory below.
         try:
@@ -911,7 +885,7 @@ def create_app():
         verdict: Optional[dict[str, Any]] = None
         feedback_list: list[dict[str, Any]] = []
 
-        # Try Lakebase first (durable persistence).  Blocking calls run in a
+        # Try RDS first (durable persistence).  Blocking calls run in a
         # worker thread with a bounded wait (``_run_blocking``) so a hung
         # connection can never freeze the single uvicorn event loop (the same
         # 502 mechanism as feedback submit).  ``_run_blocking`` returns None
@@ -963,7 +937,7 @@ def create_app():
             except Exception:
                 pass
 
-        # Fall back to in-memory context (when Lakebase is unavailable).
+        # Fall back to in-memory context (when RDS is unavailable).
         if extraction is None and ctx is not None:
             extraction = ctx.extraction_data
         if not feedback_list and ctx is not None:
@@ -1178,16 +1152,14 @@ def create_app():
         """Return the prompt text and schema JSON for a bank.
 
         Loads from DBFS override if it exists, else from the bundled file
-        (PROMPT_BY_BANK / SCHEMA_BY_BANK).
+        (PROMPT_BY_BANK / SCHEMA_BY_BANK).  Unknown bank names fall back to
+        the GENERIC prompt/schema (handled by resolve_prompt /
+        load_schema_for_bank).
         """
-        try:
-            bank_enum = Bank(bank)
-        except ValueError:
-            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
         from graph.routing import resolve_prompt
         from rules.routing import load_schema_for_bank
-        prompt = resolve_prompt(bank_enum)
-        schema = load_schema_for_bank(bank_enum)
+        prompt = resolve_prompt(bank)
+        schema = load_schema_for_bank(bank)
         return {"prompt": prompt, "schema": schema}
 
     # -- POST /api/prompt/{bank} ----------------------------------------
@@ -1197,12 +1169,11 @@ def create_app():
 
         Both ``prompt`` and ``schema`` must be present in the body. The
         prompt is written to ``/savesage/prompts/<bank>.txt`` and the schema
-        to ``/savesage/schemas/<bank>.json``.
+        to ``/savesage/schemas/<bank>.json``.  Unknown bank names save to
+        the GENERIC DBFS path.
         """
-        try:
-            bank_enum = Bank(bank)
-        except ValueError:
-            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
+        from graph.routing import try_bank
+        bank_enum = try_bank(bank)
         prompt = body.get("prompt")
         schema = body.get("schema")
         if prompt is None or schema is None:
@@ -1243,12 +1214,8 @@ def create_app():
         If an override is absent, the bank default is used. Returns the
         same ``{"request_id": ...}`` shape; the frontend consumes SSE
         from the same ``/api/parse/{request_id}/stream`` endpoint.
+        Unknown bank names are accepted (GENERIC fallback).
         """
-        try:
-            Bank(bank)
-        except ValueError:
-            raise HTTPException(status_code=400, detail=f"unsupported bank: {bank}")
-
         pdf_bytes = await file.read()
         if not pdf_bytes:
             raise HTTPException(status_code=400, detail="empty file")

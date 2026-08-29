@@ -93,7 +93,7 @@ _MAX_TRACES_SCAN = 2000
 # Module-level flag so _ensure_mlflow_configured runs once per process.
 _mlflow_configured = False
 
-# Module-level cache for the Lakebase ``ResultStore`` used to persist verdicts
+# Module-level cache for the RDS ``ResultStore`` used to persist verdicts
 # inline so ``GET /api/results`` can surface the per-field expected/actual/
 # outcome on the per-parse Results view. Built lazily and best-effort: a
 # ``None`` store simply skips the inline persist — the judge metrics still
@@ -104,40 +104,23 @@ _result_store_init_done = False
 
 
 def _build_result_store() -> Any:
-    """Build a Lakebase-backed ``ResultStore`` for verdict persistence.
+    """Build an RDS-backed ``ResultStore`` for verdict persistence.
 
-    Mirrors :func:`app.main._build_lakebase_stores` but only the result store.
+    Mirrors :func:`app.main._build_rds_stores` but only the result store.
     Raises on failure (missing env / connection error); callers catch and
-    degrade to ``None``. ``databricks-sdk`` and ``psycopg`` are imported
-    function-local inside the dependency modules, so importing this function
-    does not require them — only *calling* it does.
+    degrade to ``None``. ``psycopg`` is imported function-local inside the
+    dependency modules, so importing this function does not require it —
+    only *calling* it does.
     """
-    required = ("ENDPOINT_NAME", "PGHOST", "PGUSER", "PGDATABASE")
-    missing = [name for name in required if not os.environ.get(name)]
-    if missing:
-        raise RuntimeError(
-            "Lakebase database resource did not inject required environment "
-            f"variables: {', '.join(missing)}"
-        )
-    from databricks.sdk import WorkspaceClient
-    from db.connection import OAuthConnectionFactory
+    from db.connection import RDSConnectionFactory
     from db.stores import LakebaseResultStore, init_tables
-    client = WorkspaceClient()
-    connect = OAuthConnectionFactory(
-        client,
-        os.environ["ENDPOINT_NAME"],
-        os.environ["PGHOST"],
-        os.environ["PGDATABASE"],
-        os.environ["PGUSER"],
-        port=int(os.environ.get("PGPORT", "5432")),
-        sslmode=os.environ.get("PGSSLMODE", "require"),
-    )
+    connect = RDSConnectionFactory.from_env()
     init_tables(connect)
     return LakebaseResultStore(connect)
 
 
 def _get_result_store() -> Any:
-    """Return a cached Lakebase ``ResultStore`` or ``None`` if unavailable.
+    """Return a cached RDS ``ResultStore`` or ``None`` if unavailable.
 
     Lazily initialised on first call. Failures are logged and cached as
     ``None`` so a transient outage does not retry on every trace (the same

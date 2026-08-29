@@ -623,9 +623,16 @@
             <div class="card">
               <div class="field">
                 <label>Bank</label>
-                <select value=${bank} onChange=${(e) => setBank(e.target.value)}>
+                <input
+                  type="text"
+                  list="bank-list"
+                  value=${bank}
+                  onChange=${(e) => setBank(e.target.value)}
+                  placeholder="Select or type a bank name"
+                />
+                <datalist id="bank-list">
                   ${BANKS.map((b) => h`<option key=${b.value} value=${b.value}>${b.label}</option>`)}
-                </select>
+                </datalist>
               </div>
               <div class="field">
                 <label>Statement PDF</label>

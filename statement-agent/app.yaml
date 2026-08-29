@@ -6,22 +6,21 @@ env:
     value: databricks-gpt-5-6-luna
   - name: JUDGE_ENDPOINT
     value: databricks-claude-opus-5
-  # --- Workstream 3: Lakebase connection ---
-  # pg_version=17 Lakebase projects are NOT registered in the Databricks
-  # Database Instances API, so the app ``database`` resource binding cannot
-  # inject PGHOST/PGUSER/PGPORT/PGDATABASE.  These explicit connection values
-  # avoid an unnecessary endpoint lookup. The user comes from the
-  # WorkspaceClient identity. ENDPOINT_NAME scopes the fresh per-connection
-  # credential generated through the pinned SDK's autoscaling Postgres API.
-  - name: ENDPOINT_NAME
-    value: projects/savesage-statement-agent/branches/production/endpoints/primary
-  - name: PGHOST
-    value: ep-long-mountain-d25gb0m7.database.us-east-1.cloud.databricks.com
-  - name: PGDATABASE
-    value: databricks_postgres
-  - name: PGPORT
+  # --- RDS Postgres connection (replaces Lakebase) ---
+  # Direct connection to an AWS RDS Postgres instance using username/password
+  # credentials — no WorkspaceClient, no endpoint API, no per-connection
+  # token. See ``_build_rds_stores`` in app/main.py.
+  - name: RDS_HOST
+    value: your-rds-instance.xxxxxx.us-east-1.rds.amazonaws.com
+  - name: RDS_PORT
     value: '5432'
-  - name: PGSSLMODE
+  - name: RDS_DATABASE
+    value: postgres
+  - name: RDS_USER
+    value: postgres
+  - name: RDS_PASSWORD
+    value: CHANGE_ME
+  - name: RDS_SSLMODE
     value: require
   # --- Workstream 4: MLflow tracing ---
   - name: WS4_TRACING_ENABLED
@@ -41,11 +40,9 @@ env:
 # `databricks experiments list`; replace it if deploying to a different
 # workspace.
 #
-# Note: the Lakebase Postgres ``database`` resource binding is intentionally
-# omitted — it does not work for pg_version=17 Lakebase projects (the project
-# is not registered in the Database Instances API, so the binding cannot
-# inject connection env vars).  Connection parameters are derived at runtime
-# instead; see ``_build_lakebase_stores`` in app/main.py.
+# Note: no Databricks ``database`` resource binding is needed — the app
+# connects to RDS Postgres directly via ``RDS_*`` env vars; see
+# ``_build_rds_stores`` in app/main.py.
 resources:
   - name: savesage-mlflow
     description: "MLflow experiment for statement-agent tracing + field feedback"

@@ -42,17 +42,24 @@ SCHEMA_BY_BANK: dict[Bank, Path] = {
 }
 
 
-def load_schema_for_bank(bank: Bank) -> dict:
+def load_schema_for_bank(bank: Bank | str) -> dict:
     """Load and return the per-bank extraction schema (stdlib json).
 
-    Checks a DBFS override first (``/savesage/schemas/<bank>.json``); if the
-    SDK is unavailable or the file does not exist, falls back to the bundled
-    file. Reads from disk each call (schemas are small, ~4-10KB) so a schema
-    edit — whether on DBFS or the bundled file — is picked up without a
-    process restart, mirroring :func:`graph.routing.resolve_prompt`.
-    Raises ``KeyError`` if ``bank`` is not in :data:`SCHEMA_BY_BANK` (a
-    configuration defect, not something to silently route around).
+    Accepts a :class:`Bank` enum or an arbitrary string; unknown strings
+    fall back to :data:`Bank.GENERIC` (the generic schema), mirroring
+    :func:`graph.routing.resolve_prompt`.  Checks a DBFS override first
+    (``/savesage/schemas/<bank>.json``); if the SDK is unavailable or the
+    file does not exist, falls back to the bundled file.  Reads from disk
+    each call (schemas are small, ~4-10KB) so a schema edit — whether on
+    DBFS or the bundled file — is picked up without a process restart.
     """
+    # Normalise to a Bank enum; unknown strings fall back to GENERIC so
+    # arbitrary bank names from the UI/API route to the generic schema.
+    if not isinstance(bank, Bank):
+        try:
+            bank = Bank(bank)
+        except (ValueError, TypeError):
+            bank = Bank.GENERIC
     # DBFS override (best-effort; None when SDK unavailable or file missing).
     dbfs_text = read_dbfs_text(schema_dbfs_path(bank.value))
     if dbfs_text:

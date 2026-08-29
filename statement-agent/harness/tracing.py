@@ -387,6 +387,16 @@ class MLflowTraceSink(TraceSink):
             bank = root.attributes.get("bank")
             if bank:
                 best_effort("mlflow.log_param.bank", mlf.log_param, "bank", bank)
+                # Also set bank as a run TAG so it appears as a column in the
+                # MLflow experiments table and is picked up by the trace sync
+                # job's _run_value(run, 'tags', 'bank') fallback.  Wrapped in a
+                # lambda (like prompt_version below) so the set_tag attribute
+                # access happens inside best-effort — some mlflow fakes predate
+                # set_tag and an eager reference would raise AttributeError.
+                best_effort(
+                    "mlflow.set_tag.bank",
+                    lambda b=bank: mlf.set_tag("bank", b),
+                )
             outcome = root.attributes.get("outcome")
             if outcome:
                 best_effort("mlflow.log_param.outcome", mlf.log_param, "outcome", outcome)
