@@ -677,8 +677,35 @@
         const [name, setName] = useState("");
         const [prompt, setPrompt] = useState("");
         const [schema, setSchema] = useState("");
+        const [loadingDefaults, setLoadingDefaults] = useState(true);
         const [saving, setSaving] = useState(false);
         const [error, setError] = useState(null);
+
+        useEffect(() => {
+          let cancelled = false;
+
+          const loadDefaults = async () => {
+            const [promptResult, schemaResult] = await Promise.allSettled([
+              fetch("/api/prompt/GENERIC").then(async (resp) => {
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                return typeof data.prompt === "string" ? data.prompt : "";
+              }),
+              fetch("/api/schema/GENERIC").then(async (resp) => {
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                return JSON.stringify(await resp.json(), null, 2);
+              }),
+            ]);
+
+            if (cancelled) return;
+            setPrompt(promptResult.status === "fulfilled" ? promptResult.value : "");
+            setSchema(schemaResult.status === "fulfilled" ? schemaResult.value : "");
+            setLoadingDefaults(false);
+          };
+
+          loadDefaults();
+          return () => { cancelled = true; };
+        }, []);
 
         const handleSave = async () => {
           setError(null);
@@ -728,7 +755,7 @@
                   value=${prompt}
                   onChange=${(e) => setPrompt(e.target.value)}
                   spellCheck=${false}
-                  placeholder="Extraction prompt for this bank…"
+                  placeholder=${loadingDefaults ? "Loading defaults…" : "Extraction prompt for this bank…"}
                 ></textarea>
                 <label>Schema JSON</label>
                 <textarea
@@ -736,7 +763,7 @@
                   onChange=${(e) => setSchema(e.target.value)}
                   spellCheck=${false}
                   style=${{ minHeight: "200px" }}
-                  placeholder='{"properties": {…}, "type": "object"}'
+                  placeholder=${loadingDefaults ? "Loading defaults…" : '{"properties": {…}, "type": "object"}'}
                 ></textarea>
                 ${error && h`<div class="alert alert-error">${error}</div>`}
                 <div class="ps-actions">
