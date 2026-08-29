@@ -29,11 +29,32 @@ class FrontendPathFormatTest(unittest.TestCase):
     FIELD_TEMPLATES = [
         ("card name", "cards.{i}.cardMeta.cardDisplayName"),
         ("last four", "cards.{i}.cardMeta.lastFourDigit"),
+        ("product family", "cards.{i}.cardMeta.productFamily"),
+        ("network", "cards.{i}.cardMeta.network"),
+        ("card credit limit", "cards.{i}.bigPicture.cardCreditLimit"),
+        ("card avail credit limit", "cards.{i}.bigPicture.cardAvailableCreditLimit"),
         ("points earned", "rewards.pointsEarnedThisCycle"),
         ("closing points", "rewards.closingPoints"),
+        ("program type", "rewards.programType"),
+        ("opening points", "rewards.openingPoints"),
+        ("points redeemed", "rewards.pointsRedeemedThisCycle"),
+        ("points expiring 30", "rewards.pointsExpiringNext30Days"),
+        ("points expiring 60", "rewards.pointsExpiringNext60Days"),
+        ("bonus points", "rewards.bonusPointsThisCycle"),
         ("txn date", "transactions.{i}.date"),
         ("txn description", "transactions.{i}.description"),
         ("txn amount", "transactions.{i}.amount"),
+        ("txn direction", "transactions.{i}.direction"),
+        ("txn reward points", "transactions.{i}.rewardPointsOnThisTransaction"),
+        ("issuer name", "statementMeta.issuerName"),
+        ("statement date", "statementMeta.statementDate"),
+        ("due date", "statementMeta.dueDate"),
+        ("period start", "statementMeta.statementPeriodStart"),
+        ("period end", "statementMeta.statementPeriodEnd"),
+        ("total amount due", "statementLevelSummary.totalAmountDue"),
+        ("total min amount due", "statementLevelSummary.totalMinimumAmountDue"),
+        ("total credit limit", "statementLevelSummary.totalCreditLimit"),
+        ("available credit limit", "statementLevelSummary.availableCreditLimit"),
     ]
 
     def test_all_canonical_paths_pass_validation(self) -> None:
@@ -57,7 +78,10 @@ class FrontendPathFormatTest(unittest.TestCase):
             "transactions[].amount",               # template bracket
             "transactions.01.date",                # leading zero
             "rewards.pointsEarned",                # unknown field
-            "cards.0.cardMeta.productFamily",      # non-judged field
+            "cards.0.cardMeta.isPrimaryCard",      # non-judged field
+            "statementMeta.rawStatementId",        # non-judged field
+            "transactions.0.txnType",             # non-judged field
+            "transactions.0.currency",             # non-judged field
         ]
         for path in rejected:
             with self.subTest(path=path):

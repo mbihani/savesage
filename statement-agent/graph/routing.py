@@ -17,6 +17,7 @@ it -- the version changes whenever the prompt text changes.
 import hashlib
 
 from contracts.models import Bank
+from harness.dbfs import prompt_dbfs_path, read_dbfs_text
 from rules.routing import PROMPT_BY_BANK
 
 
@@ -27,11 +28,22 @@ class RoutingError(RuntimeError):
 def resolve_prompt(bank: Bank) -> str:
     """Return the non-empty prompt text for ``bank``.
 
-    Loads from disk each call (prompts are small) so a prompt edit during a long
-    session is picked up without a process restart. Raises :class:`RoutingError`
-    if the bank is unknown or the prompt file is empty/missing -- a bank with no
-    prompt is a configuration defect, not something to silently route around.
+    Checks a DBFS override first (``/savesage/prompts/<bank>.txt``); if the
+    SDK is unavailable or the file does not exist, falls back to the bundled
+    file. Loads from disk each call (prompts are small) so a prompt edit —
+    whether on DBFS or the bundled file — is picked up without a process
+    restart. Raises :class:`RoutingError` if the bank is unknown or the
+    prompt file is empty/missing -- a bank with no prompt is a configuration
+    defect, not something to silently route around.
     """
+    # DBFS override (best-effort; None when SDK unavailable, file missing,
+    # or bank is not a valid Bank enum with a .value attribute).
+    try:
+        dbfs_text = read_dbfs_text(prompt_dbfs_path(bank.value))
+        if dbfs_text and dbfs_text.strip():
+            return dbfs_text
+    except (AttributeError, TypeError):
+        pass  # bank is not a Bank enum; fall through to the KeyError path
     try:
         path = PROMPT_BY_BANK[bank]
     except KeyError as exc:  # pragma: no cover - exhaustive enum, defensive

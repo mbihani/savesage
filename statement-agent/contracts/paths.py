@@ -5,9 +5,12 @@ import re
 _INDEX = r"(?:0|[1-9][0-9]*)"
 _FEEDBACK_PATH = re.compile(
     rf"^(?:"
-    rf"cards\.{_INDEX}\.cardMeta\.(?:cardDisplayName|lastFourDigit)"
-    rf"|transactions\.{_INDEX}\.(?:date|description|amount)"
-    rf"|rewards\.(?:pointsEarnedThisCycle|closingPoints)"
+    rf"cards\.{_INDEX}\.cardMeta\.(?:cardDisplayName|lastFourDigit|productFamily|network)"
+    rf"|cards\.{_INDEX}\.bigPicture\.(?:cardCreditLimit|cardAvailableCreditLimit)"
+    rf"|transactions\.{_INDEX}\.(?:date|description|amount|direction|rewardPointsOnThisTransaction)"
+    rf"|rewards\.(?:pointsEarnedThisCycle|closingPoints|programType|openingPoints|pointsRedeemedThisCycle|pointsExpiringNext30Days|pointsExpiringNext60Days|bonusPointsThisCycle)"
+    rf"|statementMeta\.(?:issuerName|statementDate|dueDate|statementPeriodStart|statementPeriodEnd)"
+    rf"|statementLevelSummary\.(?:totalAmountDue|totalMinimumAmountDue|totalCreditLimit|availableCreditLimit)"
     rf")$"
 )
 
@@ -36,7 +39,7 @@ def canonical_feedback_path(
         if card_index is None or row_index is not None:
             raise ValueError("card fields require only card_index")
         path = judged_field.replace("cards[]", f"cards.{card_index}", 1)
-    elif judged_field.startswith("rewards."):
+    elif judged_field.startswith(("rewards.", "statementMeta.", "statementLevelSummary.")):
         if row_index is not None or card_index is not None:
             raise ValueError("statement scalar fields take no index")
         path = judged_field

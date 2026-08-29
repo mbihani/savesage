@@ -172,7 +172,13 @@ def _read_pdf(request: ParseRequest) -> bytes:
 
 
 class LunaExtractionAdapter(ExtractionAdapter):
-    """Concrete Luna extraction adapter; stdlib transport, per-request auth."""
+    """Concrete Luna extraction adapter; stdlib transport, per-request auth.
+
+    When ``prompt_override`` / ``schema_override`` are provided (the
+    ``/api/parse-custom`` path), they are used INSTEAD of the bank defaults —
+    ``resolve_prompt`` and ``load_schema_for_bank`` are not called. This lets
+    the user experiment with custom prompts/schemas without persisting them.
+    """
 
     def __init__(
         self,
@@ -180,11 +186,15 @@ class LunaExtractionAdapter(ExtractionAdapter):
         settings=None,
         token_provider=acquire_token,
         urlopen=urllib.request.urlopen,
+        prompt_override: str | None = None,
+        schema_override: dict[str, Any] | None = None,
     ) -> None:
         self._policy = retry_policy or RetryPolicy()
         self._settings = settings  # lazily fetched in extract() if None
         self._token_provider = token_provider
         self._urlopen = urlopen
+        self._prompt_override = prompt_override
+        self._schema_override = schema_override
 
     def _settings_obj(self):
         if self._settings is None:
@@ -210,16 +220,21 @@ class LunaExtractionAdapter(ExtractionAdapter):
 
         Uses :func:`graph.routing.resolve_prompt` for the prompt and
         :func:`rules.routing.load_schema_for_bank` for the schema (both keyed on
-        the request's detected bank, mirroring each other). The function-local
-        prompt import keeps this module importable in isolation tests that
-        monkeypatch the prompt. The retry policy's ``max_attempts`` bounds the
-        call; the ``retry_statuses`` set decides what is retried. The timeout is
-        the policy's ``timeout_seconds`` (single source -- no settings timeout).
+        the request's detected bank, mirroring each other), unless
+        ``prompt_override`` / ``schema_override`` were provided at construction
+        (the ``/api/parse-custom`` path), in which case those are used directly.
+        The function-local prompt import keeps this module importable in
+        isolation tests that monkeypatch the prompt. The retry policy's
+        ``max_attempts`` bounds the call; the ``retry_statuses`` set decides
+        what is retried. The timeout is the policy's ``timeout_seconds``
+        (single source -- no settings timeout).
         """
-        from graph.routing import resolve_prompt  # function-local; see docstring
-
-        prompt = resolve_prompt(request.bank)
-        schema = load_schema_for_bank(request.bank)
+        if self._prompt_override is not None:
+            prompt = self._prompt_override
+        else:
+            from graph.routing import resolve_prompt  # function-local; see docstring
+            prompt = resolve_prompt(request.bank)
+        schema = self._schema_override if self._schema_override is not None else load_schema_for_bank(request.bank)
         req = self._build_request(request, prompt, schema)
         timeout = self._policy.timeout_seconds
 
