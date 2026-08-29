@@ -398,12 +398,14 @@ class DbfsHelperTest(unittest.TestCase):
         from harness.dbfs import read_dbfs_text
         # databricks-sdk is not installed locally; the function-local import
         # raises ImportError and the function returns None.
-        result = read_dbfs_text("/savesage/prompts/HDFC.txt")
+        result = read_dbfs_text("/Workspace/savesage-bank-configs/prompts/HDFC.txt")
         self.assertIsNone(result)
 
     def test_write_dbfs_text_returns_false_without_sdk(self) -> None:
         from harness.dbfs import write_dbfs_text
-        result = write_dbfs_text("/savesage/prompts/HDFC.txt", "content")
+        result = write_dbfs_text(
+            "/Workspace/savesage-bank-configs/prompts/HDFC.txt", "content"
+        )
         self.assertFalse(result)
 
     def test_dbfs_dirs_are_absolute_paths(self) -> None:
@@ -411,10 +413,10 @@ class DbfsHelperTest(unittest.TestCase):
         self.assertTrue(SCHEMA_DBFS_DIR.startswith("/"))
 
     def test_prompt_dbfs_dir_value(self) -> None:
-        self.assertEqual(PROMPT_DBFS_DIR, "/savesage/prompts")
+        self.assertEqual(PROMPT_DBFS_DIR, "/Workspace/savesage-bank-configs/prompts")
 
     def test_schema_dbfs_dir_value(self) -> None:
-        self.assertEqual(SCHEMA_DBFS_DIR, "/savesage/schemas")
+        self.assertEqual(SCHEMA_DBFS_DIR, "/Workspace/savesage-bank-configs/schemas")
 
 
 if __name__ == "__main__":

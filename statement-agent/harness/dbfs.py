@@ -1,25 +1,25 @@
-"""DBFS read/write helpers for prompt/schema overrides.
+"""Workspace Files read/write helpers for prompt/schema overrides.
 
 Imports ``databricks-sdk`` function-local so this module is importable in a
 stdlib-only environment (the contract-test gate). Each function returns
 ``None``/``False`` on any failure — SDK missing, file not found, network
-error — so callers silently fall back to the bundled file.
+error — so callers fall back to the bundled file.
 
-Two on-DBFS layouts coexist:
+Two Workspace Files layouts coexist:
 
 * **Built-in bank overrides** (legacy, kept for back-compat with prompts/schemas
   saved before dynamic banks existed):
-  ``/savesage/prompts/<BANK>.txt`` and ``/savesage/schemas/<BANK>.json``.
+  ``/Workspace/savesage-bank-configs/prompts/<BANK>.txt`` and
+  ``/Workspace/savesage-bank-configs/schemas/<BANK>.json``.
 * **Dynamic banks** (added at runtime via the UI/API): one directory per bank
   holding its prompt, schema, and a top-level registry listing every dynamic
   bank name::
 
-      /savesage-statement-agent/banks/registry.json   # ["KOTAK", "RBL", ...]
-      /savesage-statement-agent/banks/<BANK>/prompt.txt
-      /savesage-statement-agent/banks/<BANK>/schema.json
+      /Workspace/savesage-bank-configs/banks/registry.json
+      /Workspace/savesage-bank-configs/banks/<BANK>/prompt.txt
+      /Workspace/savesage-bank-configs/banks/<BANK>/schema.json
 """
 
-import base64
 import io
 import json
 import logging
@@ -27,13 +27,13 @@ import re
 
 _LOGGER = logging.getLogger(__name__)
 
-# DBFS override directories for built-in bank prompts/schemas (legacy layout).
-PROMPT_DBFS_DIR = "/savesage/prompts"
-SCHEMA_DBFS_DIR = "/savesage/schemas"
+# Workspace Files directories for built-in bank prompt/schema overrides.
+PROMPT_DBFS_DIR = "/Workspace/savesage-bank-configs/prompts"
+SCHEMA_DBFS_DIR = "/Workspace/savesage-bank-configs/schemas"
 
-# DBFS root for dynamically added banks (one subdirectory per bank, plus a
-# top-level registry.json listing every dynamic bank name).
-BANKS_DBFS_DIR = "/savesage-statement-agent/banks"
+# Workspace Files root for dynamically added banks (one subdirectory per bank,
+# plus a top-level registry.json listing every dynamic bank name).
+BANKS_DBFS_DIR = "/Workspace/savesage-bank-configs/banks"
 
 _BANK_NAME_RE = re.compile(r"^[A-Z0-9_-]+$")
 
@@ -53,7 +53,7 @@ def validate_bank_name(name: str) -> str:
 
 
 def read_dbfs_text(dbfs_path: str) -> str | None:
-    """Read a UTF-8 text file from DBFS.
+    """Read a UTF-8 text file from Workspace Files.
 
     Returns the file content as a string, or ``None`` on any failure
     (SDK not installed, file not found, network error). Callers fall back
@@ -61,41 +61,43 @@ def read_dbfs_text(dbfs_path: str) -> str | None:
     """
     try:
         from databricks.sdk import WorkspaceClient
-    except ImportError:
+    except ImportError as exc:
+        _LOGGER.warning(
+            "Workspace Files SDK unavailable for read of %s: %s", dbfs_path, exc
+        )
         return None
     try:
         client = WorkspaceClient()
-        resp = client.dbfs.read(path=dbfs_path)
-        if not resp.data:
-            return None
-        raw = base64.b64decode(resp.data)
-        return raw.decode("utf-8")
+        resp = client.files.download(dbfs_path)
+        return resp.contents.read().decode("utf-8")
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
-        _LOGGER.debug("DBFS read failed for %s: %s", dbfs_path, exc)
+        _LOGGER.warning("Workspace Files read failed for %s: %s", dbfs_path, exc)
         return None
 
 
 def write_dbfs_text(dbfs_path: str, content: str) -> bool:
-    """Write a UTF-8 text file to DBFS, overwriting if it exists.
+    """Write a UTF-8 text file to Workspace Files, overwriting if it exists.
 
     Returns ``True`` on success, ``False`` on any failure. The directory
-    must already exist (the DBFS API does not create intermediate dirs on
-    upload); ``/savesage`` is created by the app's deployment bundle.
+    must already exist because upload does not create intermediate directories.
     """
     try:
         from databricks.sdk import WorkspaceClient
-    except ImportError:
+    except ImportError as exc:
+        _LOGGER.warning(
+            "Workspace Files SDK unavailable for write of %s: %s", dbfs_path, exc
+        )
         return False
     try:
         client = WorkspaceClient()
-        client.dbfs.upload(
-            path=dbfs_path,
+        client.files.upload(
+            dbfs_path,
             contents=io.BytesIO(content.encode("utf-8")),
             overwrite=True,
         )
         return True
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
-        _LOGGER.warning("DBFS write failed for %s: %s", dbfs_path, exc)
+        _LOGGER.warning("Workspace Files write failed for %s: %s", dbfs_path, exc)
         return False
 
 
@@ -110,7 +112,7 @@ def schema_dbfs_path(bank_value: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Dynamic-bank helpers (the /savesage-statement-agent/banks/<BANK>/ layout).
+# Dynamic-bank helpers (the Workspace Files banks/<BANK>/ layout).
 # ---------------------------------------------------------------------------
 
 
@@ -135,7 +137,7 @@ def registry_dbfs_path() -> str:
 
 
 def mkdirs_dbfs(dbfs_path: str) -> bool:
-    """Create a DBFS directory (and any missing parents), idempotent.
+    """Create a Workspace Files directory (and missing parents), idempotent.
 
     Returns ``True`` on success, ``False`` on any failure. Needed because
     :func:`write_dbfs_text` does not create intermediate directories, so a
@@ -144,19 +146,22 @@ def mkdirs_dbfs(dbfs_path: str) -> bool:
     """
     try:
         from databricks.sdk import WorkspaceClient
-    except ImportError:
+    except ImportError as exc:
+        _LOGGER.warning(
+            "Workspace Files SDK unavailable for mkdir of %s: %s", dbfs_path, exc
+        )
         return False
     try:
         client = WorkspaceClient()
-        client.dbfs.mkdirs(path=dbfs_path)
+        client.files.create_directory(dbfs_path)
         return True
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
-        _LOGGER.debug("DBFS mkdirs failed for %s: %s", dbfs_path, exc)
+        _LOGGER.warning("Workspace Files mkdir failed for %s: %s", dbfs_path, exc)
         return False
 
 
 def read_dbfs_registry() -> list[str]:
-    """Return the list of dynamic bank names from the DBFS registry.
+    """Return the list of dynamic bank names from the Workspace Files registry.
 
     Returns ``[]`` on any failure (SDK missing, file not found, invalid
     JSON) so callers treat a missing registry as "no dynamic banks" and
@@ -178,12 +183,14 @@ def read_dbfs_registry() -> list[str]:
         try:
             names.append(validate_bank_name(name))
         except ValueError:
-            _LOGGER.warning("Ignoring unsafe bank name in DBFS registry: %r", name)
+            _LOGGER.warning(
+                "Ignoring unsafe bank name in Workspace Files registry: %r", name
+            )
     return names
 
 
 def write_dbfs_registry(names: list[str]) -> bool:
-    """Overwrite the DBFS registry with ``names`` (a list of bank names).
+    """Overwrite the Workspace Files registry with a list of bank names.
 
     The parent directory is created first (best-effort). Returns ``True`` on
     success, ``False`` on any failure.
