@@ -5,6 +5,9 @@ stdlib-only environment (the contract-test gate). Each function returns
 ``None``/``False`` on any failure — SDK missing, file not found, network
 error — so callers fall back to the bundled file.
 
+The directory ``/Workspace/savesage-bank-configs/`` must exist, and the app
+service principal must have ``CAN_MANAGE`` permission on it.
+
 Two Workspace Files layouts coexist:
 
 * **Built-in bank overrides** (legacy, kept for back-compat with prompts/schemas
@@ -97,7 +100,12 @@ def write_dbfs_text(dbfs_path: str, content: str) -> bool:
         )
         return True
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
-        _LOGGER.warning("Workspace Files write failed for %s: %s", dbfs_path, exc)
+        _LOGGER.warning(
+            "Workspace Files write failed for %s (%s): %s",
+            dbfs_path,
+            type(exc).__name__,
+            exc,
+        )
         return False
 
 
@@ -156,7 +164,12 @@ def mkdirs_dbfs(dbfs_path: str) -> bool:
         client.files.create_directory(dbfs_path)
         return True
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
-        _LOGGER.warning("Workspace Files mkdir failed for %s: %s", dbfs_path, exc)
+        _LOGGER.error(
+            "Workspace Files mkdir failed for %s (%s): %s",
+            dbfs_path,
+            type(exc).__name__,
+            exc,
+        )
         return False
 
 
