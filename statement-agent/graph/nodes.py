@@ -19,7 +19,7 @@ from datetime import UTC, datetime
 import logging
 from typing import TYPE_CHECKING, Any
 
-from contracts.models import ExtractionResult, TraceEvent
+from contracts.models import ExtractionResult, TraceEvent, bank_name
 from contracts.ports import (
     ExtractionAdapter,
     FeedbackStore,
@@ -174,15 +174,15 @@ def route_node(state: GraphState, deps: NodeDeps) -> GraphState:
                # ``prompt_version`` is a span attribute so the route span records
                # WHICH prompt was selected (the run param/tag below also uses it).
                extra_attrs={"prompt_version": state.prompt_version},
-               inputs={"bank": state.request.bank.value},
-               outputs={"bank": state.request.bank.value,
+               inputs={"bank": bank_name(state.request.bank)},
+               outputs={"bank": bank_name(state.request.bank),
                         "prompt_resolved": True,
                         "prompt_version": state.prompt_version})
     except Exception as exc:
         state.mark_failure(Stage.ROUTED, f"route: {exc}")
         state.outcome = Outcome.EXTRACTION_FAILED
         _trace(deps, state, "route",
-               inputs={"bank": state.request.bank.value},
+               inputs={"bank": bank_name(state.request.bank)},
                error=str(exc))
     return state
 
@@ -204,7 +204,7 @@ def extract_node(state: GraphState, deps: NodeDeps) -> GraphState:
             extract_attrs["prompt_version"] = state.prompt_version
         _trace(deps, state, "extract",
                extra_attrs=extract_attrs,
-               inputs={"bank": state.request.bank.value,
+               inputs={"bank": bank_name(state.request.bank),
                        "model_id": state.extraction.model_id,
                        "prompt": state.prompt},
                outputs={"extraction": state.extraction.payload,
@@ -216,7 +216,7 @@ def extract_node(state: GraphState, deps: NodeDeps) -> GraphState:
         state.mark_failure(Stage.EXTRACTED, f"extract: {exc}")
         state.outcome = Outcome.EXTRACTION_FAILED
         _trace(deps, state, "extract",
-               inputs={"bank": state.request.bank.value},
+               inputs={"bank": bank_name(state.request.bank)},
                error=str(exc))
     return state
 
@@ -305,7 +305,7 @@ def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
             # a ParseRequest and ExtractionResult without the live store.
             extraction_meta = {
                 "request_id": state.request_id,
-                "bank": state.request.bank.value,
+                "bank": bank_name(state.request.bank),
                 "payload": state.extraction.payload,
                 "model_id": state.extraction.model_id,
                 "schema_valid": state.extraction.schema_valid,

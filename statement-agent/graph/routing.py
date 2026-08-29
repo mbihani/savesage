@@ -17,7 +17,12 @@ it -- the version changes whenever the prompt text changes.
 import hashlib
 
 from contracts.models import Bank
-from harness.dbfs import prompt_dbfs_path, read_dbfs_text
+from harness.dbfs import (
+    bank_prompt_dbfs_path,
+    prompt_dbfs_path,
+    read_dbfs_registry,
+    read_dbfs_text,
+)
 from rules.routing import PROMPT_BY_BANK
 
 
@@ -42,55 +47,128 @@ def try_bank(bank: Bank | str) -> Bank:
         return Bank.GENERIC
 
 
+def coerce_request_bank(bank: Bank | str) -> Bank | str:
+    """Normalise ``bank`` to its real identity for a parse request.
+
+    Unlike :func:`try_bank` (which collapses unknown names to GENERIC), this
+    preserves a dynamically added bank's name as a plain string so the
+    routing layer can resolve its DBFS prompt/schema. Built-in bank strings
+    map to their :class:`Bank` enum; the name is upper-cased and trimmed.
+    """
+    if isinstance(bank, Bank):
+        return bank
+    name = str(bank).strip().upper()
+    if not name:
+        return Bank.GENERIC
+    try:
+        return Bank(name)
+    except (ValueError, TypeError):
+        return name  # dynamic / unknown — keep the real name
+
+
+def detect_bank(text: str) -> str:
+    """Detect a bank name from free text (e.g. a statement header).
+
+    Checks built-in bank names first (substring, case-insensitive), then the
+    DBFS registry of dynamically added banks. Returns the matched bank name
+    string (e.g. ``"HDFC"``, ``"KOTAK"``), or :data:`Bank.GENERIC.value`
+    (``"GENERIC"``) when nothing matches. The caller PASSES the bank in the
+    normal flow; this is a utility for callers that only have raw text.
+    """
+    if not text:
+        return Bank.GENERIC.value
+    upper = text.upper()
+    # Built-in banks (GENERIC is the fallback, not a pattern to match).
+    for bank in Bank:
+        if bank.value == Bank.GENERIC.value:
+            continue
+        if bank.value in upper:
+            return bank.value
+    # Dynamically added banks from the DBFS registry.
+    for name in read_dbfs_registry():
+        if name and name.upper() in upper:
+            return name
+    return Bank.GENERIC.value
+
+
 def resolve_prompt(bank: Bank | str) -> str:
     """Return the non-empty prompt text for ``bank``.
 
-    Accepts a :class:`Bank` enum or an arbitrary string; unknown strings
-    fall back to :data:`Bank.GENERIC` (the generic Luna prompt) instead of
-    raising :class:`RoutingError`.  Checks a DBFS override first
-    (``/savesage/prompts/<bank>.txt``); if the SDK is unavailable or the
-    file does not exist, falls back to the bundled file.  Loads from disk
-    each call (prompts are small) so a prompt edit — whether on DBFS or
-    the bundled file — is picked up without a process restart.  Raises
-    :class:`RoutingError` if the prompt file is empty/missing.
+    Accepts a :class:`Bank` enum or an arbitrary string. Resolution order:
+    (1) dynamic-bank DBFS file ``/savesage-statement-agent/banks/<bank>/prompt.txt``
+    for any bank name; (2) built-in banks fall back to the legacy DBFS override
+    ``/savesage/prompts/<bank>.txt`` then the bundled ``prompts/<bank>.txt``;
+    (3) a registered dynamic bank whose prompt file is missing raises
+    :class:`RoutingError`; (4) a completely unknown bank falls back to
+    :data:`Bank.GENERIC` (the generic Luna prompt).  Loads from disk each call
+    (prompts are small) so a prompt edit is picked up without a restart.
     """
-    bank = try_bank(bank)
-    # DBFS override (best-effort; None when SDK unavailable or file missing).
+    bank_str = bank.value if isinstance(bank, Bank) else str(bank)
+
+    # 1. Dynamic-bank DBFS override (works for both dynamic and built-in names).
     try:
-        dbfs_text = read_dbfs_text(prompt_dbfs_path(bank.value))
+        dbfs_text = read_dbfs_text(bank_prompt_dbfs_path(bank_str))
         if dbfs_text and dbfs_text.strip():
             return dbfs_text
     except (AttributeError, TypeError):
-        pass  # bank is not a Bank enum; fall through to the KeyError path
+        pass  # bank is not a string-like; fall through to the built-in path
+
+    # 2. Built-in bank: legacy DBFS override -> bundled file.
     try:
-        path = PROMPT_BY_BANK[bank]
-    except KeyError as exc:  # pragma: no cover - exhaustive enum, defensive
-        raise RoutingError(f"no prompt mapped for bank {bank!r}") from exc
-    try:
-        text = path.read_text(encoding="utf-8")
-    except OSError as exc:
-        raise RoutingError(f"cannot read prompt {path}: {exc}") from exc
-    if not text.strip():
-        raise RoutingError(f"prompt for {bank.value} is empty: {path}")
-    return text
+        bank_enum = Bank(bank_str)
+    except (ValueError, TypeError):
+        bank_enum = None
+    if bank_enum is not None:
+        try:
+            dbfs_text = read_dbfs_text(prompt_dbfs_path(bank_enum.value))
+            if dbfs_text and dbfs_text.strip():
+                return dbfs_text
+        except (AttributeError, TypeError):
+            pass
+        try:
+            path = PROMPT_BY_BANK[bank_enum]
+        except KeyError as exc:  # pragma: no cover - exhaustive enum, defensive
+            raise RoutingError(f"no prompt mapped for bank {bank_enum!r}") from exc
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError as exc:
+            raise RoutingError(f"cannot read prompt {path}: {exc}") from exc
+        if not text.strip():
+            raise RoutingError(f"prompt for {bank_enum.value} is empty: {path}")
+        return text
+
+    # 3. Registered dynamic bank with missing/empty prompt -> loud error.
+    if bank_str in read_dbfs_registry():
+        raise RoutingError(
+            f"dynamic bank {bank_str!r} is registered but its prompt file "
+            f"is missing or empty on DBFS at {bank_prompt_dbfs_path(bank_str)}"
+        )
+
+    # 4. Completely unknown bank -> GENERIC fallback (generic Luna prompt).
+    return resolve_prompt(Bank.GENERIC)
 
 
-def get_prompt_version(prompt_text: str, bank: Bank) -> str:
+def get_prompt_version(prompt_text: str, bank: Bank | str) -> str:
     """Return a short, stable version id for ``prompt_text``.
 
-    The id is ``<BANK>:<sha256[:8]>`` -- ``bank``'s enum value plus the first 8
-    hex chars of the SHA-256 of ``prompt_text``. The caller passes the EXACT
-    prompt text that was traced/sent to the model (not the bank alone) so the
-    version hashes what was actually used: this avoids the resolve-then-version
-    race where :func:`resolve_prompt` is called twice (once for the trace text,
-    once for the version) and the prompt file is edited between the two reads,
-    leaving the traced text and the version silently disagreeing. ``bank`` is
-    kept only to prefix the id. The version changes whenever the prompt text
-    changes but is stable across runs that use the same text. Used to tag MLflow
-    runs/spans with the exact prompt version that produced an extraction.
+    The id is ``<BANK>:<sha256[:8]>`` -- the bank's canonical name plus the first
+    8 hex chars of the SHA-256 of ``prompt_text``. ``bank`` may be a
+    :class:`Bank` enum (built-in) or a plain string (dynamically added bank);
+    :func:`contracts.models.bank_name` extracts the name either way. The caller
+    passes the EXACT prompt text that was traced/sent to the model (not the
+    bank alone) so the version hashes what was actually used: this avoids the
+    resolve-then-version race where :func:`resolve_prompt` is called twice
+    (once for the trace text, once for the version) and the prompt file is
+    edited between the two reads, leaving the traced text and the version
+    silently disagreeing. ``bank`` is kept only to prefix the id. The version
+    changes whenever the prompt text changes but is stable across runs that
+    use the same text. Used to tag MLflow runs/spans with the exact prompt
+    version that produced an extraction.
     """
+    from contracts.models import bank_name
+
     digest = hashlib.sha256(prompt_text.encode("utf-8")).hexdigest()[:8]
-    return f"{bank.value}:{digest}"
+    return f"{bank_name(bank)}:{digest}"
 
 
 def resolve_prompt_for_all_banks() -> dict[Bank, str]:

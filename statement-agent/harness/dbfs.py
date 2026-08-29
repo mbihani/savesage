@@ -5,19 +5,34 @@ stdlib-only environment (the contract-test gate). Each function returns
 ``None``/``False`` on any failure — SDK missing, file not found, network
 error — so callers silently fall back to the bundled file.
 
-The override directories mirror the PROMPT_BY_BANK / SCHEMA_BY_BANK layout:
-``/savesage/prompts/<BANK>.txt`` and ``/savesage/schemas/<BANK>.json``.
+Two on-DBFS layouts coexist:
+
+* **Built-in bank overrides** (legacy, kept for back-compat with prompts/schemas
+  saved before dynamic banks existed):
+  ``/savesage/prompts/<BANK>.txt`` and ``/savesage/schemas/<BANK>.json``.
+* **Dynamic banks** (added at runtime via the UI/API): one directory per bank
+  holding its prompt, schema, and a top-level registry listing every dynamic
+  bank name::
+
+      /savesage-statement-agent/banks/registry.json   # ["KOTAK", "RBL", ...]
+      /savesage-statement-agent/banks/<BANK>/prompt.txt
+      /savesage-statement-agent/banks/<BANK>/schema.json
 """
 
 import base64
 import io
+import json
 import logging
 
 _LOGGER = logging.getLogger(__name__)
 
-# DBFS override directories for prompts and schemas.
+# DBFS override directories for built-in bank prompts/schemas (legacy layout).
 PROMPT_DBFS_DIR = "/savesage/prompts"
 SCHEMA_DBFS_DIR = "/savesage/schemas"
+
+# DBFS root for dynamically added banks (one subdirectory per bank, plus a
+# top-level registry.json listing every dynamic bank name).
+BANKS_DBFS_DIR = "/savesage-statement-agent/banks"
 
 
 def read_dbfs_text(dbfs_path: str) -> str | None:
@@ -73,5 +88,78 @@ def prompt_dbfs_path(bank_value: str) -> str:
 
 
 def schema_dbfs_path(bank_value: str) -> str:
-    """Return the DBFS path for a bank's schema override."""
+    """Return the DBFS path for a built-in bank's schema override."""
     return f"{SCHEMA_DBFS_DIR}/{bank_value}.json"
+
+
+# ---------------------------------------------------------------------------
+# Dynamic-bank helpers (the /savesage-statement-agent/banks/<BANK>/ layout).
+# ---------------------------------------------------------------------------
+
+
+def bank_prompt_dbfs_path(bank_value: str) -> str:
+    """Return the DBFS path for a (dynamic or overridden) bank's prompt."""
+    return f"{BANKS_DBFS_DIR}/{bank_value}/prompt.txt"
+
+
+def bank_schema_dbfs_path(bank_value: str) -> str:
+    """Return the DBFS path for a (dynamic or overridden) bank's schema."""
+    return f"{BANKS_DBFS_DIR}/{bank_value}/schema.json"
+
+
+def registry_dbfs_path() -> str:
+    """Return the DBFS path for the dynamic-bank registry."""
+    return f"{BANKS_DBFS_DIR}/registry.json"
+
+
+def mkdirs_dbfs(dbfs_path: str) -> bool:
+    """Create a DBFS directory (and any missing parents), idempotent.
+
+    Returns ``True`` on success, ``False`` on any failure. Needed because
+    :func:`write_dbfs_text` does not create intermediate directories, so a
+    per-bank subdirectory (``…/banks/<BANK>``) must be created before the
+    prompt/schema files are uploaded.
+    """
+    try:
+        from databricks.sdk import WorkspaceClient
+    except ImportError:
+        return False
+    try:
+        client = WorkspaceClient()
+        client.dbfs.mkdirs(path=dbfs_path)
+        return True
+    except Exception as exc:  # noqa: BLE001 — best-effort, never raises
+        _LOGGER.debug("DBFS mkdirs failed for %s: %s", dbfs_path, exc)
+        return False
+
+
+def read_dbfs_registry() -> list[str]:
+    """Return the list of dynamic bank names from the DBFS registry.
+
+    Returns ``[]`` on any failure (SDK missing, file not found, invalid
+    JSON) so callers treat a missing registry as "no dynamic banks" and
+    fall back gracefully.
+    """
+    text = read_dbfs_text(registry_dbfs_path())
+    if not text:
+        return []
+    try:
+        data = json.loads(text)
+    except (json.JSONDecodeError, TypeError):
+        return []
+    if not isinstance(data, list):
+        return []
+    return [str(name) for name in data if isinstance(name, str)]
+
+
+def write_dbfs_registry(names: list[str]) -> bool:
+    """Overwrite the DBFS registry with ``names`` (a list of bank names).
+
+    The parent directory is created first (best-effort). Returns ``True`` on
+    success, ``False`` on any failure.
+    """
+    mkdirs_dbfs(BANKS_DBFS_DIR)
+    return write_dbfs_text(
+        registry_dbfs_path(),
+        json.dumps(names, ensure_ascii=False),
+    )

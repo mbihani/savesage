@@ -186,7 +186,7 @@ def build_comparisons(request: ParseRequest, expected: dict, actual: dict) -> tu
 
     expected_rows = expected.get("transactions") if isinstance(expected.get("transactions"), list) else []
     actual_rows = actual.get("transactions") if isinstance(actual.get("transactions"), list) else []
-    pairs, unmatched_actual, unmatched_expected = match_transactions(actual_rows, expected_rows, THRESHOLDS[request.bank])
+    pairs, unmatched_actual, unmatched_expected = match_transactions(actual_rows, expected_rows, THRESHOLDS.get(request.bank, 0.60))
     for actual_index, expected_index, similarity in pairs:
         expected_row = expected_rows[expected_index] if isinstance(expected_rows[expected_index], dict) else {}
         actual_row = actual_rows[actual_index] if isinstance(actual_rows[actual_index], dict) else {}

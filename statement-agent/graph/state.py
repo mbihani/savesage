@@ -18,6 +18,7 @@ from contracts.models import (
     FieldFeedback,
     JudgeVerdict,
     ParseRequest,
+    bank_name,
 )
 
 
@@ -99,7 +100,7 @@ class GraphState:
         """Flat dict snapshot for tracing/logging; never the full payload."""
         return {
             "request_id": self.request_id,
-            "bank": self.request.bank.value,
+            "bank": bank_name(self.request.bank),
             "stage": self.stage.value,
             "outcome": self.outcome.value if self.outcome else None,
             "schema_valid": self.schema_valid,
