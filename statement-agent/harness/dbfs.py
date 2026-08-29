@@ -121,7 +121,13 @@ def registry_dbfs_path() -> str:
 def mkdirs_dbfs(dbfs_path: str) -> bool:
     """Create a Workspace Files directory (and missing parents), idempotent.
 
-    Returns ``True`` on success, ``False`` on any failure. Needed because
+    Returns ``True`` when the directory already exists *or* is newly
+    created, and ``False`` only on a genuine failure (SDK missing,
+    permission denied, network error). Idempotency is layered: a
+    ``get_metadata`` probe returns ``True`` immediately for an existing
+    path, and ``create_directory`` tolerates the "already exists" error
+    some Databricks backends raise for an existing directory even though
+    the API is documented as ``mkdir -p``. Needed because
     :func:`write_dbfs_text` does not create intermediate directories, so a
     per-bank subdirectory (``…/banks/<BANK>``) must be created before the
     prompt/schema files are uploaded.
@@ -135,9 +141,54 @@ def mkdirs_dbfs(dbfs_path: str) -> bool:
         return False
     try:
         client = WorkspaceClient()
+    except Exception as exc:  # noqa: BLE001 — best-effort, never raises
+        _LOGGER.error(
+            "Workspace Files mkdir failed for %s (%s): %s",
+            dbfs_path,
+            type(exc).__name__,
+            exc,
+        )
+        return False
+
+    # Fast path: if the path already exists there is nothing to create. A
+    # successful ``get_metadata`` proves the path resolves (whether it is a
+    # directory or a file); for the mkdirs use case that is sufficient.
+    try:
+        client.files.get_metadata(dbfs_path)
+        return True
+    except Exception as exc:  # noqa: BLE001 — existence probe, never raises
+        # ``NotFound`` — or a backend that answers HEAD for files only — means
+        # the path does not exist yet, so fall through to create it. Any other
+        # transient error also falls through; ``create_directory`` re-surfaces
+        # a genuine failure below.
+        _LOGGER.debug(
+            "Workspace Files get_metadata did not confirm %s (%s): %s",
+            dbfs_path,
+            type(exc).__name__,
+            exc,
+        )
+
+    # Create the directory (and parents). Some backends raise an "already
+    # exists" error for an existing directory despite the API being
+    # documented as idempotent — treat that as success so that seeding and
+    # POST /api/banks do not fail on a directory created out-of-band.
+    try:
         client.files.create_directory(dbfs_path)
         return True
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
+        already_exists = False
+        try:
+            from databricks.sdk.errors.platform import (
+                AlreadyExists,
+                ResourceAlreadyExists,
+            )
+            already_exists = isinstance(exc, (AlreadyExists, ResourceAlreadyExists))
+        except ImportError:
+            pass
+        if not already_exists and "already exist" in str(exc).lower():
+            already_exists = True
+        if already_exists:
+            return True
         _LOGGER.error(
             "Workspace Files mkdir failed for %s (%s): %s",
             dbfs_path,
