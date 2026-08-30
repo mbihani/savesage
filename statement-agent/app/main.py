@@ -1193,7 +1193,7 @@ def create_app():
 
         Both ``prompt`` and ``schema`` must be present in the body. Writes to
         the shared bank config layout
-        ``/Workspace/savesage-bank-configs/banks/<BANK>/prompt.txt`` and
+        ``/Workspace/savesage-statement-agent/banks/<BANK>/prompt.txt`` and
         ``schema.json`` — the routing layer reads this path first, so the
         override takes effect without a restart. For a bank not in the
         built-in :class:`Bank` enum, the bank is also added to the DBFS
@@ -1226,7 +1226,7 @@ def create_app():
         if not mkdirs_dbfs(bank_dbfs_dir(name)):
             raise HTTPException(
                 status_code=502,
-                detail="Failed to create bank config directory. Contact an admin to ensure /Workspace/savesage-bank-configs/banks/ exists and the app service principal has CAN_MANAGE permission.",
+                detail="Failed to create bank config directory. Contact an admin to ensure /Workspace/savesage-statement-agent/banks/ exists and the app service principal has CAN_MANAGE permission.",
             )
         prompt_ok = write_dbfs_text(bank_prompt_dbfs_path(name), str(prompt))
         schema_ok = write_dbfs_text(
@@ -1324,7 +1324,7 @@ def create_app():
         if not mkdirs_dbfs(bank_dbfs_dir(name)):
             raise HTTPException(
                 status_code=502,
-                detail="Failed to create bank config directory. Contact an admin to ensure /Workspace/savesage-bank-configs/banks/ exists and the app service principal has CAN_MANAGE permission.",
+                detail="Failed to create bank config directory. Contact an admin to ensure /Workspace/savesage-statement-agent/banks/ exists and the app service principal has CAN_MANAGE permission.",
             )
         prompt_ok = write_dbfs_text(bank_prompt_dbfs_path(name), str(prompt))
         schema_ok = write_dbfs_text(
@@ -1385,7 +1385,7 @@ def create_app():
         if not mkdirs_dbfs(bank_dbfs_dir(name)):
             raise HTTPException(
                 status_code=502,
-                detail="Failed to create bank config directory. Contact an admin to ensure /Workspace/savesage-bank-configs/banks/ exists and the app service principal has CAN_MANAGE permission.",
+                detail="Failed to create bank config directory. Contact an admin to ensure /Workspace/savesage-statement-agent/banks/ exists and the app service principal has CAN_MANAGE permission.",
             )
         if not write_dbfs_text(
             bank_schema_dbfs_path(name),

@@ -5,15 +5,15 @@ stdlib-only environment (the contract-test gate). Each function returns
 ``None``/``False`` on any failure — SDK missing, file not found, network
 error — so callers fall back to the bundled file.
 
-The directory ``/Workspace/savesage-bank-configs/`` must exist, and the app
+The directory ``/Workspace/savesage-statement-agent/banks/`` must exist, and the app
 service principal must have ``CAN_MANAGE`` permission on it.
 
 Built-in and dynamic banks share one layout: one directory per bank holding
 its prompt and schema, plus a top-level registry listing every dynamic bank::
 
-      /Workspace/savesage-bank-configs/banks/registry.json
-      /Workspace/savesage-bank-configs/banks/<BANK>/prompt.txt
-      /Workspace/savesage-bank-configs/banks/<BANK>/schema.json
+      /Workspace/savesage-statement-agent/banks/registry.json
+      /Workspace/savesage-statement-agent/banks/<BANK>/prompt.txt
+      /Workspace/savesage-statement-agent/banks/<BANK>/schema.json
 """
 
 import io
@@ -25,7 +25,7 @@ _LOGGER = logging.getLogger(__name__)
 
 # Workspace Files root for all bank configs (one subdirectory per bank, plus a
 # top-level registry.json listing every dynamic bank name).
-BANKS_DBFS_DIR = "/Workspace/savesage-bank-configs/banks"
+BANKS_DBFS_DIR = "/Workspace/savesage-statement-agent/banks"
 
 _BANK_NAME_RE = re.compile(r"^[A-Z0-9_-]+$")
 
