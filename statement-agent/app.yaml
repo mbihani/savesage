@@ -27,25 +27,24 @@ env:
     value: "true"
   - name: WS4_TRACKING_URI
     value: databricks
-  # The numeric MLflow experiment ID. configure_tracing prefers this env var
-  # (injected by the bound experiment resource) over the experiment PATH -- the
-  # ID survives experiment recreation and cross-workspace deploys. Set here
-  # explicitly as a belt-and-suspenders fallback if the resource binding ever
-  # stops injecting it. Replace if deploying to a different workspace.
-  - name: MLFLOW_EXPERIMENT_ID
-    value: "967014443183055"
-# --- Bound resources ---
-# WS4: MLflow experiment (CAN_EDIT so the agent can write traces and log
-# feedback assessments).  The experiment_id is the numeric ID from
-# `databricks experiments list`; replace it if deploying to a different
-# workspace.
-#
-# Note: no Databricks ``database`` resource binding is needed — the app
-# connects to RDS Postgres directly via ``RDS_*`` env vars; see
-# ``_build_rds_stores`` in app/main.py.
-resources:
-  - name: savesage-mlflow
-    description: "MLflow experiment for statement-agent tracing + field feedback"
-    experiment:
-      experiment_id: "967014443183055"
-      permission: CAN_EDIT
+  # The MLflow experiment NAME (path). On a fresh customer workspace no
+  # experiment exists yet — mlflow.set_experiment() (called by the tracing
+  # layer on the first parse) auto-creates it at this path, so no bound
+  # experiment resource or hardcoded numeric ID is needed. Override to a
+  # different workspace-relative path (e.g. /Users/<user>/savesage/statement-agent)
+  # to isolate traces per workspace. For backward compat, a deployment may
+  # still set MLFLOW_EXPERIMENT_ID (the numeric ID), which takes precedence.
+  - name: MLFLOW_EXPERIMENT_NAME
+    value: "/Shared/savesage/statement-agent"
+  # --- Background judge scheduler ---
+  # Run the post-hoc judge every N hours (default 6). Set to 0 to disable the
+  # scheduler entirely (the /api/run-judge + on-demand endpoints still work).
+  - name: JUDGE_INTERVAL_HOURS
+    value: "6"
+  # Number of recent parses the scheduled judge samples per run (default 10).
+  - name: JUDGE_SAMPLE_SIZE
+    value: "10"
+# Note: no Databricks ``database`` or ``experiment`` resource binding is
+# needed — the app connects to RDS Postgres directly via ``RDS_*`` env vars
+# (see ``_build_rds_stores`` in app/main.py) and resolves the MLflow
+# experiment by NAME (auto-created on first parse), not by a bound ID.

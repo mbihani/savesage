@@ -100,6 +100,20 @@ class NodeUnitTest(unittest.TestCase):
         self.assertIsNotNone(state.prompt)
         self.assertGreater(len(state.prompt), 0)
 
+    def test_route_node_normalises_unknown_bank_to_generic(self) -> None:
+        """route_node reverts a completely unknown bank to GENERIC on the state
+        so downstream nodes, traces, and the prompt version all report the
+        effective bank — not the unknown name the caller passed.
+        """
+        from contracts.models import Bank
+        from graph.nodes import route_node
+        state = _state("KOTAK")  # not built-in, not in DBFS registry locally
+        route_node(state, self._deps())
+        self.assertEqual(state.stage, Stage.ROUTED)
+        self.assertIs(state.request.bank, Bank.GENERIC)
+        # The prompt version is tagged with the effective bank (GENERIC).
+        self.assertTrue(state.prompt_version.startswith("GENERIC:"))
+
     def test_extract_then_validate_then_persist_then_judge_clean_run(self) -> None:
         from graph.nodes import extract_node, finalize_node, judge_node, persist_node, route_node, validate_node
         store, _fb, trace, extraction, judge = make_all_fakes()

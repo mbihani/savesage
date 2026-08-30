@@ -2,9 +2,11 @@
 
 import re
 import unittest
+from unittest.mock import patch
 
 from contracts.models import Bank, ParseRequest
 from graph.routing import (
+    effective_bank,
     get_prompt_version,
     resolve_prompt,
     resolve_prompt_for_all_banks,
@@ -52,6 +54,62 @@ class RoutingTest(unittest.TestCase):
     def test_try_bank_unknown_falls_back_to_generic(self) -> None:
         self.assertIs(try_bank("NOT_A_BANK"), Bank.GENERIC)
         self.assertIs(try_bank("Some New Bank"), Bank.GENERIC)
+
+
+class EffectiveBankTest(unittest.TestCase):
+    """effective_bank reverts completely unknown banks to GENERIC while
+    preserving known built-ins and registered dynamic banks.
+
+    Unlike try_bank (which collapses ANY unknown string to GENERIC), this
+    checks the DBFS registry so a dynamically added bank keeps its own name.
+    """
+
+    def test_enum_returned_as_is(self) -> None:
+        self.assertIs(effective_bank(Bank.HDFC), Bank.HDFC)
+        self.assertIs(effective_bank(Bank.GENERIC), Bank.GENERIC)
+
+    def test_built_in_string_maps_to_enum(self) -> None:
+        self.assertIs(effective_bank("HDFC"), Bank.HDFC)
+        self.assertIs(effective_bank("icici"), Bank.ICICI)
+        self.assertIs(effective_bank("  sbi "), Bank.SBI)
+
+    def test_unknown_bank_falls_back_to_generic(self) -> None:
+        # Mock the registry empty so the test does not depend on the local
+        # DBFS/SDK environment (a registered KOTAK would otherwise be kept).
+        with patch("graph.routing.read_dbfs_registry", return_value=[]):
+            self.assertIs(effective_bank("KOTAK"), Bank.GENERIC)
+            self.assertIs(effective_bank("Some Unknown Bank"), Bank.GENERIC)
+
+    def test_registry_failure_falls_back_to_generic(self) -> None:
+        # A DBFS/SDK/auth/network error from read_dbfs_registry must never
+        # escape effective_bank (it would surface a 500 on /api/v1/parse and
+        # crash route_node) — treat it as unregistered and return GENERIC.
+        with patch("graph.routing.read_dbfs_registry",
+                   side_effect=RuntimeError("auth failed")):
+            self.assertIs(effective_bank("KOTAK"), Bank.GENERIC)
+            self.assertIs(effective_bank("Some Unknown Bank"), Bank.GENERIC)
+
+    def test_empty_string_falls_back_to_generic(self) -> None:
+        self.assertIs(effective_bank(""), Bank.GENERIC)
+        self.assertIs(effective_bank("   "), Bank.GENERIC)
+
+    def test_registered_dynamic_bank_keeps_name(self) -> None:
+        with patch("graph.routing.read_dbfs_registry",
+                   return_value=["KOTAK", "RBL"]):
+            result = effective_bank("KOTAK")
+            self.assertEqual(result, "KOTAK")
+            self.assertNotIsInstance(result, Bank)
+            result = effective_bank("rbl")
+            self.assertEqual(result, "RBL")
+
+    def test_dynamic_bank_not_in_registry_falls_back_to_generic(self) -> None:
+        with patch("graph.routing.read_dbfs_registry", return_value=["KOTAK"]):
+            self.assertIs(effective_bank("RBL"), Bank.GENERIC)
+
+    def test_built_in_takes_precedence_over_registry(self) -> None:
+        # A built-in bank is always its enum even if also in the registry.
+        with patch("graph.routing.read_dbfs_registry", return_value=["HDFC"]):
+            self.assertIs(effective_bank("HDFC"), Bank.HDFC)
 
 
 class PromptVersionTest(unittest.TestCase):

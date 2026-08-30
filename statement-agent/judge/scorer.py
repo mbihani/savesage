@@ -72,10 +72,13 @@ JUDGED_FIELDS = (
 
 # Fallback MLflow experiment path used when neither the MLFLOW_EXPERIMENT_ID
 # env var (injected by the bound Databricks App resource) nor the configurable
-# MLFLOW_EXPERIMENT_PATH / config.Settings path resolve.  The scorer prefers
-# the env-var experiment ID — the same approach used by
-# harness.tracing.configure_tracing — because the ID is more robust: it
-# survives experiment recreation and cross-workspace deploys.
+# MLFLOW_EXPERIMENT_NAME / MLFLOW_EXPERIMENT_PATH / config.Settings path
+# resolve.  The scorer prefers the env-var experiment ID — the same approach
+# used by harness.tracing.configure_tracing — because the ID is more robust:
+# it survives experiment recreation and cross-workspace deploys.  On a customer
+# workspace there is no bound experiment resource, so the NAME/PATH drives a
+# get_experiment_by_name lookup (mlflow.set_experiment auto-creates it on the
+# parse path, so the judge finds it on the next scheduled run).
 _EXPERIMENT_PATH = "/Shared/savesage/statement-agent"
 
 # Per-page size for the paginated trace scan in resolve_run_id's fallback.
@@ -352,19 +355,25 @@ def _get_experiment_id(mlf: Any) -> str | None:
 
     Prefers ``MLFLOW_EXPERIMENT_ID`` (set by the bound Databricks App resource,
     the same source the live trace sink uses) over a name-based lookup.  Falls
-    back to ``get_experiment_by_name`` with the configurable experiment path
-    from ``config.Settings.mlflow_experiment_path`` (read from the
-    ``MLFLOW_EXPERIMENT_PATH`` env var or the hardcoded default).
+    back to ``get_experiment_by_name`` with the configurable experiment path.
+    The path is resolved in priority order: ``MLFLOW_EXPERIMENT_NAME`` (the
+    customer-facing var set in app.yaml) → ``config.Settings.
+    mlflow_experiment_path`` (reads ``MLFLOW_EXPERIMENT_PATH``, default
+    "/Shared/savesage/statement-agent") → the hardcoded default.
     """
     exp_id = os.getenv("MLFLOW_EXPERIMENT_ID", "")
     if exp_id:
         return exp_id
     # Fall back to looking up the experiment by its configured path/name.
-    try:
-        from config import get_settings
-        experiment_path = get_settings().mlflow_experiment_path
-    except Exception:  # noqa: BLE001 - config import must never break the scorer
-        experiment_path = _EXPERIMENT_PATH
+    # Prefer the customer-facing MLFLOW_EXPERIMENT_NAME over the legacy
+    # MLFLOW_EXPERIMENT_PATH; both resolve to the same default via config.
+    experiment_path = os.getenv("MLFLOW_EXPERIMENT_NAME") or ""
+    if not experiment_path:
+        try:
+            from config import get_settings
+            experiment_path = get_settings().mlflow_experiment_path
+        except Exception:  # noqa: BLE001 - config import must never break the scorer
+            experiment_path = _EXPERIMENT_PATH
     try:
         exp = mlf.get_experiment_by_name(experiment_path)
         if exp is not None:
@@ -936,6 +945,7 @@ def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dic
         # see what was searched, not just "experiment not found".
         tried = (
             os.getenv("MLFLOW_EXPERIMENT_ID")
+            or os.getenv("MLFLOW_EXPERIMENT_NAME")
             or os.getenv("MLFLOW_EXPERIMENT_PATH")
             or _EXPERIMENT_PATH
         )

@@ -179,7 +179,11 @@ def get_tracing_config() -> TracingConfig:
         enabled=_env_bool("WS4_TRACING_ENABLED", True),
         tracking_uri=os.getenv("WS4_TRACKING_URI", "databricks"),
         databricks_profile=os.getenv("DATABRICKS_CONFIG_PROFILE", "fevm-stable"),
-        experiment_path=os.getenv("MLFLOW_EXPERIMENT_PATH", ""),
+        # Prefer MLFLOW_EXPERIMENT_NAME (the customer-facing var set in app.yaml)
+        # over the legacy MLFLOW_EXPERIMENT_PATH; an empty/unset NAME falls back
+        # to PATH, then to config.Settings.mlflow_experiment_path (default
+        # "/Shared/savesage/statement-agent") inside resolve_experiment_path.
+        experiment_path=(os.getenv("MLFLOW_EXPERIMENT_NAME") or os.getenv("MLFLOW_EXPERIMENT_PATH", "")),
         autolog_langchain=_env_bool("WS4_AUTOLOG_LANGCHAIN", True),
         redact_pii_values=_env_bool("WS4_REDACT_PII", True),
         log_nonpii_values_raw=_env_bool("WS4_LOG_NONPII_RAW", True),
