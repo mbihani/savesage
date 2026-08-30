@@ -411,12 +411,12 @@ class DbfsHelperTest(unittest.TestCase):
         self.assertTrue(BANKS_DBFS_DIR.startswith("/"))
 
     def test_prompt_dbfs_dir_value(self) -> None:
-        self.assertEqual(BANKS_DBFS_DIR, "/Workspace/savesage-bank-configs/banks")
+        self.assertEqual(BANKS_DBFS_DIR, "/Workspace/savesage-statement-agent/banks")
 
     def test_schema_dbfs_dir_value(self) -> None:
         self.assertEqual(
             bank_schema_dbfs_path("HDFC"),
-            "/Workspace/savesage-bank-configs/banks/HDFC/schema.json",
+            "/Workspace/savesage-statement-agent/banks/HDFC/schema.json",
         )
 
 
