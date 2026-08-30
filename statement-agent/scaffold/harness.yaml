@@ -1,0 +1,28 @@
+# Savesage ICICI scaffold — the optimizer-mutable prompt, decomposed by
+# section from statement-agent/prompts/icici.txt. Each skill is one section;
+# the composer concatenates them in this order into the runtime prompt.
+#
+# NOTE: ``sampling`` is inert for the Savesage engine — the Luna extraction
+# payload is built by harness/transports.py with fixed reasoning_effort and
+# max_tokens, so the optimizer should edit skills, not sampling.
+
+sampling:
+  temperature: 0.0
+  top_p: null
+  max_tokens: 4096
+  tool_choice: auto
+  max_tool_calls: 0
+
+skills:
+- file: identity.md
+- file: transaction_rules.md
+- file: rewards_rules.md
+- file: missing_data.md
+- file: edge_cases.md
+- file: icici_bank_rules.md
+- file: icici_card_identity.md
+- file: icici_rewards_layouts.md
+
+rules: []
+
+tools: []

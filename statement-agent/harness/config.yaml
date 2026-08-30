@@ -1,0 +1,148 @@
+# ANVIL runtime config — IMMUTABLE.
+#
+# This file is OUTSIDE the optimizer's writable scope. It holds the
+# runtime model identities, the optimizer loop's meta-configuration,
+# and the MLflow experiment paths.
+#
+# The optimizer must NOT rewrite this file — changing endpoints
+# mid-loop invalidates the comparative metric, and letting the
+# optimizer rewrite its own lookback window is a recursion the loop's
+# gate is not designed to catch.
+#
+# Anything mutation-worthy (sampling, skills, rules, tools) lives in
+# `scaffold/harness.yaml`.
+
+# Optimization mode — what FORGE mutates.
+#   prompt — prompt scaffolds (skills/rules/sampling in markdown + YAML).
+#            The optimizer edits the skill .md files under scaffold/skills/
+#            and recomposes the runtime prompt. This is the default and
+#            avoids the agent-code import check (no agents/ module needed).
+#   code   — agent Python code (MemorySystem subclasses in agents/).
+#            The eval imports the active agent module instead of
+#            composing a prompt from scaffold/. Not used here.
+mode: prompt
+
+# LLM model names (FMAPI) routed through the Databricks AI Gateway.
+# All three paths (runtime, optimizer, judge) use the same gateway
+# unified URL — the model name determines which FMAPI model is called.
+# Set DATABRICKS_HOST and DATABRICKS_TOKEN in the environment (or a
+# ~/.databrickscfg profile); the gateway client refreshes the SP token
+# on each request.
+#
+# Endpoints mirrored from statement-agent/config.py + harness/config_ws4.py:
+#   extraction_endpoint (runtime) = databricks-gpt-5-6-luna  (Luna extractor)
+#   judge_endpoint                  = databricks-claude-opus-5
+# The savesage engine builds its own Luna request via statement-agent
+# (get_settings().extraction_endpoint), so runtime_endpoint is recorded
+# on the baseline header for provenance rather than used to route.
+runtime_endpoint: databricks-gpt-5-6-luna
+
+# FMAPI model the ANVIL optimizer loop uses for trace analysis +
+# mutation planning. Reached via the gateway's Anthropic route (the
+# Claude Agent SDK), not the OpenAI-compatible route.
+optimizer_endpoint: databricks-claude-opus-4-7
+
+# LLM judge model (routed through the gateway). The savesage engine
+# scores deterministically vs cached Opus GT (no LLM judge per round),
+# but the judge endpoint is declared for schema completeness.
+judge_endpoint: databricks-claude-opus-5
+
+# MLflow experiment paths. Stable, declared here, NOT driven by
+# environment variables (which lint/format passes have historically
+# clobbered). The CLI may override per-run via --experiment-suffix
+# but the suffix is appended in-process, never via env-var.
+#
+# Defaults to ``/Shared`` so the harness boots in any workspace.
+experiments:
+  runtime:   "/Shared/anvil-runtime"
+  eval:      "/Shared/anvil-eval"
+  optimizer: "/Shared/anvil-optimizer"
+
+# Loop configuration — how the ANVIL optimizer schedules itself.
+loop:
+  target_rounds: 50
+  stretch_rounds: 100
+  cost_budget_usd_per_round: 5.0
+  # Early-stop if N consecutive rounds produce no positive
+  # score_delta.
+  early_stop_after_stalled_rounds: 10
+  # How many past critiques to include in the next round's context.
+  critique_lookback: 3
+  # How many past reverted mutations to surface to the planner so it
+  # avoids re-proposing what was already tried.
+  revert_lookback: 20
+  # Hard cap on optimizer turns per round. Round aborts as `noop` if
+  # exceeded.
+  max_optimizer_turns: 30
+
+# Eval configuration.
+eval:
+  # Eval engine. ``savesage`` = compose ICICI prompt → Luna → score per-field
+  # accuracy vs cached Opus GT (deterministic, trace-free); see
+  # anvil.domains.savesage.eval.evaluate_savesage. Bypasses mlflow.genai.evaluate.
+  engine: savesage
+  # No held-out genai test mode for the savesage engine.
+  held_out_test: false
+  # Default mode for `evaluate_branch`. One of: quick, standard, full.
+  # ``standard`` (24 stmts) balances signal vs Luna cost/time; scale to
+  # ``full`` (304) once the loop is proven.
+  default_mode: standard
+  # Row count per mode. The savesage engine selects the first ``rows`` of the
+  # golden set (deterministic, sorted by sid) when ``buckets`` is empty.
+  modes:
+    quick:    {rows: 12}
+    standard: {rows: 24}
+    full:     {rows: 304}
+  # Parallelism for Luna extractions. Kept low — statement-agent caps ICICI at
+  # ~2 concurrent workers to stay under the workspace output-TPM budget.
+  n_workers: 2
+  # Cooldown seconds between row tasks inside the thread pool when
+  # the endpoint is approaching its quota.
+  inter_row_cooldown_s: 0.0
+  # Scorers active by default. Each entry may be a bare name string
+  # (legacy form → type: llm, weight: 1.0) or a dict with ``name``,
+  # ``type`` (``llm`` or ``programmatic``), ``weight`` (default 1.0),
+  # and — for programmatic scorers — ``check_function`` (the name of a
+  # function in ``data/evaluator.py``). The aggregate is a weighted
+  # average across all configured scorers; uniform weights collapse to
+  # the legacy unweighted mean.
+  scorers:
+    - correctness
+    - retrieval_groundedness
+    - refusal_appropriateness
+  safety_guard_threshold: 0.95
+
+# Gate configuration — how a round's mutation is accepted or rejected.
+#
+# The gate replaces the legacy frozen-baseline delta. The old gate kept
+# any mutation whose aggregate beat the cached baseline; that silently
+# allowed regressions (a round worse than a previous KEPT round but
+# still above the baseline was kept).
+gate:
+  # Gate strategy.
+  #   frontier — Pareto frontier (default). A mutation is KEPT only if it
+  #              improves at least one tracked objective (per-judge scores
+  #              + the aggregate) without regressing any other by more
+  #              than ``epsilon``. The frontier — best-so-far per
+  #              objective — persists to eval/runs/frontier.json and is
+  #              initialized from the baseline on the first scored round.
+  #              A round that scores worse than the best-so-far is REVERTED
+  #              even if it still beats the frozen baseline.
+  #   delta    — Legacy frozen-baseline behavior. A mutation is KEPT iff
+  #              its aggregate beats the cached baseline aggregate
+  #              (score_delta > 0). Backward compatible; the frontier file
+  #              is not used.
+  type: frontier
+  # Global fallback epsilon for objectives that don't set their own.
+  epsilon: 0.0
+  # Single-objective gate for PROMPT-mode accuracy optimization. A
+  # mutation is KEPT only if it improves the accuracy aggregate beyond
+  # its epsilon. (CODE-mode adds a latency objective; not used in
+  # prompt mode.)
+  pareto:
+    enabled: true
+    objectives:
+      - name: accuracy
+        direction: maximize
+        source: aggregate
+        epsilon: 0.005
