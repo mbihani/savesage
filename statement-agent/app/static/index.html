@@ -1269,20 +1269,30 @@
         const [rerunning, setRerunning] = useState(false);
         const [status, setStatus] = useState(null);
 
+        // Always holds the latest bank prop so a stale in-flight fetch can
+        // detect that bank changed while it was awaiting and discard its result.
+        const latestBankRef = useRef(bank);
+        latestBankRef.current = bank;
+
         const handleExpand = async () => {
           const next = !expanded;
           setExpanded(next);
           if (next && !loaded) {
             setLoading(true);
+            const fetchBank = bank;
             try {
-              const data = await getPromptSchema(bank);
+              const data = await getPromptSchema(fetchBank);
+              // Guard: if bank changed while we were fetching, discard the
+              // result so it can't overwrite the reset state for the new bank.
+              if (latestBankRef.current !== fetchBank) return;
               setPromptText(data.prompt || "");
               setSchemaText(JSON.stringify(data.schema, null, 2));
               setLoaded(true);
             } catch (e) {
               setStatus({ type: "error", msg: e.message });
+            } finally {
+              setLoading(false);
             }
-            setLoading(false);
           }
         };
 
