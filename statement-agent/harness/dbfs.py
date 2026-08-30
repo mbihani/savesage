@@ -22,7 +22,7 @@ import re
 
 _LOGGER = logging.getLogger(__name__)
 
-# Workspace Files root for all bank configs (one subdirectory per bank, plus a
+# Workspace API root for all bank configs (one subdirectory per bank, plus a
 # top-level registry.json listing every dynamic bank name).
 BANKS_DBFS_DIR = "/Workspace/savesage-statement-agent/banks"
 
@@ -44,7 +44,7 @@ def validate_bank_name(name: str) -> str:
 
 
 def read_dbfs_text(dbfs_path: str) -> str | None:
-    """Read a UTF-8 text file from Workspace Files.
+    """Read a UTF-8 text file from Workspace API.
 
     Returns the file content as a string, or ``None`` on any failure
     (SDK not installed, file not found, network error). Callers fall back
@@ -54,7 +54,7 @@ def read_dbfs_text(dbfs_path: str) -> str | None:
         from databricks.sdk import WorkspaceClient
     except ImportError as exc:
         _LOGGER.warning(
-            "Workspace Files SDK unavailable for read of %s: %s", dbfs_path, exc
+            "Workspace API SDK unavailable for read of %s: %s", dbfs_path, exc
         )
         return None
     try:
@@ -62,12 +62,12 @@ def read_dbfs_text(dbfs_path: str) -> str | None:
         resp = client.workspace.download(dbfs_path)
         return resp.read().decode("utf-8")
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
-        _LOGGER.warning("Workspace Files read failed for %s: %s", dbfs_path, exc)
+        _LOGGER.warning("Workspace API read failed for %s: %s", dbfs_path, exc)
         return None
 
 
 def write_dbfs_text(dbfs_path: str, content: str) -> bool:
-    """Write a UTF-8 text file to Workspace Files, overwriting if it exists.
+    """Write a UTF-8 text file to Workspace API, overwriting if it exists.
 
     Returns ``True`` on success, ``False`` on any failure. The directory
     must already exist because upload does not create intermediate directories.
@@ -78,7 +78,7 @@ def write_dbfs_text(dbfs_path: str, content: str) -> bool:
         import base64
     except ImportError as exc:
         _LOGGER.warning(
-            "Workspace Files SDK unavailable for write of %s: %s", dbfs_path, exc
+            "Workspace API SDK unavailable for write of %s: %s", dbfs_path, exc
         )
         return False
     try:
@@ -90,7 +90,7 @@ def write_dbfs_text(dbfs_path: str, content: str) -> bool:
         return True
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
         _LOGGER.warning(
-            "Workspace Files write failed for %s (%s): %s",
+            "Workspace API write failed for %s (%s): %s",
             dbfs_path,
             type(exc).__name__,
             exc,
@@ -134,7 +134,7 @@ def mkdirs_dbfs(dbfs_path: str) -> bool:
         from databricks.sdk import WorkspaceClient
     except ImportError as exc:
         _LOGGER.warning(
-            "Workspace Files SDK unavailable for mkdir of %s: %s", dbfs_path, exc
+            "Workspace API SDK unavailable for mkdir of %s: %s", dbfs_path, exc
         )
         return False
     try:
@@ -143,7 +143,7 @@ def mkdirs_dbfs(dbfs_path: str) -> bool:
         return True
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
         _LOGGER.error(
-            "Workspace Files mkdir failed for %s (%s): %s",
+            "Workspace API mkdir failed for %s (%s): %s",
             dbfs_path,
             type(exc).__name__,
             exc,
@@ -186,7 +186,7 @@ def seed_builtin_configs() -> bool:
 
 
 def read_dbfs_registry() -> list[str]:
-    """Return the list of dynamic bank names from the Workspace Files registry.
+    """Return the list of dynamic bank names from the Workspace API registry.
 
     Returns ``[]`` on any failure (SDK missing, file not found, invalid
     JSON) so callers treat a missing registry as "no dynamic banks" and
@@ -209,13 +209,13 @@ def read_dbfs_registry() -> list[str]:
             names.append(validate_bank_name(name))
         except ValueError:
             _LOGGER.warning(
-                "Ignoring unsafe bank name in Workspace Files registry: %r", name
+                "Ignoring unsafe bank name in Workspace API registry: %r", name
             )
     return names
 
 
 def write_dbfs_registry(names: list[str]) -> bool:
-    """Overwrite the Workspace Files registry with a list of bank names.
+    """Overwrite the Workspace API registry with a list of bank names.
 
     The parent directory is created first (best-effort). Returns ``True`` on
     success, ``False`` on any failure.
