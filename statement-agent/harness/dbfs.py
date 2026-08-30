@@ -1,4 +1,4 @@
-"""Workspace Files read/write helpers for bank prompt/schema configs.
+"""Workspace API (``client.workspace.*``) read/write helpers for bank configs.
 
 Imports ``databricks-sdk`` function-local so this module is importable in a
 stdlib-only environment (the contract-test gate). Each function returns
@@ -16,7 +16,6 @@ its prompt and schema, plus a top-level registry listing every dynamic bank::
       /Workspace/savesage-statement-agent/banks/<BANK>/schema.json
 """
 
-import io
 import json
 import logging
 import re
@@ -60,8 +59,8 @@ def read_dbfs_text(dbfs_path: str) -> str | None:
         return None
     try:
         client = WorkspaceClient()
-        resp = client.files.download(dbfs_path)
-        return resp.contents.read().decode("utf-8")
+        resp = client.workspace.download(dbfs_path)
+        return resp.read().decode("utf-8")
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
         _LOGGER.warning("Workspace Files read failed for %s: %s", dbfs_path, exc)
         return None
@@ -75,6 +74,8 @@ def write_dbfs_text(dbfs_path: str, content: str) -> bool:
     """
     try:
         from databricks.sdk import WorkspaceClient
+        from databricks.sdk.service.workspace import ImportFormat
+        import base64
     except ImportError as exc:
         _LOGGER.warning(
             "Workspace Files SDK unavailable for write of %s: %s", dbfs_path, exc
@@ -82,10 +83,9 @@ def write_dbfs_text(dbfs_path: str, content: str) -> bool:
         return False
     try:
         client = WorkspaceClient()
-        client.files.upload(
-            dbfs_path,
-            contents=io.BytesIO(content.encode("utf-8")),
-            overwrite=True,
+        content_b64 = base64.b64encode(content.encode("utf-8")).decode()
+        client.workspace.import_(
+            dbfs_path, content=content_b64, format=ImportFormat.RAW, overwrite=True
         )
         return True
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
@@ -119,18 +119,16 @@ def registry_dbfs_path() -> str:
 
 
 def mkdirs_dbfs(dbfs_path: str) -> bool:
-    """Create a Workspace Files directory (and missing parents), idempotent.
+    """Create a Workspace directory (and missing parents), idempotent.
 
     Returns ``True`` when the directory already exists *or* is newly
     created, and ``False`` only on a genuine failure (SDK missing,
-    permission denied, network error). Idempotency is layered: a
-    ``get_metadata`` probe returns ``True`` immediately for an existing
-    directory, and ``create_directory`` tolerates the "already exists" error
-    some Databricks backends raise for an existing directory even though
-    the API is documented as ``mkdir -p``. Needed because
-    :func:`write_dbfs_text` does not create intermediate directories, so a
-    per-bank subdirectory (``…/banks/<BANK>``) must be created before the
-    prompt/schema files are uploaded.
+    permission denied, network error). ``client.workspace.mkdirs()`` is
+    documented as idempotent (``mkdir -p``), so no existence probe is
+    needed. Needed because :func:`write_dbfs_text` does not create
+    intermediate directories, so a per-bank subdirectory
+    (``…/banks/<BANK>``) must be created before the prompt/schema files
+    are uploaded.
     """
     try:
         from databricks.sdk import WorkspaceClient
@@ -141,57 +139,9 @@ def mkdirs_dbfs(dbfs_path: str) -> bool:
         return False
     try:
         client = WorkspaceClient()
-    except Exception as exc:  # noqa: BLE001 — best-effort, never raises
-        _LOGGER.error(
-            "Workspace Files mkdir failed for %s (%s): %s",
-            dbfs_path,
-            type(exc).__name__,
-            exc,
-        )
-        return False
-
-    # Fast path: if the directory already exists there is nothing to create.
-    # An existing file at this path must not be treated as a directory.
-    try:
-        metadata = client.files.get_metadata(dbfs_path)
-        if getattr(metadata, "resource_type", None) == "DIRECTORY":
-            return True
-        _LOGGER.error(
-            "Workspace Files mkdir failed for %s: existing path is not a directory",
-            dbfs_path,
-        )
-        return False
-    except Exception as exc:  # noqa: BLE001 — existence probe, never raises
-        # ``NotFound`` — or a backend that answers HEAD for files only — means
-        # the path does not exist yet, so fall through to create it. Any other
-        # transient error also falls through; ``create_directory`` re-surfaces
-        # a genuine failure below.
-        _LOGGER.debug(
-            "Workspace Files get_metadata did not confirm %s (%s): %s",
-            dbfs_path,
-            type(exc).__name__,
-            exc,
-        )
-
-    # Create the directory (and parents). Some backends raise an "already
-    # exists" error for an existing directory despite the API being
-    # documented as idempotent — treat that as success so that seeding and
-    # POST /api/banks do not fail on a directory created out-of-band.
-    try:
-        client.files.create_directory(dbfs_path)
+        client.workspace.mkdirs(dbfs_path)
         return True
     except Exception as exc:  # noqa: BLE001 — best-effort, never raises
-        already_exists = False
-        try:
-            from databricks.sdk.errors.platform import (
-                AlreadyExists,
-                ResourceAlreadyExists,
-            )
-            already_exists = isinstance(exc, (AlreadyExists, ResourceAlreadyExists))
-        except ImportError:
-            pass
-        if already_exists:
-            return True
         _LOGGER.error(
             "Workspace Files mkdir failed for %s (%s): %s",
             dbfs_path,
