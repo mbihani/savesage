@@ -48,24 +48,24 @@ class DbfsPathTest(unittest.TestCase):
         self.assertEqual(validate_bank_name("AU-SMALL"), "AU-SMALL")
 
     def test_banks_dir_value(self) -> None:
-        self.assertEqual(BANKS_DBFS_DIR, "/Workspace/savesage-bank-configs/banks")
+        self.assertEqual(BANKS_DBFS_DIR, "/Workspace/savesage-statement-agent/banks")
 
     def test_bank_prompt_dbfs_path(self) -> None:
         self.assertEqual(
             bank_prompt_dbfs_path("KOTAK"),
-            "/Workspace/savesage-bank-configs/banks/KOTAK/prompt.txt",
+            "/Workspace/savesage-statement-agent/banks/KOTAK/prompt.txt",
         )
 
     def test_bank_schema_dbfs_path(self) -> None:
         self.assertEqual(
             bank_schema_dbfs_path("RBL"),
-            "/Workspace/savesage-bank-configs/banks/RBL/schema.json",
+            "/Workspace/savesage-statement-agent/banks/RBL/schema.json",
         )
 
     def test_registry_dbfs_path(self) -> None:
         self.assertEqual(
             registry_dbfs_path(),
-            "/Workspace/savesage-bank-configs/banks/registry.json",
+            "/Workspace/savesage-statement-agent/banks/registry.json",
         )
 
     def test_paths_are_absolute(self) -> None:
@@ -436,7 +436,7 @@ class BankEndpointsTest(unittest.TestCase):
         self.assertEqual(
             resp.json()["detail"],
             "Failed to create bank config directory. Contact an admin to ensure "
-            "/Workspace/savesage-bank-configs/banks/ exists and the app service "
+            "/Workspace/savesage-statement-agent/banks/ exists and the app service "
             "principal has CAN_MANAGE permission.",
         )
         write.assert_not_called()
