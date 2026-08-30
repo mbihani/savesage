@@ -1262,30 +1262,37 @@
       }
 
       /* Prompt & Schema editor panel — collapsible, below extraction results. */
-      function PromptSchemaPanel({ bank, savedFile, onRerun }) {
+      function PromptSchemaPanel({ bank, savedFile, onRerun, promptText, setPromptText, schemaText, setSchemaText, loaded, setLoaded }) {
         const [expanded, setExpanded] = useState(false);
-        const [promptText, setPromptText] = useState("");
-        const [schemaText, setSchemaText] = useState("");
         const [loading, setLoading] = useState(false);
         const [saving, setSaving] = useState(false);
         const [rerunning, setRerunning] = useState(false);
         const [status, setStatus] = useState(null);
-        const loadedRef = useRef(false);
+
+        // Always holds the latest bank prop so a stale in-flight fetch can
+        // detect that bank changed while it was awaiting and discard its result.
+        const latestBankRef = useRef(bank);
+        latestBankRef.current = bank;
 
         const handleExpand = async () => {
           const next = !expanded;
           setExpanded(next);
-          if (next && !loadedRef.current) {
+          if (next && !loaded) {
             setLoading(true);
+            const fetchBank = bank;
             try {
-              const data = await getPromptSchema(bank);
+              const data = await getPromptSchema(fetchBank);
+              // Guard: if bank changed while we were fetching, discard the
+              // result so it can't overwrite the reset state for the new bank.
+              if (latestBankRef.current !== fetchBank) return;
               setPromptText(data.prompt || "");
               setSchemaText(JSON.stringify(data.schema, null, 2));
-              loadedRef.current = true;
+              setLoaded(true);
             } catch (e) {
               setStatus({ type: "error", msg: e.message });
+            } finally {
+              setLoading(false);
             }
-            setLoading(false);
           }
         };
 
@@ -1359,7 +1366,7 @@
         `;
       }
 
-      function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh, bank, savedFile, onRerun }) {
+      function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh, bank, savedFile, onRerun, promptText, setPromptText, schemaText, setSchemaText, loaded, setLoaded }) {
         const outcome = complete?.outcome || "UNKNOWN";
         const bannerClass =
           outcome === "SUCCESS" ? "SUCCESS" :
@@ -1595,7 +1602,17 @@
             `}
 
             ${extraction && bank && h`
-              <${PromptSchemaPanel} bank=${bank} savedFile=${savedFile} onRerun=${onRerun} />
+              <${PromptSchemaPanel}
+                bank=${bank}
+                savedFile=${savedFile}
+                onRerun=${onRerun}
+                promptText=${promptText}
+                setPromptText=${setPromptText}
+                schemaText=${schemaText}
+                setSchemaText=${setSchemaText}
+                loaded=${loaded}
+                setLoaded=${setLoaded}
+              />
             `}
 
             <div style=${{ marginTop: "1.5rem", display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
@@ -1826,12 +1843,22 @@
         const [results, setResults] = useState(null);
         const [savedFile, setSavedFile] = useState(null);
         const [bank, setBank] = useState(null);
+        // Lifted from PromptSchemaPanel so the edited prompt/schema text
+        // survives the re-run view switch (processing unmounts the panel,
+        // which previously re-fetched the saved default on remount).
+        const [customPrompt, setCustomPrompt] = useState("");
+        const [customSchema, setCustomSchema] = useState("");
+        const [promptLoaded, setPromptLoaded] = useState(false);
 
         const handleStart = (reqId, file, bankVal) => {
           setRequestId(reqId);
           setSavedFile(file || null);
           setBank(bankVal || null);
           setView("processing");
+          // Reset prompt/schema editor for the new bank
+          setCustomPrompt("");
+          setCustomSchema("");
+          setPromptLoaded(false);
         };
 
         // Called by PromptSchemaPanel's Re-run button — starts a new parse
@@ -1933,6 +1960,12 @@
               bank=${bank}
               savedFile=${savedFile}
               onRerun=${handleRerun}
+              promptText=${customPrompt}
+              setPromptText=${setCustomPrompt}
+              schemaText=${customSchema}
+              setSchemaText=${setCustomSchema}
+              loaded=${promptLoaded}
+              setLoaded=${setPromptLoaded}
             />`}
             ${view === "judge" && h`<${JudgeEvaluationView} />`}
           </div>
