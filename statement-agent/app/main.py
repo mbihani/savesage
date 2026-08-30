@@ -1149,6 +1149,17 @@ def create_app():
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+        # Revert completely unknown banks to GENERIC so the response reports the
+        # effective bank that was actually used (GENERIC prompt/schema), not the
+        # unknown name the caller passed. Known built-ins and registered dynamic
+        # banks keep their own name; only banks that are neither built-in nor
+        # registered fall back. Mirrors the normalisation in route_node so the
+        # response is correct even when _run_parse is short-circuited (e.g. a
+        # 504 timeout or a test mock).
+        from contracts.models import bank_name as _canonical_bank_name
+        from graph.routing import effective_bank
+        bank_name = _canonical_bank_name(effective_bank(bank_name))
+
         request_id = _new_request_id()
         ctx = RequestContext(request_id)
         ctx.pdf_bytes = pdf_bytes

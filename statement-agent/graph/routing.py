@@ -65,6 +65,39 @@ def coerce_request_bank(bank: Bank | str) -> Bank | str:
         return name  # dynamic / unknown — keep the real name
 
 
+def effective_bank(bank: Bank | str) -> Bank | str:
+    """Return the effective bank, reverting completely unknown banks to GENERIC.
+
+    Unlike :func:`coerce_request_bank` (which preserves an unknown name as a
+    plain string so the routing layer can resolve its DBFS prompt/schema), this
+    collapses a bank that is **neither a built-in :class:`Bank` nor a registered
+    dynamic bank** to :data:`Bank.GENERIC`.  It is the identity for known banks:
+
+    * a :class:`Bank` enum is returned as-is;
+    * a built-in bank string (``"HDFC"``, …) maps to its enum;
+    * a string present in the DBFS registry (a dynamically added bank) is kept
+      as-is so its own prompt/schema/name is preserved;
+    * anything else (a completely unknown bank that :func:`resolve_prompt` would
+      serve the GENERIC prompt for) maps to :data:`Bank.GENERIC`.
+
+    Used by :func:`graph.nodes.route_node` and the ``/api/v1/parse`` route so
+    downstream nodes, traces, and the API response all report the bank that was
+    actually used — not the unknown name the caller passed.
+    """
+    if isinstance(bank, Bank):
+        return bank
+    bank_str = str(bank).strip().upper()
+    if not bank_str:
+        return Bank.GENERIC
+    try:
+        return Bank(bank_str)
+    except (ValueError, TypeError):
+        pass
+    if bank_str in read_dbfs_registry():
+        return bank_str  # registered dynamic bank — keep its real name
+    return Bank.GENERIC
+
+
 def detect_bank(text: str) -> str:
     """Detect a bank name from free text (e.g. a statement header).
 

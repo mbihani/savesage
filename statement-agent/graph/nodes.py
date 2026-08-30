@@ -27,7 +27,7 @@ from contracts.ports import (
     ResultStore,
     TraceSink,
 )
-from graph.routing import get_prompt_version, resolve_prompt
+from graph.routing import effective_bank, get_prompt_version, resolve_prompt
 from graph.state import GraphState, Outcome, Stage
 from graph.validation import load_schema_for_bank, validate_payload
 
@@ -162,6 +162,16 @@ def route_node(state: GraphState, deps: NodeDeps) -> GraphState:
     try:
         if state.prompt is None:
             state.prompt = resolve_prompt(state.request.bank)
+        # If the bank fell back to the GENERIC prompt (it is neither a known
+        # Bank enum nor a registered dynamic bank), normalise the effective bank
+        # to GENERIC so downstream nodes, traces, and the API response all
+        # report the bank that was actually used -- not the unknown name the
+        # caller passed. ``resolve_prompt`` already served the generic prompt;
+        # this just makes the bank identity explicit. Known built-ins and
+        # registered dynamic banks are left untouched.
+        effective = effective_bank(state.request.bank)
+        if bank_name(effective) != bank_name(state.request.bank):
+            state.request = dc_replace(state.request, bank=effective)
         # Stable version id for the resolved prompt; stored on state so the
         # extract span and the MLflow run can be tagged without recomputing.
         # Pass the ALREADY-RESOLVED ``state.prompt`` (not the bank) so the

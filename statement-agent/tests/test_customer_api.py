@@ -733,6 +733,44 @@ class V1ParseIntegrationTest(unittest.TestCase):
         self.assertEqual(ext["validation_errors"], [])
         self.assertEqual(ext["payload"], {"cards": [], "transactions": []})
 
+    def test_unknown_bank_normalises_to_generic(self) -> None:
+        """A completely unknown bank name (not built-in, not in the DBFS
+        registry) is reverted to GENERIC in the response so the effective bank
+        is explicit — the caller sees GENERIC, not the unknown name they
+        passed. The extraction still succeeds (200) using the generic
+        prompt/schema; it is never a 422 or 400. _run_parse is mocked so no
+        real Luna call happens — this verifies the bank normalisation in the
+        route handler, not the graph.
+        """
+        pdf = b"%PDF-1.4\n%" + b"\x00" * 200
+        with patch("app.main._run_parse", side_effect=self._mock_success_parse):
+            resp = self._client.post(
+                "/api/v1/parse",
+                files={"file": ("statement.pdf", pdf, "application/pdf")},
+                data={"bank": "KOTAK"},
+            )
+        self.assertEqual(resp.status_code, 200)
+        body = resp.json()
+        self.assertEqual(body["bank"], "GENERIC")
+        self.assertEqual(body["status"], "SUCCESS")
+        self.assertIsNotNone(body["extraction"])
+
+    def test_registered_dynamic_bank_keeps_its_name(self) -> None:
+        """A dynamically added bank (present in the DBFS registry) keeps its
+        own name — only completely unknown banks revert to GENERIC.
+        """
+        pdf = b"%PDF-1.4\n%" + b"\x00" * 200
+        with patch("graph.routing.read_dbfs_registry",
+                   return_value=["KOTAK"]), \
+             patch("app.main._run_parse", side_effect=self._mock_success_parse):
+            resp = self._client.post(
+                "/api/v1/parse",
+                files={"file": ("statement.pdf", pdf, "application/pdf")},
+                data={"bank": "KOTAK"},
+            )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["bank"], "KOTAK")
+
     def test_result_stored_in_requests(self) -> None:
         """The completed context is stored in _REQUESTS after the call."""
         pdf = b"%PDF-1.4\n%" + b"\x00" * 50
