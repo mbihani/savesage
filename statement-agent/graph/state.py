@@ -62,6 +62,9 @@ class GraphState:
 
     request: ParseRequest
     prompt: str | None = None
+    # Exact response schema sent to the model for a custom re-run. ``None``
+    # means the normal per-bank schema should be resolved by validate_node.
+    schema_override: dict[str, Any] | None = None
     # Stable version id ("<BANK>:<sha256[:8]>") for the resolved prompt; set by
     # route_node alongside ``prompt`` so the extract span and MLflow run can be
     # tagged with the exact prompt version without recomputing the hash.
