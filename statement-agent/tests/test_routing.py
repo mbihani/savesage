@@ -74,9 +74,20 @@ class EffectiveBankTest(unittest.TestCase):
         self.assertIs(effective_bank("  sbi "), Bank.SBI)
 
     def test_unknown_bank_falls_back_to_generic(self) -> None:
-        # No SDK locally → read_dbfs_registry() returns [], so KOTAK is unknown.
-        self.assertIs(effective_bank("KOTAK"), Bank.GENERIC)
-        self.assertIs(effective_bank("Some Unknown Bank"), Bank.GENERIC)
+        # Mock the registry empty so the test does not depend on the local
+        # DBFS/SDK environment (a registered KOTAK would otherwise be kept).
+        with patch("graph.routing.read_dbfs_registry", return_value=[]):
+            self.assertIs(effective_bank("KOTAK"), Bank.GENERIC)
+            self.assertIs(effective_bank("Some Unknown Bank"), Bank.GENERIC)
+
+    def test_registry_failure_falls_back_to_generic(self) -> None:
+        # A DBFS/SDK/auth/network error from read_dbfs_registry must never
+        # escape effective_bank (it would surface a 500 on /api/v1/parse and
+        # crash route_node) — treat it as unregistered and return GENERIC.
+        with patch("graph.routing.read_dbfs_registry",
+                   side_effect=RuntimeError("auth failed")):
+            self.assertIs(effective_bank("KOTAK"), Bank.GENERIC)
+            self.assertIs(effective_bank("Some Unknown Bank"), Bank.GENERIC)
 
     def test_empty_string_falls_back_to_generic(self) -> None:
         self.assertIs(effective_bank(""), Bank.GENERIC)

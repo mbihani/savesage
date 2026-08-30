@@ -30,6 +30,7 @@ from app.main import (
     _summarize_judge_result,
     _validate_v1_pdf,
 )
+from contracts.models import Bank
 from harness.dbfs import validate_bank_name
 
 
@@ -743,7 +744,8 @@ class V1ParseIntegrationTest(unittest.TestCase):
         route handler, not the graph.
         """
         pdf = b"%PDF-1.4\n%" + b"\x00" * 200
-        with patch("app.main._run_parse", side_effect=self._mock_success_parse):
+        with patch("graph.routing.read_dbfs_registry", return_value=[]), \
+             patch("app.main._run_parse", side_effect=self._mock_success_parse) as run:
             resp = self._client.post(
                 "/api/v1/parse",
                 files={"file": ("statement.pdf", pdf, "application/pdf")},
@@ -754,6 +756,10 @@ class V1ParseIntegrationTest(unittest.TestCase):
         self.assertEqual(body["bank"], "GENERIC")
         self.assertEqual(body["status"], "SUCCESS")
         self.assertIsNotNone(body["extraction"])
+        # The normalised bank (GENERIC) reaches _run_parse — not the raw
+        # "KOTAK" the caller passed.
+        run.assert_called_once()
+        self.assertEqual(run.call_args.args[3], Bank.GENERIC.value)
 
     def test_registered_dynamic_bank_keeps_its_name(self) -> None:
         """A dynamically added bank (present in the DBFS registry) keeps its

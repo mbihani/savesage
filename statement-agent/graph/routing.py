@@ -15,6 +15,7 @@ it -- the version changes whenever the prompt text changes.
 """
 
 import hashlib
+import logging
 
 from contracts.models import Bank
 from harness.dbfs import (
@@ -23,6 +24,8 @@ from harness.dbfs import (
     read_dbfs_text,
 )
 from rules.routing import PROMPT_BY_BANK
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class RoutingError(RuntimeError):
@@ -93,7 +96,18 @@ def effective_bank(bank: Bank | str) -> Bank | str:
         return Bank(bank_str)
     except (ValueError, TypeError):
         pass
-    if bank_str in read_dbfs_registry():
+    # A registry read failure (SDK/auth/network) must never break routing or
+    # surface a 500 — treat it as "no dynamic banks" and fall back to GENERIC,
+    # the same behaviour as a completely unregistered bank.
+    try:
+        registered = read_dbfs_registry()
+    except Exception:  # noqa: BLE001 — registry failure must never break routing
+        _LOGGER.warning(
+            "DBFS registry read failed for effective_bank(%r); treating as "
+            "unregistered and falling back to GENERIC", bank_str,
+        )
+        return Bank.GENERIC
+    if bank_str in registered:
         return bank_str  # registered dynamic bank — keep its real name
     return Bank.GENERIC
 
