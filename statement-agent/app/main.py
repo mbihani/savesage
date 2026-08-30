@@ -23,7 +23,7 @@ import os
 import queue
 import threading
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, Optional
 
 from contracts.models import (
@@ -338,6 +338,64 @@ def _coerce_schema(schema: Any) -> dict:
             detail=f"schema must be a JSON object, got {type(schema).__name__}",
         )
     return schema
+
+
+def _validate_v1_pdf(pdf_bytes: bytes) -> None:
+    """Validate a PDF upload for the synchronous /api/v1/parse endpoint.
+
+    Pure helper (no FastAPI import) — raises :class:`ValueError` with a
+    human-readable message on an invalid upload so the route handler can
+    translate it to a 400. A valid PDF is non-empty and starts with the
+    ``%PDF`` magic bytes.
+    """
+    if not pdf_bytes:
+        raise ValueError("empty file")
+    if not pdf_bytes.startswith(b"%PDF"):
+        raise ValueError("file is not a valid PDF (missing %PDF magic bytes)")
+
+
+def _build_v1_response(ctx: RequestContext, request_id: str,
+                       bank_name: str) -> tuple[int, dict[str, Any]]:
+    """Build the /api/v1/parse JSON response from a completed parse context.
+
+    Pure helper (no FastAPI import) — returns ``(status_code, body)`` so the
+    route handler can return the body directly on 200 or wrap it in a
+    JSONResponse for non-200. A run is a failure when the graph raised
+    (``ctx.error``), produced no extraction (``ctx.extraction_data`` is
+    ``None``), or short-circuited with the ``EXTRACTION_FAILED`` outcome.
+    ``PARTIAL`` (extraction OK, validation flagged) is still a 200 — the
+    payload is usable, ``validation_errors`` carries the caveats.
+    """
+    failed = (
+        ctx.error is not None
+        or ctx.extraction_data is None
+        or ctx.outcome == "EXTRACTION_FAILED"
+    )
+    if failed:
+        return 422, {
+            "request_id": request_id,
+            "bank": bank_name,
+            "status": "EXTRACTION_FAILED",
+            "extraction": None,
+            "error": ctx.error or "extraction produced no result",
+            "verdict": None,
+        }
+    validation_errors = (
+        ctx.complete_data.get("validation_errors", [])
+        if ctx.complete_data else []
+    )
+    return 200, {
+        "request_id": request_id,
+        "bank": bank_name,
+        "status": ctx.outcome or "SUCCESS",
+        "extraction": {
+            "payload": ctx.extraction_data["payload"],
+            "model_id": ctx.extraction_data["model_id"],
+            "schema_valid": ctx.extraction_data["schema_valid"],
+            "validation_errors": validation_errors,
+        },
+        "verdict": None,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -709,6 +767,182 @@ def _run_single_judge_bg(request_id: str, run_id: str) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Background judge scheduler (customer-deployable: runs the post-hoc judge
+# on a fixed interval so verdicts populate without a manual trigger)
+# ---------------------------------------------------------------------------
+
+# How long the synchronous /api/v1/parse endpoint waits for the full pipeline
+# before returning a 504. Luna extraction typically takes 15-30s; 300s gives a
+# wide margin for a slow first-call cold start without hanging forever.
+_SYNC_PARSE_TIMEOUT = 300.0
+
+# Default cadence (hours) and sample size for the background judge scheduler.
+_JUDGE_INTERVAL_DEFAULT = 6
+_JUDGE_SAMPLE_DEFAULT = 10
+
+
+def _judge_interval_hours() -> float:
+    """Return the configured judge interval in hours (env-overridable).
+
+    ``JUDGE_INTERVAL_HOURS <= 0`` disables the scheduler. A malformed value
+    falls back to the default (never raises — a config typo must not break
+    app startup).
+    """
+    raw = os.getenv("JUDGE_INTERVAL_HOURS", str(_JUDGE_INTERVAL_DEFAULT))
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return float(_JUDGE_INTERVAL_DEFAULT)
+
+
+def _judge_sample_size_env() -> int:
+    """Return the configured judge sample size (env-overridable, >= 1).
+
+    Capped at ``MAX_SAMPLE_SIZE`` so the scheduler cannot launch an expensive
+    sweep. A malformed value falls back to the default.
+    """
+    raw = os.getenv("JUDGE_SAMPLE_SIZE", str(_JUDGE_SAMPLE_DEFAULT))
+    try:
+        size = int(raw)
+    except (TypeError, ValueError):
+        return _JUDGE_SAMPLE_DEFAULT
+    return max(1, min(size, MAX_SAMPLE_SIZE))
+
+
+def _summarize_judge_result(result: Any) -> dict[str, Any]:
+    """Reduce a full judge evaluation result to a compact status summary.
+
+    The full result (per-field/per-bank breakdowns, error traces) is large;
+    the scheduler status endpoint only needs the high-level counts so an
+    operator can confirm the scheduler is producing verdicts.
+    """
+    if not isinstance(result, dict):
+        return {"status": "unknown"}
+    return {
+        "count_judged": result.get("count_judged", 0),
+        "count_errors": result.get("count_errors", 0),
+        "overall_strict": result.get("overall_strict"),
+        "overall_narration_forgiven": result.get("overall_narration_forgiven"),
+        "eval_run_id": result.get("eval_run_id"),
+        "_status": result.get("_status", "done"),
+    }
+
+
+class _JudgeScheduler:
+    """Daemon thread that runs the batch judge on a fixed interval.
+
+    Reuses :func:`_run_judge_evaluation_bg` — the SAME runner
+    ``/api/run-judge`` uses — so there is one judge code path; only the
+    trigger differs (a timer vs an HTTP request). The scheduler acquires the
+    shared judge concurrency slot before each run, so it never races a
+    manual/on-demand judge: if the slot is busy it skips the interval and
+    retries on the next tick.
+    """
+
+    def __init__(self, interval_hours: float, sample_size: int) -> None:
+        self.interval_hours = interval_hours
+        self.sample_size = sample_size
+        self.active = False
+        self.last_run_at: Optional[str] = None
+        self.next_run_at: Optional[str] = None
+        self.last_summary: Optional[dict[str, Any]] = None
+        self._stop = threading.Event()
+        self._thread: Optional[threading.Thread] = None
+
+    def start(self) -> None:
+        """Start the daemon thread. A no-op (and inactive) when disabled."""
+        if self.interval_hours <= 0:
+            self.active = False
+            _LOGGER.info(
+                "judge scheduler disabled (JUDGE_INTERVAL_HOURS=%s)",
+                self.interval_hours,
+            )
+            return
+        self.active = True
+        self._schedule_next()
+        self._thread = threading.Thread(
+            target=self._loop, daemon=True, name="savesage-judge-scheduler",
+        )
+        self._thread.start()
+        _LOGGER.info(
+            "judge scheduler started: every %s hours, sample_size=%d",
+            self.interval_hours, self.sample_size,
+        )
+
+    def _schedule_next(self) -> None:
+        self.next_run_at = (
+            datetime.now(UTC) + timedelta(hours=self.interval_hours)
+        ).isoformat()
+
+    def _loop(self) -> None:
+        interval_s = max(0.0, self.interval_hours) * 3600.0
+        while not self._stop.wait(interval_s):
+            if self._stop.is_set():
+                break
+            try:
+                self._tick()
+            except Exception as exc:  # noqa: BLE001 — scheduler must never die
+                _LOGGER.warning(
+                    "scheduled judge run raised unexpectedly: %s",
+                    exc, exc_info=True,
+                )
+                self.last_summary = {"status": "error", "error": str(exc)}
+            self.last_run_at = datetime.now(UTC).isoformat()
+            self._schedule_next()
+
+    def _tick(self) -> None:
+        """Run one scheduled judge evaluation (best-effort, never raises)."""
+        if not _acquire_judge_slot():
+            self.last_summary = {
+                "status": "skipped", "reason": "judge already running",
+            }
+            _LOGGER.info("scheduled judge run skipped: judge slot busy")
+            return
+        # _run_judge_evaluation_bg releases the slot in its finally block, so
+        # there is no double release (we acquire once here, it releases once).
+        _run_judge_evaluation_bg(self.sample_size)
+        self.last_summary = _summarize_judge_result(_judge_result_cache)
+        _LOGGER.info("scheduled judge run complete: %s", self.last_summary)
+
+    def stop(self) -> None:
+        """Signal the daemon loop to exit after the current wait."""
+        self._stop.set()
+        self.active = False
+
+    def status(self) -> dict[str, Any]:
+        return {
+            "active": self.active,
+            "interval_hours": self.interval_hours,
+            "sample_size": self.sample_size,
+            "last_run_at": self.last_run_at,
+            "next_run_at": self.next_run_at,
+            "last_summary": self.last_summary,
+        }
+
+
+# Process-level scheduler singleton, started once from create_app().
+_judge_scheduler: Optional[_JudgeScheduler] = None
+
+
+def _start_judge_scheduler() -> None:
+    """Build and start the background judge scheduler (best-effort).
+
+    Reads ``JUDGE_INTERVAL_HOURS`` / ``JUDGE_SAMPLE_SIZE`` from the
+    environment. Disabled (and inactive) when the interval is <= 0. Never
+    raises — a scheduler failure must not block app startup.
+    """
+    global _judge_scheduler
+    try:
+        interval = _judge_interval_hours()
+        sample = _judge_sample_size_env()
+        _judge_scheduler = _JudgeScheduler(interval, sample)
+        _judge_scheduler.start()
+    except Exception as exc:  # noqa: BLE001 — never break startup
+        _LOGGER.warning("judge scheduler failed to start: %s", exc, exc_info=True)
+        _judge_scheduler = None
+
+
+# ---------------------------------------------------------------------------
 # FastAPI app — all third-party imports are function-local inside create_app
 # ---------------------------------------------------------------------------
 
@@ -778,6 +1012,90 @@ def create_app():
         thread.start()
 
         return {"request_id": request_id}
+
+    # -- POST /api/v1/parse (synchronous customer API) -------------------
+    @app.post("/api/v1/parse")
+    async def parse_v1(file: UploadFile = File(...), bank: str = Form(...)):
+        """Synchronous parse endpoint — the PRIMARY customer integration point.
+
+        Accepts a multipart form (``file`` = PDF upload, ``bank`` = bank name),
+        runs the FULL parse pipeline synchronously (route → extract →
+        validate → persist → finalize), and returns the extracted JSON
+        directly. This is NOT a background thread — the caller blocks until
+        the extraction completes (or times out).
+
+        MLflow tracing still works: the trace sink hooks into the same graph
+        node events as the async path, so every v1 parse is traced end-to-end.
+        The result is also stored in the in-memory ``_REQUESTS`` dict, so the
+        existing ``GET /api/results/{request_id}`` endpoint serves follow-up
+        queries (feedback, on-demand re-judge) for the same ``request_id``.
+
+        Responses:
+          * 200 — extraction succeeded; ``extraction`` holds the payload.
+          * 400 — invalid PDF (empty / not a PDF) or invalid bank name.
+          * 422 — extraction failed; ``status`` is ``EXTRACTION_FAILED``.
+          * 504 — the pipeline did not complete within the sync timeout.
+        """
+        import asyncio
+
+        pdf_bytes = await file.read()
+        # PDF validation: non-empty + %PDF magic bytes (pure helper → 400).
+        try:
+            _validate_v1_pdf(pdf_bytes)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+
+        # Bank-name validation (format only; unknown banks fall back to GENERIC).
+        from harness.dbfs import validate_bank_name
+        try:
+            bank_name = validate_bank_name(bank)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+        request_id = _new_request_id()
+        ctx = RequestContext(request_id)
+        ctx.pdf_bytes = pdf_bytes
+        ctx.pdf_filename = file.filename or "statement.pdf"
+        _REQUESTS[request_id] = ctx
+        # FIFO eviction (same as /api/parse).
+        while len(_REQUESTS) > _MAX_REQUESTS:
+            _REQUESTS.pop(next(iter(_REQUESTS)), None)
+
+        # Run the full pipeline synchronously in a worker thread with a bounded
+        # wait so a hung extraction returns a 504 rather than blocking the single
+        # uvicorn event loop. _run_parse never raises (it stores errors on ctx),
+        # so a timeout is the only failure mode that reaches the except below;
+        # the orphaned worker thread is left to complete (Python can't kill it).
+        loop = asyncio.get_running_loop()
+        try:
+            await asyncio.wait_for(
+                loop.run_in_executor(
+                    None, _run_parse, ctx, pdf_bytes,
+                    file.filename or "statement.pdf", bank_name,
+                ),
+                timeout=_SYNC_PARSE_TIMEOUT,
+            )
+        except asyncio.TimeoutError:
+            return JSONResponse(
+                status_code=504,
+                content={
+                    "request_id": request_id,
+                    "bank": bank_name,
+                    "status": "EXTRACTION_FAILED",
+                    "extraction": None,
+                    "error": (
+                        f"parse did not complete within "
+                        f"{_SYNC_PARSE_TIMEOUT:.0f}s"
+                    ),
+                    "verdict": None,
+                },
+            )
+
+        # Build the response from the context the graph populated (pure helper).
+        status_code, body = _build_v1_response(ctx, request_id, bank_name)
+        if status_code == 200:
+            return body
+        return JSONResponse(status_code=status_code, content=body)
 
     # -- GET /api/pdf/{request_id} ---------------------------------------
     @app.get("/api/pdf/{request_id}")
@@ -1054,6 +1372,28 @@ def create_app():
         if _judge_result_cache is not None:
             return {"status": "done", "results": _judge_result_cache}
         return {"status": "idle", "results": None}
+
+    # -- GET /api/v1/judge/status (scheduler status) ---------------------
+    @app.get("/api/v1/judge/status")
+    async def judge_scheduler_status():
+        """Return the background judge scheduler status.
+
+        Reports whether the scheduler is active, the configured interval and
+        sample size, the last/next run timestamps (ISO-8601 UTC), and a compact
+        summary of the last scheduled batch. The scheduler is disabled (and
+        reported inactive) when ``JUDGE_INTERVAL_HOURS`` is set to 0 or less.
+        """
+        if _judge_scheduler is None:
+            # Scheduler not built (disabled at startup or build failed).
+            return {
+                "active": False,
+                "interval_hours": _judge_interval_hours(),
+                "sample_size": _judge_sample_size_env(),
+                "last_run_at": None,
+                "next_run_at": None,
+                "last_summary": None,
+            }
+        return _judge_scheduler.status()
 
     # -- POST /api/results/{request_id}/judge ----------------------------
     @app.post("/api/results/{request_id}/judge")
@@ -1480,6 +1820,10 @@ def create_app():
             )
     except Exception as exc:  # noqa: BLE001 -- seeding must never block startup
         _LOGGER.warning("Built-in bank config seeding failed: %s", exc)
+
+    # Start the background judge scheduler (best-effort; never blocks startup).
+    # Disabled (and reported inactive) when JUDGE_INTERVAL_HOURS <= 0.
+    _start_judge_scheduler()
 
     return app
 

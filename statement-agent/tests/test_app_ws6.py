@@ -449,20 +449,59 @@ class AppYamlTest(unittest.TestCase):
         self.assertIn("WS4_TRACING_ENABLED", names)
         self.assertIn("WS4_TRACKING_URI", names)
 
-    def test_mlflow_experiment_resource(self) -> None:
+    def test_mlflow_experiment_name_not_hardcoded_id(self) -> None:
+        """The experiment is parameterised by NAME (path), not a hardcoded ID.
+
+        A customer workspace has no pre-existing experiment, so app.yaml must
+        not pin a numeric MLFLOW_EXPERIMENT_ID (which would point at a
+        non-existent experiment on a fresh workspace) or bind an experiment
+        resource. Instead it sets MLFLOW_EXPERIMENT_NAME, which the tracing
+        layer resolves via mlflow.set_experiment() (auto-creating the path).
+        """
+        names = set(self._env_names())
+        self.assertIn("MLFLOW_EXPERIMENT_NAME", names)
+        # The customer-facing NAME var must NOT coexist with the hardcoded ID.
+        self.assertNotIn("MLFLOW_EXPERIMENT_ID", names)
+        # No workspace-specific numeric ID anywhere in the file.
+        self.assertNotIn("967014443183055", self.text)
         if self.parsed is not None:
-            resources = {r["name"]: r for r in self.parsed.get("resources", [])}
-            self.assertIn("savesage-mlflow", resources)
-            # Databricks resource names are capped at 30 chars.
-            self.assertLessEqual(len("savesage-mlflow"), 30)
-            exp = resources["savesage-mlflow"]
-            self.assertIn("experiment", exp)
-            self.assertEqual(exp["experiment"]["permission"], "CAN_EDIT")
-            self.assertTrue(exp["experiment"]["experiment_id"])
+            env = {e["name"]: e.get("value") for e in self.parsed.get("env", [])}
+            self.assertEqual(
+                env["MLFLOW_EXPERIMENT_NAME"], "/Shared/savesage/statement-agent"
+            )
+
+    def test_judge_scheduler_env_vars(self) -> None:
+        """Background judge scheduler env vars are declared with sane defaults."""
+        names = set(self._env_names())
+        self.assertIn("JUDGE_INTERVAL_HOURS", names)
+        self.assertIn("JUDGE_SAMPLE_SIZE", names)
+        if self.parsed is not None:
+            env = {e["name"]: e.get("value") for e in self.parsed.get("env", [])}
+            self.assertEqual(env["JUDGE_INTERVAL_HOURS"], "6")
+            self.assertEqual(env["JUDGE_SAMPLE_SIZE"], "10")
+
+    def test_no_hardcoded_experiment_resource(self) -> None:
+        """No bound experiment resource — the experiment is resolved by NAME.
+
+        A customer workspace does not have the dev workspace's experiment, so
+        app.yaml must not bind a ``resources:`` experiment block (which would
+        reference a non-existent experiment_id and fail the deploy). The
+        MLflow experiment is auto-created at MLFLOW_EXPERIMENT_NAME on the
+        first parse instead.
+        """
+        if self.parsed is not None:
+            resources = self.parsed.get("resources", []) or []
+            self.assertFalse(
+                any("experiment" in r for r in resources),
+                "no experiment resource binding should remain (resolved by NAME)",
+            )
+            self.assertFalse(
+                any(r.get("name") == "savesage-mlflow" for r in resources),
+                "savesage-mlflow resource should be removed",
+            )
         else:
-            self.assertIn("savesage-mlflow", self.text)
-            self.assertIn("experiment", self.text)
-            self.assertIn("CAN_EDIT", self.text)
+            self.assertNotIn("savesage-mlflow", self.text)
+            self.assertNotIn("experiment_id", self.text)
 
     def test_no_database_resource(self) -> None:
         """No database resource binding (direct RDS connection via env vars).
