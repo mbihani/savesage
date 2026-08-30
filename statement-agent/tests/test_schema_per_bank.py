@@ -414,6 +414,34 @@ class ValidationNodePerBankTest(unittest.TestCase):
         self.assertFalse(state.schema_valid)
         self.assertTrue(any("rawStatementId" in e for e in state.validation_errors))
 
+    def test_validate_node_uses_schema_override_without_bank_lookup(self) -> None:
+        from graph.nodes import NodeDeps, validate_node
+        from graph.fakes import FakeExtractionAdapter, make_synthetic_request
+        from graph.state import GraphState
+
+        override = {
+            "type": "object",
+            "required": ["customField"],
+            "properties": {"customField": {"type": "string"}},
+            "additionalProperties": False,
+        }
+        state = GraphState(
+            request=make_synthetic_request(Bank.HDFC),
+            schema_override=override,
+        )
+        state.extraction = ExtractionResult(
+            request_id=state.request_id,
+            payload={"customField": "model output"},
+            model_id="synthetic",
+            latency_ms=1.0,
+        )
+
+        with patch("graph.nodes.load_schema_for_bank") as mock_resolve:
+            validate_node(state, NodeDeps(extraction=FakeExtractionAdapter()))
+
+        mock_resolve.assert_not_called()
+        self.assertTrue(state.schema_valid, state.validation_errors)
+
 
 # --------------------------------------------------------------------------- #
 # 6. Extraction adapter resolves the per-bank schema

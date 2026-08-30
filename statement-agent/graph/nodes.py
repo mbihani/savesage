@@ -232,11 +232,13 @@ def validate_node(state: GraphState, deps: NodeDeps) -> GraphState:
     """
     if state.outcome is Outcome.EXTRACTION_FAILED or state.extraction is None:
         return state
-    # Per-bank schema resolution: validate against the schema that was actually
-    # sent to the model for this request's detected bank (mirrors the per-bank
-    # prompt routing in route_node). Falls back to load_gt_schema() if a bank
-    # somehow has no schema, but SCHEMA_BY_BANK covers every Bank enum value.
-    schema = load_schema_for_bank(state.request.bank)
+    # A custom re-run sends schema_override to the model, so validation must use
+    # that exact schema too. Normal parses retain the existing per-bank lookup.
+    schema = (
+        state.schema_override
+        if state.schema_override is not None
+        else load_schema_for_bank(state.request.bank)
+    )
     report = validate_payload(state.extraction.payload, schema)
     state.schema_valid = report.schema_valid
     state.validation_errors = report.all_errors

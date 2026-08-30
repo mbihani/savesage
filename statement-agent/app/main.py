@@ -571,7 +571,9 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str,
             bank=coerce_request_bank(bank),
             request_id=ctx.request_id,
         )
-        state = GraphState(request=request)
+        # Keep the custom schema on the per-run state so validation uses the
+        # exact same schema that the extraction adapter sends to Luna.
+        state = GraphState(request=request, schema_override=schema_override)
         # Pre-set the prompt so route_node does not overwrite it with the
         # bank default when a custom prompt is provided.
         if prompt_override is not None:
