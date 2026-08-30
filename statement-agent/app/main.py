@@ -354,21 +354,60 @@ def _validate_v1_pdf(pdf_bytes: bytes) -> None:
         raise ValueError("file is not a valid PDF (missing %PDF magic bytes)")
 
 
+class _UploadTooLarge(Exception):
+    """Signal that an upload exceeds the configured max size.
+
+    Carries the limit (MB) and the observed size (MB) so the route handler can
+    build a 413 body. The read is abandoned mid-stream, so only ``max_bytes``
+    of the body are buffered — not the full (potentially huge) upload.
+    """
+
+    def __init__(self, limit_mb: int, observed_mb: float) -> None:
+        self.limit_mb = limit_mb
+        self.observed_mb = observed_mb
+        super().__init__(f"upload exceeds {limit_mb} MB")
+
+
+async def _read_bounded(file: Any, max_bytes: int) -> bytes:
+    """Read an ``UploadFile`` with a hard byte cap (no FastAPI import here).
+
+    Streams in chunks so an oversized upload is detected after reading at most
+    ``max_bytes + chunk`` bytes (the chunk that crosses the cap), not the whole
+    body. Raises :class:`_UploadTooLarge` when the cap is exceeded; the caller
+    translates that to a 413.
+    """
+    chunks: list[bytes] = []
+    total = 0
+    while True:
+        chunk = await file.read(1024 * 1024)  # 1 MB chunks
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > max_bytes:
+            raise _UploadTooLarge(
+                max_bytes // (1024 * 1024), total / (1024 * 1024),
+            )
+        chunks.append(chunk)
+    return b"".join(chunks)
+
+
 def _build_v1_response(ctx: RequestContext, request_id: str,
                        bank_name: str) -> tuple[int, dict[str, Any]]:
     """Build the /api/v1/parse JSON response from a completed parse context.
 
     Pure helper (no FastAPI import) — returns ``(status_code, body)`` so the
     route handler can return the body directly on 200 or wrap it in a
-    JSONResponse for non-200. A run is a failure when the graph raised
-    (``ctx.error``), produced no extraction (``ctx.extraction_data`` is
-    ``None``), or short-circuited with the ``EXTRACTION_FAILED`` outcome.
-    ``PARTIAL`` (extraction OK, validation flagged) is still a 200 — the
-    payload is usable, ``validation_errors`` carries the caveats.
+    JSONResponse for non-200. A run is a failure ONLY when the graph
+    produced no extraction (``ctx.extraction_data`` is ``None``) or
+    short-circuited with the ``EXTRACTION_FAILED`` outcome. A ``PARTIAL``
+    outcome (extraction OK, validation flagged) is still a 200 — the payload
+    is usable, ``validation_errors`` carries the caveats — even when
+    ``ctx.error`` is set (e.g. a validation message), because the extraction
+    itself succeeded and the payload is returned. ``ctx.error`` alone never
+    flips a usable extraction to a 422.
     """
     failed = (
-        ctx.error is not None
-        or ctx.extraction_data is None
+        ctx.extraction_data is None
         or ctx.outcome == "EXTRACTION_FAILED"
     )
     if failed:
@@ -779,20 +818,55 @@ _SYNC_PARSE_TIMEOUT = 300.0
 # Default cadence (hours) and sample size for the background judge scheduler.
 _JUDGE_INTERVAL_DEFAULT = 6
 _JUDGE_SAMPLE_DEFAULT = 10
+# Minimum enabled cadence — a positive value below this is clamped up so the
+# scheduler can't spin a tight loop that hammers the (expensive) Opus judge.
+_JUDGE_INTERVAL_MIN = 0.1
+
+# Maximum accepted PDF upload size (megabytes). A multipart upload larger than
+# this is rejected with 413 BEFORE the body is read into memory. Env-overridable
+# so a workspace with larger statements can raise it. 50 MB is generous for a
+# credit-card statement PDF (typically 0.1-2 MB).
+_MAX_PDF_SIZE_MB_DEFAULT = 50
+
+
+def _max_pdf_size_mb() -> int:
+    """Return the configured max PDF upload size in MB (env-overridable, >= 1).
+
+    ``MAX_PDF_SIZE_MB`` lets a workspace tune the upload cap. A malformed value
+    falls back to the default (never raises — a config typo must not break app
+    startup).
+    """
+    raw = os.getenv("MAX_PDF_SIZE_MB", str(_MAX_PDF_SIZE_MB_DEFAULT))
+    try:
+        size = int(raw)
+    except (TypeError, ValueError):
+        return _MAX_PDF_SIZE_MB_DEFAULT
+    return max(1, size)
 
 
 def _judge_interval_hours() -> float:
     """Return the configured judge interval in hours (env-overridable).
 
-    ``JUDGE_INTERVAL_HOURS <= 0`` disables the scheduler. A malformed value
-    falls back to the default (never raises — a config typo must not break
-    app startup).
+    ``JUDGE_INTERVAL_HOURS <= 0`` disables the scheduler (returned as-is so the
+    caller can distinguish "disabled" from a real cadence). A positive value
+    is clamped to a minimum of ``_JUDGE_INTERVAL_MIN`` (0.1 h) so the scheduler
+    can't spin a tight loop that hammers the Opus judge. ``NaN`` / ``Infinity``
+    fall back to the default — both break the daemon wait loop. A malformed
+    value falls back to the default (never raises — a config typo must not
+    break app startup).
     """
+    import math
+
     raw = os.getenv("JUDGE_INTERVAL_HOURS", str(_JUDGE_INTERVAL_DEFAULT))
     try:
-        return float(raw)
+        val = float(raw)
     except (TypeError, ValueError):
         return float(_JUDGE_INTERVAL_DEFAULT)
+    if not math.isfinite(val):
+        return float(_JUDGE_INTERVAL_DEFAULT)
+    if val <= 0:
+        return val  # disables — pass through unchanged
+    return max(val, _JUDGE_INTERVAL_MIN)
 
 
 def _judge_sample_size_env() -> int:
@@ -930,8 +1004,16 @@ def _start_judge_scheduler() -> None:
     Reads ``JUDGE_INTERVAL_HOURS`` / ``JUDGE_SAMPLE_SIZE`` from the
     environment. Disabled (and inactive) when the interval is <= 0. Never
     raises — a scheduler failure must not block app startup.
+
+    Re-entrancy: if a scheduler is already running (e.g. ``create_app`` is
+    called twice in a test harness), the existing one is stopped first so its
+    daemon thread exits cleanly — no orphaned loop keeps firing the judge.
     """
     global _judge_scheduler
+    # Stop any pre-existing scheduler so its daemon thread exits before we
+    # replace the global. idempotent when the scheduler is None or inactive.
+    if _judge_scheduler is not None and _judge_scheduler.active:
+        _judge_scheduler.stop()
     try:
         interval = _judge_interval_hours()
         sample = _judge_sample_size_env()
@@ -1033,12 +1115,27 @@ def create_app():
         Responses:
           * 200 — extraction succeeded; ``extraction`` holds the payload.
           * 400 — invalid PDF (empty / not a PDF) or invalid bank name.
+          * 413 — the upload exceeds the configured ``MAX_PDF_SIZE_MB``.
           * 422 — extraction failed; ``status`` is ``EXTRACTION_FAILED``.
           * 504 — the pipeline did not complete within the sync timeout.
         """
         import asyncio
 
-        pdf_bytes = await file.read()
+        max_bytes = _max_pdf_size_mb() * 1024 * 1024
+        try:
+            pdf_bytes = await _read_bounded(file, max_bytes)
+        except _UploadTooLarge as exc:
+            return JSONResponse(
+                status_code=413,
+                content={
+                    "status": "EXTRACTION_FAILED",
+                    "error": (
+                        f"upload too large: {exc.observed_mb:.1f} MB exceeds "
+                        f"the {exc.limit_mb} MB limit (MAX_PDF_SIZE_MB)"
+                    ),
+                },
+            )
+
         # PDF validation: non-empty + %PDF magic bytes (pure helper → 400).
         try:
             _validate_v1_pdf(pdf_bytes)

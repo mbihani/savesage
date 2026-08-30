@@ -19,10 +19,14 @@ from unittest.mock import patch
 from app.main import (
     MAX_SAMPLE_SIZE,
     RequestContext,
+    _UploadTooLarge,
     _build_v1_response,
     _judge_interval_hours,
     _judge_sample_size_env,
     _JudgeScheduler,
+    _JUDGE_INTERVAL_MIN,
+    _max_pdf_size_mb,
+    _read_bounded,
     _summarize_judge_result,
     _validate_v1_pdf,
 )
@@ -113,6 +117,42 @@ class V1ResponseBuilderTest(unittest.TestCase):
         self.assertEqual(body["status"], "PARTIAL")
         self.assertFalse(body["extraction"]["schema_valid"])
         self.assertEqual(body["extraction"]["validation_errors"], ["missing field X"])
+
+    def test_partial_with_error_set_is_still_200(self) -> None:
+        """A PARTIAL outcome with usable extraction_data returns 200 even when
+        ``ctx.error`` is set (e.g. a validation message). Per the contract, a
+        PARTIAL result is a success — the payload is usable, ``validation_errors``
+        carries the caveats. ``ctx.error`` alone never flips a usable extraction
+        to a 422.
+        """
+        ctx = self._ctx("req-partialerr1")
+        ctx.extraction_data = {
+            "payload": {"cards": [{"x": 1}]},
+            "model_id": "databricks-gpt-5-6-luna",
+            "schema_valid": False,
+        }
+        ctx.complete_data = {"validation_errors": ["missing field X"]}
+        ctx.outcome = "PARTIAL"
+        ctx.error = "validation flagged missing field X"
+        status, body = _build_v1_response(ctx, "req-partialerr1", "HDFC")
+        self.assertEqual(status, 200)
+        self.assertEqual(body["status"], "PARTIAL")
+        self.assertIsNotNone(body["extraction"])
+        self.assertEqual(
+            body["extraction"]["validation_errors"], ["missing field X"]
+        )
+
+    def test_error_with_extraction_still_returns_200(self) -> None:
+        """Even a non-PARTIAL outcome (e.g. None) with usable extraction_data
+        returns 200 when ctx.error is set — the error alone does not flip to 422.
+        """
+        ctx = self._ctx("req-err-w-ext1")
+        ctx.extraction_data = {"payload": {}, "model_id": "m", "schema_valid": True}
+        ctx.outcome = None
+        ctx.error = "a transient warning during validate"
+        status, body = _build_v1_response(ctx, "req-err-w-ext1", "HDFC")
+        self.assertEqual(status, 200)
+        self.assertEqual(body["status"], "SUCCESS")
 
     def test_error_returns_422(self) -> None:
         ctx = self._ctx("req-error000001")
@@ -432,6 +472,351 @@ class StartJudgeSchedulerTest(unittest.TestCase):
         self.assertTrue(sched.active)
         self.assertEqual(sched.sample_size, 3)
         self.assertIsNotNone(sched._thread)
+
+    def test_reentrant_start_stops_existing_scheduler(self) -> None:
+        """Calling _start_judge_scheduler twice stops the first scheduler's
+        daemon thread before building the second — no orphaned loop keeps
+        firing the judge."""
+        os.environ["JUDGE_INTERVAL_HOURS"] = "1000"
+        self._main._start_judge_scheduler()
+        first = self._main._judge_scheduler
+        self.assertIsNotNone(first)
+        self.assertTrue(first.active)
+        first_thread = first._thread
+        self.assertIsNotNone(first_thread)
+
+        self._main._start_judge_scheduler()
+        second = self._main._judge_scheduler
+        self.assertIsNotNone(second)
+        self.assertTrue(second.active)
+        self.assertIsNot(second, first)
+        # The first scheduler was stopped and its thread exited.
+        self.assertFalse(first.active)
+        if first_thread is not None:
+            first_thread.join(timeout=2.0)
+            self.assertFalse(first_thread.is_alive())
+
+
+# ---------------------------------------------------------------------------
+# Upload size cap — _max_pdf_size_mb + _read_bounded
+# ---------------------------------------------------------------------------
+
+class MaxPdfSizeTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self._saved = os.environ.pop("MAX_PDF_SIZE_MB", None)
+
+    def tearDown(self) -> None:
+        v = self._saved
+        if v is None:
+            os.environ.pop("MAX_PDF_SIZE_MB", None)
+        else:
+            os.environ["MAX_PDF_SIZE_MB"] = v
+
+    def test_default_is_50(self) -> None:
+        self.assertEqual(_max_pdf_size_mb(), 50)
+
+    def test_override(self) -> None:
+        os.environ["MAX_PDF_SIZE_MB"] = "100"
+        self.assertEqual(_max_pdf_size_mb(), 100)
+
+    def test_garbage_falls_back_to_default(self) -> None:
+        os.environ["MAX_PDF_SIZE_MB"] = "huge"
+        self.assertEqual(_max_pdf_size_mb(), 50)
+
+    def test_minimum_is_one(self) -> None:
+        os.environ["MAX_PDF_SIZE_MB"] = "0"
+        self.assertEqual(_max_pdf_size_mb(), 1)
+        os.environ["MAX_PDF_SIZE_MB"] = "-5"
+        self.assertEqual(_max_pdf_size_mb(), 1)
+
+
+class ReadBoundedTest(unittest.TestCase):
+    """_read_bounded streams an UploadFile with a hard byte cap."""
+
+    @staticmethod
+    def _fake_upload(data: bytes):
+        """Build a minimal async stand-in for fastapi.UploadFile.
+
+        Only ``read(n)`` is used by ``_read_bounded``; we expose it as an async
+        method that returns successive slices, exactly like a real spooled
+        UploadFile.
+        """
+        class _FakeUpload:
+            def __init__(self, payload: bytes) -> None:
+                self._buf = payload
+                self._pos = 0
+
+            async def read(self, n: int = -1) -> bytes:
+                if n < 0:
+                    chunk = self._buf[self._pos:]
+                else:
+                    chunk = self._buf[self._pos:self._pos + n]
+                self._pos += len(chunk)
+                return chunk
+
+        return _FakeUpload(data)
+
+    def test_small_upload_read_in_full(self) -> None:
+        import asyncio
+        data = b"%PDF-1.4\n" + b"x" * 100
+        upload = self._fake_upload(data)
+        result = asyncio.new_event_loop().run_until_complete(
+            _read_bounded(upload, 1024 * 1024)
+        )
+        self.assertEqual(result, data)
+
+    def test_oversized_raises_before_full_body(self) -> None:
+        """An upload exceeding the cap raises _UploadTooLarge; only ~max_bytes
+        are buffered (the chunk that crosses the cap), not the whole body."""
+        import asyncio
+        # 3 MB body, 1 MB cap → crosses on the 2nd 1-MB chunk.
+        data = b"%PDF-1.4\n" + b"x" * (3 * 1024 * 1024)
+        upload = self._fake_upload(data)
+        with self.assertRaises(_UploadTooLarge) as cm:
+            asyncio.new_event_loop().run_until_complete(
+                _read_bounded(upload, 1024 * 1024)
+            )
+        self.assertEqual(cm.exception.limit_mb, 1)
+        self.assertGreater(cm.exception.observed_mb, 1.0)
+
+
+# ---------------------------------------------------------------------------
+# JUDGE_INTERVAL_HOURS — NaN / Infinity / minimum enforcement
+# ---------------------------------------------------------------------------
+
+class JudgeIntervalValidationTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self._saved = os.environ.pop("JUDGE_INTERVAL_HOURS", None)
+
+    def tearDown(self) -> None:
+        v = self._saved
+        if v is None:
+            os.environ.pop("JUDGE_INTERVAL_HOURS", None)
+        else:
+            os.environ["JUDGE_INTERVAL_HOURS"] = v
+
+    def test_nan_falls_back_to_default(self) -> None:
+        os.environ["JUDGE_INTERVAL_HOURS"] = "nan"
+        self.assertEqual(_judge_interval_hours(), 6.0)
+
+    def test_infinity_falls_back_to_default(self) -> None:
+        os.environ["JUDGE_INTERVAL_HOURS"] = "inf"
+        self.assertEqual(_judge_interval_hours(), 6.0)
+
+    def test_negative_infinity_falls_back_to_default(self) -> None:
+        os.environ["JUDGE_INTERVAL_HOURS"] = "-inf"
+        self.assertEqual(_judge_interval_hours(), 6.0)
+
+    def test_tiny_positive_clamped_to_minimum(self) -> None:
+        os.environ["JUDGE_INTERVAL_HOURS"] = "0.001"
+        self.assertEqual(_judge_interval_hours(), _JUDGE_INTERVAL_MIN)
+
+    def test_minimum_itself_passes(self) -> None:
+        os.environ["JUDGE_INTERVAL_HOURS"] = str(_JUDGE_INTERVAL_MIN)
+        self.assertEqual(_judge_interval_hours(), _JUDGE_INTERVAL_MIN)
+
+    def test_above_minimum_passes_unchanged(self) -> None:
+        os.environ["JUDGE_INTERVAL_HOURS"] = "0.5"
+        self.assertEqual(_judge_interval_hours(), 0.5)
+
+    def test_zero_still_disables(self) -> None:
+        os.environ["JUDGE_INTERVAL_HOURS"] = "0"
+        self.assertEqual(_judge_interval_hours(), 0.0)
+
+    def test_negative_still_disables(self) -> None:
+        os.environ["JUDGE_INTERVAL_HOURS"] = "-1"
+        self.assertEqual(_judge_interval_hours(), -1.0)
+
+
+# ---------------------------------------------------------------------------
+# /api/v1/parse — real integration tests via FastAPI TestClient
+# ---------------------------------------------------------------------------
+
+def _testclient_available() -> bool:
+    """True iff fastapi + httpx are importable (needed for TestClient)."""
+    try:
+        import fastapi  # noqa: F401
+        import httpx  # noqa: F401
+        from fastapi.testclient import TestClient  # noqa: F401
+        return True
+    except Exception:
+        return False
+
+
+@unittest.skipUnless(_testclient_available(), "fastapi/httpx not importable")
+class V1ParseIntegrationTest(unittest.TestCase):
+    """End-to-end tests for the synchronous /api/v1/parse endpoint.
+
+    These send real multipart POSTs through the ASGI app via FastAPI's
+    TestClient, exercising the route handler, the upload-size guard, PDF/bank
+    validation, the synchronous executor path, and the in-memory ``_REQUESTS``
+    store. The underlying ``_run_parse`` is mocked so no real Luna call (or
+    graph import) is needed.
+    """
+
+    def setUp(self) -> None:
+        # Disable the background judge scheduler so no daemon thread fires.
+        self._saved_interval = os.environ.pop("JUDGE_INTERVAL_HOURS", None)
+        os.environ["JUDGE_INTERVAL_HOURS"] = "0"
+        import app.main as main_mod
+        self._main = main_mod
+        # Snapshot + clear module-level state so tests are isolated.
+        self._saved_requests = main_mod._REQUESTS
+        main_mod._REQUESTS.clear()
+        # (Re)build the app so the scheduler env (disabled) takes effect.
+        self._app = main_mod.create_app()
+        from fastapi.testclient import TestClient
+        self._client = TestClient(self._app)
+
+    def tearDown(self) -> None:
+        # Stop any scheduler create_app may have started.
+        sched = self._main._judge_scheduler
+        if sched is not None and sched.active:
+            sched.stop()
+        # Restore module state.
+        self._main._REQUESTS.clear()
+        self._main._REQUESTS.update(self._saved_requests)
+        v = self._saved_interval
+        if v is None:
+            os.environ.pop("JUDGE_INTERVAL_HOURS", None)
+        else:
+            os.environ["JUDGE_INTERVAL_HOURS"] = v
+
+    @staticmethod
+    def _mock_success_parse(ctx, pdf_bytes, filename, bank_name, *_a, **_k):
+        """Mock _run_parse that simulates a successful extraction.
+
+        Populates the same fields the real graph sets so _build_v1_response
+        can build a 200 body.
+        """
+        ctx.extraction_data = {
+            "payload": {"cards": [], "transactions": []},
+            "model_id": "databricks-gpt-5-6-luna",
+            "schema_valid": True,
+        }
+        ctx.outcome = "SUCCESS"
+        ctx.complete_data = {
+            "request_id": ctx.request_id,
+            "outcome": "SUCCESS",
+            "stage": "FINALIZE",
+            "schema_valid": True,
+            "validation_errors": [],
+        }
+        ctx.push_sentinel()
+
+    @staticmethod
+    def _mock_failed_parse(ctx, pdf_bytes, filename, bank_name, *_a, **_k):
+        """Mock _run_parse that simulates an extraction failure (422)."""
+        ctx.extraction_data = None
+        ctx.outcome = "EXTRACTION_FAILED"
+        ctx.error = "Luna endpoint timed out"
+        ctx.push_sentinel()
+
+    def test_valid_pdf_returns_200(self) -> None:
+        """A valid PDF + valid bank → 200 with the expected JSON structure."""
+        pdf = b"%PDF-1.4\n%" + b"\x00" * 200
+        with patch("app.main._run_parse", side_effect=self._mock_success_parse):
+            resp = self._client.post(
+                "/api/v1/parse",
+                files={"file": ("statement.pdf", pdf, "application/pdf")},
+                data={"bank": "HDFC"},
+            )
+        self.assertEqual(resp.status_code, 200)
+        body = resp.json()
+        self.assertIn(body["request_id"], self._main._REQUESTS)
+        self.assertEqual(body["bank"], "HDFC")
+        self.assertEqual(body["status"], "SUCCESS")
+        self.assertEqual(body["verdict"], None)
+        ext = body["extraction"]
+        self.assertEqual(ext["model_id"], "databricks-gpt-5-6-luna")
+        self.assertTrue(ext["schema_valid"])
+        self.assertEqual(ext["validation_errors"], [])
+        self.assertEqual(ext["payload"], {"cards": [], "transactions": []})
+
+    def test_result_stored_in_requests(self) -> None:
+        """The completed context is stored in _REQUESTS after the call."""
+        pdf = b"%PDF-1.4\n%" + b"\x00" * 50
+        with patch("app.main._run_parse", side_effect=self._mock_success_parse):
+            resp = self._client.post(
+                "/api/v1/parse",
+                files={"file": ("statement.pdf", pdf, "application/pdf")},
+                data={"bank": "ICICI"},
+            )
+        self.assertEqual(resp.status_code, 200)
+        rid = resp.json()["request_id"]
+        self.assertIn(rid, self._main._REQUESTS)
+        ctx = self._main._REQUESTS[rid]
+        self.assertEqual(ctx.outcome, "SUCCESS")
+        self.assertIsNotNone(ctx.extraction_data)
+
+    def test_non_pdf_returns_400(self) -> None:
+        """A file without %PDF magic bytes → 400."""
+        with patch("app.main._run_parse", side_effect=self._mock_success_parse):
+            resp = self._client.post(
+                "/api/v1/parse",
+                files={"file": ("stmt.txt", b"Not a PDF -- just text",
+                                "text/plain")},
+                data={"bank": "HDFC"},
+            )
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn("%PDF", resp.json()["detail"])
+
+    def test_empty_file_returns_400(self) -> None:
+        """An empty file → 400."""
+        with patch("app.main._run_parse", side_effect=self._mock_success_parse):
+            resp = self._client.post(
+                "/api/v1/parse",
+                files={"file": ("empty.pdf", b"", "application/pdf")},
+                data={"bank": "HDFC"},
+            )
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn("empty", resp.json()["detail"].lower())
+
+    def test_extraction_failure_returns_422(self) -> None:
+        """A valid PDF that triggers an extraction failure → 422."""
+        pdf = b"%PDF-1.4\n%" + b"\x00" * 200
+        with patch("app.main._run_parse", side_effect=self._mock_failed_parse):
+            resp = self._client.post(
+                "/api/v1/parse",
+                files={"file": ("statement.pdf", pdf, "application/pdf")},
+                data={"bank": "HDFC"},
+            )
+        self.assertEqual(resp.status_code, 422)
+        body = resp.json()
+        self.assertEqual(body["status"], "EXTRACTION_FAILED")
+        self.assertIsNone(body["extraction"])
+        self.assertEqual(body["error"], "Luna endpoint timed out")
+
+    def test_invalid_bank_returns_400(self) -> None:
+        """An invalid bank name → 400 (no parse attempt)."""
+        pdf = b"%PDF-1.4\n%" + b"\x00" * 50
+        with patch("app.main._run_parse", side_effect=self._mock_success_parse) as m:
+            resp = self._client.post(
+                "/api/v1/parse",
+                files={"file": ("statement.pdf", pdf, "application/pdf")},
+                data={"bank": "../etc"},
+            )
+        self.assertEqual(resp.status_code, 400)
+        m.assert_not_called()
+
+    def test_oversized_upload_returns_413(self) -> None:
+        """An upload exceeding MAX_PDF_SIZE_MB → 413, before any parse."""
+        # Shrink the cap to 1 MB so we can build a 2 MB body quickly.
+        with patch("app.main._max_pdf_size_mb", return_value=1):
+            with patch("app.main._run_parse", side_effect=self._mock_success_parse) as m:
+                big = b"%PDF-1.4\n" + b"x" * (2 * 1024 * 1024)
+                resp = self._client.post(
+                    "/api/v1/parse",
+                    files={"file": ("big.pdf", big, "application/pdf")},
+                    data={"bank": "HDFC"},
+                )
+        self.assertEqual(resp.status_code, 413)
+        body = resp.json()
+        self.assertEqual(body["status"], "EXTRACTION_FAILED")
+        self.assertIn("too large", body["error"])
+        # No parse was attempted and nothing leaked into _REQUESTS.
+        m.assert_not_called()
+        self.assertEqual(len(self._main._REQUESTS), 0)
 
 
 if __name__ == "__main__":

@@ -85,11 +85,17 @@ first connect, so the database just needs to exist and the user needs
 
 | Variable | Default | Description |
 |---|---|---|
-| `JUDGE_INTERVAL_HOURS` | `6` | Run the post-hoc judge every N hours. Set to `0` (or any value ≤ 0) to **disable** the scheduler. |
+| `JUDGE_INTERVAL_HOURS` | `6` | Run the post-hoc judge every N hours. Set to `0` (or any value ≤ 0) to **disable** the scheduler. Must be ≥ `0.1` when enabled; `NaN`/`Infinity` fall back to the default. |
 | `JUDGE_SAMPLE_SIZE` | `10` | Number of recent parses the scheduled judge samples per run (capped at 50). |
 
 When the scheduler is disabled, the manual `POST /api/run-judge` and on-demand
 `POST /api/results/{request_id}/judge` endpoints still work.
+
+### Upload limits
+
+| Variable | Default | Description |
+|---|---|---|
+| `MAX_PDF_SIZE_MB` | `50` | Maximum accepted PDF upload size (megabytes). An upload exceeding this is rejected with `413` **before** the body is read into memory. A credit-card statement PDF is typically 0.1-2 MB; raise this only if your statements are larger. |
 
 ---
 
@@ -180,6 +186,7 @@ is still returned, with `validation_errors` populated). Both are HTTP 200.
 | HTTP | Cause |
 |---|---|
 | `400` | Invalid PDF (empty, or missing `%PDF` magic bytes) or invalid bank name. |
+| `413` | The upload exceeds `MAX_PDF_SIZE_MB` (default 50 MB). |
 | `422` | Extraction failed (the `error` field carries the message). |
 | `504` | The pipeline did not complete within the sync timeout (300s). |
 
@@ -244,10 +251,11 @@ never run the (expensive) Opus judge concurrently.
 ## 6. MLflow experiment setup
 
 No setup step is required — the experiment is **auto-created** on the first
-parse. On startup the tracing layer calls `mlflow.set_experiment(
-MLFLOW_EXPERIMENT_NAME)` (default `/Shared/savesage/statement-agent`); MLflow
-creates the experiment at that path if it does not exist, then every parse
-writes its trace there.
+parse. The tracing layer is built lazily on that first parse (not at app
+startup) and calls `mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)` (default
+`/Shared/savesage/statement-agent`); MLflow creates the experiment at that
+path if it does not exist, then every subsequent parse writes its trace
+there.
 
 To verify after the first parse:
 
