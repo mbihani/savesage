@@ -2,7 +2,7 @@
 
 This is the key to four-workstream parallelism: the graph depends only on the
 ``contracts/ports.py`` ABCs, and these fakes satisfy them with stdlib-only
-in-memory storage. WS3 (Lakebase), WS4 (MLflow), and WS5 (Opus judge) hand in
+in-memory storage. WS4 (MLflow) and WS5 (Opus judge) hand in
 their real implementations later; until then the graph runs end-to-end against
 these fakes, so integration is incremental, not a big-bang.
 

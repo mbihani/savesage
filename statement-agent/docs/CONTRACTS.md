@@ -1,7 +1,7 @@
 # Parallel implementation contracts
 
 All shared contracts are stdlib-only in `contracts/`. Do not add Pydantic,
-LangGraph, MLflow, FastAPI, psycopg, or Databricks SDK imports there. Adapter
+LangGraph, MLflow, FastAPI, or Databricks SDK imports there. Adapter
 modules imported by tests must also remain stdlib-only; third-party imports in
 `app/main.py`, auth, DB, graph, and telemetry code must be function-local unless
 their module is never on the contract-test import path.

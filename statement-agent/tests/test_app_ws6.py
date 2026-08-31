@@ -1,7 +1,7 @@
 """Stdlib-only tests for the workstream-6 FastAPI app (routes, SSE, app.yaml).
 
 These tests import helper functions from ``app.main`` that are pure
-stdlib — no FastAPI, langgraph, psycopg, or mlflow required.  The
+stdlib — no FastAPI, langgraph, or mlflow required.  The
 ``app = create_app()`` guard in ``app/main.py`` ensures the module imports
 cleanly even when FastAPI is absent.
 """

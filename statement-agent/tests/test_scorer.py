@@ -730,7 +730,7 @@ class ScoreTraceTest(unittest.TestCase):
         the 28 per-field + 2 overall ``judge_<field>`` assessments onto the
         ORIGINAL parse trace (the one the Results view links to), so an
         on-demand-judged trace ends up with assessments — not just metrics +
-        a Lakebase verdict.  Reuses build_field_feedbacks (the SAME builder
+        a scored verdict.  Reuses build_field_feedbacks (the SAME builder
         the batch genai.evaluate scorer uses) so there is ONE assessment-
         construction code path; only the persistence differs (direct
         mlflow.log_assessment on the original trace_id here)."""

@@ -4,8 +4,8 @@ Each node takes and returns the :class:`graph.state.GraphState` (LangGraph's
 "state modifier" pattern with a reducer-free typed object is used by mutating
 and returning the same instance). Nodes depend ONLY on the ABCs from
 ``contracts/ports.py`` injected through the :class:`NodeDeps` carrier -- never
-on psycopg, mlflow, or a concrete judge. This is what lets four workstreams
-integrate later without a big-bang: WS3/WS4/WS5 hand in their concrete ports and
+on mlflow or a concrete judge. This is what lets the workstreams
+integrate later without a big-bang: WS4/WS5 hand in their concrete ports and
 the graph keeps its shape.
 
 langgraph is NOT imported here; node functions are plain callables the graph

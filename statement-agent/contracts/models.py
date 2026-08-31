@@ -44,11 +44,6 @@ class MatchMethod(str, Enum):
     DESCRIPTION_SIMILARITY_1TO1 = "DESCRIPTION_SIMILARITY_1TO1"
 
 
-class FeedbackDisposition(str, Enum):
-    ACCEPT = "ACCEPT"
-    CORRECT = "CORRECT"
-
-
 @dataclass(frozen=True, slots=True)
 class ParseRequest:
     """One PDF extraction request; `pdf` is raw bytes or a filesystem Path.
@@ -179,35 +174,6 @@ class JudgeVerdict:
     match_method: MatchMethod = MatchMethod.DESCRIPTION_SIMILARITY_1TO1
     raw_response_id: str | None = None
     summary: str | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class FieldFeedback:
-    """Client decision for one canonical concrete dot path.
-
-    Array indices are zero-based decimal integers. Examples:
-    `cards.0.cardMeta.cardDisplayName`, `transactions.14.amount`, and
-    `rewards.closingPoints`. Templates (`[]`), wildcards, JSON Pointer slashes,
-    negative indices, and leading-zero indices are invalid.
-    """
-
-    request_id: str
-    field_path: str
-    original_value: JsonValue
-    corrected_value: JsonValue
-    accepted: bool
-    actor: str
-    timestamp: datetime
-
-    def __post_init__(self) -> None:
-        from .paths import is_valid_feedback_path
-
-        if not is_valid_feedback_path(self.field_path):
-            raise ValueError(f"invalid canonical feedback path: {self.field_path}")
-
-    @property
-    def disposition(self) -> FeedbackDisposition:
-        return FeedbackDisposition.ACCEPT if self.accepted else FeedbackDisposition.CORRECT
 
 
 @dataclass(frozen=True, slots=True)

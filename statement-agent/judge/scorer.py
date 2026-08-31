@@ -18,6 +18,8 @@ Reuses — does NOT rewrite — the existing scoring logic:
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 import logging
 import os
@@ -83,7 +85,7 @@ _EXPERIMENT_PATH = "/Shared/savesage/statement-agent"
 
 # Per-page size for the paginated trace scan in resolve_run_id's fallback.
 # The on-demand judge button is on the Results view, which loads ANY
-# persisted/historical parse from Lakebase — not only freshly-parsed ones
+# persisted/historical parse from MLflow traces — not only freshly-parsed ones
 # — so the fallback must page through traces (not cap at a fixed window)
 # to avoid recreating the 404 for older parses.
 _TRACE_PAGE_SIZE = 200
@@ -376,18 +378,76 @@ def _ensure_mlflow_configured(mlf: Any) -> None:
 # chars in cleartext — including on JUDGE_ERROR paths. The outcome +
 # similarity already convey the verdict signal in the artifact; the
 # free-text rationale is not needed there and is the one remaining PII
-# vector. It is retained in the Lakebase verdict_payload (same protected
-# Postgres boundary as extraction_payload).
+# vector.
 _RATIONALE_OMITTED = True
+
+
+# Field-path leaves that ARE client PII -> HMAC or omit.
+_PII_LEAVES = frozenset({"cardDisplayName", "description"})
+# Field-path leaves that are NOT individually PII and essential to analytics.
+_KEEP_LEAVES = frozenset(
+    {"lastFourDigit", "amount", "date", "pointsEarnedThisCycle", "closingPoints"}
+)
+
+
+def _leaf(path: str) -> str:
+    return path.rsplit(".", 1)[-1]
+
+
+def _to_primitive(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, (str, int, float, bool)):
+        return value
+    return str(value)
+
+
+def _hmac(key: bytes, value: Any) -> str:
+    """Keyed HMAC-SHA256 (16 hex chars). Not reversible without the key."""
+    return "hmac:" + hmac.new(key, repr(value).encode(), hashlib.sha256).hexdigest()[:16]
+
+
+def redact_feedback_value(
+    field_path: str,
+    value: Any,
+    *,
+    redact_pii: bool = True,
+    log_nonpii: bool = True,
+    hmac_key: bytes = b"",
+) -> Any:
+    """Tiered PII redaction of one field value -> a JSON primitive or None.
+
+    ``cardDisplayName`` / ``description`` (client PII) -> keyed HMAC, or
+    omitted (None) when no HMAC key is configured (never a reversible unsalted
+    digest). ``lastFourDigit`` / ``amount`` / ``date`` /
+    ``pointsEarnedThisCycle`` / ``closingPoints`` -> retained raw (not
+    individually identifying; documented trade-off — hashing them destroys
+    analytics value). Any other leaf -> omitted (or HMAC if a key is
+    configured).
+    """
+    leaf = _leaf(field_path)
+    raw = _to_primitive(value)
+    if not redact_pii:
+        # Operator disabled redaction -> raw values (documented exception).
+        return raw
+    if leaf in _KEEP_LEAVES:
+        return raw if log_nonpii else None
+    if leaf in _PII_LEAVES:
+        if not hmac_key:
+            return None  # omit rather than send a reversible unsalted digest
+        return _hmac(hmac_key, value)
+    # Unknown leaf: defensive omit (or HMAC if key present).
+    if not hmac_key:
+        return None
+    return _hmac(hmac_key, value)
 
 
 def _redact_comparisons(comparisons: Any) -> list[dict[str, Any]]:
     """Build a PII-redacted JSON payload for the ``verdict_comparisons.json``
     MLflow artifact.
 
-    Reuses :func:`harness.tracing_feedback.redact_feedback_value` — the SAME
-    field-aware policy as feedback telemetry — so the leaf-driven rules stay
-    consistent across both paths:
+    Reuses :func:`redact_feedback_value` (module-level, below) — the SAME
+    field-aware policy — so the leaf-driven rules stay consistent:
 
     * ``cardDisplayName`` / ``description`` (client PII) -> keyed HMAC, or
       omitted (None) when no HMAC key is configured (never a reversible
@@ -412,8 +472,6 @@ def _redact_comparisons(comparisons: Any) -> list[dict[str, Any]]:
     never raises on a None leaf for ANY outcome, and ``outcome`` is normalised
     whether it arrives as a ``ComparisonOutcome`` enum or a raw string.
     """
-    from harness.tracing_feedback import redact_feedback_value
-
     hmac_key = _resolve_feedback_hmac_key()
     out: list[dict[str, Any]] = []
     for c in comparisons:
@@ -444,7 +502,7 @@ def _resolve_feedback_hmac_key() -> bytes:
 
     Returns ``b""`` when unset — in which case PII leaves are OMITTED (None)
     rather than risk a reversible unsalted digest (the documented policy in
-    harness.tracing_feedback). Never raises.
+    the module-level redaction helper). Never raises.
     """
     try:
         from harness.config_ws4 import get_tracing_config
@@ -583,7 +641,7 @@ def _judge_and_persist(
     (:func:`score_trace`) and the genai.evaluate batch scorer.
 
     The database persistence layer has been removed — the verdict is no
-    longer saved to Lakebase. The scorer still downloads the PDF artifact,
+    longer saved to a database. The scorer still downloads the PDF artifact,
     calls Opus 5, compares the fields, logs MLflow metrics + tags, and
     (on the on-demand path) logs per-field assessments onto the trace.
 
@@ -692,7 +750,7 @@ def _judge_and_persist(
     # applies to span attrs/inputs/outputs). Real card display names and
     # transaction descriptions are client PII and MUST NOT reach the MLflow
     # artifact in cleartext. We reuse the EXACT field-aware policy from
-    # harness.tracing_feedback.redact_feedback_value — keyed HMAC (or omit
+    # redact_feedback_value — keyed HMAC (or omit
     # when no HMAC key) for ``cardDisplayName``/``description``; retain
     # ``lastFourDigit`` and the non-PII numerics (amount/date/points) raw.
     # The ``rationale`` string is OMITTED entirely (it is Opus free-text that

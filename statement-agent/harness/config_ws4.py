@@ -52,7 +52,7 @@ class TracingConfig:
     # Empty => resolved from shared config.Settings.mlflow_experiment_path.
     experiment_path: str = ""  # CONFIGURE(ws4-experiment-path)
     autolog_langchain: bool = True  # CONFIGURE(ws4-autolog-langchain)
-    # PII policy: see harness/tracing_feedback.py for the tiered redaction rules.
+    # PII policy: see judge/scorer.py redact_feedback_value for the tiered redaction rules.
     redact_pii_values: bool = True  # CONFIGURE(ws4-redact-pii)
     log_nonpii_values_raw: bool = True  # CONFIGURE(ws4-log-nonpii-raw)
     # Explicit cost-rate table (per 1M tokens, USD). CONFIGURE(ws4-cost-rates)

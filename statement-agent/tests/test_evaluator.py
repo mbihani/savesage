@@ -2,7 +2,7 @@
 
 Two layers:
 
-* ``BuildFieldFeedbacksTest`` — pure-logic unit tests for
+* ``BuildFeedbacksTest`` — pure-logic unit tests for
   :func:`build_field_feedbacks` (the verdict → 28 per-field Feedback objects
   builder).  Uses the real ``mlflow.entities.Feedback`` (importable locally)
   but no MLflow tracking store.  Verifies the 28 per-field assessment
@@ -198,7 +198,7 @@ def _comparisons(feedback: Any) -> list[dict[str, Any]]:
 # Pure-logic tests for build_field_feedbacks
 # ---------------------------------------------------------------------------
 
-class BuildFieldFeedbacksTest(unittest.TestCase):
+class BuildFeedbacksTest(unittest.TestCase):
     """Verifies the verdict → 28 per-field Feedback + 2 overall builder."""
 
     def setUp(self):
@@ -585,7 +585,7 @@ def _mixed_outcome_verdict(request_id: str = "req-abc123def456") -> JudgeVerdict
     )
 
 
-class BuildFieldFeedbacksNoneLeafTest(unittest.TestCase):
+class BuildFeedbacksNoneLeafTest(unittest.TestCase):
     """Bug 1 — real verdicts carry UNMATCHED_ROW / ABSENT_IN_PDF / DISAGREE
     comparisons whose leaves (expected, actual, card_index,
     expected_row_index, actual_row_index, similarity) can be None.  The

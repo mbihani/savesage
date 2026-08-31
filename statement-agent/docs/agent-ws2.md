@@ -17,14 +17,12 @@ simple.
 | Port             | Required | When absent                         |
 |------------------|----------|-------------------------------------|
 | `ExtractionAdapter` | yes   | graph cannot run                    |
-| `ResultStore`    | no       | persistence skipped                 |
 | `TraceSink`      | no       | no trace events recorded            |
 | `JudgeAdapter`   | no       | judge stage skipped (not a failure) |
-| `FeedbackStore`  | no       | not used by core path (WS3 wiring)  |
 
-No `psycopg`, `mlgraph`, `langchain`, or `OpusJudgeAdapter` import appears
+No `mlgraph`, `langchain`, or `OpusJudgeAdapter` import appears
 anywhere in `graph/`, `harness/extraction_adapter.py`, `skills/extract_statement.py`,
-or `harness/cli.py`. WS3/WS4/WS5 hand in their concrete ports at integration.
+or `harness/cli.py`. WS4/WS5 hand in their concrete ports at integration.
 
 ## Validation short-circuit decision
 

@@ -1,7 +1,7 @@
-"""MLflow-backed TraceSink + field-wise feedback + judge logging (workstream 4).
+"""MLflow-backed TraceSink + judge logging (workstream 4).
 
 Implements ``contracts.ports.TraceSink.record`` and the wider workstream-4
-telemetry surface (feedback, judge verdicts, cost) against MLflow. ``mlflow`` is
+telemetry surface (judge verdicts, cost) against MLflow. ``mlflow`` is
 imported FUNCTION-LOCAL only, so importing this module never requires mlflow
 (per CONTRACTS.md); the pure builders under ``harness/tracing_*.py`` are
 stdlib-testable without it.
@@ -9,9 +9,9 @@ stdlib-testable without it.
 BEST-EFFORT BOUNDARY (review B1 — airtight):
 
 The single most important property: telemetry must NEVER break a customer's
-statement parse. Every PUBLIC method (``record``, ``log_field_feedback``,
-``log_judge_verdict``) wraps its ENTIRE body — tree construction, configuration,
-payload construction, AND mlflow interaction — in ``_guard``, the outer boundary.
+statement parse. Every PUBLIC method (``record``, ``log_judge_verdict``)
+wraps its ENTIRE body — tree construction, configuration, payload construction,
+AND mlflow interaction — in ``_guard``, the outer boundary.
 ``_guard`` catches ``BaseException``, RE-RAISES ``KeyboardInterrupt`` /
 ``SystemExit`` / ``GeneratorExit`` (genuine process control — never swallow Ctrl-C),
 and on any other failure logs a warning and DISABLES telemetry so a recurring
@@ -29,12 +29,11 @@ import os
 from collections import OrderedDict
 from typing import Any, Callable
 
-from contracts.models import FieldFeedback, JudgeVerdict, TraceEvent
+from contracts.models import JudgeVerdict, TraceEvent
 from contracts.ports import TraceSink
 
 from .config_ws4 import TracingConfig, get_tracing_config, resolve_experiment_path
 from .tracing_cost import cost_attributes, model_attributes, usage_attributes
-from .tracing_feedback import build_feedback_payload
 from .tracing_judge import build_judge_feedback, verdict_to_metrics
 from .tracing_keys import (
     ASSESSMENT_HUMAN,
@@ -145,10 +144,10 @@ class MLflowTraceSink(TraceSink):
     """Concrete MLflow-backed TraceSink.
 
     Records the parse pipeline as a TRACE: an outer parse span (CHAIN) containing
-    child spans for extraction (LLM), validation (GUARDRAIL), persistence (TOOL),
-    and judging (EVALUATOR), connected via ``span_id``/``parent_span_id`` (not
-    flattened). Per-field client feedback and judge verdicts are logged as
-    trace-bound assessments via ``mlflow.log_feedback``.
+    child spans for extraction (LLM), validation (GUARDRAIL), and judging
+    (EVALUATOR), connected via ``span_id``/``parent_span_id`` (not flattened).
+    Judge verdicts are logged as trace-bound assessments via
+    ``mlflow.log_feedback``.
 
     All request-scoped state (pending trees, trace-id map, flushed set) is BOUNDED
     (review B2) so a long-lived Apps process cannot leak memory under sustained
@@ -367,8 +366,8 @@ class MLflowTraceSink(TraceSink):
             return
         root = ops[0].event
         # The extract event carries model_id, latency_ms, and token_usage in
-        # its attributes (added by _extract_telemetry).  Match by exact name so
-        # "persist_extraction" is not confused with "extract".
+        # its attributes (added by _extract_telemetry).  Match by exact name
+        # to avoid picking up a similarly-named span.
         extract_evt = next(
             (op.event for op in ops if op.event.name == "extract"),
             None,
@@ -591,44 +590,6 @@ class MLflowTraceSink(TraceSink):
             raise
         except BaseException as exc:  # noqa: BLE001 - cleanup must never raise
             _LOGGER.warning("telemetry abandon failed for %s: %s", request_id, exc)
-
-    # --- field-wise client feedback (requirement 3) ---
-    def log_field_feedback(self, feedback: FieldFeedback, trace_id: str | None = None) -> None:
-        if not self._config.enabled:
-            return
-        # ENTIRE operation inside the boundary (review B1).
-        self._guard("tracing.log_field_feedback", self._feedback_impl, feedback, trace_id)
-
-    def _feedback_impl(self, feedback: FieldFeedback, trace_id: str | None) -> None:
-        tid = trace_id or self.get_trace_id(feedback.request_id)
-        if not tid:
-            _LOGGER.warning(
-                "telemetry feedback dropped (no trace_id for %s); persist trace_id with the result",
-                feedback.request_id,
-            )
-            return
-        payload = build_feedback_payload(
-            feedback,
-            redact_pii=self._config.redact_pii_values,
-            log_nonpii=self._config.log_nonpii_values_raw,
-            hmac_key=self._config.feedback_hmac_key,
-        )
-        self._ensure_configured()
-
-        def _do() -> None:
-            mlf = self._mlflow()
-            from mlflow.entities import AssessmentSource  # function-local
-
-            mlf.log_feedback(
-                trace_id=tid,
-                name=payload.name,
-                value=payload.value,
-                source=AssessmentSource(payload.source_type, payload.source_id),
-                rationale=payload.rationale,
-                metadata=payload.metadata,
-            )
-
-        best_effort("mlflow.log_feedback", _do)
 
     # --- judge verdict (requirement 4) ---
     def log_judge_verdict(self, verdict: JudgeVerdict, trace_id: str | None = None) -> None:
