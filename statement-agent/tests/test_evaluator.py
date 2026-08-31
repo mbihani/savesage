@@ -12,8 +12,8 @@ Two layers:
 * ``RunGenaiEvaluationRealTest`` — end-to-end against a REAL local mlflow
   file store (temp dir), verifying that ``mlflow.genai.evaluate`` drives the
   scorer once per trace, logs per-field assessments to the original parse
-  trace, calls Opus exactly once per trace, and persists the verdict to
-  Lakebase.  Skipped if ``mlflow``/``pandas`` are not importable.
+  trace, and calls Opus exactly once per trace.  Skipped if
+  ``mlflow``/``pandas`` are not importable.
 """
 
 import json
@@ -939,9 +939,8 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
     Creates a parse run with statement.pdf + extraction.json artifacts, a
     trace linked to that run (carrying mlflow.sourceRun), then calls
     ``run_genai_evaluation`` with the trace.  Verifies that genai.evaluate
-    drives the scorer once per trace, Opus is called exactly once, per-field
-    assessments land on the trace, and the verdict is persisted to a fake
-    Lakebase store.
+    drives the scorer once per trace, Opus is called exactly once, and
+    per-field assessments land on the trace.
     """
 
     def setUp(self):
@@ -1038,8 +1037,7 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
 
     def test_genai_evaluation_logs_assessments_and_calls_opus_once(self):
         """genai.evaluate drives the scorer once per trace, Opus is called
-        exactly once (not 7×), per-field assessments land on the trace, and
-        the verdict is persisted to Lakebase."""
+        exactly once (not 7×), per-field assessments land on the trace."""
         from judge.evaluator import (
             FIELD_ASSESSMENT_NAMES,
             OVERALL_FORGIVEN_NAME,
@@ -1052,13 +1050,6 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
         trace = self._create_trace_for_run(run_id, request_id)
         trace_id = trace.info.trace_id
 
-        # Fake Lakebase store to capture save_verdict.
-        saved_verdicts: list = []
-
-        class _FakeStore:
-            def save_verdict(self, verdict) -> None:
-                saved_verdicts.append(verdict)
-
         verdict = _full_verdict(request_id)
         opus_call_count = [0]
 
@@ -1069,7 +1060,7 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
         with patch("harness.judge_adapter.OpusJudgeAdapter") as MockAdapter:
             MockAdapter.return_value.judge.side_effect = _fake_judge
             eval_info = run_genai_evaluation(
-                [trace], _FakeStore(), experiment_id=self._exp_id,
+                [trace], experiment_id=self._exp_id,
             )
 
         # genai.evaluate succeeded.
@@ -1079,10 +1070,6 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
 
         # Opus called EXACTLY ONCE (not 7× — one scorer, one trace).
         self.assertEqual(opus_call_count[0], 1)
-
-        # The verdict was persisted to Lakebase (save_verdict called).
-        self.assertEqual(len(saved_verdicts), 1)
-        self.assertEqual(saved_verdicts[0].request_id, request_id)
 
         # The side-channel collected a result dict with the right shape.
         results = eval_info["results"]
@@ -1121,7 +1108,7 @@ class RunGenaiEvaluationRealTest(unittest.TestCase):
         """When no traces are passed, run_genai_evaluation returns None."""
         from judge.evaluator import run_genai_evaluation
 
-        result = run_genai_evaluation([], None, experiment_id=self._exp_id)
+        result = run_genai_evaluation([], experiment_id=self._exp_id)
         self.assertIsNone(result)
 
 

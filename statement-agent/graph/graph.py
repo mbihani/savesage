@@ -1,6 +1,6 @@
 """LangGraph parse-graph builder.
 
-The graph is linear: ``route -> extract -> validate -> persist -> finalize``.
+The graph is linear: ``route -> extract -> validate -> finalize``.
 The judge no longer runs inline on every parse — it is a post-hoc evaluation
 that samples MLflow traces asynchronously (see ``judge/scorer.py``). The
 ``judge_node`` function stays in :mod:`graph.nodes` so the post-hoc scorer can
@@ -32,7 +32,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from contracts.models import TraceEvent, bank_name
-from graph.nodes import NodeDeps, finalize_node, extract_node, persist_node, route_node, validate_node
+from graph.nodes import NodeDeps, finalize_node, extract_node, route_node, validate_node
 from graph.state import GraphState
 
 
@@ -40,7 +40,6 @@ _NODES = (
     ("route", route_node),
     ("extract", extract_node),
     ("validate", validate_node),
-    ("persist", persist_node),
     ("finalize", finalize_node),
 )
 
@@ -75,7 +74,7 @@ def run_graph(deps: NodeDeps, state: GraphState) -> GraphState:
     """Execute the parse pipeline once, returning the final state.
 
     This is the convenience entry point used by the skill and the CLI. It runs
-    each node in order — ``route -> extract -> validate -> persist -> finalize``
+    each node in order — ``route -> extract -> validate -> finalize``
     — passing the *same* ``state`` object to every node so mutations persist.
 
     We execute nodes directly instead of calling ``graph.invoke()`` (the

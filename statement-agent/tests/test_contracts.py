@@ -3,13 +3,13 @@ import inspect
 import unittest
 
 from contracts.models import ComparisonOutcome, FieldComparison, FieldScope, MatchMethod
-from contracts.ports import ExtractionAdapter, FeedbackStore, JudgeAdapter, ResultStore, TraceSink
+from contracts.ports import ExtractionAdapter, JudgeAdapter, TraceSink
 from memory.session import MemoryStore
 
 
 class ContractTest(unittest.TestCase):
     def test_all_abstract_methods_are_typed(self) -> None:
-        for cls in (ExtractionAdapter, JudgeAdapter, ResultStore, FeedbackStore, TraceSink, MemoryStore):
+        for cls in (ExtractionAdapter, JudgeAdapter, TraceSink, MemoryStore):
             for name in cls.__abstractmethods__:
                 signature = inspect.signature(getattr(cls, name))
                 self.assertNotEqual(signature.return_annotation, inspect.Signature.empty, f"{cls.__name__}.{name}")
@@ -20,12 +20,6 @@ class ContractTest(unittest.TestCase):
         calls = (
             (ExtractionAdapter.extract, (None, None)),
             (JudgeAdapter.judge, (None, None, None)),
-            (ResultStore.save_extraction, (None, None, None)),
-            (ResultStore.save_verdict, (None, None)),
-            (ResultStore.get_extraction, (None, "request")),
-            (ResultStore.get_verdict, (None, "request")),
-            (FeedbackStore.append_feedback, (None, None)),
-            (FeedbackStore.list_feedback, (None, "request")),
             (TraceSink.record, (None, None)),
             (MemoryStore.read, (None, "request")),
             (MemoryStore.write, (None, None)),

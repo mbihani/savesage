@@ -173,9 +173,9 @@ class MLflowTraceSink(TraceSink):
         self._trace_ids: "OrderedDict[str, str]" = OrderedDict()
         # Bounded LRU run-id map — one MLflow run per parse request. The run is
         # started when the first trace event arrives (before the root span
-        # flushes) so that log_artifact() called from persist_node has an active
-        # run to log to. The run carries artifacts, metrics (when judged), and
-        # the ``judged`` tag.
+        # flushes) so that log_artifact() called from the finalize node has an
+        # active run to log to. The run carries artifacts, metrics (when judged),
+        # and the ``judged`` tag.
         self._run_ids: "OrderedDict[str, str]" = OrderedDict()
         self._mlflow_factory = mlflow_factory  # test seam: inject a fake/raising mlflow
         self._mlflow_client: Any = None
@@ -263,7 +263,7 @@ class MLflowTraceSink(TraceSink):
         """Start an MLflow run for this request if not already started.
 
         Called on the FIRST trace event for a request (before the root span
-        flushes) so that ``log_artifact()`` from persist_node has an active run.
+        flushes) so that ``log_artifact()`` from the finalize node has an active run.
         Best-effort: a failure here means no run (artifacts/metrics are skipped).
         """
         if request_id in self._run_ids:
@@ -331,7 +331,7 @@ class MLflowTraceSink(TraceSink):
     def _record_impl(self, event: TraceEvent) -> None:
         # Start an MLflow run for this request on the FIRST trace event (before
         # the root span flushes). This ensures log_artifact() called from
-        # persist_node (during the graph, before the root arrives) has an
+        # the finalize node (during the graph, before the root arrives) has an
         # active run to log to. The run carries artifacts, judge metrics, and
         # the ``judged`` tag. Best-effort: a failure here only means no run.
         self._ensure_run(event.request_id)

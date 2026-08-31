@@ -12,7 +12,6 @@ No third-party imports. Safe to import on the stdlib test path.
 from __future__ import annotations
 
 import copy
-from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Any
 
@@ -21,7 +20,6 @@ from contracts.models import (
     ComparisonOutcome,
     ExtractionResult,
     FieldComparison,
-    FieldFeedback,
     FieldScope,
     JudgeVerdict,
     MatchMethod,
@@ -30,44 +28,9 @@ from contracts.models import (
 )
 from contracts.ports import (
     ExtractionAdapter,
-    FeedbackStore,
     JudgeAdapter,
-    ResultStore,
     TraceSink,
 )
-
-
-class InMemoryResultStore(ResultStore):
-    """Dict-backed extraction/verdict store; get_* return None if absent."""
-
-    def __init__(self) -> None:
-        self.extractions: dict[str, ExtractionResult] = {}
-        self.verdicts: dict[str, JudgeVerdict] = {}
-
-    def save_extraction(self, result: ExtractionResult, bank: Bank) -> None:
-        self.extractions[result.request_id] = result
-
-    def save_verdict(self, verdict: JudgeVerdict) -> None:
-        self.verdicts[verdict.request_id] = verdict
-
-    def get_extraction(self, request_id: str) -> ExtractionResult | None:
-        return self.extractions.get(request_id)
-
-    def get_verdict(self, request_id: str) -> JudgeVerdict | None:
-        return self.verdicts.get(request_id)
-
-
-class InMemoryFeedbackStore(FeedbackStore):
-    """List-backed feedback store keyed by request_id."""
-
-    def __init__(self) -> None:
-        self._items: list[FieldFeedback] = []
-
-    def append_feedback(self, feedback: FieldFeedback) -> None:
-        self._items.append(feedback)
-
-    def list_feedback(self, request_id: str) -> Sequence[FieldFeedback]:
-        return [f for f in self._items if f.request_id == request_id]
 
 
 class InMemoryTraceSink(TraceSink):
@@ -256,11 +219,9 @@ def make_all_fakes(
     extraction_payload: dict[str, Any] | None = None,
     extraction_mutator=None,
     judge_outcome: ComparisonOutcome = ComparisonOutcome.AGREE,
-) -> tuple[InMemoryResultStore, InMemoryFeedbackStore, InMemoryTraceSink, FakeExtractionAdapter, FakeJudgeAdapter]:
+) -> tuple[InMemoryTraceSink, FakeExtractionAdapter, FakeJudgeAdapter]:
     """Convenience: build the full set of in-memory fakes in one call."""
     return (
-        InMemoryResultStore(),
-        InMemoryFeedbackStore(),
         InMemoryTraceSink(),
         FakeExtractionAdapter(extraction_payload, mutator=extraction_mutator),
         FakeJudgeAdapter(outcome=judge_outcome),

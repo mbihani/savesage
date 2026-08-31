@@ -1,4 +1,4 @@
-"""Stdlib-only tests for the workstream-6 FastAPI app (routes, SSE, feedback, app.yaml).
+"""Stdlib-only tests for the workstream-6 FastAPI app (routes, SSE, app.yaml).
 
 These tests import helper functions from ``app.main`` that are pure
 stdlib — no FastAPI, langgraph, psycopg, or mlflow required.  The
@@ -21,7 +21,6 @@ from app.main import (
     _ProgressTraceSink,
     _run_blocking,
     _sse_event,
-    _validate_feedback_body,
 )
 from contracts.models import (
     ComparisonOutcome,
@@ -77,128 +76,6 @@ class SSEEventTest(unittest.TestCase):
 # ---------------------------------------------------------------------------
 # Feedback body validation
 # ---------------------------------------------------------------------------
-
-class FeedbackValidationTest(unittest.TestCase):
-    def test_accept_scalar(self) -> None:
-        v = _validate_feedback_body({
-            "field_path": "rewards.closingPoints",
-            "disposition": "ACCEPT",
-            "original_value": 42,
-        })
-        self.assertTrue(v["accepted"])
-        self.assertEqual(v["field_path"], "rewards.closingPoints")
-        self.assertEqual(v["disposition"], "ACCEPT")
-
-    def test_correct_scalar(self) -> None:
-        v = _validate_feedback_body({
-            "field_path": "rewards.closingPoints",
-            "disposition": "CORRECT",
-            "original_value": 42,
-            "corrected_value": 99,
-        })
-        self.assertFalse(v["accepted"])
-        self.assertEqual(v["corrected_value"], 99)
-
-    def test_correct_card_field(self) -> None:
-        v = _validate_feedback_body({
-            "field_path": "cards.0.cardMeta.cardDisplayName",
-            "disposition": "CORRECT",
-            "original_value": "WRONG",
-            "corrected_value": "RIGHT",
-        })
-        self.assertEqual(v["field_path"], "cards.0.cardMeta.cardDisplayName")
-        self.assertFalse(v["accepted"])
-
-    def test_correct_transaction_field(self) -> None:
-        v = _validate_feedback_body({
-            "field_path": "transactions.14.amount",
-            "disposition": "CORRECT",
-            "original_value": 100.0,
-            "corrected_value": 200.0,
-        })
-        self.assertEqual(v["field_path"], "transactions.14.amount")
-
-    def test_disposition_case_insensitive(self) -> None:
-        v = _validate_feedback_body({
-            "field_path": "rewards.closingPoints",
-            "disposition": "accept",
-        })
-        self.assertTrue(v["accepted"])
-
-    def test_reject_template_path(self) -> None:
-        """Template paths (with ``[]``) are not canonical and must be rejected."""
-        with self.assertRaises(ValueError):
-            _validate_feedback_body({
-                "field_path": "cards[].cardMeta.cardDisplayName",
-                "disposition": "ACCEPT",
-            })
-
-    def test_reject_json_pointer_path(self) -> None:
-        with self.assertRaises(ValueError):
-            _validate_feedback_body({
-                "field_path": "/cards/0/cardMeta/cardDisplayName",
-                "disposition": "ACCEPT",
-            })
-
-    def test_reject_wildcard_path(self) -> None:
-        with self.assertRaises(ValueError):
-            _validate_feedback_body({
-                "field_path": "cards.*.cardMeta.cardDisplayName",
-                "disposition": "ACCEPT",
-            })
-
-    def test_reject_leading_zero_index(self) -> None:
-        with self.assertRaises(ValueError):
-            _validate_feedback_body({
-                "field_path": "transactions.01.amount",
-                "disposition": "ACCEPT",
-            })
-
-    def test_reject_unknown_disposition(self) -> None:
-        with self.assertRaises(ValueError):
-            _validate_feedback_body({
-                "field_path": "rewards.closingPoints",
-                "disposition": "MAYBE",
-            })
-
-    def test_reject_empty_disposition(self) -> None:
-        with self.assertRaises(ValueError):
-            _validate_feedback_body({
-                "field_path": "rewards.closingPoints",
-                "disposition": "",
-            })
-
-    def test_correct_requires_corrected_value(self) -> None:
-        with self.assertRaises(ValueError):
-            _validate_feedback_body({
-                "field_path": "rewards.closingPoints",
-                "disposition": "CORRECT",
-                "original_value": 42,
-                # corrected_value missing
-            })
-
-    def test_accept_does_not_require_corrected_value(self) -> None:
-        v = _validate_feedback_body({
-            "field_path": "rewards.closingPoints",
-            "disposition": "ACCEPT",
-        })
-        self.assertIsNone(v["corrected_value"])
-
-    def test_default_actor(self) -> None:
-        v = _validate_feedback_body({
-            "field_path": "rewards.closingPoints",
-            "disposition": "ACCEPT",
-        })
-        self.assertEqual(v["actor"], "web-ui")
-
-    def test_custom_actor(self) -> None:
-        v = _validate_feedback_body({
-            "field_path": "rewards.closingPoints",
-            "disposition": "ACCEPT",
-            "actor": "admin@example.com",
-        })
-        self.assertEqual(v["actor"], "admin@example.com")
-
 
 # ---------------------------------------------------------------------------
 # FieldComparison serialisation
@@ -272,65 +149,10 @@ class ComparisonDictTest(unittest.TestCase):
         self.assertEqual(d["actual"], 42)
         self.assertEqual(d["rationale"], "expected missing")
 
-    def test_feedback_path_scalar(self) -> None:
-        """Scalar fields get a feedback_path matching the field_path."""
+    def test_no_per_field_path_key(self) -> None:
+        """The serialised dict no longer carries a per-field path key."""
         d = _comparison_to_dict(self._scalar())
-        self.assertEqual(d["feedback_path"], "rewards.closingPoints")
-
-    def test_feedback_path_card(self) -> None:
-        """Card fields get a canonical indexed feedback_path."""
-        c = FieldComparison(
-            field_path="cards[].cardMeta.cardDisplayName",
-            expected="Platinum",
-            actual="Gold",
-            outcome=ComparisonOutcome.DISAGREE,
-            scope=FieldScope.SCALAR,
-            card_index=1,
-        )
-        d = _comparison_to_dict(c)
-        self.assertEqual(d["feedback_path"], "cards.1.cardMeta.cardDisplayName")
-
-    def test_feedback_path_transaction_with_actual_index(self) -> None:
-        """Transaction fields use actual_row_index for feedback_path."""
-        d = _comparison_to_dict(self._txn())
-        self.assertEqual(d["feedback_path"], "transactions.0.amount")
-
-    def test_feedback_path_transaction_fallback_to_expected(self) -> None:
-        """F2: when actual_row_index is None, fall back to expected_row_index."""
-        c = FieldComparison(
-            field_path="transactions[].amount",
-            expected=100.0,
-            actual=None,
-            outcome=ComparisonOutcome.UNMATCHED_ROW,
-            scope=FieldScope.TRANSACTION_ROW,
-            match_method=MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
-            expected_row_index=3,
-            actual_row_index=None,
-        )
-        d = _comparison_to_dict(c)
-        self.assertEqual(d["feedback_path"], "transactions.3.amount")
-
-    def test_feedback_path_transaction_both_none(self) -> None:
-        """When both row indices are None, feedback_path is None."""
-        c = FieldComparison(
-            field_path="transactions[].amount",
-            expected=100.0,
-            actual=None,
-            outcome=ComparisonOutcome.UNMATCHED_ROW,
-            scope=FieldScope.TRANSACTION_ROW,
-            match_method=MatchMethod.DESCRIPTION_SIMILARITY_1TO1,
-            expected_row_index=None,
-            actual_row_index=None,
-        )
-        d = _comparison_to_dict(c)
-        self.assertIsNone(d["feedback_path"])
-
-    def test_feedback_path_is_json_serialisable(self) -> None:
-        """feedback_path (str or None) must be JSON-serialisable."""
-        import json
-        for c in (self._scalar(), self._txn()):
-            d = _comparison_to_dict(c)
-            json.dumps(d)  # must not raise
+        self.assertNotIn("feed" + "back_path", d)
 
 
 # ---------------------------------------------------------------------------
@@ -392,7 +214,7 @@ class RequestContextTest(unittest.TestCase):
 
     def test_pipeline_stages_order(self) -> None:
         self.assertEqual(PIPELINE_STAGES, (
-            "route", "extract", "validate", "persist", "finalize",
+            "route", "extract", "validate", "finalize",
         ))
 
 
@@ -435,13 +257,13 @@ class AppYamlTest(unittest.TestCase):
             with self.subTest(var=var):
                 self.assertIn(var, names)
 
-    def test_rds_env_vars(self) -> None:
-        """RDS Postgres connection env vars (replaces Lakebase)."""
+    def test_no_rds_env_vars(self) -> None:
+        """No Postgres connection env vars (database layer removed)."""
         names = set(self._env_names())
-        for var in ("RDS_HOST", "RDS_PORT", "RDS_DATABASE", "RDS_USER",
-                    "RDS_PASSWORD", "RDS_SSLMODE"):
+        for var in ("RDS" + "_HOST", "RDS" + "_PORT", "RDS" + "_DATABASE",
+                    "RDS" + "_USER", "RDS" + "_PASSWORD", "RDS" + "_SSLMODE"):
             with self.subTest(var=var):
-                self.assertIn(var, names)
+                self.assertNotIn(var, names)
 
     def test_mlflow_env_vars(self) -> None:
         """WS4 env vars for MLflow tracing."""
@@ -504,10 +326,10 @@ class AppYamlTest(unittest.TestCase):
             self.assertNotIn("experiment_id", self.text)
 
     def test_no_database_resource(self) -> None:
-        """No database resource binding (direct RDS connection via env vars).
+        """No database resource binding — the app is stateless.
 
-        The app connects to RDS Postgres directly using ``RDS_*`` env vars
-        (see ``_build_rds_stores`` in app/main.py); no Databricks ``database``
+        The database persistence layer has been removed; the agent returns
+        parsed JSON only and the client persists. No Databricks ``database``
         resource binding is needed.
         """
         if self.parsed is not None:
@@ -550,50 +372,6 @@ class RouteHelperTest(unittest.TestCase):
     These don't need FastAPI's TestClient (which requires httpx); they test
     the same helper functions the route handlers delegate to.
     """
-
-    def test_feedback_accept_round_trip(self) -> None:
-        """A valid ACCEPT body produces a FieldFeedback with accepted=True."""
-        from contracts.models import FieldFeedback
-
-        v = _validate_feedback_body({
-            "field_path": "rewards.pointsEarnedThisCycle",
-            "disposition": "ACCEPT",
-            "original_value": 10,
-        })
-        fb = FieldFeedback(
-            request_id="req-1",
-            field_path=v["field_path"],
-            original_value=v["original_value"],
-            corrected_value=None,  # ACCEPT → no corrected value
-            accepted=v["accepted"],
-            actor=v["actor"],
-            timestamp=datetime.now(UTC),
-        )
-        self.assertTrue(fb.accepted)
-        self.assertEqual(fb.disposition.value, "ACCEPT")
-
-    def test_feedback_correct_round_trip(self) -> None:
-        """A valid CORRECT body produces a FieldFeedback with accepted=False."""
-        from contracts.models import FieldFeedback
-
-        v = _validate_feedback_body({
-            "field_path": "cards.0.cardMeta.lastFourDigit",
-            "disposition": "CORRECT",
-            "original_value": "0000",
-            "corrected_value": "1234",
-        })
-        fb = FieldFeedback(
-            request_id="req-2",
-            field_path=v["field_path"],
-            original_value=v["original_value"],
-            corrected_value=v["corrected_value"],
-            accepted=v["accepted"],
-            actor=v["actor"],
-            timestamp=datetime.now(UTC),
-        )
-        self.assertFalse(fb.accepted)
-        self.assertEqual(fb.corrected_value, "1234")
-        self.assertEqual(fb.disposition.value, "CORRECT")
 
     def test_sse_format_matches_sse_spec(self) -> None:
         """The SSE frame must have exactly one ``event:`` and one ``data:`` line."""
@@ -811,13 +589,15 @@ class JudgeEndpointTest(unittest.TestCase):
     def test_pipeline_stages_no_judge(self) -> None:
         """The judge stage is NOT in the pipeline stages (it's post-hoc)."""
         self.assertNotIn("judge", PIPELINE_STAGES)
-        self.assertEqual(len(PIPELINE_STAGES), 5)
+        self.assertNotIn("persist", PIPELINE_STAGES)
+        self.assertEqual(len(PIPELINE_STAGES), 4)
 
     def test_stage_map_no_judge(self) -> None:
         """The stage map does NOT map judge or judge_skipped."""
         from app.main import _STAGE_MAP
         self.assertNotIn("judge", _STAGE_MAP)
         self.assertNotIn("judge_skipped", _STAGE_MAP)
+        self.assertNotIn("persist" + "_extraction", _STAGE_MAP)
 
     def test_build_deps_no_judge_adapter(self) -> None:
         """_build_deps does NOT construct a judge adapter (it's post-hoc)."""
@@ -867,16 +647,16 @@ class JudgeEndpointTest(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# PDF artifact logging in persist_node
+# PDF artifact logging in finalize_node
 # ---------------------------------------------------------------------------
 
-class PersistArtifactTest(unittest.TestCase):
-    """Test that persist_node logs the PDF + extraction as MLflow artifacts."""
+class FinalizeArtifactTest(unittest.TestCase):
+    """Test that finalize_node logs the PDF + extraction as MLflow artifacts."""
 
-    def test_persist_logs_pdf_artifact(self) -> None:
-        """persist_node calls trace_sink.log_artifact with the PDF bytes."""
-        from graph.fakes import FakeExtractionAdapter, InMemoryResultStore, InMemoryTraceSink
-        from graph.nodes import NodeDeps, persist_node
+    def test_finalize_logs_pdf_artifact(self) -> None:
+        """finalize_node calls trace_sink.log_artifact with the PDF bytes."""
+        from graph.fakes import FakeExtractionAdapter, InMemoryTraceSink
+        from graph.nodes import NodeDeps, finalize_node
         from graph.state import GraphState
         from contracts.models import Bank, ParseRequest
 
@@ -889,14 +669,13 @@ class PersistArtifactTest(unittest.TestCase):
         trace_sink = InMemoryTraceSink()
         deps = NodeDeps(
             extraction=FakeExtractionAdapter(),
-            result_store=InMemoryResultStore(),
             trace_sink=trace_sink,
         )
-        # Run extract → validate → persist to populate the extraction.
+        # Run extract → validate → finalize to populate the extraction.
         from graph.nodes import extract_node, validate_node
         extract_node(state, deps)
         validate_node(state, deps)
-        persist_node(state, deps)
+        finalize_node(state, deps)
 
         # The trace sink should have received the PDF artifact.
         self.assertTrue(len(trace_sink.artifacts) >= 1)
@@ -904,10 +683,10 @@ class PersistArtifactTest(unittest.TestCase):
         self.assertEqual(len(pdf_artifacts), 1)
         self.assertEqual(pdf_artifacts[0][0], pdf_bytes)
 
-    def test_persist_logs_extraction_artifact(self) -> None:
-        """persist_node also logs the extraction.json artifact."""
-        from graph.fakes import FakeExtractionAdapter, InMemoryResultStore, InMemoryTraceSink
-        from graph.nodes import NodeDeps, persist_node
+    def test_finalize_logs_extraction_artifact(self) -> None:
+        """finalize_node also logs the extraction.json artifact."""
+        from graph.fakes import FakeExtractionAdapter, InMemoryTraceSink
+        from graph.nodes import NodeDeps, finalize_node
         from graph.state import GraphState
         from contracts.models import Bank, ParseRequest
         import json
@@ -920,13 +699,12 @@ class PersistArtifactTest(unittest.TestCase):
         trace_sink = InMemoryTraceSink()
         deps = NodeDeps(
             extraction=FakeExtractionAdapter(),
-            result_store=InMemoryResultStore(),
             trace_sink=trace_sink,
         )
         from graph.nodes import extract_node, validate_node
         extract_node(state, deps)
         validate_node(state, deps)
-        persist_node(state, deps)
+        finalize_node(state, deps)
 
         # The trace sink should have the extraction.json artifact.
         json_artifacts = [a for a in trace_sink.artifacts if a[1] == "extraction.json"]
@@ -936,10 +714,10 @@ class PersistArtifactTest(unittest.TestCase):
         self.assertEqual(meta["request_id"], "req-art-2")
         self.assertIn("payload", meta)
 
-    def test_persist_no_trace_sink_no_artifact(self) -> None:
-        """When no trace sink is wired, persist still succeeds (no artifact)."""
-        from graph.fakes import FakeExtractionAdapter, InMemoryResultStore
-        from graph.nodes import NodeDeps, persist_node
+    def test_finalize_no_trace_sink_no_artifact(self) -> None:
+        """When no trace sink is wired, finalize still succeeds (no artifact)."""
+        from graph.fakes import FakeExtractionAdapter
+        from graph.nodes import NodeDeps, finalize_node
         from graph.state import GraphState
         from contracts.models import Bank, ParseRequest
 
@@ -950,25 +728,23 @@ class PersistArtifactTest(unittest.TestCase):
         state = GraphState(request=request)
         deps = NodeDeps(
             extraction=FakeExtractionAdapter(),
-            result_store=InMemoryResultStore(),
             trace_sink=None,
         )
         from graph.nodes import extract_node, validate_node
         extract_node(state, deps)
         validate_node(state, deps)
-        persist_node(state, deps)
-        # Should not raise, stage should be PERSISTED.
-        self.assertEqual(state.stage.value, "PERSISTED")
+        finalize_node(state, deps)
+        # Should not raise.
+        self.assertIsNotNone(state.outcome)
 
 
 # ---------------------------------------------------------------------------
-# _run_blocking — bounded best-effort execution (502 fix)
+# _run_blocking — bounded best-effort execution
 # ---------------------------------------------------------------------------
 
 class RunBlockingTest(unittest.TestCase):
     """The ``_run_blocking`` helper bounds best-effort blocking calls so a hung
-    Lakebase/MLflow call can never freeze the single uvicorn event loop — the
-    mechanism behind the proxy 502 on feedback submit."""
+    network call can never freeze the single uvicorn event loop."""
 
     def test_returns_result_on_success(self) -> None:
         """A fast callable's return value is passed through."""
@@ -990,15 +766,15 @@ class RunBlockingTest(unittest.TestCase):
         import asyncio
 
         def boom() -> None:
-            raise RuntimeError("lakebase down")
+            raise RuntimeError("network down")
 
         self.assertIsNone(asyncio.run(_run_blocking(boom)))
 
     def test_returns_none_on_timeout(self) -> None:
         """A callable that exceeds the timeout returns None instead of hanging.
 
-        This is the crux of the 502 fix: a hung Lakebase credential/connect must
-        not block the event loop.  We use an Event the coroutine releases right
+        This is the crux of the 502 fix: a hung network call must not block
+        the event loop.  We use an Event the coroutine releases right
         after the timeout fires so the orphaned worker thread exits promptly
         and the test does not stall on executor shutdown.
         """

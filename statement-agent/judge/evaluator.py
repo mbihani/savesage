@@ -29,8 +29,7 @@ PII REDACTION — reuse the EXACT field-aware policy from
 numerics raw; DROP the free-text ``rationale`` — set to ``None``).  No card
 names or descriptions reach an assessment in cleartext.
 
-ADDITIVE — both the existing aggregate Evaluations view AND the inline
-per-parse verdict keep working:
+ADDITIVE — the existing aggregate Evaluations view keeps working:
 
 * The aggregate summary shape consumed by the frontend
   (``count_judged``, ``count_errors``, ``overall_strict``,
@@ -42,9 +41,11 @@ per-parse verdict keep working:
   breakdown) + tags are logged to the genai.evaluate run via
   ``MlflowClient`` after it returns, so the "Evaluations" tab still
   renders them.
-* The inline per-parse verdict (Lakebase ``save_verdict``) is called inside
-  ``_judge_and_persist`` — so the Results-view "Judge this statement" path
-  keeps working.
+
+The database persistence layer has been removed — the agent returns parsed
+JSON only and the client persists.  The scorer still downloads the PDF
+artifact, calls Opus 5, logs MLflow metrics + tags, and returns per-field
+``Feedback`` assessments.
 
 This module is stdlib-importable at the module level (third-party imports
 like ``mlflow`` are function-local) so the test gate runs on this machine
@@ -248,7 +249,7 @@ def build_field_feedbacks(
 
 
 def make_judge_scorer(
-    result_store: Any, results_collector: list[dict[str, Any]]
+    results_collector: list[dict[str, Any]]
 ) -> Any:
     """Build the ``@mlflow.genai.scorer`` that judges one trace per row.
 
@@ -265,10 +266,6 @@ def make_judge_scorer(
     (so the aggregate ``count_errors`` is correct) and re-raises —
     ``genai.evaluate`` catches it and logs an error assessment with the
     scorer name.
-
-    ``result_store`` threads the app's cached Lakebase store into the scorer
-    so each OK verdict is persisted inline (best-effort).  ``None`` lets the
-    scorer build its own lazily.
     """
     from mlflow.genai.scorers import scorer
 
@@ -314,7 +311,7 @@ def make_judge_scorer(
             # it for signature parity with the on-demand path.
             verdict, meta, metrics, status, _assessment_errors = (
                 _judge_and_persist(
-                    run_id, result_store, log_assessments=False,
+                    run_id, log_assessments=False,
                 )
             )
         except Exception as exc:  # noqa: BLE001 - re-raise for genai.evaluate
@@ -390,7 +387,6 @@ def _log_supplementary_metrics_and_tags(
 
 def run_genai_evaluation(
     traces: list[Any],
-    result_store: Any,
     *,
     experiment_id: str | None = None,
 ) -> dict[str, Any] | None:
@@ -405,10 +401,10 @@ def run_genai_evaluation(
     PARTIAL-FAILURE PRESERVES COMPLETED RESULTS — never returns ``None`` when
     ``traces`` is non-empty.  If ``genai.evaluate`` raises AFTER one or more
     per-trace scorers already completed (each already called Opus once + wrote
-    ``save_verdict`` + metrics), the completed ``results`` are returned with
+    metrics), the completed ``results`` are returned with
     ``"partial": True`` and ``eval_run_id=None``.  The caller uses those to
     SKIP the completed run_ids in the ``score_trace`` fallback — preventing a
-    second Opus call and duplicate ``save_verdict``/metric writes for the
+    second Opus call and duplicate metric writes for the
     completed subset.  Returns ``None`` only when ``traces`` is empty.
     """
     if not traces:
@@ -418,7 +414,7 @@ def run_genai_evaluation(
     # Declared OUTSIDE the try so it survives a partial failure: if
     # genai.evaluate raises mid-run, the scorer calls already recorded here
     # are returned to the caller so it can skip those run_ids in the
-    # score_trace fallback (no double Opus, no double save_verdict).
+    # score_trace fallback (no double Opus, no double metric writes).
     results_collector: list[dict[str, Any]] = []
     try:
         import mlflow
@@ -429,7 +425,7 @@ def run_genai_evaluation(
         if experiment_id is None:
             experiment_id = _get_experiment_id(mlflow)
 
-        scorer = make_judge_scorer(result_store, results_collector)
+        scorer = make_judge_scorer(results_collector)
 
         # genai.evaluate reuses the active run — start one ourselves so we
         # control the experiment + run_name, then genai.evaluate logs into it.
@@ -448,12 +444,12 @@ def run_genai_evaluation(
     except Exception as exc:  # noqa: BLE001 - best-effort, never fatal
         _LOGGER.warning("genai.evaluate run failed: %s", exc, exc_info=True)
         # Preserve the run_ids the scorer already completed (each already
-        # called Opus once + wrote save_verdict + metrics) so the caller does
-        # NOT re-score them via the score_trace fallback — that would
-        # double-call Opus and double-write save_verdict/metrics for the
-        # completed subset.  ``partial=True`` signals the genai run did not
-        # finish; ``eval_run_id=None`` so the caller skips supplementary
-        # metric logging to a half-formed run.
+        # called Opus once + wrote metrics) so the caller does NOT re-score
+        # them via the score_trace fallback — that would double-call Opus
+        # and double-write metrics for the completed subset.
+        # ``partial=True`` signals the genai run did not finish;
+        # ``eval_run_id=None`` so the caller skips supplementary metric
+        # logging to a half-formed run.
         return {
             "eval_run_id": None,
             "results": results_collector,
