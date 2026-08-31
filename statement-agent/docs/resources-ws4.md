@@ -50,7 +50,7 @@ WS6 may surface them in `app.yaml` `env:` if operator-tunable:
 | `DATABRICKS_CONFIG_PROFILE` | `fevm-stable` | Local-only profile; runtime ignores |
 | `MLFLOW_EXPERIMENT_PATH` | (from `config.py`) | Fallback experiment path |
 | `WS4_AUTOLOG_LANGCHAIN` | `true` | Enable `mlflow.langchain.autolog` |
-| `WS4_REDACT_PII` | `true` | PII redaction in telemetry (see tracing_feedback.py) |
+| `WS4_REDACT_PII` | `true` | PII redaction in telemetry (see judge/scorer.py) |
 | `WS4_LOG_NONPII_RAW` | `true` | Log non-PII values (amount/date/last4) raw |
 | `WS4_COST_RATES_*` | (via code) | Per-model USD/1M-token cost rates |
 
