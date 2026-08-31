@@ -6,22 +6,6 @@ env:
     value: databricks-gpt-5-6-luna
   - name: JUDGE_ENDPOINT
     value: databricks-claude-opus-5
-  # --- RDS Postgres connection (replaces Lakebase) ---
-  # Direct connection to an AWS RDS Postgres instance using username/password
-  # credentials — no WorkspaceClient, no endpoint API, no per-connection
-  # token. See ``_build_rds_stores`` in app/main.py.
-  - name: RDS_HOST
-    value: your-rds-instance.xxxxxx.us-east-1.rds.amazonaws.com
-  - name: RDS_PORT
-    value: '5432'
-  - name: RDS_DATABASE
-    value: postgres
-  - name: RDS_USER
-    value: postgres
-  - name: RDS_PASSWORD
-    value: CHANGE_ME
-  - name: RDS_SSLMODE
-    value: require
   # --- Workstream 4: MLflow tracing ---
   - name: WS4_TRACING_ENABLED
     value: "true"
@@ -44,7 +28,8 @@ env:
   # Number of recent parses the scheduled judge samples per run (default 10).
   - name: JUDGE_SAMPLE_SIZE
     value: "10"
-# Note: no Databricks ``database`` or ``experiment`` resource binding is
-# needed — the app connects to RDS Postgres directly via ``RDS_*`` env vars
-# (see ``_build_rds_stores`` in app/main.py) and resolves the MLflow
-# experiment by NAME (auto-created on first parse), not by a bound ID.
+# Note: no Databricks ``database`` resource binding is needed — the app is
+# stateless. It returns parsed JSON only; the client's own application
+# persists to their database. An ``experiment`` resource binding is also
+# unnecessary — the app resolves the MLflow experiment by NAME (auto-created
+# on first parse), not by a bound ID.

@@ -12,9 +12,6 @@ class Settings:
     uc_catalog: str = "stable_classic_7ppxjq_catalog"
     uc_schema: str = "savesage"
     mlflow_experiment_path: str = "/Shared/savesage/statement-agent"
-    lakebase_project: str = "savesage"
-    lakebase_host: str = ""
-    lakebase_database: str = "savesage"
     results_table: str = "statement_results"
     feedback_table: str = "field_feedback"
     cdf_table: str = "statement_results_cdf"
@@ -37,9 +34,6 @@ def get_settings() -> Settings:
         uc_catalog=os.getenv("UC_CATALOG", _DEFAULTS.uc_catalog),  # CONFIGURE(uc-catalog)
         uc_schema=os.getenv("UC_SCHEMA", _DEFAULTS.uc_schema),  # CONFIGURE(uc-schema)
         mlflow_experiment_path=os.getenv("MLFLOW_EXPERIMENT_PATH", _DEFAULTS.mlflow_experiment_path),  # CONFIGURE(mlflow-experiment)
-        lakebase_project=os.getenv("LAKEBASE_PROJECT", _DEFAULTS.lakebase_project),  # CONFIGURE(lakebase-project)
-        lakebase_host=os.getenv("LAKEBASE_HOST", _DEFAULTS.lakebase_host),  # CONFIGURE(lakebase-host)
-        lakebase_database=os.getenv("LAKEBASE_DATABASE", _DEFAULTS.lakebase_database),  # CONFIGURE(lakebase-database)
         results_table=os.getenv("RESULTS_TABLE", _DEFAULTS.results_table),  # CONFIGURE(results-table)
         feedback_table=os.getenv("FEEDBACK_TABLE", _DEFAULTS.feedback_table),  # CONFIGURE(feedback-table)
         cdf_table=os.getenv("CDF_TABLE", _DEFAULTS.cdf_table),  # CONFIGURE(cdf-table)

@@ -177,10 +177,6 @@
       .btn-primary { background: var(--accent); color: #fff; border-color: transparent; }
       .btn-primary:hover:not(:disabled) { opacity: 0.9; }
       .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
-      .btn-accept { background: var(--agree-soft); color: var(--agree); border: 1px solid var(--agree); }
-      .btn-correct { background: var(--disagree-soft); color: var(--disagree); border: 1px solid var(--disagree); }
-      .btn-accept:hover:not(:disabled) { background: var(--agree); color: #fff; }
-      .btn-correct:hover:not(:disabled) { background: var(--disagree); color: #fff; }
 
       /* Pipeline progress */
       .stages { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -276,16 +272,6 @@
       }
       .field-val { font-family: var(--mono); font-size: 0.875rem; word-break: break-all; }
       .field-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
-      .correct-input {
-        display: flex; gap: 0.5rem; flex: 1; min-width: 200px;
-      }
-      .correct-input input { flex: 1; padding: 0.375rem 0.625rem; font-size: 0.8125rem; }
-      .feedback-note {
-        font-size: 0.75rem;
-        color: var(--agree);
-        font-weight: 600;
-        margin-top: 0.5rem;
-      }
 
       /* Judged-field badge */
       .judged-badge {
@@ -512,19 +498,6 @@
         return resp.json();
       }
 
-      async function submitFeedback(requestId, payload) {
-        const resp = await fetch(`/api/feedback/${requestId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!resp.ok) {
-          const e = await resp.json().catch(() => ({}));
-          throw new Error(e.detail || `HTTP ${resp.status}`);
-        }
-        return resp.json();
-      }
-
       async function runJudge(sampleSize) {
         const resp = await fetch("/api/run-judge", {
           method: "POST",
@@ -620,7 +593,7 @@
       // plus any dynamically added banks persisted to DBFS). BUILT_IN_BANKS is
       // a fallback so the dropdown is usable before the fetch resolves.
       const BUILT_IN_BANKS = ["HDFC", "ICICI", "SBI", "AXIS", "GENERIC"];
-      const STAGES = ["route", "extract", "validate", "persist", "finalize"];
+      const STAGES = ["route", "extract", "validate", "finalize"];
 
       /* Template paths for the 28 judged fields (mirrors contracts/models.py
        * JUDGED_FIELDS). Used to show a "J" badge next to each judged field. */
@@ -1046,59 +1019,12 @@
       }
 
       /* ===================================================================
-       * ResultsView — extracted fields with per-field Accept/Correct feedback
+       * ResultsView — extracted fields with per-field verdict badges
        * =================================================================== */
 
-      /* Shared accept/correct state machine for a single feedback field.
-       * Used by both FieldRow (card mode) and TxnCell (inline table mode). */
-      function useFeedback(requestId, fieldPath, value) {
-        const [showCorrect, setShowCorrect] = useState(false);
-        const [corrected, setCorrected] = useState("");
-        const [submitted, setSubmitted] = useState(null);
-        const [error, setError] = useState(null);
-
-        const handleAccept = async () => {
-          setError(null);
-          try {
-            await submitFeedback(requestId, {
-              field_path: fieldPath,
-              disposition: "ACCEPT",
-              original_value: value,
-            });
-            setSubmitted("accept");
-          } catch (e) {
-            setError(e.message);
-          }
-        };
-
-        const handleCorrect = async () => {
-          setError(null);
-          if (!corrected.trim()) return;
-          try {
-            await submitFeedback(requestId, {
-              field_path: fieldPath,
-              disposition: "CORRECT",
-              original_value: value,
-              corrected_value: corrected,
-            });
-            setSubmitted("correct");
-            setShowCorrect(false);
-          } catch (e) {
-            setError(e.message);
-          }
-        };
-
-        return {
-          showCorrect, setShowCorrect, corrected, setCorrected,
-          submitted, error, handleAccept, handleCorrect,
-        };
-      }
-
-      /* Full-card feedback row — used for card fields, reward scalars, and
+      /* Full-card field row — used for card fields, reward scalars, and
        * statementMeta/statementLevelSummary fields. */
-      function FieldRow({ requestId, fieldPath, label, value, verdict, judged }) {
-        const fb = useFeedback(requestId, fieldPath, value);
-
+      function FieldRow({ label, value, verdict, judged }) {
         return h`
           <div class="field-row">
             <div class="field-row-head">
@@ -1118,74 +1044,18 @@
                 `}
               </div>
             `}
-            ${fb.submitted
-              ? h`<div class="feedback-note">
-                  ${fb.submitted === "accept" ? "✓ Accepted as correct" : "✓ Correction submitted"}
-                </div>`
-              : h`<div class="field-actions" style=${{ marginTop: "0.5rem" }}>
-                  <button class="btn btn-sm btn-accept" onClick=${fb.handleAccept}>
-                    ✓ Accept
-                  </button>
-                  <button class="btn btn-sm btn-correct" onClick=${() => fb.setShowCorrect(!fb.showCorrect)}>
-                    ✎ Correct
-                  </button>
-                </div>
-                ${fb.showCorrect && h`
-                  <div class="correct-input" style=${{ marginTop: "0.5rem" }}>
-                    <input
-                      type="text"
-                      placeholder="Corrected value"
-                      value=${fb.corrected}
-                      onChange=${(e) => fb.setCorrected(e.target.value)}
-                      onKeyDown=${(e) => { if (e.key === "Enter") fb.handleCorrect(); }}
-                    />
-                    <button class="btn btn-sm btn-primary" onClick=${fb.handleCorrect} disabled=${!fb.corrected.trim()}>
-                      Submit
-                    </button>
-                  </div>
-                `}
-                ${fb.error && h`<div class="alert alert-error" style=${{ marginTop: "0.5rem" }}>${fb.error}</div>`}
-            `}
           </div>
         `;
       }
 
-      /* Compact inline feedback cell — used inside the transactions table. */
-      function TxnCell({ requestId, fieldPath, value, verdict, judged }) {
-        const fb = useFeedback(requestId, fieldPath, value);
-
+      /* Compact inline cell — used inside the transactions table. */
+      function TxnCell({ value, verdict, judged }) {
         return h`
           <div style=${{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "100px" }}>
             ${judged ? judgedBadge() : ""}
-            ${fb.submitted
-              ? h`<span class="feedback-note" style=${{ fontSize: "0.75rem" }}>
-                  ${fb.submitted === "accept" ? "✓ Accepted" : "✓ Corrected"}
-                </span>`
-              : fb.showCorrect
-                ? h`<div style=${{ display: "flex", alignItems: "center", gap: "0.25rem", flexWrap: "wrap" }}>
-                    <div class="correct-input" style=${{ minWidth: "140px" }}>
-                      <input
-                        type="text"
-                        placeholder="Corrected value"
-                        value=${fb.corrected}
-                        onChange=${(e) => fb.setCorrected(e.target.value)}
-                        onKeyDown=${(e) => { if (e.key === "Enter") fb.handleCorrect(); }}
-                      />
-                      <button class="btn btn-sm btn-primary" onClick=${fb.handleCorrect} disabled=${!fb.corrected.trim()}>
-                        ✓
-                      </button>
-                    </div>
-                    <button class="btn btn-sm" style=${{ background: "var(--neutral-soft)", color: "var(--text-muted)", fontSize: "0.6875rem", padding: "0.1875rem 0.5rem", border: "1px solid var(--border)" }}
-                      onClick=${() => fb.setShowCorrect(false)}>
-                      Cancel
-                    </button>
-                  </div>`
-                : h`<div style=${{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                    <span class="field-val" style=${{ fontSize: "0.8125rem" }}>${fmtVal(value)}</span>
-                    <button class="btn btn-sm btn-accept" style=${{ padding: "0.125rem 0.375rem", fontSize: "0.6875rem" }} onClick=${fb.handleAccept}>✓</button>
-                    <button class="btn btn-sm btn-correct" style=${{ padding: "0.125rem 0.375rem", fontSize: "0.6875rem" }} onClick=${() => fb.setShowCorrect(true)}>✎</button>
-                  </div>`
-            }
+            <div style=${{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+              <span class="field-val" style=${{ fontSize: "0.8125rem" }}>${fmtVal(value)}</span>
+            </div>
             ${verdict && h`
               <div style=${{ display: "flex", alignItems: "center", gap: "0.25rem", flexWrap: "wrap" }}>
                 <span class=${"verdict verdict-" + verdict.outcome} style=${{ fontSize: "0.625rem", padding: "0.0625rem 0.3rem" }}>${verdict.outcome.replace(/_/g, " ")}</span>
@@ -1194,7 +1064,6 @@
                 `}
               </div>
             `}
-            ${fb.error && h`<div style=${{ fontSize: "0.6875rem", color: "var(--disagree)" }}>${fb.error}</div>`}
           </div>
         `;
       }
@@ -1375,10 +1244,10 @@
         const payload = extraction?.payload;
         // Preserve original array indices — do NOT .filter(Boolean) the cards
         // or transactions arrays. A malformed payload with null entries would
-        // compress indices and shift verdict/feedback paths off the actual
-        // array index (cards.<i>.cardMeta.*, transactions.<i>.*) the judge and
-        // feedback paths key on. Instead keep the original index in the map
-        // and skip null rows during render.
+        // compress indices and shift verdict paths off the actual array
+        // index (cards.<i>.cardMeta.*, transactions.<i>.*) the judge keys on.
+        // Instead keep the original index in the map and skip null rows
+        // during render.
         const cards = (payload?.cards || []);
         const rewards = payload?.rewards;
         const transactions = (payload?.transactions || []);
@@ -1396,8 +1265,19 @@
         for (const c of comparisons) {
           if (c.outcome === "UNMATCHED_ROW" && c.actual_row_index === null) {
             unmatchedPdfComparisons.push(c);
-          } else if (c.feedback_path) {
-            verdictByPath[c.feedback_path] = c;
+          } else if (c.field_path) {
+            // Build a concrete path from the generic field_path by
+            // substituting the array index for [] (cards use card_index,
+            // transactions use actual_row_index).
+            let path = c.field_path;
+            if (path.includes("[]")) {
+              if (path.startsWith("cards[]") && c.card_index != null) {
+                path = path.replace("[]", `.${c.card_index}`);
+              } else if (path.startsWith("transactions[]") && c.actual_row_index != null) {
+                path = path.replace("[]", `.${c.actual_row_index}`);
+              }
+            }
+            verdictByPath[path] = c;
           }
         }
         // Group the "seen in PDF, not extracted" comparisons by expected_row_index.
@@ -1423,8 +1303,6 @@
 
         // Helper to render a FieldRow with the standard props + judged badge.
         const FR = (fp, label, val, tmpl) => h`<${FieldRow}
-          requestId=${requestId}
-          fieldPath=${fp}
           label=${label}
           value=${val}
           verdict=${verdictByPath[fp]}
@@ -1546,19 +1424,19 @@
                         <tr key=${"txn-" + i} style=${{ borderBottom: "1px solid var(--border)" }}>
                           <td style=${{ ...tdStyle, color: "var(--text-muted)", whiteSpace: "nowrap" }}>${i + 1}</td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.date`} value=${txn?.date} verdict=${verdictByPath[`transactions.${i}.date`]} judged=${isJudged("transactions[].date")} />
+                            <${TxnCell} value=${txn?.date} verdict=${verdictByPath[`transactions.${i}.date`]} judged=${isJudged("transactions[].date")} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.description`} value=${txn?.description} verdict=${verdictByPath[`transactions.${i}.description`]} judged=${isJudged("transactions[].description")} />
+                            <${TxnCell} value=${txn?.description} verdict=${verdictByPath[`transactions.${i}.description`]} judged=${isJudged("transactions[].description")} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.amount`} value=${txn?.amount} verdict=${verdictByPath[`transactions.${i}.amount`]} judged=${isJudged("transactions[].amount")} />
+                            <${TxnCell} value=${txn?.amount} verdict=${verdictByPath[`transactions.${i}.amount`]} judged=${isJudged("transactions[].amount")} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.direction`} value=${txn?.direction} verdict=${verdictByPath[`transactions.${i}.direction`]} judged=${isJudged("transactions[].direction")} />
+                            <${TxnCell} value=${txn?.direction} verdict=${verdictByPath[`transactions.${i}.direction`]} judged=${isJudged("transactions[].direction")} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} requestId=${requestId} fieldPath=${`transactions.${i}.rewardPointsOnThisTransaction`} value=${txn?.rewardPointsOnThisTransaction} verdict=${verdictByPath[`transactions.${i}.rewardPointsOnThisTransaction`]} judged=${isJudged("transactions[].rewardPointsOnThisTransaction")} />
+                            <${TxnCell} value=${txn?.rewardPointsOnThisTransaction} verdict=${verdictByPath[`transactions.${i}.rewardPointsOnThisTransaction`]} judged=${isJudged("transactions[].rewardPointsOnThisTransaction")} />
                           </td>
                         </tr>
                       `)}
@@ -1873,9 +1751,9 @@
           // ALWAYS fetch the full extraction via HTTP first — the complete
           // SSE event is intentionally small (no payload) so it can't be
           // truncated, and /api/results is the authoritative source (in-
-          // memory ctx.extraction_data or Lakebase).  The extraction SSE
-          // event (data.extraction) is a fast-path fallback if the fetch
-          // fails or returns no extraction.
+          // memory ctx.extraction_data).  The extraction SSE event
+          // (data.extraction) is a fast-path fallback if the fetch fails or
+          // returns no extraction.
           try {
             const resp = await fetch(`/api/results/${requestId}`, {
               signal: AbortSignal.timeout(5000),
@@ -1885,10 +1763,10 @@
               if (apiResults.extraction) {
                 setResults({
                   extraction: apiResults.extraction,
-                  // The post-hoc judge persists per-field verdicts to Lakebase
-                  // keyed by request_id; /api/results returns them here so the
-                  // Results view can render expected/actual/outcome inline.
-                  // null when the trace has not been judged yet.
+                  // The post-hoc judge logs per-field verdicts to MLflow; the
+                  // on-demand judge endpoint surfaces them so the Results view
+                  // can render expected/actual/outcome inline.  null when the
+                  // trace has not been judged yet.
                   verdict: apiResults.verdict || null,
                   complete: data.complete,
                 });

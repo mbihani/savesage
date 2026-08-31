@@ -4,8 +4,8 @@ Each node takes and returns the :class:`graph.state.GraphState` (LangGraph's
 "state modifier" pattern with a reducer-free typed object is used by mutating
 and returning the same instance). Nodes depend ONLY on the ABCs from
 ``contracts/ports.py`` injected through the :class:`NodeDeps` carrier -- never
-on psycopg, mlflow, or a concrete judge. This is what lets four workstreams
-integrate later without a big-bang: WS3/WS4/WS5 hand in their concrete ports and
+on mlflow or a concrete judge. This is what lets the workstreams
+integrate later without a big-bang: WS4/WS5 hand in their concrete ports and
 the graph keeps its shape.
 
 langgraph is NOT imported here; node functions are plain callables the graph
@@ -16,15 +16,12 @@ from __future__ import annotations
 
 from dataclasses import replace as dc_replace
 from datetime import UTC, datetime
-import logging
 from typing import TYPE_CHECKING, Any
 
 from contracts.models import ExtractionResult, TraceEvent, bank_name
 from contracts.ports import (
     ExtractionAdapter,
-    FeedbackStore,
     JudgeAdapter,
-    ResultStore,
     TraceSink,
 )
 from graph.routing import effective_bank, get_prompt_version, resolve_prompt
@@ -35,33 +32,30 @@ if TYPE_CHECKING:  # pragma: no cover
     pass
 
 
-_LOGGER = logging.getLogger(__name__)
-
-
 class NodeDeps:
     """Injected port carrier passed to every node.
 
     Only the extraction adapter is required (it is the core of this workstream).
-    ``result_store``, ``trace_sink``, and ``judge`` are optional so the graph
-    degrades gracefully: a missing store means persistence is skipped, a missing
-    judge means the judge stage is skipped, a missing trace sink means no trace
-    events are recorded. The in-memory test fakes provide all four; production
-    wiring provides the real ones.
+    ``trace_sink`` and ``judge`` are optional so the graph degrades gracefully:
+    a missing judge means the judge stage is skipped, a missing trace sink means
+    no trace events are recorded. The in-memory test fakes provide all three;
+    production wiring provides the real ones.
+
+    The database persistence layer has been removed — the agent returns
+    parsed JSON only and the client persists. The PDF + extraction are still
+    logged as MLflow artifacts (by ``finalize_node``) so the post-hoc judge
+    can re-read them when scoring the trace.
     """
 
     def __init__(
         self,
         extraction: ExtractionAdapter,
-        result_store: ResultStore | None = None,
         trace_sink: TraceSink | None = None,
         judge: JudgeAdapter | None = None,
-        feedback_store: FeedbackStore | None = None,
     ) -> None:
         self.extraction = extraction
-        self.result_store = result_store
         self.trace_sink = trace_sink
         self.judge = judge
-        self.feedback_store = feedback_store
 
 
 def _trace(
@@ -236,9 +230,9 @@ def validate_node(state: GraphState, deps: NodeDeps) -> GraphState:
 
     CRITICAL: the validated ``schema_valid`` is propagated into the frozen
     ``ExtractionResult`` via ``dataclasses.replace`` so the object handed to
-    ``persist_node`` carries the validated value, not the adapter's initial
-    ``False``. Without this, every real Luna extraction would be persisted as
-    schema-invalid.
+    ``finalize_node`` (and logged as the ``extraction.json`` artifact) carries
+    the validated value, not the adapter's initial ``False``. Without this,
+    every real Luna extraction would be logged as schema-invalid.
     """
     if state.outcome is Outcome.EXTRACTION_FAILED or state.extraction is None:
         return state
@@ -267,66 +261,6 @@ def validate_node(state: GraphState, deps: NodeDeps) -> GraphState:
            inputs={"extraction": state.extraction.payload},
            outputs={"schema_valid": report.schema_valid,
                     "validation_errors": report.all_errors})
-    return state
-
-
-def persist_node(state: GraphState, deps: NodeDeps) -> GraphState:
-    """Persist the extraction via the injected store and log the PDF artifact.
-
-    After saving the extraction, the source PDF is logged as an MLflow artifact
-    on the current trace (best-effort) so the post-hoc judge can re-read the PDF
-    later when scoring the trace. The artifact path is ``statement.pdf``.
-    """
-    if state.outcome is Outcome.EXTRACTION_FAILED:
-        return state
-    persisted = False
-    persist_error: str | None = None
-    if state.extraction is not None:
-        if deps.result_store is not None:
-            try:
-                deps.result_store.save_extraction(state.extraction, state.request.bank)
-                state.stage = Stage.PERSISTED
-                persisted = True
-            except Exception as exc:
-                _LOGGER.exception(
-                    "Lakebase extraction persistence failed for request_id=%s",
-                    state.request_id,
-                )
-                state.mark_failure(Stage.PERSISTED, f"persist: {exc}")
-                persist_error = str(exc)
-        # No store wired (e.g. Lakebase unavailable): persistence is SKIPPED, not
-        # a failure. The stage is left at its prior value (the data was not
-        # actually persisted) -- but the persist span is STILL traced so the span
-        # tree is complete and the post-hoc judge sees every pipeline stage.
-        # ``persisted`` is an explicit boolean: it stays False when the store is
-        # absent (save was skipped) AND when save raises, so the trace never
-        # falsely reports a successful persist.
-        _trace(deps, state, "persist_extraction",
-               error=persist_error,
-               inputs={"request_id": state.request_id},
-               outputs={"persisted": persisted})
-    # Log the source PDF and the extraction as MLflow artifacts so the post-hoc
-    # judge can re-read them when scoring this trace. Best-effort: never raises.
-    if deps.trace_sink is not None:
-        try:
-            import json
-            from pathlib import Path
-            pdf = state.request.pdf.read_bytes() if isinstance(state.request.pdf, Path) else state.request.pdf
-            deps.trace_sink.log_artifact(pdf, "statement.pdf")
-            # Log the extraction payload + bank so the scorer can reconstruct
-            # a ParseRequest and ExtractionResult without the live store.
-            extraction_meta = {
-                "request_id": state.request_id,
-                "bank": bank_name(state.request.bank),
-                "payload": state.extraction.payload,
-                "model_id": state.extraction.model_id,
-                "schema_valid": state.extraction.schema_valid,
-            }
-            deps.trace_sink.log_artifact(
-                json.dumps(extraction_meta).encode("utf-8"), "extraction.json",
-            )
-        except Exception:  # pragma: no cover - artifact logging must never break the parse
-            pass
     return state
 
 
@@ -395,8 +329,6 @@ def judge_node(state: GraphState, deps: NodeDeps) -> GraphState:
     try:
         state.verdict = deps.judge.judge(state.request, state.extraction)
         state.stage = Stage.JUDGED
-        if deps.result_store is not None:
-            deps.result_store.save_verdict(state.verdict)
         _trace(deps, state, "judge",
                inputs={"request_id": state.request_id},
                outputs={"judge_model_id": state.verdict.judge_model_id,
@@ -414,12 +346,39 @@ def judge_node(state: GraphState, deps: NodeDeps) -> GraphState:
 def finalize_node(state: GraphState, deps: NodeDeps) -> GraphState:
     """Set the terminal outcome if no terminal failure was recorded earlier.
 
-    A run with ANY real stage error (e.g. persistence failure), validation
-    errors (schema/rule violations), OR an internal validation error is
-    PARTIAL at best -- a user must never be told SUCCESS when their statement
-    was not saved or when the validator itself misbehaved. Trace failures do
-    NOT count (they are telemetry).
+    A run with validation errors (schema/rule violations) OR an internal
+    validation error is PARTIAL at best -- a user must never be told SUCCESS
+    when the validator itself misbehaved. Trace failures do NOT count (they
+    are telemetry).
+
+    Also logs the source PDF + extraction as MLflow artifacts (best-effort) so
+    the post-hoc judge can re-read them when scoring this trace. This was
+    previously done in the now-removed persist stage; the pipeline no longer
+    has a persist step, but the scorer still depends on these artifacts.
     """
+    # Log the source PDF + extraction as MLflow artifacts so the post-hoc
+    # judge can re-read them when scoring this trace. Best-effort: never raises.
+    if state.extraction is not None and deps.trace_sink is not None:
+        try:
+            import json
+            from pathlib import Path
+            pdf = state.request.pdf.read_bytes() if isinstance(state.request.pdf, Path) else state.request.pdf
+            deps.trace_sink.log_artifact(pdf, "statement.pdf")
+            # Log the extraction payload + bank so the scorer can reconstruct
+            # a ParseRequest and ExtractionResult without a live store.
+            extraction_meta = {
+                "request_id": state.request_id,
+                "bank": bank_name(state.request.bank),
+                "payload": state.extraction.payload,
+                "model_id": state.extraction.model_id,
+                "schema_valid": state.extraction.schema_valid,
+            }
+            deps.trace_sink.log_artifact(
+                json.dumps(extraction_meta).encode("utf-8"), "extraction.json",
+            )
+        except Exception:  # pragma: no cover - artifact logging must never break the parse
+            pass
+
     if state.outcome is not None:
         return state
     if state.validation_errors or state.has_stage_errors:

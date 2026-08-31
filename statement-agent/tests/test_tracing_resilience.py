@@ -2,9 +2,8 @@
 
 These prove telemetry failure NEVER breaks the parse path. They use an injected
 ``mlflow_factory`` (no real mlflow needed) that raises, returns a broken object,
-or returns None — and asserts ``record`` / ``log_field_feedback`` /
-``log_judge_verdict`` all complete without propagating. The gate at the bottom
-runs the full suite including these.
+or returns None — and asserts ``record`` / ``log_judge_verdict`` all complete
+without propagating. The gate at the bottom runs the full suite including these.
 """
 
 from datetime import UTC, datetime
@@ -15,7 +14,6 @@ from contracts.models import (
     ComparisonOutcome,
     ExtractionResult,
     FieldComparison,
-    FieldFeedback,
     FieldScope,
     JudgeVerdict,
     MatchMethod,
@@ -90,24 +88,6 @@ class ResilienceTest(unittest.TestCase):
         sink.record(_evt("extraction", None, parent=None, attrs={}))
         # root with no span_id triggers flush with just itself
         sink.record(_evt("parse", None, parent=None, attrs={"bank": "HDFC"}))
-
-    def test_log_field_feedback_with_raising_mlflow_does_not_raise(self):
-        sink = MLflowTraceSink(_config(), mlflow_factory=_raising_factory)
-        # Prime the trace-id map so we reach the mlflow call (not the early no-trace return).
-        sink._trace_ids["req-1"] = "tr-fake"
-        fb = FieldFeedback("req-1", "cards.0.cardMeta.cardDisplayName",
-                           "Jane Doe", "Jane D", False, "synthetic-client",
-                           datetime.now(UTC))
-        sink.log_field_feedback(fb)
-        # No exception -> pass.
-
-    def test_log_field_feedback_without_trace_id_drops_silently(self):
-        sink = MLflowTraceSink(_config(), mlflow_factory=_raising_factory)
-        fb = FieldFeedback("req-2", "cards.0.cardMeta.lastFourDigit",
-                           "1234", "4321", False, "synthetic-client",
-                           datetime.now(UTC))
-        # No trace_id for req-2 -> logs a warning, does not call mlflow, does not raise.
-        sink.log_field_feedback(fb)
 
     def test_log_judge_verdict_with_raising_mlflow_does_not_raise(self):
         sink = MLflowTraceSink(_config(), mlflow_factory=_raising_factory)

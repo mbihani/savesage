@@ -15,7 +15,6 @@ from typing import Any
 
 from contracts.models import (
     ExtractionResult,
-    FieldFeedback,
     JudgeVerdict,
     ParseRequest,
     bank_name,
@@ -29,7 +28,6 @@ class Stage(str, Enum):
     ROUTED = "ROUTED"
     EXTRACTED = "EXTRACTED"
     VALIDATED = "VALIDATED"
-    PERSISTED = "PERSISTED"
     JUDGED = "JUDGED"
 
 
@@ -37,9 +35,9 @@ class Outcome(str, Enum):
     """Terminal disposition of one parse run.
 
     SUCCESS means every stage completed cleanly. PARTIAL means the extraction
-    succeeded enough to persist and show, but validation flagged schema/rule
-    violations OR a real stage (e.g. persistence) failed without short-circuiting
-    -- the user is never told SUCCESS when the statement was not saved.
+    succeeded but validation flagged schema/rule violations OR a real stage
+    failed without short-circuiting -- the user is never told SUCCESS when a
+    stage did not complete cleanly.
     EXTRACTION_FAILED and JUDGE_FAILED are hard failures of a single stage that
     short-circuit the rest of the pipeline.
     """
@@ -56,8 +54,8 @@ class GraphState:
 
     ``request`` and ``prompt`` are set by the caller/router. ``errors`` is an
     ordered list of human-readable stage failures; an empty list means a clean
-    run. ``verdict`` and ``feedback`` stay ``None``/empty when the judge is
-    skipped (validation short-circuit, or no judge adapter injected).
+    run. ``verdict`` stays ``None`` when the judge is skipped (validation
+    short-circuit, or no judge adapter injected).
     """
 
     request: ParseRequest
@@ -73,10 +71,9 @@ class GraphState:
     schema_valid: bool = False
     validation_errors: list[str] = field(default_factory=list)
     verdict: JudgeVerdict | None = None
-    feedback: list[FieldFeedback] = field(default_factory=list)
     stage: Stage = Stage.INIT
     outcome: Outcome | None = None
-    # `errors` holds real stage failures (route/extract/persist/judge) that must
+    # `errors` holds real stage failures (route/extract/judge) that must
     # influence the terminal outcome. Trace-recording failures go in
     # `trace_errors` so a broken telemetry sink never turns a clean run PARTIAL.
     errors: list[str] = field(default_factory=list)

@@ -8,20 +8,21 @@ PDF + Bank
     v
 LangGraph (WS2) -> Luna extraction -> GT_SCHEMA validation
     |                    |
-    |                    +-> Lakebase + CDF (WS3)
     |                    +-> MLflow traces (WS4)
     v
-Opus-5 judge (WS5) -> seven-field verdict -> FastAPI/UI feedback (WS6)
+Opus-5 judge (WS5) -> 28-field verdict -> FastAPI/UI (WS6)
 ```
 
-## Six workstreams
+## Workstreams
 
 1. This scaffold: contracts, schema, prompts, rules, memory, and harness.
 2. LangGraph orchestration and `ExtractionAdapter`.
-3. Lakebase/CDF, `ResultStore`, and `FeedbackStore`.
-4. MLflow instrumentation and `TraceSink`.
-5. Opus-5 adjudication and `JudgeAdapter`.
-6. FastAPI API and no-build static frontend.
+3. MLflow instrumentation and `TraceSink`.
+4. Opus-5 adjudication and `JudgeAdapter`.
+5. FastAPI API and no-build static frontend.
+
+The agent returns parsed JSON only — no database persistence layer. The
+client persists results to its own store.
 
 ## YOU CANNOT RUN THIS LOCALLY
 
@@ -34,6 +35,6 @@ the stdlib contract tests run locally. Databricks Apps installs pinned
 ## Deploy to fevm-stable
 
 From an authenticated Databricks CLI, create or update the app from this source
-directory, bind the workstream-3/4 resources in `app.yaml`, grant the app service
+directory, bind the workstream-4 resources in `app.yaml`, grant the app service
 principal endpoint/resource access, and deploy. Runtime values are environment
 variables described in `MANIFESTO.md`; secrets are never committed.

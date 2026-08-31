@@ -9,7 +9,6 @@ background judge scheduler.
 PDF + Bank  -->  POST /api/v1/parse  -->  JSON extraction (synchronous)
                     |
                     +-> MLflow traces (auto-created experiment)
-                    +-> RDS Postgres (durable results + feedback)
                     +-> Background judge (every 6h, post-hoc verdicts)
 ```
 
@@ -27,11 +26,7 @@ PDF + Bank  -->  POST /api/v1/parse  -->  JSON extraction (synchronous)
    - A **Claude** judge endpoint (default FMAPI name
      `databricks-claude-opus-5`).
    - The app service principal must be granted **CAN_QUERY** on both endpoints.
-3. **Postgres** for durable result + feedback storage. Any managed Postgres
-   works (Databricks Lakebase PG, AWS RDS, etc.). The app connects directly
-   over TCP with username/password — no Databricks `database` resource binding
-   is required.
-4. **Databricks CLI** (`databricks` ≥ 0.255.0), authenticated to the target
+3. **Databricks CLI** (`databricks` ≥ 0.255.0), authenticated to the target
    workspace (`databricks auth login`).
 
 > The app **auto-creates** its MLflow experiment on the first parse, so no
@@ -52,21 +47,6 @@ deploying.
 | `DATABRICKS_HOST` | `https://fevm-stable-classic-7ppxjq.cloud.databricks.com` | Target workspace URL. **Set to your workspace.** |
 | `EXTRACTION_ENDPOINT` | `databricks-gpt-5-6-luna` | FMAPI name of the Luna extraction endpoint on your AI Gateway. |
 | `JUDGE_ENDPOINT` | `databricks-claude-opus-5` | FMAPI name of the Claude judge endpoint on your AI Gateway. |
-
-### Postgres (durable storage)
-
-| Variable | Default | Description |
-|---|---|---|
-| `RDS_HOST` | `your-rds-instance.xxxxxx.us-east-1.rds.amazonaws.com` | Postgres host. **Set to your instance.** |
-| `RDS_PORT` | `5432` | Postgres port. |
-| `RDS_DATABASE` | `postgres` | Database name. |
-| `RDS_USER` | `postgres` | Database user. |
-| `RDS_PASSWORD` | `CHANGE_ME` | Database password. **Set a real secret.** |
-| `RDS_SSLMODE` | `require` | `psycopg` SSL mode (`require` / `prefer` / `disable`). |
-
-The app runs `CREATE TABLE IF NOT EXISTS` for the results + feedback tables on
-first connect, so the database just needs to exist and the user needs
-`CREATE` + `INSERT`/`SELECT`/`UPDATE` on the `public` schema.
 
 ### MLflow tracing
 
@@ -105,8 +85,8 @@ From this directory (`statement-agent/`), with the CLI authenticated to your
 workspace:
 
 ```bash
-# Edit app.yaml with your workspace host, RDS credentials, and (optionally)
-# custom endpoint/experiment/judge values.
+# Edit app.yaml with your workspace host and (optionally) custom
+# endpoint/experiment/judge values.
 
 # Create + deploy the app (the app.yaml in this directory is picked up
 # automatically from the source path).
@@ -196,9 +176,9 @@ is still returned, with `validation_errors` populated). Both are HTTP 200.
   (same trace sink as the UI path). The `request_id` is the trace/run tag.
 - **Follow-up queries:** the result is kept in-memory for the process lifetime,
   so `GET <APP_URL>/api/results/{request_id}` returns the same extraction plus
-  any feedback / on-demand verdict for follow-up workflows.
+  any on-demand verdict for follow-up workflows.
 - The synchronous endpoint runs the full pipeline (route → extract → validate →
-  persist → finalize) and blocks until it completes. It does **not** stream.
+  finalize) and blocks until it completes. It does **not** stream.
 
 ---
 
@@ -288,8 +268,7 @@ are unchanged:
 |---|---|---|
 | `POST` | `/api/parse` | Async parse (returns `request_id`; stream via SSE). Used by the web UI. |
 | `GET` | `/api/parse/{request_id}/stream` | SSE stream of parse progress + extraction items. |
-| `GET` | `/api/results/{request_id}` | Fetch extraction + verdict + feedback for a request. |
-| `POST` | `/api/feedback/{request_id}` | Submit per-field Accept/Correct feedback. |
+| `GET` | `/api/results/{request_id}` | Fetch extraction + verdict for a request. |
 | `GET` | `/api/banks` | List built-in + dynamic banks. |
 | `GET` | `/health` | Liveness + config diagnostics. |
 

@@ -1,7 +1,7 @@
 # Parallel implementation contracts
 
 All shared contracts are stdlib-only in `contracts/`. Do not add Pydantic,
-LangGraph, MLflow, FastAPI, psycopg, or Databricks SDK imports there. Adapter
+LangGraph, MLflow, FastAPI, or Databricks SDK imports there. Adapter
 modules imported by tests must also remain stdlib-only; third-party imports in
 `app/main.py`, auth, DB, graph, and telemetry code must be function-local unless
 their module is never on the contract-test import path.
@@ -12,8 +12,6 @@ their module is never on the contract-test import path.
 |---|---|---|
 | `ExtractionAdapter` | Workstream 2 | `harness/extraction_adapter.py` and graph modules |
 | `JudgeAdapter` | Workstream 5 | `harness/judge_adapter.py`, `judge/` |
-| `ResultStore` | Workstream 3 | `db/` |
-| `FeedbackStore` | Workstream 3 | `db/` |
 | `TraceSink` | Workstream 4 | new telemetry modules under `harness/` |
 | `MemoryStore` | Workstream 2 | `memory/` and graph wiring |
 
@@ -24,20 +22,17 @@ their module is never on the contract-test import path.
   edit these files; `harness/transports.py` is on the stdlib test path.
 - WS2 owns new graph modules, `skills/extract_statement.py`,
   `harness/extraction_adapter.py`, and `harness/cli.py`.
-- WS3 owns `db/`, `skills/persist_result.py`, and
-  `skills/record_feedback.py`. It must put a commented app resource snippet in
-  its own new `docs/resources-ws3.md` for WS6 to consolidate.
 - WS4 owns new `harness/tracing*.py` modules. It must put a commented app
   resource snippet in its own new `docs/resources-ws4.md` for WS6 to consolidate.
 - WS5 owns `judge/`, `skills/judge_statement.py`, and
   `harness/judge_adapter.py`.
 - WS6 solely owns `app.yaml`, `app/`, and new static frontend assets; it
-  consolidates the WS3/WS4 resource snippets.
+  consolidates the WS4 resource snippets.
 
-If WS3 or WS4 needs additional configuration, add a `CONFIGURE(<slug>)`-tagged
-setting in a workstream-owned module (`db/config_ws3.py` or
-`harness/config_ws4.py`). Keep environment names workstream-prefixed. Do not
-race by appending to shared `config.py`; WS6 can consolidate after integration.
+If WS4 needs additional configuration, add a `CONFIGURE(<slug>)`-tagged
+setting in a workstream-owned module (`harness/config_ws4.py`). Keep
+environment names workstream-prefixed. Do not race by appending to shared
+`config.py`; WS6 can consolidate after integration.
 
 Downstream workstreams must not edit `contracts/`, `schema/`, `prompts/`,
 `rules/`, `memory/`, this ownership document, or another workstream's files.

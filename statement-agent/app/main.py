@@ -4,17 +4,20 @@ Wires the real ports into the LangGraph parse pipeline:
 
 * ``ExtractionAdapter`` → :class:`harness.extraction_adapter.LunaExtractionAdapter`
 * ``JudgeAdapter`` → :class:`harness.judge_adapter.OpusJudgeAdapter`
-* ``ResultStore`` + ``FeedbackStore`` → :mod:`db.stores` (RDS/psycopg)
 * ``TraceSink`` → :class:`harness.tracing.MLflowTraceSink`, wrapped by
   :class:`_ProgressTraceSink` which mirrors per-node trace events into the SSE
   stream.
 
+The database persistence layer has been removed — the agent returns parsed
+JSON only and the client's own application persists. MLflow traces, the
+post-hoc judge, the judge scheduler, and the synchronous API all remain.
+
 **Import discipline.**  FastAPI/uvicorn are imported function-local inside
 :func:`create_app` so the module is importable in a stdlib-only environment
 (the contract-test gate).  All other module-level imports are stdlib-only;
-the modules they pull in (``graph.*``, ``harness.*``, ``db.*``) defer their
-own third-party imports (langgraph, psycopg, mlflow, databricks-sdk) to
-function-local scopes — importing them never requires those packages.
+the modules they pull in (``graph.*``, ``harness.*``) defer their own
+third-party imports (langgraph, mlflow, databricks-sdk) to function-local
+scopes — importing them never requires those packages.
 """
 
 import json
@@ -28,10 +31,8 @@ from typing import Any, Optional
 
 from contracts.models import (
     FieldComparison,
-    FieldFeedback,
     TraceEvent,
 )
-from contracts.paths import canonical_feedback_path, is_valid_feedback_path
 from contracts.ports import TraceSink
 
 # ---------------------------------------------------------------------------
@@ -39,21 +40,19 @@ from contracts.ports import TraceSink
 # ---------------------------------------------------------------------------
 
 # Trace event names emitted by graph nodes → frontend stage labels.
-# ``persist_extraction`` is an internal trace name that maps to the
-# user-facing ``persist`` stage. The judge no longer runs inline (it is a
-# post-hoc evaluation over MLflow traces), so there is no ``judge`` stage.
+# The judge no longer runs inline (it is a post-hoc evaluation over MLflow
+# traces), so there is no ``judge`` stage.
 _STAGE_MAP: dict[str, str] = {
     "route": "route",
     "extract": "extract",
     "validate": "validate",
-    "persist_extraction": "persist",
     "finalize": "finalize",
 }
 
-# The five pipeline stages the frontend renders, in order. The judge no
-# longer runs inline — it is a post-hoc evaluation triggered separately.
+# The pipeline stages the frontend renders, in order. The judge no longer
+# runs inline — it is a post-hoc evaluation triggered separately.
 PIPELINE_STAGES: tuple[str, ...] = (
-    "route", "extract", "validate", "persist", "finalize",
+    "route", "extract", "validate", "finalize",
 )
 
 # In-memory request contexts, keyed by request_id.  Populated by
@@ -62,19 +61,8 @@ PIPELINE_STAGES: tuple[str, ...] = (
 _REQUESTS: dict[str, Any] = {}
 _MAX_REQUESTS = 50  # FIFO cap — each entry holds ~1-10 MB of PDF bytes
 
-# Module-level caches so we don't create a WorkspaceClient or MLflow sink
-# per request.  ``None`` means "not yet attempted"; a tuple/store means
-# "attempted" (including the failure sentinel).
-_stores: Optional[tuple[Any, Any]] = None
-# Last error from an RDS store-init attempt, surfaced via the /health
-# endpoint for diagnostics.  ``None`` means "no attempt has failed".
-_last_store_error: Optional[str] = None
-# Connection parameters most recently resolved from the ``RDS_*`` env vars
-# by ``_build_rds_stores``.  Surfaced via the /health endpoint for
-# diagnostics; ``None`` until a derivation attempt has produced them (so a
-# partial failure still shows whatever was resolved before the error).
-_derived_host: Optional[str] = None
-_derived_user: Optional[str] = None
+# Module-level cache so we don't create an MLflow sink per request.
+# ``None`` means "not yet attempted".
 _trace_sink: Any = None
 _LOGGER = logging.getLogger("statement-agent.app")
 
@@ -94,17 +82,11 @@ def _is_valid_request_id(request_id: str) -> bool:
     """Return True iff ``request_id`` matches the canonical ``req-<12hex>`` form."""
     return bool(_REQUEST_ID_RE.match(request_id or ""))
 
-# Max seconds to wait for a best-effort persistence/telemetry call (RDS
-# or MLflow) inside an ``async`` route handler before giving up and falling
-# back to in-memory storage.  Bounds the blocking call so a hung connection
-# can never freeze the single uvicorn event loop — which is what made the
-# Apps proxy return 502 on feedback submit.  The initial RDS cold-start
-# requires psycopg.connect with SSL + DDL (advisory lock + CREATE TABLE IF
-# NOT EXISTS x2 + CREATE INDEX + ALTER TABLE x2); 5 s was too tight and
-# silently timed out, so all results fell back to in-memory storage and
-# never persisted.  15 s gives the cold-start room while still bounding a
-# genuinely hung call.
-_PERSIST_TIMEOUT = 15.0
+# Max seconds to wait for a best-effort blocking call (e.g. an MLflow
+# trace-id resolution) inside an ``async`` route handler before giving up.
+# Bounds the blocking call so a hung network call can never freeze the
+# single uvicorn event loop.
+_BLOCKING_TIMEOUT = 15.0
 
 # Cache for the most recent judge evaluation result (populated by
 # ``POST /api/run-judge`` and returned by ``GET /api/judge-results``).
@@ -157,9 +139,9 @@ class RequestContext:
     The background graph thread pushes events into ``events`` (a stdlib
     ``queue.Queue``, thread-safe); the async SSE endpoint reads from it via
     ``run_in_executor``.  After the graph completes, ``extraction_data`` is
-    available for the ``GET /api/results`` fallback when RDS is
-    unreachable. The judge no longer runs inline, so there is no
-    ``verdict_data`` — judge results come from the post-hoc evaluation API.
+    available for the ``GET /api/results`` fallback. The judge no longer
+    runs inline, so there is no ``verdict_data`` — judge results come from
+    the post-hoc evaluation API.
     """
 
     def __init__(self, request_id: str) -> None:
@@ -176,8 +158,6 @@ class RequestContext:
         # the extracted fields for the lifetime of this process.
         self.pdf_bytes: Optional[bytes] = None
         self.pdf_filename: str = "statement.pdf"
-        # In-memory feedback list (fallback when RDS feedback store is down).
-        self.feedback: list[dict[str, Any]] = []
 
     def push(self, event_type: str, data: dict[str, Any]) -> None:
         """Push an SSE event (thread-safe; called from the background thread)."""
@@ -214,29 +194,9 @@ def _comparison_to_dict(c: FieldComparison) -> dict[str, Any]:
 
     Enum values are flattened to their ``.value`` strings so the frontend
     receives plain JSON (no enum-serialisation knowledge required).
-
-    ``feedback_path`` is the canonical concrete dot-path the frontend
-    should use when submitting Accept/Correct feedback for this field.
-    For transaction rows, ``actual_row_index`` is preferred, falling
-    back to ``expected_row_index`` so unmatched rows (where
-    ``actual_row_index`` is ``None``) still get a valid path.
     """
-    row_index = c.actual_row_index
-    if row_index is None:
-        row_index = c.expected_row_index
-    feedback_path = None
-    try:
-        feedback_path = canonical_feedback_path(
-            c.field_path,
-            row_index=row_index,
-            card_index=c.card_index,
-        )
-    except (ValueError, TypeError):
-        pass  # feedback_path stays None — frontend hides Accept/Correct
-
     return {
         "field_path": c.field_path,
-        "feedback_path": feedback_path,
         "expected": c.expected,
         "actual": c.actual,
         "outcome": c.outcome.value,
@@ -250,58 +210,19 @@ def _comparison_to_dict(c: FieldComparison) -> dict[str, Any]:
     }
 
 
-def _validate_feedback_body(body: dict[str, Any]) -> dict[str, Any]:
-    """Validate a feedback request body and return normalised fields.
-
-    Raises :class:`ValueError` with a human-readable message on invalid input.
-    Validation includes the canonical-path check via :func:`contracts.paths.
-    is_valid_feedback_path` — a path that is not a concrete, indexed canonical
-    path (e.g. a template like ``cards[].cardMeta.cardDisplayName`` or a
-    JSON-Pointer-style ``/cards/0/...``) is rejected.
-    """
-    field_path = str(body.get("field_path", ""))
-    disposition = str(body.get("disposition", "")).upper()
-
-    if not is_valid_feedback_path(field_path):
-        raise ValueError(f"invalid field_path: {field_path!r}")
-
-    if disposition == "ACCEPT":
-        accepted = True
-    elif disposition == "CORRECT":
-        accepted = False
-    else:
-        raise ValueError("disposition must be ACCEPT or CORRECT")
-
-    original_value = body.get("original_value")
-    corrected_value = body.get("corrected_value")
-
-    if not accepted and corrected_value is None:
-        raise ValueError("corrected_value is required when disposition is CORRECT")
-
-    return {
-        "field_path": field_path,
-        "disposition": disposition,
-        "accepted": accepted,
-        "original_value": original_value,
-        "corrected_value": corrected_value,
-        "actor": str(body.get("actor", "web-ui")),
-    }
-
-
 def _queue_get(q: queue.Queue, timeout: float) -> Any:
     """Blocking ``Queue.get`` with timeout — helper for ``run_in_executor``."""
     return q.get(block=True, timeout=timeout)
 
 
-async def _run_blocking(func: Any, *args: Any, timeout: float = _PERSIST_TIMEOUT) -> Any:
+async def _run_blocking(func: Any, *args: Any, timeout: float = _BLOCKING_TIMEOUT) -> Any:
     """Run a blocking callable in a worker thread with a bounded wait.
 
     Returns the callable's result, or ``None`` on exception/timeout.  Used for
-    best-effort persistence/telemetry (RDS, MLflow) inside ``async`` route
+    best-effort calls (e.g. MLflow trace-id resolution) inside ``async`` route
     handlers so a hung network call can never block the single uvicorn event
-    loop — the mechanism behind the proxy 502 on feedback submit.  The
-    orphaned thread is not cancelled on timeout (Python cannot kill threads),
-    but the handler returns immediately with an in-memory fallback.
+    loop.  The orphaned thread is not cancelled on timeout (Python cannot kill
+    threads), but the handler returns immediately.
     """
     import asyncio
 
@@ -311,7 +232,7 @@ async def _run_blocking(func: Any, *args: Any, timeout: float = _PERSIST_TIMEOUT
             loop.run_in_executor(None, func, *args), timeout=timeout,
         )
     except Exception:
-        _LOGGER.exception("Blocking persistence/telemetry call failed: %s",
+        _LOGGER.exception("Blocking call failed: %s",
                           getattr(func, "__qualname__", repr(func)))
         return None
 
@@ -441,59 +362,6 @@ def _build_v1_response(ctx: RequestContext, request_id: str,
 # Production port wiring (third-party imports deferred to call-time)
 # ---------------------------------------------------------------------------
 
-def _build_rds_stores() -> tuple[Any, Any]:
-    """Build RDS-backed ``ResultStore`` + ``FeedbackStore``.
-
-    Returns ``(result_store, feedback_store)``.  Raises on failure; callers
-    catch and degrade to in-memory.  ``psycopg`` is imported function-local
-    inside the dependency modules, so importing this function does not require
-    it — only *calling* it does.
-
-    Connection parameters come from the ``RDS_*`` environment variables in
-    ``app.yaml`` — a plain direct Postgres connection with username/password,
-    no ``WorkspaceClient`` or endpoint API call.
-    """
-    global _derived_host, _derived_user
-    from db.connection import RDSConnectionFactory
-    from db.stores import LakebaseFeedbackStore, LakebaseResultStore, init_tables
-
-    if not os.environ.get("RDS_HOST"):
-        raise RuntimeError(
-            "RDS_HOST environment variable is required for the RDS "
-            "connection (set in app.yaml)"
-        )
-    # Surface the connection parameters for /health diagnostics before the
-    # connection attempt that may still fail (and reset them on each call so
-    # a later re-derivation overwrites a stale value).
-    _derived_host = os.environ.get("RDS_HOST", "")
-    _derived_user = os.environ.get("RDS_USER", "")
-    _LOGGER.info(
-        "RDS connection: host=%s, user=%s, db=%s",
-        _derived_host, _derived_user, os.environ.get("RDS_DATABASE", "postgres"))
-    connect = RDSConnectionFactory.from_env()
-    init_tables(connect)
-    return LakebaseResultStore(connect), LakebaseFeedbackStore(connect)
-
-
-def _get_stores() -> tuple[Any, Any]:
-    """Return cached RDS stores ``(result_store, feedback_store)``.
-
-    Lazily initialised on first call. Failures are logged and are not cached,
-    allowing a transient credential or database outage to recover.
-    """
-    global _last_store_error, _stores
-    if _stores is not None:
-        return _stores
-    try:
-        _stores = _build_rds_stores()
-        _last_store_error = None
-    except Exception as exc:
-        _last_store_error = f"{type(exc).__name__}: {exc}"
-        _LOGGER.exception("RDS store initialization failed")
-        return (None, None)
-    return _stores
-
-
 def _get_trace_sink() -> Any:
     """Return a cached MLflow trace sink, or ``None`` if MLflow is unavailable."""
     global _trace_sink
@@ -590,7 +458,7 @@ class _ProgressTraceSink(TraceSink):
                 "data": rewards,
             })
         # Summary event — includes the full payload so ResultsView can
-        # render extracted fields with per-field Accept/Correct feedback.
+        # render the extracted fields.
         self._ctx.push("extraction", {
             "model_id": state.extraction.model_id,
             "schema_valid": state.extraction.schema_valid,
@@ -603,8 +471,8 @@ def _build_deps(ctx: RequestContext, state: Any = None,
                 schema_override: dict | None = None) -> Any:
     """Build production :class:`NodeDeps` with real ports wired.
 
-    Degrades gracefully: if a port cannot be constructed (RDS down,
-    MLflow unavailable), the graph skips that stage rather than failing the
+    Degrades gracefully: if a port cannot be constructed (MLflow
+    unavailable), the graph skips that stage rather than failing the
     entire parse. The judge no longer runs inline — it is a post-hoc
     evaluation over MLflow traces (see ``judge/scorer.py``), so no judge
     adapter is constructed here.
@@ -626,14 +494,11 @@ def _build_deps(ctx: RequestContext, state: Any = None,
         schema_override=schema_override,
     )
 
-    result_store, feedback_store = _get_stores()
     trace_sink = _ProgressTraceSink(_get_trace_sink(), ctx, state)
 
     return NodeDeps(
         extraction=extraction,
-        result_store=result_store,
         trace_sink=trace_sink,
-        feedback_store=feedback_store,
     )
 
 
@@ -736,12 +601,7 @@ def _run_judge_evaluation_bg(sample_size: int) -> None:
     global _judge_result_cache, _judge_running
     try:
         from judge.scorer import run_judge_evaluation
-        # Thread the app's cached RDS result store into the scorer so each
-        # OK verdict is persisted inline (best-effort) and surfaces on the
-        # per-parse Results view. _get_stores()[0] is the result store or None
-        # when RDS is unavailable; None lets the scorer build its own.
-        result_store = _get_stores()[0]
-        result = run_judge_evaluation(sample_size=sample_size, result_store=result_store)
+        result = run_judge_evaluation(sample_size=sample_size)
         _judge_result_cache = result
     except Exception as exc:
         _LOGGER = __import__("logging").getLogger("statement-agent.app")
@@ -766,22 +626,19 @@ def _run_single_judge_bg(request_id: str, run_id: str) -> None:
 
     Judges JUST the one MLflow run for ``request_id`` (already resolved to
     ``run_id`` by the caller) by delegating to :func:`judge.scorer.score_trace`
-    — which reuses the existing scoring logic AND persists the verdict to
-    RDS (best-effort) so ``GET /api/results`` surfaces it inline.
+    — which reuses the existing scoring logic, logs MLflow metrics + tags,
+    and logs per-field assessments onto the original parse trace.
 
-    The ``result_store`` is the app's cached RDS store (same one the
-    batch path threads through ``_run_judge_evaluation_bg``); ``None`` lets
-    the scorer build its own.  Force-rejudge is inherent: ``score_trace``
-    does NOT check the ``judged`` tag (only the batch sampler skips already-
-    judged runs), so calling it on a ``judged=true`` run re-judges it.
+    Force-rejudge is inherent: ``score_trace`` does NOT check the ``judged``
+    tag (only the batch sampler skips already-judged runs), so calling it on
+    a ``judged=true`` run re-judges it.
 
     Updates ``_single_judge_status[request_id]`` so the GET status endpoint
     can report progress.  Never raises — all failures land in the status.
     """
     try:
         from judge.scorer import score_trace
-        result_store = _get_stores()[0]
-        result = score_trace(run_id, result_store=result_store)
+        result = score_trace(run_id)
         status = result.get("status", "ERROR")
         if status == "OK":
             _single_judge_status[request_id] = {"status": "done", "request_id": request_id}
@@ -1047,26 +904,9 @@ def create_app():
     # -- GET /health -----------------------------------------------------
     @app.get("/health")
     def health() -> dict[str, Any]:
-        import os
-        # RDS_HOST/RDS_USER/RDS_PASSWORD are required for the direct RDS
-        # Postgres connection (set in app.yaml).
-        env_status = {
-            name: "set" if os.environ.get(name) else "MISSING"
-            for name in ("RDS_HOST", "RDS_USER", "RDS_PASSWORD", "RDS_SSLMODE")
-        }
-        psycopg_ok = True
-        try:
-            import psycopg  # noqa: F401
-        except ImportError:
-            psycopg_ok = False
         return {
             "status": "ok",
-            "stores_initialized": _stores is not None,
-            "last_store_error": _last_store_error,
-            "env_vars": env_status,
-            "psycopg_available": psycopg_ok,
-            "rds_host": _derived_host,
-            "rds_user": _derived_user,
+            "database": "removed (agent returns JSON only)",
         }
 
     # -- POST /api/parse -------------------------------------------------
@@ -1102,7 +942,7 @@ def create_app():
 
         Accepts a multipart form (``file`` = PDF upload, ``bank`` = bank name),
         runs the FULL parse pipeline synchronously (route → extract →
-        validate → persist → finalize), and returns the extracted JSON
+        validate → finalize), and returns the extracted JSON
         directly. This is NOT a background thread — the caller blocks until
         the extraction completes (or times out).
 
@@ -1110,7 +950,7 @@ def create_app():
         node events as the async path, so every v1 parse is traced end-to-end.
         The result is also stored in the in-memory ``_REQUESTS`` dict, so the
         existing ``GET /api/results/{request_id}`` endpoint serves follow-up
-        queries (feedback, on-demand re-judge) for the same ``request_id``.
+        queries (on-demand re-judge) for the same ``request_id``.
 
         Responses:
           * 200 — extraction succeeded; ``extraction`` holds the payload.
@@ -1259,148 +1099,21 @@ def create_app():
             },
         )
 
-    # -- POST /api/feedback/{request_id} ---------------------------------
-    @app.post("/api/feedback/{request_id}")
-    async def submit_feedback(request_id: str, body: dict = Body(...)):
-        try:
-            v = _validate_feedback_body(body)
-        except ValueError as exc:
-            raise HTTPException(status_code=400, detail=str(exc))
-
-        # Build the feedback dataclass.  Guarded so a constructor or
-        # __post_init__ validation failure degrades to in-memory storage
-        # rather than surfacing as an unhandled 500/502.  The path is
-        # pre-validated above, but this is defence-in-depth.
-        fb = None
-        try:
-            from contracts.models import FieldFeedback
-
-            fb = FieldFeedback(
-                request_id=request_id,
-                field_path=v["field_path"],
-                original_value=v["original_value"],
-                corrected_value=v["corrected_value"] if not v["accepted"] else None,
-                accepted=v["accepted"],
-                actor=v["actor"],
-                timestamp=datetime.now(UTC),
-            )
-        except Exception:
-            fb = None
-
-        # Persist to RDS + log to MLflow — both best-effort.  Each blocking
-        # call runs in a worker thread with a bounded wait (``_run_blocking``)
-        # so a hung RDS connection or MLflow request can never freeze the
-        # single uvicorn event loop — the mechanism behind the proxy 502 on
-        # feedback submit.  Even if both fail, we fall back to in-memory below.
-        try:
-            stores = await _run_blocking(_get_stores)
-            if stores is not None:
-                _result_store, feedback_store = stores
-            else:
-                _result_store, feedback_store = None, None
-        except Exception:
-            _result_store, feedback_store = None, None
-        if feedback_store is not None and fb is not None:
-            await _run_blocking(feedback_store.append_feedback, fb)
-
-        try:
-            sink = await _run_blocking(_get_trace_sink)
-        except Exception:
-            sink = None
-        if sink is not None and fb is not None:
-            await _run_blocking(sink.log_field_feedback, fb)
-
-        # Store in-memory for /api/results fallback.
-        ctx = _REQUESTS.get(request_id)
-        if ctx is not None:
-            ctx.feedback.append({
-                "field_path": v["field_path"],
-                "disposition": v["disposition"],
-                "original_value": v["original_value"],
-                "corrected_value": v["corrected_value"],
-                "actor": v["actor"],
-                "timestamp": datetime.now(UTC).isoformat(),
-            })
-
-        return {
-            "status": "ok",
-            "request_id": request_id,
-            "field_path": v["field_path"],
-        }
-
     # -- GET /api/results/{request_id} -----------------------------------
     @app.get("/api/results/{request_id}")
     async def results(request_id: str):
         ctx = _REQUESTS.get(request_id)
 
         extraction: Optional[dict[str, Any]] = None
-        verdict: Optional[dict[str, Any]] = None
-        feedback_list: list[dict[str, Any]] = []
-
-        # Try RDS first (durable persistence).  Blocking calls run in a
-        # worker thread with a bounded wait (``_run_blocking``) so a hung
-        # connection can never freeze the single uvicorn event loop (the same
-        # 502 mechanism as feedback submit).  ``_run_blocking`` returns None
-        # on exception/timeout, which simply falls back to in-memory below.
-        try:
-            stores = await _run_blocking(_get_stores)
-            if stores is not None:
-                result_store, feedback_store = stores
-            else:
-                result_store, feedback_store = None, None
-        except Exception:
-            result_store, feedback_store = None, None
-
-        if result_store is not None:
-            try:
-                stored = await _run_blocking(result_store.get_extraction, request_id)
-                if stored is not None:
-                    extraction = {
-                        "payload": stored.payload,
-                        "model_id": stored.model_id,
-                        "schema_valid": stored.schema_valid,
-                    }
-                stored_v = await _run_blocking(result_store.get_verdict, request_id)
-                if stored_v is not None:
-                    verdict = {
-                        "comparisons": [
-                            _comparison_to_dict(c) for c in stored_v.comparisons
-                        ],
-                        "judge_model_id": stored_v.judge_model_id,
-                        "summary": stored_v.summary,
-                    }
-            except Exception:
-                pass
-
-        if feedback_store is not None:
-            try:
-                rows = await _run_blocking(feedback_store.list_feedback, request_id)
-                if rows:
-                    for f in rows:
-                        ts = f.timestamp
-                        feedback_list.append({
-                            "field_path": f.field_path,
-                            "accepted": f.accepted,
-                            "original_value": f.original_value,
-                            "corrected_value": f.corrected_value,
-                            "actor": f.actor,
-                            "timestamp": ts.isoformat() if hasattr(ts, "isoformat") else str(ts),
-                        })
-            except Exception:
-                pass
-
-        # Fall back to in-memory context (when RDS is unavailable).
-        if extraction is None and ctx is not None:
+        if ctx is not None:
             extraction = ctx.extraction_data
-        if not feedback_list and ctx is not None:
-            feedback_list = list(ctx.feedback)
 
         return {
             "request_id": request_id,
             "extraction": extraction,
-            "verdict": verdict,
-            "feedback": feedback_list,
+            "verdict": None,
         }
+
 
     # -- POST /api/run-judge ---------------------------------------------
     @app.post("/api/run-judge")

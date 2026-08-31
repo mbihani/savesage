@@ -19,8 +19,6 @@ from graph.fakes import (
     FakeExtractionAdapter,
     FakeJudgeAdapter,
     FailingExtractionAdapter,
-    InMemoryFeedbackStore,
-    InMemoryResultStore,
     InMemoryTraceSink,
     _synthetic_valid_payload,
     make_all_fakes,
@@ -40,31 +38,11 @@ class FakesTest(unittest.TestCase):
         report = validate_payload(_synthetic_valid_payload())
         self.assertTrue(report.ok, report.all_errors)
 
-    def test_make_all_fakes_returns_five_distinct_fakes(self) -> None:
-        store, feedback, trace, extraction, judge = make_all_fakes()
-        self.assertIsInstance(store, InMemoryResultStore)
-        self.assertIsInstance(feedback, InMemoryFeedbackStore)
+    def test_make_all_fakes_returns_three_distinct_fakes(self) -> None:
+        trace, extraction, judge = make_all_fakes()
         self.assertIsInstance(trace, InMemoryTraceSink)
         self.assertIsInstance(extraction, FakeExtractionAdapter)
         self.assertIsInstance(judge, FakeJudgeAdapter)
-
-    def test_result_store_roundtrip(self) -> None:
-        store = InMemoryResultStore()
-        from contracts.models import ExtractionResult
-        result = ExtractionResult(request_id="r1", payload={}, model_id="m", latency_ms=1.0)
-        store.save_extraction(result, Bank.HDFC)
-        self.assertIs(store.get_extraction("r1"), result)
-        self.assertIsNone(store.get_extraction("missing"))
-
-    def test_feedback_store_filters_by_request(self) -> None:
-        from datetime import UTC, datetime
-        store = InMemoryFeedbackStore()
-        fb1 = _make_feedback("r1")
-        fb2 = _make_feedback("r2")
-        store.append_feedback(fb1)
-        store.append_feedback(fb2)
-        self.assertEqual(list(store.list_feedback("r1")), [fb1])
-        self.assertEqual(list(store.list_feedback("r2")), [fb2])
 
     def test_trace_sink_captures_events(self) -> None:
         from contracts.models import TraceEvent
@@ -75,19 +53,12 @@ class FakesTest(unittest.TestCase):
         self.assertEqual(sink.events, [ev])
 
 
-def _make_feedback(request_id: str):
-    from datetime import UTC, datetime
-    from contracts.models import FieldFeedback
-    return FieldFeedback(request_id, "rewards.closingPoints", 1, 2, True, "actor", datetime.now(UTC))
-
-
 class NodeUnitTest(unittest.TestCase):
     """Test nodes directly (no langgraph), to cover the short-circuit logic."""
 
-    def _deps(self, *, extraction=None, judge=None, store=None, trace=None) -> NodeDeps:
+    def _deps(self, *, extraction=None, judge=None, trace=None) -> NodeDeps:
         return NodeDeps(
             extraction=extraction or FakeExtractionAdapter(),
-            result_store=store,
             trace_sink=trace,
             judge=judge,
         )
@@ -114,79 +85,55 @@ class NodeUnitTest(unittest.TestCase):
         # The prompt version is tagged with the effective bank (GENERIC).
         self.assertTrue(state.prompt_version.startswith("GENERIC:"))
 
-    def test_extract_then_validate_then_persist_then_judge_clean_run(self) -> None:
-        from graph.nodes import extract_node, finalize_node, judge_node, persist_node, route_node, validate_node
-        store, _fb, trace, extraction, judge = make_all_fakes()
-        deps = self._deps(extraction=extraction, judge=judge, store=store, trace=trace)
+    def test_extract_then_validate_then_judge_clean_run(self) -> None:
+        from graph.nodes import extract_node, finalize_node, judge_node, route_node, validate_node
+        _trace, extraction, judge = make_all_fakes()
+        deps = self._deps(extraction=extraction, judge=judge, trace=_trace)
         state = _state(Bank.ICICI)
         route_node(state, deps)
         extract_node(state, deps)
         validate_node(state, deps)
-        persist_node(state, deps)
         judge_node(state, deps)
         finalize_node(state, deps)
         self.assertEqual(state.stage, Stage.JUDGED)
         self.assertEqual(state.outcome, Outcome.SUCCESS)
         self.assertTrue(state.schema_valid)
         # BLOCKING 2: the validated schema_valid must be propagated into the
-        # persisted extraction object, not just the state field.
+        # extraction object, not just the state field.
         self.assertTrue(state.extraction.schema_valid)
         self.assertEqual(state.errors, [])
         self.assertIsNone(state.judge_skipped_reason)
         self.assertIsNotNone(state.verdict)
-        self.assertIsNotNone(store.get_extraction("synthetic-req-001"))
-        self.assertIsNotNone(store.get_verdict("synthetic-req-001"))
-        self.assertGreater(len(trace.events), 0)
+        self.assertGreater(len(_trace.events), 0)
 
-    def test_persisted_object_carries_validated_schema_valid(self) -> None:
+    def test_validated_object_carries_validated_schema_valid(self) -> None:
         # BLOCKING 2 regression: the fake adapter leaves schema_valid=False (as
         # the real adapter does); validate_node must propagate the validated
-        # value into the extraction BEFORE persist stores it.
-        from graph.nodes import extract_node, persist_node, route_node, validate_node
-        saved: list = []
-
-        class CapturingStore(InMemoryResultStore):
-            def save_extraction(self, result, bank):
-                saved.append(result)
-                super().save_extraction(result, bank)
-
-        store = CapturingStore()
-        deps = self._deps(extraction=FakeExtractionAdapter(), store=store)
+        # value into the extraction object.
+        from graph.nodes import extract_node, route_node, validate_node
         state = _state(Bank.HDFC)
+        deps = self._deps(extraction=FakeExtractionAdapter())
         route_node(state, deps)
         extract_node(state, deps)
         # After extract, the adapter left schema_valid=False (mirrors real Luna).
         self.assertFalse(state.extraction.schema_valid)
         validate_node(state, deps)
-        persist_node(state, deps)
-        # The object handed to save_extraction must carry the validated True.
-        self.assertEqual(len(saved), 1)
-        self.assertTrue(saved[0].schema_valid)
         self.assertTrue(state.extraction.schema_valid)
 
-    def test_persisted_object_carries_false_on_schema_invalid(self) -> None:
+    def test_validated_object_carries_false_on_schema_invalid(self) -> None:
         # The propagated value must be False when validation genuinely fails.
-        from graph.nodes import extract_node, persist_node, route_node, validate_node
-        saved: list = []
-
-        class CapturingStore(InMemoryResultStore):
-            def save_extraction(self, result, bank):
-                saved.append(result)
-                super().save_extraction(result, bank)
+        from graph.nodes import extract_node, route_node, validate_node
 
         def add_unknown_key(payload):
             payload["statementMeta"]["unexpectedExtra"] = "x"  # additionalProperties
 
-        store = CapturingStore()
         deps = self._deps(
-            extraction=FakeExtractionAdapter(mutator=add_unknown_key), store=store)
+            extraction=FakeExtractionAdapter(mutator=add_unknown_key))
         state = _state()
         route_node(state, deps)
         extract_node(state, deps)
         validate_node(state, deps)
-        persist_node(state, deps)
-        self.assertEqual(len(saved), 1)
-        self.assertFalse(saved[0].schema_valid)
+        self.assertFalse(state.extraction.schema_valid)
 
     def test_extraction_failure_short_circuits_judge(self) -> None:
         from graph.nodes import extract_node, judge_node, route_node
@@ -203,19 +150,18 @@ class NodeUnitTest(unittest.TestCase):
 
     def test_validation_failure_does_not_short_circuit_judge(self) -> None:
         # Documented decision: validation failure -> PARTIAL, but judge still runs.
-        from graph.nodes import extract_node, finalize_node, judge_node, persist_node, route_node, validate_node
-        store, _fb, _trace, _ext, judge = make_all_fakes()
+        from graph.nodes import extract_node, finalize_node, judge_node, route_node, validate_node
+        _trace, _ext, judge = make_all_fakes()
 
         def corrupt_amount(payload):
             payload["transactions"][0]["amount"] = -99.0  # violates amount_direction
 
         extraction = FakeExtractionAdapter(mutator=corrupt_amount)
-        deps = NodeDeps(extraction=extraction, result_store=store, judge=judge)
+        deps = NodeDeps(extraction=extraction, judge=judge)
         state = _state()
         route_node(state, deps)
         extract_node(state, deps)
         validate_node(state, deps)
-        persist_node(state, deps)
         judge_node(state, deps)
         finalize_node(state, deps)
         self.assertEqual(state.outcome, Outcome.PARTIAL)
@@ -235,15 +181,6 @@ class NodeUnitTest(unittest.TestCase):
         self.assertIsNone(state.verdict)
         # no terminal failure; outcome set by finalize (SUCCESS since no validation ran yet)
         self.assertEqual(state.outcome, Outcome.SUCCESS)
-
-    def test_no_store_wired_skips_persist(self) -> None:
-        from graph.nodes import persist_node
-        deps = self._deps(store=None)
-        state = _state()
-        state.extraction = FakeExtractionAdapter().extract(make_synthetic_request())
-        persist_node(state, deps)
-        # no exception, stage unchanged (still INIT since route wasn't called)
-        self.assertEqual(state.stage, Stage.INIT)
 
     def test_trace_failure_does_not_kill_graph(self) -> None:
         from graph.nodes import route_node
@@ -276,46 +213,6 @@ class NodeUnitTest(unittest.TestCase):
         self.assertEqual(evt.parent_span_id, f"{state.request_id}:parse")
         self.assertEqual(evt.name, "route")
         self.assertIsNotNone(evt.span_id)
-
-    def test_persistence_failure_yields_partial_not_success(self) -> None:
-        # BLOCKING 4: a run that persisted nothing must never report SUCCESS.
-        from graph.nodes import extract_node, finalize_node, judge_node, persist_node, route_node, validate_node
-
-        class FailingStore(InMemoryResultStore):
-            def save_extraction(self, result, bank):
-                raise RuntimeError("database is down")
-
-        judge = FakeJudgeAdapter()
-        deps = self._deps(
-            extraction=FakeExtractionAdapter(), store=FailingStore(), judge=judge)
-        state = _state()
-        route_node(state, deps)
-        extract_node(state, deps)
-        validate_node(state, deps)
-        persist_node(state, deps)
-        judge_node(state, deps)
-        finalize_node(state, deps)
-        self.assertEqual(state.outcome, Outcome.PARTIAL)
-        self.assertTrue(state.has_stage_errors)
-        self.assertGreater(len(state.errors), 0)
-        self.assertIn("persist", state.errors[0])
-
-    def test_persistence_failure_with_no_judge_still_partial(self) -> None:
-        # Even with no judge wired, a persist failure must not be SUCCESS.
-        from graph.nodes import extract_node, finalize_node, persist_node, route_node, validate_node
-
-        class FailingStore(InMemoryResultStore):
-            def save_extraction(self, result, bank):
-                raise IOError("disk full")
-
-        deps = self._deps(extraction=FakeExtractionAdapter(), store=FailingStore())
-        state = _state()
-        route_node(state, deps)
-        extract_node(state, deps)
-        validate_node(state, deps)
-        persist_node(state, deps)
-        finalize_node(state, deps)
-        self.assertEqual(state.outcome, Outcome.PARTIAL)
 
     def test_judge_skipped_when_no_section_judgeable(self) -> None:
         # NB: a payload with NO structurally judgeable section is not judged.
@@ -435,9 +332,9 @@ class NodeUnitTest(unittest.TestCase):
         # internal_error flows into validation_errors via all_errors, and
         # validate_node also records it as a stage error, so finalize_node
         # produces PARTIAL -- never SUCCESS.
-        from graph.nodes import extract_node, finalize_node, judge_node, persist_node, route_node, validate_node
-        store, _fb, _trace, _ext, judge = make_all_fakes()
-        deps = NodeDeps(extraction=FakeExtractionAdapter(), result_store=store, judge=judge)
+        from graph.nodes import extract_node, finalize_node, judge_node, route_node, validate_node
+        _trace, _ext, judge = make_all_fakes()
+        deps = NodeDeps(extraction=FakeExtractionAdapter(), judge=judge)
         state = _state()
         route_node(state, deps)
         extract_node(state, deps)
@@ -452,7 +349,6 @@ class NodeUnitTest(unittest.TestCase):
             validate_node(state, deps)
         finally:
             mod.validate_schema_conformance = original
-        persist_node(state, deps)
         judge_node(state, deps)
         finalize_node(state, deps)
         self.assertEqual(state.outcome, Outcome.PARTIAL)

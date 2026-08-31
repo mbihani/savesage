@@ -1,9 +1,9 @@
 """Run/session memory retained while a statement moves through the graph."""
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-from contracts.models import Bank, FieldFeedback
+from contracts.models import Bank
 
 
 @dataclass(slots=True)
@@ -11,7 +11,6 @@ class SessionMemory:
     statement_id: str
     request_id: str
     bank: Bank
-    prior_field_corrections: list[FieldFeedback] = field(default_factory=list)
 
 
 class MemoryStore(ABC):

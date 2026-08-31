@@ -15,7 +15,6 @@ from contracts.models import Bank, TraceEvent
 from graph.fakes import (
     FakeExtractionAdapter,
     FailingExtractionAdapter,
-    InMemoryResultStore,
     make_synthetic_request,
 )
 from graph.graph import run_graph
@@ -118,23 +117,15 @@ def _config():
     )
 
 
-# Sentinel so ``store=None`` (no store wired) is distinguishable from "use the
-# default in-memory store" when calling ``_run_graph_with_sink``.
-_DEFAULT_STORE = object()
-
-
-def _run_graph_with_sink(fake_mlflow, *, extraction=None, store=_DEFAULT_STORE,
-                         bank=Bank.HDFC):
+def _run_graph_with_sink(fake_mlflow, *, extraction=None, bank=Bank.HDFC):
     """Run the full parse pipeline through the MLflowTraceSink.
 
-    Keyword args let error-path tests inject a failing extraction adapter, a
-    store that raises on save, or no store at all (``store=None``) without
-    disturbing the happy-path callers that pass only ``fake_mlflow``.
+    Keyword args let error-path tests inject a failing extraction adapter
+    without disturbing the happy-path callers that pass only ``fake_mlflow``.
     """
     sink = MLflowTraceSink(_config(), mlflow_factory=lambda: fake_mlflow)
     deps = NodeDeps(
         extraction=extraction if extraction is not None else FakeExtractionAdapter(),
-        result_store=InMemoryResultStore() if store is _DEFAULT_STORE else store,
         trace_sink=sink,
     )
     state = GraphState(request=make_synthetic_request(bank))
@@ -205,17 +196,6 @@ class SpanPayloadTest(unittest.TestCase):
         self.assertIsNotNone(span.outputs)
         self.assertTrue(span.outputs["schema_valid"])
         self.assertIsInstance(span.outputs["validation_errors"], list)
-
-    def test_persist_span_carries_request_id_and_persisted_flag(self):
-        fake, _ = _run_graph_with_sink(_RecordingMLflow())
-        persist_spans = [s for s in fake.spans if s.name == "persist_extraction"]
-        self.assertEqual(len(persist_spans), 1)
-        span = persist_spans[0]
-
-        self.assertIsNotNone(span.inputs)
-        self.assertIn("request_id", span.inputs)
-        self.assertIsNotNone(span.outputs)
-        self.assertTrue(span.outputs["persisted"])
 
     def test_finalize_span_carries_outcome_and_extraction(self):
         fake, _ = _run_graph_with_sink(_RecordingMLflow())
@@ -329,22 +309,12 @@ class EmptySpansWhenNoPayloadTest(unittest.TestCase):
         self.assertEqual(span.attributes.get("bank"), "HDFC")
 
 
-class _FailingResultStore(InMemoryResultStore):
-    """ResultStore that always raises on save_extraction (persist-failure test)."""
-
-    def save_extraction(self, result, bank):
-        raise RuntimeError("persist failure: lakebase unavailable")
-
-
 class SpanErrorPathTest(unittest.TestCase):
     """Error-path spans must still carry inputs and report status/outputs honestly.
 
-    Covers three failure modes (code-review finding LOW): a route failure, an
-    extract failure, and a persist failure.  In every case the span's ``inputs``
-    must survive so the trace view shows WHAT was being attempted, and the
-    ``persisted`` flag must be an honest boolean (False when the store is absent
-    or save raises — never the old ``persist_error is None`` shortcut that was
-    True even when nothing was actually saved).
+    Covers two failure modes: a route failure and an extract failure.  In
+    every case the span's ``inputs`` must survive so the trace view shows
+    WHAT was being attempted.
     """
 
     def test_route_failure_span_still_carries_inputs(self):
@@ -375,33 +345,6 @@ class SpanErrorPathTest(unittest.TestCase):
         self.assertEqual(span.inputs["bank"], "HDFC")
         # No outputs on the error path.
         self.assertIsNone(span.outputs)
-        # Error is recorded on the span.
-        self.assertIsNotNone(span.recorded_exception)
-        self.assertEqual(span.end_status, "ERROR")
-
-    def test_persist_store_unavailable_reports_not_persisted(self):
-        fake = _RecordingMLflow()
-        _run_graph_with_sink(fake, store=None)
-        persist_spans = [s for s in fake.spans if s.name == "persist_extraction"]
-        self.assertEqual(len(persist_spans), 1)
-        span = persist_spans[0]
-        self.assertIsNotNone(span.outputs)
-        # Store was not wired → save was skipped → persisted must be False,
-        # not the old True (persist_error is None was True even when skipped).
-        self.assertFalse(span.outputs["persisted"])
-        # Skipping is not a failure: no error recorded.
-        self.assertIsNone(span.recorded_exception)
-        self.assertEqual(span.end_status, "OK")
-
-    def test_persist_save_failure_reports_not_persisted(self):
-        fake = _RecordingMLflow()
-        _run_graph_with_sink(fake, store=_FailingResultStore())
-        persist_spans = [s for s in fake.spans if s.name == "persist_extraction"]
-        self.assertEqual(len(persist_spans), 1)
-        span = persist_spans[0]
-        self.assertIsNotNone(span.outputs)
-        # Save raised → persisted must be False.
-        self.assertFalse(span.outputs["persisted"])
         # Error is recorded on the span.
         self.assertIsNotNone(span.recorded_exception)
         self.assertEqual(span.end_status, "ERROR")

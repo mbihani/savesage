@@ -2,7 +2,7 @@
 
 ## Graph shape
 
-Linear pipeline: `route -> extract -> validate -> persist -> judge -> finalize`.
+Linear pipeline: `route -> extract -> validate -> judge -> finalize`.
 
 Every node takes and returns the same mutable `GraphState` instance. There are
 no conditional edges: a node that hits a terminal failure sets
@@ -17,14 +17,12 @@ simple.
 | Port             | Required | When absent                         |
 |------------------|----------|-------------------------------------|
 | `ExtractionAdapter` | yes   | graph cannot run                    |
-| `ResultStore`    | no       | persistence skipped                 |
 | `TraceSink`      | no       | no trace events recorded            |
 | `JudgeAdapter`   | no       | judge stage skipped (not a failure) |
-| `FeedbackStore`  | no       | not used by core path (WS3 wiring)  |
 
-No `psycopg`, `mlgraph`, `langchain`, or `OpusJudgeAdapter` import appears
+No `mlgraph`, `langchain`, or `OpusJudgeAdapter` import appears
 anywhere in `graph/`, `harness/extraction_adapter.py`, `skills/extract_statement.py`,
-or `harness/cli.py`. WS3/WS4/WS5 hand in their concrete ports at integration.
+or `harness/cli.py`. WS4/WS5 hand in their concrete ports at integration.
 
 ## Validation short-circuit decision
 
@@ -58,29 +56,25 @@ The point is to distinguish "invalid but judgeable" from "structurally
 unusable": a schema-invalid-but-structurally-usable payload IS still judged;
 a payload with no judgeable section at all is not.
 
-### Persistence-failure outcome (BLOCKING 4)
+### Stage-failure outcome (BLOCKING 4)
 
-A run that failed to persist (e.g. `ResultStore.save_extraction` raised) must
-never report SUCCESS. `finalize_node` treats any real stage error (in
-`state.errors`, which excludes trace failures routed to `state.trace_errors`)
-as at least PARTIAL. A user must never be told their statement was saved when
-it was not.
+A run where a real stage failed must never report SUCCESS. `finalize_node`
+treats any real stage error (in `state.errors`, which excludes trace failures
+routed to `state.trace_errors`) as at least PARTIAL.
 
 ### schema_valid propagation (BLOCKING 2)
 
 The `validate_node` propagates the validated `schema_valid` into the frozen
-`ExtractionResult` via `dataclasses.replace` *before* persistence, so the object
-handed to `ResultStore.save_extraction` carries the validated value — not the
-adapter's initial `False`.
+`ExtractionResult` via `dataclasses.replace`, so the object carries the
+validated value — not the adapter's initial `False`.
 
 Outcomes:
 - `SUCCESS` — clean run, schema + rules both pass, no stage errors.
-- `PARTIAL` — extraction succeeded and was persisted + judged, but validation
-  flagged schema/rule violations OR a real stage (e.g. persistence) failed without
-  short-circuiting (the UI shows a partial parse; never SUCCESS when unsaved).
-- `EXTRACTION_FAILED` — the extract node failed terminally; persist + judge
-  are skipped.
-- `JUDGE_FAILED` — extraction + validation + persist succeeded, but the judge
+- `PARTIAL` — extraction succeeded and was judged, but validation flagged
+  schema/rule violations OR a real stage failed without short-circuiting.
+- `EXTRACTION_FAILED` — the extract node failed terminally; the judge
+  is skipped.
+- `JUDGE_FAILED` — extraction + validation succeeded, but the judge
   raised; the extraction is still available.
 
 ### Non-finite numbers (BLOCKING 1)

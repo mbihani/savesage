@@ -1,10 +1,9 @@
 """One-off invocation shell: parse one credit-card statement PDF.
 
 Wires the real Luna extraction adapter with default ports and runs a single PDF
-through the graph. Result/judge/trace stores are optional: if the relevant WS3/4
-ports are not wired, the graph degrades gracefully (persistence/trace skipped,
-judge skipped). This CLI is for local/ops use; ``app/main.py`` (WS6) is the
-production HTTP entry point.
+through the graph. Judge/trace are optional: if the relevant ports are not
+wired, the graph degrades gracefully (trace skipped, judge skipped). This CLI
+is for local/ops use; ``app/main.py`` (WS6) is the production HTTP entry point.
 """
 
 from __future__ import annotations
@@ -28,12 +27,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def build_deps() -> NodeDeps:
-    """Build the default production deps: real Luna adapter, no store/judge/trace.
+    """Build the default production deps: real Luna adapter, no judge/trace.
 
-    Keeping store/judge/trace None here is intentional -- the CLI is for an
+    Keeping judge/trace None here is intentional -- the CLI is for an
     extraction-only smoke check. Full production wiring lives in ``app/main.py``
-    (WS6), which injects the real Lakebase store, MLflow trace sink, and Opus
-    judge.
+    (WS6), which injects the MLflow trace sink and Opus judge.
     """
     from harness.extraction_adapter import LunaExtractionAdapter
 

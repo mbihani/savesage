@@ -1,11 +1,7 @@
 """Stdlib-only tests for the inline-verdict-on-Results-view feature.
 
-Three concerns, all exercised without third-party deps (pypi is blackholed):
+Two concerns, all exercised without third-party deps (pypi is blackholed):
 
-(c) The full persist -> read -> API-serialise round-trip preserves the
-    per-field expected/actual/outcome and row-index fields the frontend
-    renders — including a transaction DISAGREE (row indices set) and a
-    type-1 UNMATCHED_ROW (actual_row_index=None).
 (d) The comparison -> transaction-row mapping (by actual_row_index) the
     frontend implements, including the two UNMATCHED_ROW flavours and the
     collision guard between a type-1 unmatched row and a matched row that
@@ -13,6 +9,10 @@ Three concerns, all exercised without third-party deps (pypi is blackholed):
     Plus frontend content assertions pinning that index.html wires the
     verdict through fetch -> ResultsView -> FieldRow/TxnCell and renders
     the "seen in PDF, not extracted" section.
+
+The database persistence layer has been removed — the agent returns JSON
+only. The verdict round-trip through the persistence layer is no longer
+tested because that mapping module was deleted.
 """
 
 import json
@@ -29,19 +29,17 @@ from contracts.models import (
     JudgeVerdict,
     MatchMethod,
 )
-from db.mapping import verdict_from_dict, verdict_to_dict
 
 _INDEX_HTML = Path(__file__).resolve().parent.parent / "app" / "static" / "index.html"
 
 
 # ---------------------------------------------------------------------------
-# (c) Persist -> read -> API-serialise round-trip
+# API serialisation — _comparison_to_dict preserves expected/actual/outcome
 # ---------------------------------------------------------------------------
 
-class VerdictSerializationRoundTripTest(unittest.TestCase):
-    """The verdict travels Lakebase (verdict_to_dict -> jsonb -> verdict_from_dict)
-    then the API (_comparison_to_dict). Every field the frontend renders must
-    survive both hops intact."""
+class ApiSerialisationTest(unittest.TestCase):
+    """_comparison_to_dict emits every field the frontend needs, in plain JSON
+    (enums flattened to .value strings)."""
 
     def _verdict(self) -> JudgeVerdict:
         comparisons = (
@@ -72,18 +70,10 @@ class VerdictSerializationRoundTripTest(unittest.TestCase):
             summary=json.dumps({"status": "OK"}),
         )
 
-    def test_verdict_survives_lakebase_wire_round_trip(self):
-        """verdict_to_dict -> JSON (jsonb) -> verdict_from_dict is lossless."""
-        verdict = self._verdict()
-        wire = json.dumps(verdict_to_dict(verdict))
-        self.assertEqual(verdict_from_dict(json.loads(wire)), verdict)
-
     def test_api_serialisation_preserves_expected_actual_outcome_row_indices(self):
-        """_comparison_to_dict on the restored verdict emits every field the
-        frontend needs, in plain JSON (enums flattened to .value strings)."""
+        """_comparison_to_dict emits every field the frontend needs."""
         verdict = self._verdict()
-        restored = verdict_from_dict(json.loads(json.dumps(verdict_to_dict(verdict))))
-        api = [_comparison_to_dict(c) for c in restored.comparisons]
+        api = [_comparison_to_dict(c) for c in verdict.comparisons]
 
         # Scalar AGREE.
         self.assertEqual(api[0]["field_path"], "cards[].cardMeta.cardDisplayName")
@@ -101,22 +91,18 @@ class VerdictSerializationRoundTripTest(unittest.TestCase):
         self.assertEqual(api[1]["actual_row_index"], 1)
         self.assertEqual(api[1]["similarity"], 0.91)
         self.assertEqual(api[1]["rationale"], "off by one")
-        self.assertEqual(api[1]["feedback_path"], "transactions.1.amount")
 
-        # Type-1 UNMATCHED_ROW — actual_row_index is None; feedback_path
-        # falls back to expected_row_index so the row still gets a path.
+        # Type-1 UNMATCHED_ROW — actual_row_index is None.
         self.assertEqual(api[2]["outcome"], "UNMATCHED_ROW")
         self.assertEqual(api[2]["expected"], "2026-01-01")
         self.assertIsNone(api[2]["actual"])
         self.assertEqual(api[2]["expected_row_index"], 3)
         self.assertIsNone(api[2]["actual_row_index"])
-        self.assertEqual(api[2]["feedback_path"], "transactions.3.date")
 
     def test_api_serialisation_is_json_safe(self):
         """The API dicts must be JSON-serialisable (no enum/dataclass leaks)."""
         verdict = self._verdict()
-        restored = verdict_from_dict(json.loads(json.dumps(verdict_to_dict(verdict))))
-        api = [_comparison_to_dict(c) for c in restored.comparisons]
+        api = [_comparison_to_dict(c) for c in verdict.comparisons]
         json.dumps({"comparisons": api})  # must not raise
 
 
@@ -129,10 +115,13 @@ def group_verdict_comparisons(comparisons):
 
     Splits API-shaped comparison dicts (as ``_comparison_to_dict`` emits) into:
 
-    - ``verdictByPath``: dict keyed by ``feedback_path`` for comparisons that
-      map to a *rendered* field — matched rows (AGREE/DISAGREE/FORMAT_ONLY/
+    - ``verdictByPath``: dict keyed by the concrete field path for comparisons
+      that map to a *rendered* field — matched rows (AGREE/DISAGREE/FORMAT_ONLY/
       ABSENT_IN_PDF) AND type-2 UNMATCHED_ROW (Luna extracted a row Opus did
       not see; ``actual_row_index`` is set, so it attaches to the Luna row).
+      The concrete path is built from the generic ``field_path`` by
+      substituting ``card_index`` (cards) or ``actual_row_index`` (transactions)
+      for the ``[]`` placeholder.
     - ``unmatchedPdfRows``: list of ``{row_index, date, description, amount}``
       for type-1 UNMATCHED_ROW (Opus saw a PDF row Luna did not extract;
       ``actual_row_index`` is None — no rendered row to attach to), grouped
@@ -146,8 +135,16 @@ def group_verdict_comparisons(comparisons):
     for c in comparisons:
         if c["outcome"] == "UNMATCHED_ROW" and c["actual_row_index"] is None:
             unmatched.append(c)
-        elif c.get("feedback_path"):
-            verdict_by_path[c["feedback_path"]] = c
+        elif c.get("field_path"):
+            # Build concrete path from generic field_path + index (mirrors
+            # the frontend's verdictByPath keying logic).
+            path = c["field_path"]
+            if "[]" in path:
+                if path.startswith("cards[]") and c.get("card_index") is not None:
+                    path = path.replace("[]", f".{c['card_index']}", 1)
+                elif path.startswith("transactions[]") and c.get("actual_row_index") is not None:
+                    path = path.replace("[]", f".{c['actual_row_index']}", 1)
+            verdict_by_path[path] = c
     by_row = {}
     rows = []
     for c in unmatched:
@@ -167,23 +164,24 @@ def group_verdict_comparisons(comparisons):
 class VerdictMappingTest(unittest.TestCase):
     """Pins the comparison -> field/row mapping the frontend renders."""
 
-    def _cmp(self, field_path, expected, actual, outcome, feedback_path,
-             expected_row_index=None, actual_row_index=None):
+    def _cmp(self, field_path, expected, actual, outcome,
+             expected_row_index=None, actual_row_index=None, card_index=None):
         return {
             "field_path": field_path, "expected": expected, "actual": actual,
-            "outcome": outcome, "feedback_path": feedback_path,
+            "outcome": outcome,
             "expected_row_index": expected_row_index,
             "actual_row_index": actual_row_index,
+            "card_index": card_index,
         }
 
     def test_matched_transaction_maps_by_actual_row_index(self):
-        """Matched rows key into verdictByPath by feedback_path, which is built
-        from actual_row_index — the Luna row index the frontend renders."""
+        """Matched rows key into verdictByPath by the concrete path built from
+        actual_row_index — the Luna row index the frontend renders."""
         comps = [
             self._cmp("transactions[].date", "2026-01-01", "2026-01-01", "AGREE",
-                      "transactions.0.date", expected_row_index=0, actual_row_index=0),
+                      expected_row_index=0, actual_row_index=0),
             self._cmp("transactions[].amount", 100.0, 99.0, "DISAGREE",
-                      "transactions.1.amount", expected_row_index=2, actual_row_index=1),
+                      expected_row_index=2, actual_row_index=1),
         ]
         by_path, unmatched = group_verdict_comparisons(comps)
         self.assertEqual(set(by_path), {"transactions.0.date", "transactions.1.amount"})
@@ -191,14 +189,13 @@ class VerdictMappingTest(unittest.TestCase):
         self.assertEqual(by_path["transactions.1.amount"]["actual"], 99.0)
         self.assertEqual(unmatched, [])
 
-    def test_scalar_fields_key_by_feedback_path(self):
-        """Scalar (card/reward) comparisons key by their concrete feedback_path."""
+    def test_scalar_fields_key_by_concrete_path(self):
+        """Scalar (card/reward) comparisons key by their concrete path —
+        card fields substitute card_index for [], rewards have no []."""
         comps = [
             self._cmp("cards[].cardMeta.cardDisplayName", "Platinum", "Platinum",
-                      "AGREE", "cards.0.cardMeta.cardDisplayName", expected_row_index=None,
-                      actual_row_index=None),
-            self._cmp("rewards.closingPoints", 500, 500, "AGREE",
-                      "rewards.closingPoints"),
+                      "AGREE", card_index=0),
+            self._cmp("rewards.closingPoints", 500, 500, "AGREE"),
         ]
         by_path, unmatched = group_verdict_comparisons(comps)
         self.assertEqual(set(by_path),
@@ -210,11 +207,11 @@ class VerdictMappingTest(unittest.TestCase):
         collapse into one unmatchedPdfRows entry keyed by expected_row_index."""
         comps = [
             self._cmp("transactions[].date", "2026-03-01", None, "UNMATCHED_ROW",
-                      "transactions.3.date", expected_row_index=3, actual_row_index=None),
+                      expected_row_index=3, actual_row_index=None),
             self._cmp("transactions[].description", "Amazon", None, "UNMATCHED_ROW",
-                      "transactions.3.description", expected_row_index=3, actual_row_index=None),
+                      expected_row_index=3, actual_row_index=None),
             self._cmp("transactions[].amount", 50.0, None, "UNMATCHED_ROW",
-                      "transactions.3.amount", expected_row_index=3, actual_row_index=None),
+                      expected_row_index=3, actual_row_index=None),
         ]
         by_path, unmatched = group_verdict_comparisons(comps)
         self.assertEqual(by_path, {})
@@ -231,9 +228,9 @@ class VerdictMappingTest(unittest.TestCase):
         inline on the Luna row — NOT into the 'not extracted' section."""
         comps = [
             self._cmp("transactions[].date", None, "2026-05-05", "UNMATCHED_ROW",
-                      "transactions.2.date", expected_row_index=None, actual_row_index=2),
+                      expected_row_index=None, actual_row_index=2),
             self._cmp("transactions[].amount", None, 25.0, "UNMATCHED_ROW",
-                      "transactions.2.amount", expected_row_index=None, actual_row_index=2),
+                      expected_row_index=None, actual_row_index=2),
         ]
         by_path, unmatched = group_verdict_comparisons(comps)
         self.assertEqual(set(by_path), {"transactions.2.date", "transactions.2.amount"})
@@ -241,14 +238,14 @@ class VerdictMappingTest(unittest.TestCase):
 
     def test_type1_unmatched_does_not_collide_with_matched_same_index(self):
         """A type-1 row (expected_row_index=3) and a matched row
-        (actual_row_index=3) both produce feedback_path 'transactions.3.amount'
+        (actual_row_index=3) both produce concrete path 'transactions.3.amount'
         but are DIFFERENT rows. The type-1 must go to unmatchedPdfRows and the
         matched one to verdictByPath — no collision/overwrite."""
         comps = [
             self._cmp("transactions[].amount", 50.0, None, "UNMATCHED_ROW",
-                      "transactions.3.amount", expected_row_index=3, actual_row_index=None),
+                      expected_row_index=3, actual_row_index=None),
             self._cmp("transactions[].amount", 99.0, 99.0, "AGREE",
-                      "transactions.3.amount", expected_row_index=5, actual_row_index=3),
+                      expected_row_index=5, actual_row_index=3),
         ]
         by_path, unmatched = group_verdict_comparisons(comps)
         self.assertEqual(set(by_path), {"transactions.3.amount"})
@@ -261,16 +258,15 @@ class VerdictMappingTest(unittest.TestCase):
     def test_mixed_grouping(self):
         """One scalar AGREE, one type-1 row (3 fields), one type-2 field."""
         comps = [
-            self._cmp("rewards.closingPoints", 500, 500, "AGREE",
-                      "rewards.closingPoints"),
+            self._cmp("rewards.closingPoints", 500, 500, "AGREE"),
             self._cmp("transactions[].date", "2026-03-01", None, "UNMATCHED_ROW",
-                      "transactions.3.date", expected_row_index=3, actual_row_index=None),
+                      expected_row_index=3, actual_row_index=None),
             self._cmp("transactions[].description", "Amazon", None, "UNMATCHED_ROW",
-                      "transactions.3.description", expected_row_index=3, actual_row_index=None),
+                      expected_row_index=3, actual_row_index=None),
             self._cmp("transactions[].amount", 50.0, None, "UNMATCHED_ROW",
-                      "transactions.3.amount", expected_row_index=3, actual_row_index=None),
+                      expected_row_index=3, actual_row_index=None),
             self._cmp("transactions[].date", None, "2026-05-05", "UNMATCHED_ROW",
-                      "transactions.2.date", expected_row_index=None, actual_row_index=2),
+                      expected_row_index=None, actual_row_index=2),
         ]
         by_path, unmatched = group_verdict_comparisons(comps)
         self.assertEqual(set(by_path),
@@ -282,11 +278,11 @@ class VerdictMappingTest(unittest.TestCase):
     def test_unmatched_rows_sorted_by_row_index(self):
         comps = [
             self._cmp("transactions[].date", "2026-03-05", None, "UNMATCHED_ROW",
-                      "transactions.5.date", expected_row_index=5, actual_row_index=None),
+                      expected_row_index=5, actual_row_index=None),
             self._cmp("transactions[].date", "2026-03-01", None, "UNMATCHED_ROW",
-                      "transactions.1.date", expected_row_index=1, actual_row_index=None),
+                      expected_row_index=1, actual_row_index=None),
             self._cmp("transactions[].date", "2026-03-03", None, "UNMATCHED_ROW",
-                      "transactions.3.date", expected_row_index=3, actual_row_index=None),
+                      expected_row_index=3, actual_row_index=None),
         ]
         _, unmatched = group_verdict_comparisons(comps)
         self.assertEqual([r["row_index"] for r in unmatched], [1, 3, 5])
@@ -311,7 +307,7 @@ class FrontendVerdictInlineTest(unittest.TestCase):
 
     def test_resultsview_accepts_verdict_prop(self):
         self.assertIn(
-            "function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh, bank, savedFile, onRerun })",
+            "function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh, bank, savedFile, onRerun",
             self.html,
         )
 
@@ -336,13 +332,13 @@ class FrontendVerdictInlineTest(unittest.TestCase):
 
     def test_fieldrow_accepts_verdict_prop(self):
         self.assertIn(
-            "function FieldRow({ requestId, fieldPath, label, value, verdict, judged })",
+            "function FieldRow({ label, value, verdict, judged })",
             self.html,
         )
 
     def test_txncell_accepts_verdict_prop(self):
         self.assertIn(
-            "function TxnCell({ requestId, fieldPath, value, verdict, judged })",
+            "function TxnCell({ value, verdict, judged })",
             self.html,
         )
 
@@ -514,10 +510,7 @@ class ThreadStartFailureSlotLeakTest(unittest.TestCase):
     def test_bg_runner_releases_slot_on_success(self):
         """Sanity: the bg runner releases the slot after a successful run,
         so a subsequent acquire works (the normal path)."""
-        from tests.test_scorer import _FakeResultStore
-        store = _FakeResultStore()
-        with patch.object(self._main, "_get_stores", return_value=(store, None)), \
-             patch("judge.scorer.score_trace", return_value={"status": "OK"}):
+        with patch("judge.scorer.score_trace", return_value={"status": "OK"}):
             self._main._run_single_judge_bg("req-aabbccddeeff", "run-1")
         self.assertFalse(self._main._judge_running)
         self.assertTrue(self._main._acquire_judge_slot())
@@ -588,9 +581,9 @@ class ThreadStartFailureSlotLeakTest(unittest.TestCase):
 
 
 class SingleJudgeBgRunnerTest(unittest.TestCase):
-    """_run_single_judge_bg resolves, invokes score_trace with the
-    result_store, and updates per-request status — force-rejudging even
-    when the run is already tagged judged=true."""
+    """_run_single_judge_bg invokes score_trace with the run_id and updates
+    per-request status — force-rejudging even when the run is already tagged
+    judged=true."""
 
     def setUp(self):
         import app.main as main_mod
@@ -605,31 +598,25 @@ class SingleJudgeBgRunnerTest(unittest.TestCase):
         self._main._single_judge_status.clear()
         self._main._single_judge_status.update(self._saved_status)
 
-    def test_invokes_score_trace_with_run_id_and_result_store(self):
-        """The bg runner calls score_trace(run_id, result_store=...) —
-        reusing the existing single-trace scorer with the app's result store."""
-        from tests.test_scorer import _FakeResultStore
-        store = _FakeResultStore()
-
-        with patch.object(self._main, "_get_stores", return_value=(store, None)), \
-             patch("judge.scorer.score_trace", return_value={"status": "OK"}) as mock_score:
+    def test_invokes_score_trace_with_run_id(self):
+        """The bg runner calls score_trace(run_id) — the single-trace scorer
+        logs metrics to MLflow without any persistence layer."""
+        with patch("judge.scorer.score_trace", return_value={"status": "OK"}) as mock_score:
             self._main._run_single_judge_bg("req-1", "run-1")
 
-        mock_score.assert_called_once_with("run-1", result_store=store)
+        mock_score.assert_called_once_with("run-1")
         self.assertEqual(self._main._single_judge_status["req-1"]["status"], "done")
 
     def test_score_trace_failure_does_not_crash(self):
         """A score_trace exception lands in the status, never raised."""
-        with patch.object(self._main, "_get_stores", return_value=(None, None)), \
-             patch("judge.scorer.score_trace", side_effect=RuntimeError("boom")):
+        with patch("judge.scorer.score_trace", side_effect=RuntimeError("boom")):
             self._main._run_single_judge_bg("req-1", "run-1")
 
         self.assertEqual(self._main._single_judge_status["req-1"]["status"], "error")
 
     def test_judge_error_status_surfaces(self):
         """A JUDGE_ERROR result is surfaced as an error status."""
-        with patch.object(self._main, "_get_stores", return_value=(None, None)), \
-             patch("judge.scorer.score_trace", return_value={"status": "JUDGE_ERROR"}):
+        with patch("judge.scorer.score_trace", return_value={"status": "JUDGE_ERROR"}):
             self._main._run_single_judge_bg("req-1", "run-1")
 
         self.assertEqual(self._main._single_judge_status["req-1"]["status"], "error")
@@ -639,8 +626,7 @@ class SingleJudgeBgRunnerTest(unittest.TestCase):
         """score_trace is called regardless of whether the run is already
         tagged judged=true — force-rejudge is inherent (score_trace does NOT
         check the tag; only the batch sampler skips already-judged runs)."""
-        with patch.object(self._main, "_get_stores", return_value=(None, None)), \
-             patch("judge.scorer.score_trace", return_value={"status": "OK"}) as mock_score:
+        with patch("judge.scorer.score_trace", return_value={"status": "OK"}) as mock_score:
             # Simulate a run that is ALREADY judged=true (the tag exists).
             self._main._run_single_judge_bg("req-already", "run-already")
 
@@ -649,15 +635,13 @@ class SingleJudgeBgRunnerTest(unittest.TestCase):
 
     def test_releases_slot_on_completion(self):
         """The concurrency slot is released in the finally block."""
-        with patch.object(self._main, "_get_stores", return_value=(None, None)), \
-             patch("judge.scorer.score_trace", return_value={"status": "OK"}):
+        with patch("judge.scorer.score_trace", return_value={"status": "OK"}):
             self._main._run_single_judge_bg("req-1", "run-1")
         self.assertFalse(self._main._judge_running)
 
     def test_releases_slot_on_failure(self):
         """The slot is released even when score_trace raises."""
-        with patch.object(self._main, "_get_stores", return_value=(None, None)), \
-             patch("judge.scorer.score_trace", side_effect=RuntimeError("boom")):
+        with patch("judge.scorer.score_trace", side_effect=RuntimeError("boom")):
             self._main._run_single_judge_bg("req-1", "run-1")
         self.assertFalse(self._main._judge_running)
 

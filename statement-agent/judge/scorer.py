@@ -18,6 +18,8 @@ Reuses — does NOT rewrite — the existing scoring logic:
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 import logging
 import os
@@ -83,7 +85,7 @@ _EXPERIMENT_PATH = "/Shared/savesage/statement-agent"
 
 # Per-page size for the paginated trace scan in resolve_run_id's fallback.
 # The on-demand judge button is on the Results view, which loads ANY
-# persisted/historical parse from Lakebase — not only freshly-parsed ones
+# persisted/historical parse from MLflow traces — not only freshly-parsed ones
 # — so the fallback must page through traces (not cap at a fixed window)
 # to avoid recreating the 404 for older parses.
 _TRACE_PAGE_SIZE = 200
@@ -95,53 +97,6 @@ _MAX_TRACES_SCAN = 2000
 
 # Module-level flag so _ensure_mlflow_configured runs once per process.
 _mlflow_configured = False
-
-# Module-level cache for the RDS ``ResultStore`` used to persist verdicts
-# inline so ``GET /api/results`` can surface the per-field expected/actual/
-# outcome on the per-parse Results view. Built lazily and best-effort: a
-# ``None`` store simply skips the inline persist — the judge metrics still
-# flow to MLflow. Tests inject a fake store via the ``result_store`` param of
-# :func:`score_trace` so this builder is never called on the test path.
-_result_store: Any = None
-_result_store_init_done = False
-
-
-def _build_result_store() -> Any:
-    """Build an RDS-backed ``ResultStore`` for verdict persistence.
-
-    Mirrors :func:`app.main._build_rds_stores` but only the result store.
-    Raises on failure (missing env / connection error); callers catch and
-    degrade to ``None``. ``psycopg`` is imported function-local inside the
-    dependency modules, so importing this function does not require it —
-    only *calling* it does.
-    """
-    from db.connection import RDSConnectionFactory
-    from db.stores import LakebaseResultStore, init_tables
-    connect = RDSConnectionFactory.from_env()
-    init_tables(connect)
-    return LakebaseResultStore(connect)
-
-
-def _get_result_store() -> Any:
-    """Return a cached RDS ``ResultStore`` or ``None`` if unavailable.
-
-    Lazily initialised on first call. Failures are logged and cached as
-    ``None`` so a transient outage does not retry on every trace (the same
-    pattern as :func:`app.main._get_stores`).
-    """
-    global _result_store, _result_store_init_done
-    if _result_store_init_done:
-        return _result_store
-    _result_store_init_done = True
-    try:
-        _result_store = _build_result_store()
-    except Exception:
-        _LOGGER.warning(
-            "Lakebase result store unavailable; verdicts will not be "
-            "persisted inline", exc_info=True,
-        )
-        _result_store = None
-    return _result_store
 
 
 def resolve_run_id(request_id: str) -> str | None:
@@ -423,18 +378,76 @@ def _ensure_mlflow_configured(mlf: Any) -> None:
 # chars in cleartext — including on JUDGE_ERROR paths. The outcome +
 # similarity already convey the verdict signal in the artifact; the
 # free-text rationale is not needed there and is the one remaining PII
-# vector. It is retained in the Lakebase verdict_payload (same protected
-# Postgres boundary as extraction_payload).
+# vector.
 _RATIONALE_OMITTED = True
+
+
+# Field-path leaves that ARE client PII -> HMAC or omit.
+_PII_LEAVES = frozenset({"cardDisplayName", "description"})
+# Field-path leaves that are NOT individually PII and essential to analytics.
+_KEEP_LEAVES = frozenset(
+    {"lastFourDigit", "amount", "date", "pointsEarnedThisCycle", "closingPoints"}
+)
+
+
+def _leaf(path: str) -> str:
+    return path.rsplit(".", 1)[-1]
+
+
+def _to_primitive(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, (str, int, float, bool)):
+        return value
+    return str(value)
+
+
+def _hmac(key: bytes, value: Any) -> str:
+    """Keyed HMAC-SHA256 (16 hex chars). Not reversible without the key."""
+    return "hmac:" + hmac.new(key, repr(value).encode(), hashlib.sha256).hexdigest()[:16]
+
+
+def redact_feedback_value(
+    field_path: str,
+    value: Any,
+    *,
+    redact_pii: bool = True,
+    log_nonpii: bool = True,
+    hmac_key: bytes = b"",
+) -> Any:
+    """Tiered PII redaction of one field value -> a JSON primitive or None.
+
+    ``cardDisplayName`` / ``description`` (client PII) -> keyed HMAC, or
+    omitted (None) when no HMAC key is configured (never a reversible unsalted
+    digest). ``lastFourDigit`` / ``amount`` / ``date`` /
+    ``pointsEarnedThisCycle`` / ``closingPoints`` -> retained raw (not
+    individually identifying; documented trade-off — hashing them destroys
+    analytics value). Any other leaf -> omitted (or HMAC if a key is
+    configured).
+    """
+    leaf = _leaf(field_path)
+    raw = _to_primitive(value)
+    if not redact_pii:
+        # Operator disabled redaction -> raw values (documented exception).
+        return raw
+    if leaf in _KEEP_LEAVES:
+        return raw if log_nonpii else None
+    if leaf in _PII_LEAVES:
+        if not hmac_key:
+            return None  # omit rather than send a reversible unsalted digest
+        return _hmac(hmac_key, value)
+    # Unknown leaf: defensive omit (or HMAC if key present).
+    if not hmac_key:
+        return None
+    return _hmac(hmac_key, value)
 
 
 def _redact_comparisons(comparisons: Any) -> list[dict[str, Any]]:
     """Build a PII-redacted JSON payload for the ``verdict_comparisons.json``
     MLflow artifact.
 
-    Reuses :func:`harness.tracing_feedback.redact_feedback_value` — the SAME
-    field-aware policy as feedback telemetry — so the leaf-driven rules stay
-    consistent across both paths:
+    Reuses :func:`redact_feedback_value` (module-level, below) — the SAME
+    field-aware policy — so the leaf-driven rules stay consistent:
 
     * ``cardDisplayName`` / ``description`` (client PII) -> keyed HMAC, or
       omitted (None) when no HMAC key is configured (never a reversible
@@ -459,8 +472,6 @@ def _redact_comparisons(comparisons: Any) -> list[dict[str, Any]]:
     never raises on a None leaf for ANY outcome, and ``outcome`` is normalised
     whether it arrives as a ``ComparisonOutcome`` enum or a raw string.
     """
-    from harness.tracing_feedback import redact_feedback_value
-
     hmac_key = _resolve_feedback_hmac_key()
     out: list[dict[str, Any]] = []
     for c in comparisons:
@@ -491,7 +502,7 @@ def _resolve_feedback_hmac_key() -> bytes:
 
     Returns ``b""`` when unset — in which case PII leaves are OMITTED (None)
     rather than risk a reversible unsalted digest (the documented policy in
-    harness.tracing_feedback). Never raises.
+    the module-level redaction helper). Never raises.
     """
     try:
         from harness.config_ws4 import get_tracing_config
@@ -500,7 +511,7 @@ def _resolve_feedback_hmac_key() -> bytes:
         return b""
 
 
-def score_trace(run_id: str, result_store: Any = None) -> dict[str, Any]:
+def score_trace(run_id: str) -> dict[str, Any]:
     """Score a single MLflow trace by re-running the judge on its artifacts.
 
     Steps:
@@ -509,29 +520,26 @@ def score_trace(run_id: str, result_store: Any = None) -> dict[str, Any]:
     3. Call ``OpusJudgeAdapter.judge()`` → ``JudgeVerdict`` (Opus + comparisons).
     4. Compute metrics via ``verdict_to_metrics``.
     5. Log metrics on the SAME MLflow run.
-    6. Persist the verdict to Lakebase (best-effort) so ``GET /api/results``
-       can surface the per-field expected/actual/outcome inline — preserved
-       regardless of the assessment-persistence outcome.
-    7. Log the 9 per-field + overall assessments onto the ORIGINAL parse
+    6. Log the per-field + overall assessments onto the ORIGINAL parse
        trace (Bug 2).  Returns ``(n_logged, errors)``.
-    8. Tag the run ``judged=true`` ONLY when the verdict is OK AND all 9
+    7. Tag the run ``judged=true`` ONLY when the verdict is OK AND all
        assessments persisted; otherwise ``judged=error`` (re-judgeable) and
        the status is promoted to ``ASSESSMENT_ERROR`` (Bug 3 invariant).
-    9. Return a per-trace result dict.
+    8. Return a per-trace result dict.
 
-    ``result_store`` is an optional :class:`contracts.ports.ResultStore`. When
-    ``None`` the scorer builds its own lazily (best-effort; ``None`` if the
-    Lakebase env is absent). Tests inject a fake to assert save behaviour.
+    The verdict is no longer persisted to a database — the agent returns JSON
+    only and the client persists. The scorer still downloads the PDF artifact,
+    calls Opus 5, compares the fields, and logs MLflow metrics + tags.
 
     Returns ``{"run_id": ..., "status": "OK"|"JUDGE_ERROR"|"ASSESSMENT_ERROR"|
     "ERROR", ...}`` — never raises (errors are captured in the ``status``/
     ``error`` fields).  ``ASSESSMENT_ERROR`` means the verdict was OK but the
-    30 assessments did NOT all persist: the run is left ``judged=error``
+    assessments did NOT all persist: the run is left ``judged=error``
     (re-judgeable) and the sanitized failure detail is in ``error`` /
     ``assessment_error``.
     """
     try:
-        return _score_trace_impl(run_id, result_store)
+        return _score_trace_impl(run_id)
     except Exception as exc:
         _LOGGER.warning(
             "score_trace failed for run %s: %s", run_id, exc, exc_info=True
@@ -627,10 +635,15 @@ def _log_field_assessments(
 
 
 def _judge_and_persist(
-    run_id: str, result_store: Any = None, *, log_assessments: bool = True
+    run_id: str, *, log_assessments: bool = True
 ) -> tuple[Any, dict[str, Any], dict[str, Any], str, list[str]]:
     """Shared scoring core used by BOTH the single-trace on-demand path
     (:func:`score_trace`) and the genai.evaluate batch scorer.
+
+    The database persistence layer has been removed — the verdict is no
+    longer saved to a database. The scorer still downloads the PDF artifact,
+    calls Opus 5, compares the fields, logs MLflow metrics + tags, and
+    (on the on-demand path) logs per-field assessments onto the trace.
 
     Steps:
     1. Download ``statement.pdf`` and ``extraction.json`` artifacts from the run.
@@ -639,18 +652,15 @@ def _judge_and_persist(
        This is the SINGLE Opus call per trace — both callers reuse it.
     4. Compute metrics via ``verdict_to_metrics``.
     5. Log metrics on the SAME MLflow run.
-    6. Persist the verdict to Lakebase (best-effort) so ``GET /api/results``
-       can surface the per-field expected/actual/outcome inline — preserved
-       regardless of the assessment-persistence outcome (step 8).
-    7. Log the PII-redacted ``verdict_comparisons.json`` artifact on the run
+    6. Log the PII-redacted ``verdict_comparisons.json`` artifact on the run
        (best-effort).
-    8. When ``log_assessments`` is True (the on-demand path), log the 9
+    7. When ``log_assessments`` is True (the on-demand path), log the 9
        per-field + overall assessments onto the ORIGINAL parse trace via
        :func:`_log_field_assessments`, which returns ``(n_logged, errors)``.
        The batch genai.evaluate path sets ``log_assessments=False`` because
        ``genai.evaluate``'s harness logs the scorer's returned Feedbacks
        itself — and accounts for assessment errors itself.
-    9. Tag the run ``judged=true`` ONLY when the verdict is OK AND (on the
+    8. Tag the run ``judged=true`` ONLY when the verdict is OK AND (on the
        on-demand path) all 30 assessments persisted; otherwise
        ``judged=error`` (re-judgeable) and the status is promoted to
        ``ASSESSMENT_ERROR`` (Bug 3 invariant).  The tag is set AFTER the
@@ -727,31 +737,9 @@ def _judge_and_persist(
     summary = json.loads(verdict.summary) if verdict.summary else {}
     status = summary.get("status", "OK")
 
-    # 8. Persist the verdict to Lakebase so ``GET /api/results`` can surface
-    # the per-field expected/actual/outcome inline on the per-parse Results
-    # view. Best-effort by contract: a Lakebase write failure is logged and
-    # MUST NOT abort the judge run or the aggregate — the MLflow metrics
-    # above are already recorded. Only written on OK status: a JUDGE_ERROR
-    # verdict carries no usable ground truth (Opus failed to read the PDF),
-    # so persisting it would surface misleading expected values.
-    # The verdict's ``request_id`` is set by the adapter from
-    # ``request.request_id`` (== ``meta['request_id']``), so the upsert keys
-    # the verdict into the same ``statement_results`` row as the extraction.
-    # PRESERVED REGARDLESS of the assessment-persistence outcome (step 9):
-    # the verdict is valid when status == "OK"; an assessment-write failure
-    # is a separate concern and MUST NOT roll back the inline verdict.
-    if status == "OK":
-        store = result_store if result_store is not None else _get_result_store()
-        if store is not None:
-            try:
-                store.save_verdict(verdict)
-            except Exception:
-                _LOGGER.warning(
-                    "save_verdict failed for request %s; inline verdict "
-                    "not persisted", verdict.request_id, exc_info=True,
-                )
 
-    # 9. Best-effort: log the per-field expected/actual/outcome comparisons as
+
+    # 8. Best-effort: log the per-field expected/actual/outcome comparisons as
     # a JSON artifact on the run for trace visibility. Guarded like the
     # metrics — must never fail the run. Uses ``log_dict`` (plain JSON, no
     # pandas dependency) rather than ``log_table``; ``set_tag`` is avoided
@@ -762,14 +750,11 @@ def _judge_and_persist(
     # applies to span attrs/inputs/outputs). Real card display names and
     # transaction descriptions are client PII and MUST NOT reach the MLflow
     # artifact in cleartext. We reuse the EXACT field-aware policy from
-    # harness.tracing_feedback.redact_feedback_value — keyed HMAC (or omit
+    # redact_feedback_value — keyed HMAC (or omit
     # when no HMAC key) for ``cardDisplayName``/``description``; retain
     # ``lastFourDigit`` and the non-PII numerics (amount/date/points) raw.
     # The ``rationale`` string is OMITTED entirely (it is Opus free-text that
     # may echo cardholder names / transaction descriptions from the PDF).
-    # NOTE: Lakebase verdict_payload is NOT redacted here — it lives behind
-    # the same protected Postgres boundary as the already-stored
-    # extraction_payload, consistent with codex's posture confirmation.
     try:
         client.log_dict(run_id, _redact_comparisons(verdict.comparisons),
                         "verdict_comparisons.json")
@@ -778,7 +763,7 @@ def _judge_and_persist(
             "log_dict of verdict comparisons failed for %s", run_id, exc_info=True,
         )
 
-    # 10. On-demand path only: log the 30 assessments onto the ORIGINAL parse
+    # 9. On-demand path only: log the 30 assessments onto the ORIGINAL parse
     # trace (Bug 2).  Skipped for the batch genai.evaluate path
     # (``log_assessments=False``) because genai.evaluate's harness logs the
     # scorer's returned Feedbacks itself — and accounts for assessment
@@ -788,7 +773,7 @@ def _judge_and_persist(
     # call's output.
     #
     # BUG 3 INVARIANT (cross-review fix): the assessments are logged BEFORE
-    # the ``judged=true`` tag is set (step 11), and the tag is set to
+    # the ``judged=true`` tag is set (step 10), and the tag is set to
     # judged=true ONLY when ALL 30 assessments persisted.  Any assessment
     # failure (trace-id resolution fails, ``build_field_feedbacks`` fails, a
     # ``log_assessment`` raises, or the count is short) leaves the run
@@ -813,7 +798,7 @@ def _judge_and_persist(
                     trace_id, verdict, metrics,
                 )
 
-    # 11. Tag the run — AFTER the assessment writes (step 10) so the tag
+    # 10. Tag the run — AFTER the assessment writes (step 9) so the tag
     # decision reflects whether the assessments actually persisted.
     # ``judged=true`` ONLY when the verdict is OK AND (on the on-demand
     # path) all 30 assessments persisted.  Any assessment failure →
@@ -871,9 +856,9 @@ def _build_result_dict(
     }
 
 
-def _score_trace_impl(run_id: str, result_store: Any = None) -> dict[str, Any]:
+def _score_trace_impl(run_id: str) -> dict[str, Any]:
     verdict, meta, metrics, status, assessment_errors = _judge_and_persist(
-        run_id, result_store,
+        run_id,
     )
     result = _build_result_dict(run_id, meta, metrics, status)
     if assessment_errors:
@@ -914,7 +899,7 @@ def _resolve_trace_for_run(run_id: str) -> Any:
     )
 
 
-def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dict[str, Any]:
+def run_judge_evaluation(sample_size: int = 10) -> dict[str, Any]:
     """Sample unjudged MLflow runs, score each, and return an aggregate summary.
 
     1. Query MLflow for recent runs (ordered by start_time DESC).
@@ -1018,10 +1003,7 @@ def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dic
     # Runs WITH a trace go through genai.evaluate (one @scorer → 28 per-field
     # trace-level assessments + aggregate metrics).  Runs WITHOUT a trace
     # (older run whose trace aged out, or search unavailable) fall back to
-    # :func:`score_trace` (per-run metrics + save_verdict, no assessments).
-    # The optional ``result_store`` threads through to BOTH paths so each OK
-    # verdict is persisted inline (best-effort) and surfaces on the per-parse
-    # Results view.
+    # :func:`score_trace` (per-run metrics + tags, no assessments).
     traced: list[tuple[str, Any]] = []  # (run_id, trace) pairs
     fallback_run_ids: list[str] = []     # run_ids without a trace
     for rid in sample:
@@ -1042,7 +1024,7 @@ def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dic
 
         trace_objs = [t for _, t in traced]
         eval_info = run_genai_evaluation(
-            trace_objs, result_store, experiment_id=exp_id,
+            trace_objs, experiment_id=exp_id,
         )
         if eval_info is not None:
             # genai.evaluate ran (fully OR partially).  Extend with the
@@ -1053,8 +1035,8 @@ def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dic
             # already called Opus once inside _judge_and_persist.  SKIP them
             # in the score_trace fallback so they are NOT re-scored:
             # re-scoring a completed trace would call Opus a SECOND time and
-            # DUPLICATE the save_verdict + metric writes.  Only the traced
-            # runs the scorer did NOT reach fall back to score_trace.
+            # DUPLICATE the metric writes.  Only the traced runs the scorer
+            # did NOT reach fall back to score_trace.
             scored_run_ids = {
                 r["run_id"] for r in eval_info["results"] if r.get("run_id")
             }
@@ -1067,10 +1049,10 @@ def run_judge_evaluation(sample_size: int = 10, result_store: Any = None) -> dic
             fallback_run_ids = [rid for rid, _ in traced] + fallback_run_ids
 
     # 6. Fallback path (no trace, or genai.evaluate failed): score_trace per
-    # run.  Each call logs per-run metrics + tags + save_verdict + the
+    # run.  Each call logs per-run metrics + tags + the
     # verdict_comparisons.json artifact on the source run.
     for rid in fallback_run_ids:
-        results.append(score_trace(rid, result_store=result_store))
+        results.append(score_trace(rid))
 
     # 7. Aggregate (UNCHANGED shape — frontend contract preserved).
     summary = _aggregate_results(results)

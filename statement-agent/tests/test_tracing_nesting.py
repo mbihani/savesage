@@ -197,7 +197,7 @@ class NestingTest(unittest.TestCase):
     def test_end_run_not_called_on_buffered_events(self):
         """end_run is NOT called while events are buffered (no root yet).
 
-        The run stays active so log_artifact() from persist_node can log to it.
+        The run stays active so log_artifact() from the finalize node can log to it.
         Only the root span's arrival triggers end_run.
         """
         fake = _RecordingMLflow()
