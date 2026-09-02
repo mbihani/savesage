@@ -332,13 +332,13 @@ class FrontendVerdictInlineTest(unittest.TestCase):
 
     def test_fieldrow_accepts_verdict_prop(self):
         self.assertIn(
-            "function FieldRow({ label, value, verdict, judged })",
+            "function FieldRow({ label, value, verdict, judged, requestId, fieldPath, feedback, onFeedback })",
             self.html,
         )
 
     def test_txncell_accepts_verdict_prop(self):
         self.assertIn(
-            "function TxnCell({ value, verdict, judged })",
+            "function TxnCell({ value, verdict, judged, requestId, fieldPath, feedback, onFeedback })",
             self.html,
         )
 

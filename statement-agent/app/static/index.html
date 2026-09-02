@@ -272,6 +272,21 @@
       }
       .field-val { font-family: var(--mono); font-size: 0.875rem; word-break: break-all; }
       .field-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+      .feedback-actions { display: flex; gap: 0.3rem; align-items: center; flex-wrap: wrap; margin-top: 0.4rem; }
+      .feedback-btn {
+        border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+        color: var(--text-muted); border-radius: 5px; padding: 0.15rem 0.4rem;
+        font-size: 0.6875rem; cursor: pointer;
+      }
+      .feedback-btn:hover:not(:disabled) { color: var(--text); border-color: var(--text-muted); }
+      .feedback-btn:disabled { opacity: 0.5; cursor: default; }
+      .feedback-input {
+        min-width: 110px; max-width: 220px; padding: 0.2rem 0.4rem;
+        border: 1px solid var(--border); border-radius: 5px;
+        background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 0.75rem;
+      }
+      .feedback-badge { font-size: 0.6875rem; color: var(--agree); }
+      .feedback-warning { font-size: 0.6875rem; color: var(--disagree); }
 
       /* Judged-field badge */
       .judged-badge {
@@ -1024,7 +1039,58 @@
 
       /* Full-card field row — used for card fields, reward scalars, and
        * statementMeta/statementLevelSummary fields. */
-      function FieldRow({ label, value, verdict, judged }) {
+      function FeedbackControls({ requestId, fieldPath, value, feedback, onFeedback }) {
+        const [editing, setEditing] = useState(false);
+        const [correctedValue, setCorrectedValue] = useState(value == null ? "" : String(value));
+        const [saving, setSaving] = useState(false);
+        const [warning, setWarning] = useState(null);
+
+        const submit = async (accepted) => {
+          setSaving(true);
+          setWarning(null);
+          try {
+            const resp = await fetch(`/api/feedback/${requestId}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                field_path: fieldPath,
+                accepted,
+                corrected_value: accepted ? null : correctedValue,
+                original_value: value,
+              }),
+            });
+            const result = await resp.json();
+            if (result.status === "logged") {
+              onFeedback(fieldPath, { accepted, correctedValue: accepted ? null : correctedValue });
+              setEditing(false);
+            } else {
+              setWarning(result.reason || "feedback was not logged");
+            }
+          } catch (_) {
+            setWarning("feedback was not logged");
+          } finally {
+            setSaving(false);
+          }
+        };
+
+        if (feedback) return h`<span class="feedback-badge">${feedback.accepted ? "✓ accepted" : "✎ corrected"}</span>`;
+        return h`
+          <div class="feedback-actions">
+            ${editing ? h`
+              <input class="feedback-input" aria-label=${`Correct ${fieldPath}`} value=${correctedValue}
+                onInput=${e => setCorrectedValue(e.target.value)} />
+              <button class="feedback-btn" disabled=${saving || correctedValue === ""} onClick=${() => submit(false)}>Save</button>
+              <button class="feedback-btn" disabled=${saving} onClick=${() => setEditing(false)}>Cancel</button>
+            ` : h`
+              <button class="feedback-btn" title="Accept extracted value" disabled=${saving} onClick=${() => submit(true)}>✓ Accept</button>
+              <button class="feedback-btn" title="Correct extracted value" disabled=${saving} onClick=${() => setEditing(true)}>✎ Correct</button>
+            `}
+            ${warning && h`<span class="feedback-warning">${warning}</span>`}
+          </div>
+        `;
+      }
+
+      function FieldRow({ label, value, verdict, judged, requestId, fieldPath, feedback, onFeedback }) {
         return h`
           <div class="field-row">
             <div class="field-row-head">
@@ -1033,6 +1099,7 @@
             <div class="field-val-box">
               <div class="field-val-label">Extracted Value</div>
               <div class="field-val">${fmtVal(value)}</div>
+              <${FeedbackControls} requestId=${requestId} fieldPath=${fieldPath} value=${value} feedback=${feedback} onFeedback=${onFeedback} />
             </div>
             ${verdict && h`
               <div style=${{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.5rem", flexWrap: "wrap" }}>
@@ -1049,13 +1116,14 @@
       }
 
       /* Compact inline cell — used inside the transactions table. */
-      function TxnCell({ value, verdict, judged }) {
+      function TxnCell({ value, verdict, judged, requestId, fieldPath, feedback, onFeedback }) {
         return h`
           <div style=${{ display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: "100px" }}>
             ${judged ? judgedBadge() : ""}
             <div style=${{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
               <span class="field-val" style=${{ fontSize: "0.8125rem" }}>${fmtVal(value)}</span>
             </div>
+            <${FeedbackControls} requestId=${requestId} fieldPath=${fieldPath} value=${value} feedback=${feedback} onFeedback=${onFeedback} />
             ${verdict && h`
               <div style=${{ display: "flex", alignItems: "center", gap: "0.25rem", flexWrap: "wrap" }}>
                 <span class=${"verdict verdict-" + verdict.outcome} style=${{ fontSize: "0.625rem", padding: "0.0625rem 0.3rem" }}>${verdict.outcome.replace(/_/g, " ")}</span>
@@ -1236,6 +1304,10 @@
       }
 
       function ResultsView({ requestId, extraction, complete, verdict, onVerdictRefresh, bank, savedFile, onRerun, promptText, setPromptText, schemaText, setSchemaText, loaded, setLoaded }) {
+        const [feedbackByPath, setFeedbackByPath] = useState({});
+        const recordFeedback = (fieldPath, feedback) => {
+          setFeedbackByPath(previous => ({ ...previous, [fieldPath]: feedback }));
+        };
         const outcome = complete?.outcome || "UNKNOWN";
         const bannerClass =
           outcome === "SUCCESS" ? "SUCCESS" :
@@ -1307,6 +1379,10 @@
           value=${val}
           verdict=${verdictByPath[fp]}
           judged=${isJudged(tmpl)}
+          requestId=${requestId}
+          fieldPath=${fp}
+          feedback=${feedbackByPath[fp]}
+          onFeedback=${recordFeedback}
         />`;
 
         return h`
@@ -1424,19 +1500,19 @@
                         <tr key=${"txn-" + i} style=${{ borderBottom: "1px solid var(--border)" }}>
                           <td style=${{ ...tdStyle, color: "var(--text-muted)", whiteSpace: "nowrap" }}>${i + 1}</td>
                           <td style=${tdStyle}>
-                            <${TxnCell} value=${txn?.date} verdict=${verdictByPath[`transactions.${i}.date`]} judged=${isJudged("transactions[].date")} />
+                            <${TxnCell} value=${txn?.date} verdict=${verdictByPath[`transactions.${i}.date`]} judged=${isJudged("transactions[].date")} requestId=${requestId} fieldPath=${`transactions.${i}.date`} feedback=${feedbackByPath[`transactions.${i}.date`]} onFeedback=${recordFeedback} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} value=${txn?.description} verdict=${verdictByPath[`transactions.${i}.description`]} judged=${isJudged("transactions[].description")} />
+                            <${TxnCell} value=${txn?.description} verdict=${verdictByPath[`transactions.${i}.description`]} judged=${isJudged("transactions[].description")} requestId=${requestId} fieldPath=${`transactions.${i}.description`} feedback=${feedbackByPath[`transactions.${i}.description`]} onFeedback=${recordFeedback} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} value=${txn?.amount} verdict=${verdictByPath[`transactions.${i}.amount`]} judged=${isJudged("transactions[].amount")} />
+                            <${TxnCell} value=${txn?.amount} verdict=${verdictByPath[`transactions.${i}.amount`]} judged=${isJudged("transactions[].amount")} requestId=${requestId} fieldPath=${`transactions.${i}.amount`} feedback=${feedbackByPath[`transactions.${i}.amount`]} onFeedback=${recordFeedback} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} value=${txn?.direction} verdict=${verdictByPath[`transactions.${i}.direction`]} judged=${isJudged("transactions[].direction")} />
+                            <${TxnCell} value=${txn?.direction} verdict=${verdictByPath[`transactions.${i}.direction`]} judged=${isJudged("transactions[].direction")} requestId=${requestId} fieldPath=${`transactions.${i}.direction`} feedback=${feedbackByPath[`transactions.${i}.direction`]} onFeedback=${recordFeedback} />
                           </td>
                           <td style=${tdStyle}>
-                            <${TxnCell} value=${txn?.rewardPointsOnThisTransaction} verdict=${verdictByPath[`transactions.${i}.rewardPointsOnThisTransaction`]} judged=${isJudged("transactions[].rewardPointsOnThisTransaction")} />
+                            <${TxnCell} value=${txn?.rewardPointsOnThisTransaction} verdict=${verdictByPath[`transactions.${i}.rewardPointsOnThisTransaction`]} judged=${isJudged("transactions[].rewardPointsOnThisTransaction")} requestId=${requestId} fieldPath=${`transactions.${i}.rewardPointsOnThisTransaction`} feedback=${feedbackByPath[`transactions.${i}.rewardPointsOnThisTransaction`]} onFeedback=${recordFeedback} />
                           </td>
                         </tr>
                       `)}
