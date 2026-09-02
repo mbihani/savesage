@@ -462,8 +462,10 @@ class ThreadStartFailureSlotLeakTest(unittest.TestCase):
         self._main = main_mod
         self._saved_running = main_mod._judge_running
         self._saved_status = dict(main_mod._single_judge_status)
+        self._saved_verdicts = dict(main_mod._verdict_cache)
         self._saved_thread = threading.Thread
         main_mod._single_judge_status.clear()
+        main_mod._verdict_cache.clear()
         main_mod._judge_running = False
 
     def tearDown(self):
@@ -471,6 +473,8 @@ class ThreadStartFailureSlotLeakTest(unittest.TestCase):
         self._main._judge_running = self._saved_running
         self._main._single_judge_status.clear()
         self._main._single_judge_status.update(self._saved_status)
+        self._main._verdict_cache.clear()
+        self._main._verdict_cache.update(self._saved_verdicts)
         threading.Thread = self._saved_thread
 
     def test_slot_released_if_thread_start_raises(self):
@@ -590,13 +594,17 @@ class SingleJudgeBgRunnerTest(unittest.TestCase):
         self._main = main_mod
         self._saved_running = main_mod._judge_running
         self._saved_status = dict(main_mod._single_judge_status)
+        self._saved_verdicts = dict(main_mod._verdict_cache)
         main_mod._single_judge_status.clear()
+        main_mod._verdict_cache.clear()
         main_mod._judge_running = False
 
     def tearDown(self):
         self._main._judge_running = self._saved_running
         self._main._single_judge_status.clear()
         self._main._single_judge_status.update(self._saved_status)
+        self._main._verdict_cache.clear()
+        self._main._verdict_cache.update(self._saved_verdicts)
 
     def test_invokes_score_trace_with_run_id(self):
         """The bg runner calls score_trace(run_id) — the single-trace scorer
@@ -606,6 +614,49 @@ class SingleJudgeBgRunnerTest(unittest.TestCase):
 
         mock_score.assert_called_once_with("run-1")
         self.assertEqual(self._main._single_judge_status["req-1"]["status"], "done")
+
+    def test_verdict_cached_on_success(self):
+        """A successful judge run caches the serialized verdict comparisons
+        so GET /api/results can serve them to the frontend ResultsView."""
+        fake_comparisons = [
+            {"field_path": "rewards.closingPoints", "expected": 500,
+             "actual": 500, "outcome": "AGREE", "scope": "SCALAR",
+             "match_method": "DIRECT", "card_index": None,
+             "expected_row_index": None, "actual_row_index": None,
+             "similarity": None, "rationale": None},
+        ]
+        with patch("judge.scorer.score_trace", return_value={
+            "status": "OK", "verdict_comparisons": fake_comparisons,
+        }):
+            self._main._run_single_judge_bg("req-cache", "run-cache")
+
+        self.assertIn("req-cache", self._main._verdict_cache)
+        self.assertEqual(
+            self._main._verdict_cache["req-cache"]["comparisons"],
+            fake_comparisons,
+        )
+
+    def test_verdict_not_cached_on_judge_error(self):
+        """A JUDGE_ERROR result evicts any pre-existing verdict so the frontend
+        doesn't show stale badges from a previous successful judge."""
+        # Pre-populate the cache as if a previous judge succeeded.
+        self._main._verdict_cache["req-err"] = {"comparisons": [{"outcome": "AGREE"}]}
+        with patch("judge.scorer.score_trace", return_value={
+            "status": "JUDGE_ERROR",
+        }):
+            self._main._run_single_judge_bg("req-err", "run-err")
+
+        self.assertNotIn("req-err", self._main._verdict_cache)
+
+    def test_verdict_evicted_on_generic_error(self):
+        """A generic ERROR status also evicts any pre-existing verdict."""
+        self._main._verdict_cache["req-err2"] = {"comparisons": [{"outcome": "AGREE"}]}
+        with patch("judge.scorer.score_trace", return_value={
+            "status": "ERROR", "error": "something broke",
+        }):
+            self._main._run_single_judge_bg("req-err2", "run-err2")
+
+        self.assertNotIn("req-err2", self._main._verdict_cache)
 
     def test_score_trace_failure_does_not_crash(self):
         """A score_trace exception lands in the status, never raised."""

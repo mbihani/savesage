@@ -128,6 +128,14 @@ def _release_judge_slot() -> None:
 _single_judge_status: dict[str, dict[str, Any]] = {}
 _MAX_SINGLE_JUDGE_STATUS = 50
 
+# Cache for on-demand single-trace judge verdicts, keyed by request_id.
+# Populated by _run_single_judge_bg after a successful judge run and read by
+# GET /api/results/{request_id} so the frontend's ResultsView can render
+# inline per-field verdict badges.  Entries persist until evicted by the
+# FIFO cap below (same pattern as _single_judge_status).
+_verdict_cache: dict[str, dict[str, Any]] = {}
+_MAX_VERDICT_CACHE = 50
+
 
 # ---------------------------------------------------------------------------
 # RequestContext — thread-safe progress + result holder for one parse request
@@ -698,22 +706,35 @@ def _run_single_judge_bg(request_id: str, run_id: str) -> None:
     can report progress.  Never raises — all failures land in the status.
     """
     try:
+        _verdict_cache.pop(request_id, None)
         from judge.scorer import score_trace
         result = score_trace(run_id)
         status = result.get("status", "ERROR")
         if status == "OK":
+            # Cache the serialized verdict comparisons so GET /api/results
+            # can serve them to the frontend's ResultsView for inline
+            # per-field verdict badges.  FIFO eviction (same pattern as
+            # _single_judge_status).
+            while len(_verdict_cache) >= _MAX_VERDICT_CACHE:
+                _verdict_cache.pop(next(iter(_verdict_cache)), None)
+            _verdict_cache[request_id] = {
+                "comparisons": result.get("verdict_comparisons", []),
+            }
             _single_judge_status[request_id] = {"status": "done", "request_id": request_id}
         elif status == "JUDGE_ERROR":
+            _verdict_cache.pop(request_id, None)
             _single_judge_status[request_id] = {
                 "status": "error", "request_id": request_id,
                 "error": "judge returned an unusable response (JUDGE_ERROR)",
             }
         else:
+            _verdict_cache.pop(request_id, None)
             _single_judge_status[request_id] = {
                 "status": "error", "request_id": request_id,
                 "error": result.get("error", "judge failed"),
             }
     except Exception as exc:
+        _verdict_cache.pop(request_id, None)
         _LOGGER.warning("single-trace judge failed for %s: %s", request_id, exc, exc_info=True)
         _single_judge_status[request_id] = {
             "status": "error", "request_id": request_id,
@@ -1172,7 +1193,7 @@ def create_app():
         return {
             "request_id": request_id,
             "extraction": extraction,
-            "verdict": None,
+            "verdict": _verdict_cache.get(request_id),
         }
 
 

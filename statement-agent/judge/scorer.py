@@ -826,6 +826,40 @@ def _judge_and_persist(
     return verdict, meta, metrics, status, assessment_errors
 
 
+def _serialize_verdict(verdict: Any) -> dict[str, Any]:
+    """Serialize a :class:`JudgeVerdict` to a JSON-serializable dict with a
+    ``comparisons`` array of plain-dict :class:`FieldComparison` objects.
+
+    Each comparison dict carries: ``field_path``, ``expected``, ``actual``,
+    ``outcome``, ``scope``, ``match_method``, ``card_index``,
+    ``expected_row_index``, ``actual_row_index``, ``similarity``,
+    ``rationale`` — the full set the frontend's ResultsView needs to render
+    inline per-field verdict badges.  Enum values are flattened to their
+    ``.value`` strings so the result is plain JSON.
+
+    Unlike :func:`_redact_comparisons` (which omits/HMACs PII for the MLflow
+    artifact), this keeps the raw ``expected``/``actual`` values — the
+    frontend shows the user their own extraction data, not a redacted
+    telemetry payload.
+    """
+    comparisons = []
+    for c in verdict.comparisons:
+        comparisons.append({
+            "field_path": c.field_path,
+            "expected": c.expected,
+            "actual": c.actual,
+            "outcome": c.outcome.value,
+            "scope": c.scope.value,
+            "match_method": c.match_method.value,
+            "card_index": c.card_index,
+            "expected_row_index": c.expected_row_index,
+            "actual_row_index": c.actual_row_index,
+            "similarity": c.similarity,
+            "rationale": c.rationale,
+        })
+    return {"comparisons": comparisons}
+
+
 def _build_result_dict(
     run_id: str, meta: dict[str, Any], metrics: dict[str, Any], status: str,
 ) -> dict[str, Any]:
@@ -861,6 +895,12 @@ def _score_trace_impl(run_id: str) -> dict[str, Any]:
         run_id,
     )
     result = _build_result_dict(run_id, meta, metrics, status)
+    # Serialize the verdict comparisons so the on-demand judge caller
+    # (app/main.py _run_single_judge_bg) can cache and serve them to the
+    # frontend ResultsView for inline per-field verdict badges.  The
+    # ``comparisons`` key in the result dict is an integer COUNT (for the
+    # batch aggregate summary); this is the full array the frontend needs.
+    result["verdict_comparisons"] = _serialize_verdict(verdict)["comparisons"]
     if assessment_errors:
         # Surface the assessment-persistence failure in the result dict so
         # the on-demand caller (app/main.py) reports it to the UI (the
