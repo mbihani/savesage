@@ -29,3 +29,4 @@ misses*.json
 */gemini/incumbent*.json
 */gemini/pdf_oracle*.json
 */gemini/logs/
+data/golden_set.jsonl

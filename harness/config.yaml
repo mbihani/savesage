@@ -1,0 +1,49 @@
+mode: code
+agent_module: agents/savesage_agent.py
+runtime_endpoint: databricks-gpt-5-6-luna
+optimizer_endpoint: databricks-claude-opus-4-7
+judge_endpoint: databricks-claude-opus-5
+experiments:
+  runtime: /Shared/anvil-runtime
+  eval: /Shared/anvil-eval
+  optimizer: /Shared/anvil-optimizer
+loop:
+  target_rounds: 50
+  stretch_rounds: 100
+  cost_budget_usd_per_round: 5.0
+  early_stop_after_stalled_rounds: 10
+  critique_lookback: 3
+  revert_lookback: 20
+  max_optimizer_turns: 30
+eval:
+  engine: savesage
+  held_out_test: false
+  default_mode: standard
+  accuracy_exclude_fields:
+    - rewards_programType
+    - cards_cardMeta_productFamily
+  modes:
+    quick: {rows: 12}
+    standard: {rows: 24}
+    full: {rows: 304}
+  n_workers: 2
+  inter_row_cooldown_s: 0.0
+  scorers:
+    - correctness
+    - retrieval_groundedness
+    - refusal_appropriateness
+  safety_guard_threshold: 0.95
+gate:
+  type: frontier
+  epsilon: 0.0
+  pareto:
+    enabled: true
+    objectives:
+      - name: accuracy
+        direction: maximize
+        source: aggregate
+        epsilon: 0.005
+      - name: latency
+        direction: minimize
+        source: latency
+        epsilon: 500.0
