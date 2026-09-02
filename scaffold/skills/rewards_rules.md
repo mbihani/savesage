@@ -1,3 +1,6 @@
+---
+kind: rewards_rules
+---
 - Extract rewards ONLY from statement-level rewards sections.
 - NEVER infer, compute, aggregate, or roll up rewards from transactions.
 - Reward Points Earned at transaction level have no relation to total reward Earned at statement Level.

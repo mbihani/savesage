@@ -1,3 +1,6 @@
+---
+kind: rewards_layouts
+---
 ICICI prints its rewards block low on page 1. Four layouts occur. In every one of them the LABELS sit
   on one or two lines and the VALUES sit BELOW them on a single shared line, separated only by their x
   position — so you must bind each value to the label that sits in the SAME COLUMN, not to the nearest

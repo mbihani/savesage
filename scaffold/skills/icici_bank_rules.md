@@ -1,3 +1,6 @@
+---
+kind: bank_rules
+---
 - issuerName is ALWAYS "ICICI Bank". These cards are co-branded (Amazon Pay, Coral, Sapphiro, Rubyx,
   Emeralde, Platinum, MakeMyTrip, Adani One, HPCL, Expressions, Mine, Manu). The co-brand partner and
   the product name are NOT the issuer. Never return "Amazon", "MakeMyTrip", "Adani One", "HPCL",

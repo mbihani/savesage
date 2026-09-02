@@ -1,3 +1,6 @@
+---
+kind: edge_cases
+---
 - If due date is non-date text (e.g., IMMEDIATELY, PAY IMMEDIATELY, DUE IMMEDIATELY),
   set dueDate to the exact text as shown — do not infer, normalize, or replace it with statementDate.
 - For cardDisplayName: extract the credit card product name as printed in the page-1 identity block.

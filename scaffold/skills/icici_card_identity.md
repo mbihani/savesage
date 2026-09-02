@@ -1,3 +1,6 @@
+---
+kind: card_identity
+---
 - The product name is printed ONCE, in the page-1 identity block at the TOP RIGHT, immediately beside
   the "ICICI Bank Credit Cards" logo — for example "Sapphiro", "Coral", "Rubyx", or the co-brand
   wordmark "amazon pay". On the older "CREDIT CARD E-STATEMENT" template there is no such block.

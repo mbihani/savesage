@@ -1,3 +1,6 @@
+---
+kind: transaction_rules
+---
 TRANSACTION RULES:
 - For any Amount except for transactions->"amount" in the JSON Schema, if it is a credit transaction then add - before that Amount.
 - transactions->amount is ALWAYS a positive number. Never negate the amount field regardless of the transaction direction.
