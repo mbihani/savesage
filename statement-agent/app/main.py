@@ -237,6 +237,67 @@ async def _run_blocking(func: Any, *args: Any, timeout: float = _BLOCKING_TIMEOU
         return None
 
 
+def _log_human_feedback(request_id: str, feedback: dict[str, Any]) -> dict[str, str]:
+    """Best-effort persistence of one UI correction as a trace assessment.
+
+    This function deliberately owns every MLflow import so ``app.main`` stays
+    importable in the stdlib-only test environment.  Any tracking-store or SDK
+    compatibility failure is reported as a skipped assessment, never raised.
+    """
+    try:
+        import mlflow
+        from mlflow.entities import AssessmentSource
+
+        from judge.scorer import resolve_run_id, _resolve_trace_for_run
+
+        run_id = resolve_run_id(request_id)
+        if not run_id:
+            return {"status": "skipped", "reason": "trace not found"}
+
+        trace = _resolve_trace_for_run(run_id)
+        trace_id = getattr(getattr(trace, "info", None), "trace_id", None)
+        if not trace_id:
+            return {"status": "skipped", "reason": "trace not found"}
+
+        metadata = {
+            "request_id": request_id,
+            "field_path": feedback["field_path"],
+            "accepted": feedback["accepted"],
+            "corrected_value": feedback.get("corrected_value"),
+            "original_value": feedback.get("original_value"),
+        }
+        assessment_name = f"human_feedback.{feedback['field_path']}"
+        source = AssessmentSource("HUMAN", "savesage-ui")
+        try:
+            mlflow.log_feedback(
+                trace_id=trace_id,
+                name=assessment_name,
+                value=feedback["accepted"],
+                source=source,
+                metadata=metadata,
+            )
+        except (AttributeError, TypeError):
+            # Compatibility path for MLflow releases exposing only the lower-
+            # level assessment API.
+            from mlflow.entities import Feedback
+
+            assessment = Feedback(
+                name=assessment_name,
+                value=feedback["accepted"],
+                source=source,
+                metadata=metadata,
+                trace_id=trace_id,
+            )
+            mlflow.log_assessment(trace_id=trace_id, assessment=assessment)
+        return {"status": "logged"}
+    except Exception:
+        _LOGGER.warning(
+            "human feedback could not be logged for request %s", request_id,
+            exc_info=True,
+        )
+        return {"status": "skipped", "reason": "MLflow unavailable"}
+
+
 def _coerce_schema(schema: Any) -> dict:
     """Normalise a schema body value to a dict, raising :class:`HTTPException`.
 
@@ -1217,6 +1278,32 @@ def create_app():
         return _judge_scheduler.status()
 
     # -- POST /api/results/{request_id}/judge ----------------------------
+    @app.post("/api/feedback/{request_id}")
+    async def submit_feedback(request_id: str, body: dict = Body(...)):
+        """Log per-field human feedback on the request's MLflow trace.
+
+        Feedback is intentionally best-effort: malformed payloads, missing
+        traces, unavailable tracking stores, and SDK-version differences all
+        produce a 200 response so the Results view is never disrupted.
+        """
+        field_path = body.get("field_path")
+        accepted = body.get("accepted")
+        if not isinstance(field_path, str) or not field_path.strip():
+            return {"status": "skipped", "reason": "invalid field_path"}
+        if not isinstance(accepted, bool):
+            return {"status": "skipped", "reason": "invalid accepted value"}
+        if not accepted and body.get("corrected_value") is None:
+            return {"status": "skipped", "reason": "corrected_value required"}
+
+        feedback = {
+            "field_path": field_path,
+            "accepted": accepted,
+            "corrected_value": body.get("corrected_value"),
+            "original_value": body.get("original_value"),
+        }
+        result = await _run_blocking(_log_human_feedback, request_id, feedback)
+        return result or {"status": "skipped", "reason": "MLflow unavailable"}
+
     @app.post("/api/results/{request_id}/judge")
     async def judge_single(request_id: str):
         """Judge a SINGLE trace on demand so inline per-field verdicts render
