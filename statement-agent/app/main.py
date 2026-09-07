@@ -274,7 +274,7 @@ def _log_human_feedback(request_id: str, feedback: dict[str, Any]) -> dict[str, 
             "corrected_value": feedback.get("corrected_value"),
             "original_value": feedback.get("original_value"),
         }
-        assessment_name = f"human_feedback.{feedback['field_path']}"
+        assessment_name = f"human_feedback_{feedback['field_path'].replace('.', '_')}"
         source = AssessmentSource("HUMAN", "savesage-ui")
         try:
             mlflow.log_feedback(
