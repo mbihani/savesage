@@ -88,24 +88,13 @@ def _is_valid_request_id(request_id: str) -> bool:
 # single uvicorn event loop.
 _BLOCKING_TIMEOUT = 15.0
 
-# Hard bound (seconds) the graph thread will EVER wait on the wrapped MLflow
-# trace sink per event/artifact. The production hang was a synchronous MLflow
-# call with no timeout freezing the graph thread inside the ROUTE trace
-# callback. The telemetry sink is best-effort (WS4), so if it does not return
-# within this bound the graph thread abandons it and proceeds — a parse must
-# never be held hostage by telemetry. Env-overridable (tests set it low).
-def _sink_call_timeout() -> float:
-    """Return the per-call wrapped-sink timeout (seconds), env-overridable.
-
-    A malformed / non-positive value falls back to the default (never raises —
-    a config typo must not break parsing).
-    """
-    raw = os.getenv("TELEMETRY_SINK_TIMEOUT_SECONDS", "5.0")
-    try:
-        val = float(raw)
-    except (TypeError, ValueError):
-        return 5.0
-    return val if val > 0 else 5.0
+# Telemetry decoupling: the parse graph thread must NEVER block on MLflow (the
+# production hang was a synchronous ``mlflow.start_run()`` on the graph thread in
+# the ROUTE trace callback). ``_ProgressTraceSink`` pushes the SSE/progress event
+# synchronously, then hands the MLflow work to the single background telemetry
+# consumer (``harness.telemetry_dispatch``) via a non-blocking enqueue and returns
+# immediately. See that module for why one serial consumer preserves the
+# request_id → run join key and cannot leak threads or wedge a parse.
 
 # Cache for the most recent judge evaluation result (populated by
 # ``POST /api/run-judge`` and returned by ``GET /api/judge-results``).
@@ -175,6 +164,14 @@ class RequestContext:
         self.request_id = request_id
         self.events: queue.Queue[Optional[dict[str, Any]]] = queue.Queue()
         self.done = threading.Event()
+        # Cooperative-cancellation signal, distinct from ``done`` (which just
+        # means "no more SSE events"). Set by an endpoint when it gives up on a
+        # slow parse (the /api/v1/parse 504 or the /api/parse watchdog). The
+        # extraction adapter checks it before token acquisition, each attempt,
+        # and each backoff sleep so a zombie worker stops promptly; ``_run_parse``
+        # checks it before publishing/caching so a late worker cannot overwrite
+        # the context (or push events) after the caller already gave up.
+        self.cancelled = threading.Event()
         self.outcome: Optional[str] = None
         self.error: Optional[str] = None
         self.started_at = datetime.now(UTC)
@@ -484,43 +481,21 @@ class _ProgressTraceSink(TraceSink):
         wrapped: Optional[TraceSink],
         ctx: RequestContext,
         state: Any = None,
+        dispatcher: Any = None,
     ) -> None:
         self._wrapped = wrapped
         self._ctx = ctx
         self._state = state
-        # Latch: once the wrapped MLflow sink has stalled (timed out) on this
-        # request, stop calling it for the rest of the request. This bounds the
-        # graph thread's total telemetry wait to ONE timeout even when MLflow is
-        # hung for every event, so the parse still finishes in a few seconds.
-        self._wrapped_degraded = False
+        # The single background telemetry consumer. Injected in tests; otherwise
+        # the process-wide singleton. Resolved lazily (and only when there IS a
+        # wrapped MLflow sink) so a stdlib-only import path never touches it.
+        self._dispatcher = dispatcher
 
-    def _call_wrapped(self, action: str, fn_name: str, *args: Any) -> None:
-        """Invoke a wrapped-sink method under a hard timeout; never block the graph.
-
-        The SSE/progress event has ALREADY been pushed by the caller before this
-        runs, so the frontend is never held up by MLflow. The wrapped call runs
-        in a worker thread bounded by ``_sink_call_timeout()``; if it does not
-        return in time we abandon it, latch ``_wrapped_degraded`` (skip further
-        wrapped calls for this request), and return control to the graph thread.
-        """
-        if self._wrapped is None or self._wrapped_degraded:
-            return
-        from harness.tracing_safe import call_bounded
-
-        sentinel = object()
-        fn = getattr(self._wrapped, fn_name, None)
-        if fn is None:
-            return
-        result = call_bounded(action, _sink_call_timeout(), lambda: (fn(*args), sentinel)[1])
-        if result is not sentinel:
-            # Timed out (abandoned) or raised — degrade so we don't pay the
-            # timeout again on every subsequent event of this request.
-            self._wrapped_degraded = True
-            _LOGGER.warning(
-                "telemetry sink degraded for %s (call [%s] did not complete in %.1fs); "
-                "skipping further telemetry for this request",
-                self._ctx.request_id, action, _sink_call_timeout(),
-            )
+    def _get_dispatcher(self) -> Any:
+        if self._dispatcher is None:
+            from harness.telemetry_dispatch import get_dispatcher
+            self._dispatcher = get_dispatcher()
+        return self._dispatcher
 
     def record(self, event: TraceEvent) -> None:
         # Push the SSE/progress event FIRST and UNCONDITIONALLY — the frontend
@@ -537,19 +512,24 @@ class _ProgressTraceSink(TraceSink):
         if event.name == "extract" and not event.error:
             self._push_extraction_items()
 
-        # Only now invoke the wrapped MLflow sink — under a hard timeout so a
-        # hung/blocked tracking-server call can never stall the graph thread.
-        self._call_wrapped(f"sink.record.{event.name}", "record", event)
+        # Hand the MLflow work to the background consumer with a NON-BLOCKING
+        # enqueue and return immediately — the graph thread never waits on
+        # telemetry. Dropped if the consumer is backed up (best-effort).
+        if self._wrapped is not None:
+            self._get_dispatcher().submit(self._wrapped.record, event)
 
     def log_artifact(self, data: bytes, path: str, request_id: str | None = None) -> None:
-        """Delegate artifact logging to the wrapped sink under a hard timeout.
+        """Enqueue artifact logging onto the background telemetry consumer.
 
         Passes THIS request's id so the MLflow sink attaches the artifact to the
         correct parse run (runs are explicit — there is no active-run fallback).
-        Never blocks the graph thread: artifact logging must never break the SSE
-        stream or the parse.
+        Non-blocking: artifact logging must never stall the graph thread or the
+        SSE stream.
         """
-        self._call_wrapped("sink.log_artifact", "log_artifact", data, path, self._ctx.request_id)
+        if self._wrapped is not None:
+            self._get_dispatcher().submit(
+                self._wrapped.log_artifact, data, path, self._ctx.request_id,
+            )
 
     def _push_extraction_items(self) -> None:
         """Push one ``extraction_item`` SSE event per card / transaction / reward."""
@@ -619,6 +599,10 @@ def _build_deps(ctx: RequestContext, state: Any = None,
     extraction = LunaExtractionAdapter(
         prompt_override=prompt_override,
         schema_override=schema_override,
+        # Cooperative cancellation: the adapter checks this before token
+        # acquisition, each attempt, and each backoff sleep so a zombie worker
+        # stops promptly once an endpoint has given up (504 / watchdog).
+        cancel_event=ctx.cancelled,
     )
 
     trace_sink = _ProgressTraceSink(_get_trace_sink(), ctx, state)
@@ -682,6 +666,18 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str,
         from graph.graph import run_graph
         final_state = run_graph(deps, state)
 
+        # FAIL-LOUD / freeze: if an endpoint already gave up on this parse
+        # (504 timeout or the async watchdog set ``cancelled``), a late-finishing
+        # worker must NOT publish or cache its result — the caller has moved on
+        # and the timeout response is authoritative. Discard silently: the
+        # sentinel in ``finally`` still closes any open SSE stream.
+        if ctx.cancelled.is_set():
+            _LOGGER.warning(
+                "parse[%s]: completed AFTER cancellation; discarding result "
+                "(not published/cached)", ctx.request_id,
+            )
+            return
+
         # Store extraction snapshot for /api/results fallback.
         # The extraction_item + extraction SSE events were already pushed
         # by _ProgressTraceSink when the extract node completed.
@@ -715,6 +711,44 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str,
         ctx.push("error", {"message": str(exc), "request_id": ctx.request_id})
     finally:
         ctx.push_sentinel()
+
+
+def _start_parse_watchdog(ctx: RequestContext, timeout: float) -> None:
+    """Fail-loud watchdog for the async (streaming) parse path.
+
+    The async ``POST /api/parse`` returns immediately and the client consumes an
+    SSE stream, so there is no synchronous response to attach a 504 to. This
+    watchdog gives that path the SAME fail-loud guarantee as ``/api/v1/parse``:
+    if the parse has not finished within ``timeout`` it cancels the worker
+    (cooperatively, via ``ctx.cancelled`` — the extraction adapter and
+    ``_run_parse`` both honour it) and closes the stream with a structured
+    ``TIMEOUT`` error event, so a stalled parse never leaves the client hanging.
+
+    Runs on its own daemon thread and exits immediately (does nothing) when the
+    parse finishes normally within the window.
+    """
+    def _watch() -> None:
+        if ctx.done.wait(timeout):
+            return  # parse finished (or errored) normally — nothing to do
+        ctx.cancelled.set()
+        _LOGGER.error(
+            "parse[%s]: exceeded %.0fs; cancelling worker and closing stream "
+            "(TIMEOUT)", ctx.request_id, timeout,
+        )
+        ctx.push("error", {
+            "message": (
+                f"parse did not complete within {timeout:.0f}s "
+                f"(extraction retry budget exceeded)"
+            ),
+            "request_id": ctx.request_id,
+            "status": "TIMEOUT",
+            "timeout": True,
+        })
+        ctx.push_sentinel()
+
+    threading.Thread(
+        target=_watch, name=f"parse-watchdog-{ctx.request_id}", daemon=True,
+    ).start()
 
 
 def _run_judge_evaluation_bg(sample_size: int) -> None:
@@ -1097,6 +1131,10 @@ def create_app():
             daemon=True,
         )
         thread.start()
+        # Fail-loud: cancel the worker and close the stream with a structured
+        # TIMEOUT if the parse outlives the extraction retry budget (+margin),
+        # the same bound the synchronous /api/v1/parse uses.
+        _start_parse_watchdog(ctx, _sync_parse_timeout())
 
         return {"request_id": request_id}
 
@@ -1198,9 +1236,11 @@ def create_app():
             )
         except asyncio.TimeoutError:
             # FAIL LOUD: the pipeline exceeded even the retry budget + margin.
-            # Signal the worker to stop (best-effort) and return a clear 504 —
-            # never a silent hang. The worker's retry ladder is bounded below
-            # this timeout, so it is finishing/finished rather than looping.
+            # Cancel the worker (cooperative: the extraction adapter checks
+            # ``cancelled`` before its next attempt/backoff, and ``_run_parse``
+            # checks it before publishing so a late worker cannot overwrite this
+            # request's context after we return the 504) and close any stream.
+            ctx.cancelled.set()
             ctx.done.set()
             elapsed = (datetime.now(UTC) - t_start).total_seconds()
             _LOGGER.error(

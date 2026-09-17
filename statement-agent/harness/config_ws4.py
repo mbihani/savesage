@@ -76,13 +76,20 @@ class TracingConfig:
     # allowed through even if it exceeds the cap (it triggers a flush, so no
     # accumulation). CONFIGURE(ws4-max-events-per-request)
     max_events_per_request: int = 100  # CONFIGURE(ws4-max-events-per-request)
-    # Hard per-operation timeout (seconds) for EVERY MLflow call the sink makes
-    # (create_run, set_tag, log_param/metric, flush spans, log_artifact,
-    # set_terminated, log_feedback). A tracking-server call that hangs must never
-    # freeze the parse graph thread — each op runs under this bound and is
-    # abandoned past it (the parse always completes, even with zero telemetry).
-    # CONFIGURE(ws4-op-timeout)
-    op_timeout_seconds: float = 5.0  # CONFIGURE(ws4-op-timeout)
+    # Transport-level HTTP timeout (seconds) applied to the MLflow tracking
+    # client via ``MLFLOW_HTTP_REQUEST_TIMEOUT`` (set in configure_tracing when
+    # the operator has not). ALL telemetry runs on a single background consumer
+    # thread (harness.telemetry_dispatch) decoupled from the parse, so this bound
+    # only governs how long a hung tracking-server REST call can stall the
+    # CONSUMER before it is abandoned and the consumer moves on — it never
+    # affects a parse. Generous enough not to kill a legitimately slow call
+    # (e.g. a first-request cold start) but finite so the consumer self-heals.
+    # CONFIGURE(ws4-http-timeout)
+    http_request_timeout_seconds: float = 30.0  # CONFIGURE(ws4-http-timeout)
+    # Bound on pending telemetry tasks in the single-consumer queue. Bounds
+    # memory (a task may retain the source PDF bytes) under a consumer stall —
+    # excess tasks are dropped (best-effort telemetry). CONFIGURE(ws4-telemetry-queue)
+    telemetry_queue_maxsize: int = 256  # CONFIGURE(ws4-telemetry-queue)
 
 
 def _env_bool(name: str, default: bool) -> bool:
@@ -95,8 +102,8 @@ def _env_bool(name: str, default: bool) -> bool:
 def _env_float(name: str, default: float) -> float:
     """Fail-safe float env-var parse: returns default on non-numeric/non-finite values.
 
-    A malformed ``WS4_OP_TIMEOUT`` must not prevent app startup — it degrades to
-    the default with a warning, never a raise (review B1).
+    A malformed ``WS4_HTTP_REQUEST_TIMEOUT`` must not prevent app startup — it
+    degrades to the default with a warning, never a raise (review B1).
     """
     raw = os.getenv(name)
     if raw is None:
@@ -225,7 +232,8 @@ def get_tracing_config() -> TracingConfig:
         max_trace_ids=_env_int("WS4_MAX_TRACE_IDS", 1024),
         max_flushed=_env_int("WS4_MAX_FLUSHED", 2048),
         max_events_per_request=_env_int("WS4_MAX_EVENTS_PER_REQUEST", 100),
-        op_timeout_seconds=_env_float("WS4_OP_TIMEOUT", 5.0),
+        http_request_timeout_seconds=_env_float("WS4_HTTP_REQUEST_TIMEOUT", 30.0),
+        telemetry_queue_maxsize=_env_int("WS4_TELEMETRY_QUEUE_MAXSIZE", 256),
     )
 
 

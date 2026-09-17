@@ -43,7 +43,7 @@ from .tracing_keys import (
     SPAN_ATTR_MODEL,
     SPAN_ATTR_MODEL_PROVIDER,
 )
-from .tracing_safe import best_effort, call_bounded
+from .tracing_safe import best_effort
 from .tracing_spans import SpanTreeBuilder, SpanOp, redact_telemetry_attributes, span_type_for, to_ns
 
 _LOGGER = logging.getLogger("statement-agent.tracing")
@@ -71,6 +71,24 @@ def configure_tracing(config: TracingConfig, mlflow_module: Any = None) -> None:
     ``mlflow_module`` lets tests inject a fake; production leaves it None so the
     real mlflow is imported function-local here.
     """
+    # Bound the tracking client's HTTP transport so a hung tracking-server call
+    # cannot stall the single telemetry consumer forever (it is abandoned at the
+    # transport layer and the consumer moves on). Set only when the operator has
+    # not, so a deploy-time override wins. This is the hang bound now that ALL
+    # MLflow work runs on the background consumer (harness.telemetry_dispatch),
+    # off the parse graph thread. ``MLFLOW_HTTP_REQUEST_TIMEOUT`` is honoured by
+    # mlflow's REST tracking store (create_run / log_* / set_terminated).
+    if not os.environ.get("MLFLOW_HTTP_REQUEST_TIMEOUT"):
+        os.environ["MLFLOW_HTTP_REQUEST_TIMEOUT"] = str(
+            int(config.http_request_timeout_seconds)
+        )
+    # Keep trace export SYNCHRONOUS on the consumer thread (unless the operator
+    # opted into async): the consumer owns the full lifecycle serially, so an
+    # async background exporter would only add a second telemetry thread and make
+    # SOURCE_RUN linkage timing nondeterministic. Deterministic synchronous
+    # export keeps create → span-flush → link → terminate ordered on one thread.
+    if not os.environ.get("MLFLOW_ENABLE_ASYNC_TRACE_LOGGING"):
+        os.environ["MLFLOW_ENABLE_ASYNC_TRACE_LOGGING"] = "false"
     mlf = mlflow_module if mlflow_module is not None else _import_mlflow()
     if config.tracking_uri == "databricks" and config.databricks_profile:
         # Resolve the config file path the same way the SDK does: honour
@@ -177,6 +195,14 @@ class MLflowTraceSink(TraceSink):
         # active run to log to. The run carries artifacts, metrics (when judged),
         # and the ``judged`` tag.
         self._run_ids: "OrderedDict[str, str]" = OrderedDict()
+        # Bounded set of request_ids for which run creation was ALREADY attempted
+        # (whether it succeeded, failed, or timed out at the transport). Guards
+        # against creating a SECOND run for the same request on a later event when
+        # the first create_run did not land a run_id — a duplicate run would give
+        # the request_id → run join key TWO runs and corrupt the judge scorer's
+        # lookup. At-most-once creation keeps the mapping unambiguous. Bounded LRU
+        # like the other per-request maps (review B2).
+        self._run_attempted: "OrderedDict[str, bool]" = OrderedDict()
         self._mlflow_factory = mlflow_factory  # test seam: inject a fake/raising mlflow
         self._mlflow_client: Any = None
         # An explicit MlflowClient() is used for ALL run-scoped writes
@@ -287,15 +313,6 @@ class MLflowTraceSink(TraceSink):
             return None
         return getattr(exp, "experiment_id", None)
 
-    def _timed(self, action: str, fn: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
-        """Run one MLflow operation under the hard per-op timeout (best-effort).
-
-        Every mlflow-touching closure the sink runs goes through here so a hung
-        tracking-server call is abandoned after ``op_timeout_seconds`` and the
-        caller (the graph thread) proceeds — telemetry must never block the parse.
-        """
-        return call_bounded(action, self._config.op_timeout_seconds, fn, *args, **kwargs)
-
     def _link_trace_to_run(self, trace_id: str, run_id: str) -> None:
         """Associate ``trace_id`` with ``run_id`` via the in-memory trace manager.
 
@@ -351,6 +368,13 @@ class MLflowTraceSink(TraceSink):
         """
         if request_id in self._run_ids:
             return  # already started for this request
+        if request_id in self._run_attempted:
+            # A run was already attempted for this request and did NOT land a
+            # run_id (create_run failed or was transport-abandoned). Do NOT try
+            # again on a later event — a second create_run would give this
+            # request two runs and make the request_id → run join key ambiguous.
+            return
+        self._mark_run_attempted(request_id)
         self._ensure_configured()
 
         def _do() -> None:
@@ -376,7 +400,12 @@ class MLflowTraceSink(TraceSink):
             if run_id is not None:
                 self._set_run_id(request_id, run_id)
 
-        self._timed("mlflow.create_run", _do)
+        best_effort("mlflow.create_run", _do)
+
+    def _mark_run_attempted(self, request_id: str) -> None:
+        self._run_attempted[request_id] = True
+        while len(self._run_attempted) > self._config.max_trace_ids:
+            self._run_attempted.popitem(last=False)
 
     def _set_run_id(self, request_id: str, run_id: str) -> None:
         self._run_ids[request_id] = run_id
@@ -409,7 +438,7 @@ class MLflowTraceSink(TraceSink):
             client = self._get_client()
             client.set_terminated(run_id)
 
-        self._timed("mlflow.set_terminated", _do)
+        best_effort("mlflow.set_terminated", _do)
         self.pop_run_id(request_id)
 
     # --- TraceSink ABC ---
@@ -544,7 +573,7 @@ class MLflowTraceSink(TraceSink):
             if isinstance(n_txn, (int, float)):
                 _metric("n_transactions", n_txn)
 
-        self._timed("mlflow.run_params_metrics_do", _do)
+        best_effort("mlflow.run_params_metrics_do", _do)
 
     def _flush(self, ops: list[SpanOp], request_id: str) -> None:
         _LOGGER.debug("tracing flush: %d spans for %s", len(ops), request_id)
@@ -599,7 +628,7 @@ class MLflowTraceSink(TraceSink):
             if root_trace_id:
                 self._set_trace_id(request_id, root_trace_id)
 
-        self._timed("mlflow.flush", _do)
+        best_effort("mlflow.flush", _do)
 
     def _apply_attributes(self, live: Any, event: TraceEvent) -> None:
         # Redacted caller-provided attributes (counts/hashes/paths/bools, never PII).
@@ -683,6 +712,7 @@ class MLflowTraceSink(TraceSink):
             self._builder.abandon(request_id)
             self._trace_ids.pop(request_id, None)
             self._run_ids.pop(request_id, None)
+            self._run_attempted.pop(request_id, None)
         except _CONTROL_EXCEPTIONS:
             raise
         except BaseException as exc:  # noqa: BLE001 - cleanup must never raise
@@ -719,7 +749,7 @@ class MLflowTraceSink(TraceSink):
                 metadata=payload["metadata"],
             )
 
-        self._timed("mlflow.log_judge_verdict", _do)
+        best_effort("mlflow.log_judge_verdict", _do)
 
     # Convenience for WS6/WS3: also return metrics for run-side logging if desired.
     def judge_metrics(self, verdict: JudgeVerdict) -> dict[str, float]:
@@ -774,7 +804,7 @@ class MLflowTraceSink(TraceSink):
                 filepath.write_bytes(data)
                 client.log_artifact(run_id, str(filepath), artifact_path=artifact_dir)
 
-        self._timed("mlflow.log_artifact", _do)
+        best_effort("mlflow.log_artifact", _do)
 
 
 def build_trace_sink(config: TracingConfig | None = None) -> MLflowTraceSink:
