@@ -45,15 +45,26 @@ class _FakeMLflow:
     class langchain:
         autolog = staticmethod(lambda **kw: None)
     def start_span_no_context(self, **kw): return _FakeLiveSpan()
-    def start_run(self):
+    def MlflowClient(self): return _FakeClient()
+
+
+class _FakeExperiment:
+    experiment_id = "exp-fake-b2"
+
+
+class _FakeClient:
+    def get_experiment_by_name(self, name): return _FakeExperiment()
+    def create_run(self, experiment_id, tags=None, run_name=None, start_time=None):
         class _FakeRunInfo:
             run_id = "fake-run-b2"
         class _FakeRun:
             info = _FakeRunInfo()
         return _FakeRun()
-    def end_run(self): pass
-    def log_param(self, key, value): pass
-    def log_metric(self, key, value): pass
+    def set_terminated(self, run_id, status=None, end_time=None): pass
+    def set_tag(self, run_id, key, value): pass
+    def log_param(self, run_id, key, value): pass
+    def log_metric(self, run_id, key, value): pass
+    def log_artifact(self, run_id, local_path, artifact_path=None): pass
 
 
 class BoundedMemoryTest(unittest.TestCase):

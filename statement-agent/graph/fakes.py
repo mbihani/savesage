@@ -47,7 +47,7 @@ class InMemoryTraceSink(TraceSink):
     def record(self, event: TraceEvent) -> None:
         self.events.append(event)
 
-    def log_artifact(self, data: bytes, path: str) -> None:
+    def log_artifact(self, data: bytes, path: str, request_id: str | None = None) -> None:
         self.artifacts.append((data, path))
 
 

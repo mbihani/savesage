@@ -67,21 +67,8 @@ class _RecordingMLflow:
     class langchain:
         autolog = staticmethod(lambda **kw: None)
 
-    def start_run(self):
-        class _FakeRunInfo:
-            run_id = "fake-run-001"
-        class _FakeRun:
-            info = _FakeRunInfo()
-        return _FakeRun()
-
-    def end_run(self):
-        self.end_run_calls += 1
-
-    def log_param(self, key, value):
-        pass
-
-    def log_metric(self, key, value):
-        pass
+    def MlflowClient(self):
+        return _FakeClient(self)
 
     def start_span_no_context(self, *, name, span_type, parent_span=None, start_time_ns=None):
         self._counter += 1
@@ -94,6 +81,48 @@ class _RecordingMLflow:
         )
         self.start_calls.append((name, span_type, parent_span, start_time_ns))
         return live
+
+
+class _FakeExperiment:
+    experiment_id = "exp-fake-001"
+
+
+class _FakeClient:
+    """Explicit MlflowClient stand-in delegating run writes to the fake module.
+
+    The sink now creates runs and logs params/metrics/tags through an explicit
+    ``MlflowClient(run_id, ...)`` instead of the fluent active-run API. This fake
+    records ``set_terminated`` as ``end_run_calls`` so the existing assertions
+    (run finalized once, run_id popped) still hold.
+    """
+
+    def __init__(self, outer):
+        self.outer = outer
+
+    def get_experiment_by_name(self, name):
+        return _FakeExperiment()
+
+    def create_run(self, experiment_id, tags=None, run_name=None, start_time=None):
+        class _Info:
+            run_id = "fake-run-001"
+        class _Run:
+            info = _Info()
+        return _Run()
+
+    def set_terminated(self, run_id, status=None, end_time=None):
+        self.outer.end_run_calls += 1
+
+    def set_tag(self, run_id, key, value):
+        pass
+
+    def log_param(self, run_id, key, value):
+        pass
+
+    def log_metric(self, run_id, key, value):
+        pass
+
+    def log_artifact(self, run_id, local_path, artifact_path=None):
+        pass
 
 
 def _evt(name, sid, parent=None, attrs=None, offset=0, rid="req-1"):

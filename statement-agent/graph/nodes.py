@@ -14,6 +14,7 @@ builder wires up. That keeps this module on the stdlib test path.
 
 from __future__ import annotations
 
+import logging
 from dataclasses import replace as dc_replace
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
@@ -30,6 +31,8 @@ from graph.validation import load_schema_for_bank, validate_payload
 
 if TYPE_CHECKING:  # pragma: no cover
     pass
+
+_LOGGER = logging.getLogger("statement-agent.nodes")
 
 
 class NodeDeps:
@@ -174,6 +177,11 @@ def route_node(state: GraphState, deps: NodeDeps) -> GraphState:
         # re-read the file and could disagree if it was edited between reads.
         state.prompt_version = get_prompt_version(state.prompt, state.request.bank)
         state.stage = Stage.ROUTED
+        # The production hang lived in THIS trace callback (the sink blocked with
+        # no timeout). Bracket it with timestamped logs so the same class of
+        # stall is immediately visible in logs next time.
+        _LOGGER.info("route[%s]: prompt resolved (v=%s); emitting route trace",
+                     state.request_id, state.prompt_version)
         _trace(deps, state, "route",
                # ``prompt_version`` is a span attribute so the route span records
                # WHICH prompt was selected (the run param/tag below also uses it).
@@ -182,6 +190,8 @@ def route_node(state: GraphState, deps: NodeDeps) -> GraphState:
                outputs={"bank": bank_name(state.request.bank),
                         "prompt_resolved": True,
                         "prompt_version": state.prompt_version})
+        _LOGGER.info("route[%s]: route trace emitted; entering extract",
+                     state.request_id)
     except Exception as exc:
         state.mark_failure(Stage.ROUTED, f"route: {exc}")
         state.outcome = Outcome.EXTRACTION_FAILED

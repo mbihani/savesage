@@ -43,7 +43,7 @@ from .tracing_keys import (
     SPAN_ATTR_MODEL,
     SPAN_ATTR_MODEL_PROVIDER,
 )
-from .tracing_safe import best_effort
+from .tracing_safe import best_effort, call_bounded
 from .tracing_spans import SpanTreeBuilder, SpanOp, redact_telemetry_attributes, span_type_for, to_ns
 
 _LOGGER = logging.getLogger("statement-agent.tracing")
@@ -159,6 +159,7 @@ class MLflowTraceSink(TraceSink):
         config: TracingConfig | None = None,
         *,
         mlflow_factory: Callable[[], Any] | None = None,
+        client_factory: Callable[[], Any] | None = None,
     ) -> None:
         self._config = config or get_tracing_config()
         self._builder = SpanTreeBuilder(
@@ -178,6 +179,22 @@ class MLflowTraceSink(TraceSink):
         self._run_ids: "OrderedDict[str, str]" = OrderedDict()
         self._mlflow_factory = mlflow_factory  # test seam: inject a fake/raising mlflow
         self._mlflow_client: Any = None
+        # An explicit MlflowClient() is used for ALL run-scoped writes
+        # (create_run / log_param / log_metric / set_tag / set_terminated /
+        # log_artifact) with an explicit run_id, instead of the process-global
+        # fluent ``mlflow.start_run()`` + active-run state. The fluent API binds
+        # a trace's ``mlflow.sourceRun`` and ``set_tag`` to
+        # ``_get_latest_active_run()`` — the most recently started run across ALL
+        # threads — so under concurrent parses (and the judge scheduler daemon)
+        # a run's tag / trace could bind to the WRONG run, and ``start_run()``
+        # could hang the graph thread on the tracking server. Explicit run_id is
+        # thread-safe and never contends on global active-run state. The trace is
+        # relinked to its own run explicitly in ``_flush`` (see
+        # ``_link_trace_to_run``). ``client_factory`` is a test seam mirroring
+        # ``mlflow_factory``; production leaves it None and derives the client
+        # from the (function-local) mlflow module.
+        self._client_factory = client_factory
+        self._client: Any = None
         self._configured = False
         self._disabled = False  # set by _guard after repeated consecutive hard failures
         # Circuit-breaker state: a SINGLE hard failure must not permanently kill
@@ -234,6 +251,73 @@ class MLflowTraceSink(TraceSink):
             self._mlflow_client = _import_mlflow()
         return self._mlflow_client
 
+    def _get_client(self) -> Any:
+        """Return the explicit ``MlflowClient`` used for all run-scoped writes.
+
+        Prefers the injected ``client_factory`` (test seam), else derives the
+        client from the mlflow module (``mlflow.MlflowClient`` — a stable
+        top-level alias). The client is stateless w.r.t. active runs, so a single
+        instance is cached and reused across concurrent parses.
+        """
+        if self._client_factory is not None:
+            return self._client_factory()
+        if self._client is None:
+            self._client = self._mlflow().MlflowClient()
+        return self._client
+
+    def _resolve_experiment_id(self, client: Any) -> str | None:
+        """Resolve the numeric experiment id for ``create_run``.
+
+        ``client.create_run`` needs an explicit experiment id (unlike the fluent
+        ``start_run`` which reads the active experiment). Prefer
+        ``MLFLOW_EXPERIMENT_ID`` (set by the bound Databricks App resource, the
+        same source ``configure_tracing`` uses), else look the configured
+        experiment path up via ``get_experiment_by_name``. Returns ``None`` when
+        it cannot be resolved — the caller then skips run creation (best-effort:
+        a parse still completes, just without a run/artifacts/metrics).
+        """
+        exp_id = os.getenv("MLFLOW_EXPERIMENT_ID", "")
+        if exp_id:
+            return exp_id
+        path = resolve_experiment_path(self._config)
+        if not path:
+            return None
+        exp = best_effort("mlflow.get_experiment_by_name", client.get_experiment_by_name, path)
+        if exp is None:
+            return None
+        return getattr(exp, "experiment_id", None)
+
+    def _timed(self, action: str, fn: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+        """Run one MLflow operation under the hard per-op timeout (best-effort).
+
+        Every mlflow-touching closure the sink runs goes through here so a hung
+        tracking-server call is abandoned after ``op_timeout_seconds`` and the
+        caller (the graph thread) proceeds — telemetry must never block the parse.
+        """
+        return call_bounded(action, self._config.op_timeout_seconds, fn, *args, **kwargs)
+
+    def _link_trace_to_run(self, trace_id: str, run_id: str) -> None:
+        """Associate ``trace_id`` with ``run_id`` via the in-memory trace manager.
+
+        Because we create the run explicitly (not as the fluent active run), the
+        trace is NOT auto-tagged with ``mlflow.sourceRun``. The scorer's
+        ``_resolve_trace_for_run`` (on-demand single-trace judge) finds the trace
+        via ``search_traces(run_id=...)`` — i.e. the SOURCE_RUN metadata — so we
+        set it explicitly here (the exact pattern mlflow's own openai autolog uses
+        for runs it creates outside the active-run context). This binds the trace
+        to ITS OWN run correctly, unlike the racy global-active-run linkage.
+        Best-effort: if the internal API is unavailable, resolution falls back to
+        the run's ``request_id`` tag (set reliably at ``create_run``).
+        """
+        def _do() -> None:
+            from mlflow.tracing.constant import TraceMetadataKey  # function-local
+            from mlflow.tracing.trace_manager import InMemoryTraceManager
+
+            tm = InMemoryTraceManager().get_instance()
+            tm.set_trace_metadata(trace_id, TraceMetadataKey.SOURCE_RUN, run_id)
+
+        best_effort("mlflow.link_trace_to_run", _do)
+
     def _ensure_configured(self) -> None:
         if self._configured or not self._config.enabled:
             return
@@ -270,23 +354,29 @@ class MLflowTraceSink(TraceSink):
         self._ensure_configured()
 
         def _do() -> None:
-            mlf = self._mlflow()
-            run = mlf.start_run()
-            # start_run returns an ActiveRun; extract the run_id.
+            client = self._get_client()
+            experiment_id = self._resolve_experiment_id(client)
+            if experiment_id is None:
+                _LOGGER.warning(
+                    "tracing: no experiment id resolved; skipping run for %s "
+                    "(parse continues, no telemetry run)", request_id,
+                )
+                return
+            # Explicit run creation with the request_id tag set ATOMICALLY at
+            # creation — the on-demand single-trace judge resolves
+            # request_id -> run_id via ``search_runs(tags.request_id=...)``, so
+            # setting the tag here (rather than on a racy fluent active run)
+            # makes that fast-path resolution reliable per parse.
+            run = client.create_run(
+                experiment_id=experiment_id, tags={"request_id": request_id},
+            )
             run_id = getattr(getattr(run, "info", None), "run_id", None)
             if run_id is None:
                 run_id = str(getattr(run, "run_id", "")) or None
             if run_id is not None:
                 self._set_run_id(request_id, run_id)
-                # Tag the run with request_id so the on-demand single-trace
-                # judge (POST /api/results/{request_id}/judge) can resolve
-                # request_id -> run_id via an MLflow tag filter search. Set
-                # immediately after start_run so the tag is present before any
-                # artifacts/spans flush. Best-effort like every mlflow call.
-                best_effort("mlflow.set_tag.request_id",
-                            lambda rid=request_id: mlf.set_tag("request_id", rid))
 
-        best_effort("mlflow.start_run", _do)
+        self._timed("mlflow.create_run", _do)
 
     def _set_run_id(self, request_id: str, run_id: str) -> None:
         self._run_ids[request_id] = run_id
@@ -306,18 +396,20 @@ class MLflowTraceSink(TraceSink):
 
         Called once after the root span flushes — all child spans are ended,
         and artifacts were logged during the graph run (before the root
-        arrived). Best-effort: if ``end_run`` fails, MLflow auto-ends the run
-        on the next ``start_run()`` or process exit. The run_id is popped from
-        the bounded map regardless, so the slot is freed for reuse.
+        arrived). Best-effort: if ``set_terminated`` fails or times out, the run
+        is left RUNNING (harmless — the scorer reads runs regardless of status).
+        The run_id is popped from the bounded map regardless, so the slot is
+        freed for reuse.
         """
-        if request_id not in self._run_ids:
+        run_id = self._run_ids.get(request_id)
+        if run_id is None:
             return  # no run was started (e.g. _ensure_run failed)
 
         def _do() -> None:
-            mlf = self._mlflow()
-            mlf.end_run()
+            client = self._get_client()
+            client.set_terminated(run_id)
 
-        best_effort("mlflow.end_run", _do)
+        self._timed("mlflow.set_terminated", _do)
         self.pop_run_id(request_id)
 
     # --- TraceSink ABC ---
@@ -365,6 +457,9 @@ class MLflowTraceSink(TraceSink):
         if not ops:
             return
         root = ops[0].event
+        run_id = self._run_ids.get(root.request_id)
+        if run_id is None:
+            return  # no run for this request (create_run failed/skipped)
         # The extract event carries model_id, latency_ms, and token_usage in
         # its attributes (added by _extract_telemetry).  Match by exact name
         # to avoid picking up a similarly-named span.
@@ -381,53 +476,48 @@ class MLflowTraceSink(TraceSink):
         )
 
         def _do() -> None:
-            mlf = self._mlflow()
+            # Explicit client + run_id (never the global active run). Each write
+            # is individually best-effort so one raising call cannot abort the
+            # rest of the run's params/metrics.
+            client = self._get_client()
+
+            def _param(key: str, value: Any) -> None:
+                best_effort(f"mlflow.log_param.{key}", client.log_param, run_id, key, value)
+
+            def _metric(key: str, value: Any) -> None:
+                best_effort(f"mlflow.log_metric.{key}", client.log_metric, run_id, key, value)
+
+            def _tag(key: str, value: Any) -> None:
+                best_effort(f"mlflow.set_tag.{key}", client.set_tag, run_id, key, value)
+
             # Params from root attributes (non-PII: bank, outcome).
             bank = root.attributes.get("bank")
             if bank:
-                best_effort("mlflow.log_param.bank", mlf.log_param, "bank", bank)
+                _param("bank", bank)
                 # Also set bank as a run TAG so it appears as a column in the
                 # MLflow experiments table and is picked up by the trace sync
-                # job's _run_value(run, 'tags', 'bank') fallback.  Wrapped in a
-                # lambda (like prompt_version below) so the set_tag attribute
-                # access happens inside best-effort — some mlflow fakes predate
-                # set_tag and an eager reference would raise AttributeError.
-                best_effort(
-                    "mlflow.set_tag.bank",
-                    lambda b=bank: mlf.set_tag("bank", b),
-                )
+                # job's _run_value(run, 'tags', 'bank') fallback.
+                _tag("bank", bank)
             outcome = root.attributes.get("outcome")
             if outcome:
-                best_effort("mlflow.log_param.outcome", mlf.log_param, "outcome", outcome)
+                _param("outcome", outcome)
             # Prompt version from the route event.  Logged as BOTH a param
-            # (filterable) and a tag (visible as a column in the experiments
-            # table).  set_tag uses the active run (no run_id kwarg).
+            # (filterable) and a tag (visible as a column in the experiments table).
             prompt_version = route_evt.attributes.get("prompt_version") if route_evt else None
             if prompt_version:
-                best_effort(
-                    "mlflow.log_param.prompt_version", mlf.log_param,
-                    "prompt_version", prompt_version,
-                )
-                # set_tag is wrapped in a lambda (unlike log_param above) so the
-                # attribute access happens INSIDE best-effort: some mlflow fakes
-                # predate set_tag, and an eager ``mlf.set_tag`` reference would
-                # raise AttributeError before best-effort could catch it, aborting
-                # the rest of _do (model_id, metrics) for that run.
-                best_effort(
-                    "mlflow.set_tag.prompt_version",
-                    lambda pv=prompt_version: mlf.set_tag("prompt_version", pv),
-                )
+                _param("prompt_version", prompt_version)
+                _tag("prompt_version", prompt_version)
             # Model, usage, and latency from the extract event.
             if extract_evt is not None:
                 model_id = extract_evt.attributes.get("model_id")
                 if model_id:
-                    best_effort("mlflow.log_param.model_id", mlf.log_param, "model_id", model_id)
+                    _param("model_id", model_id)
                 tu = extract_evt.attributes.get("token_usage")
                 if isinstance(tu, dict):
                     for key in ("input_tokens", "output_tokens", "total_tokens"):
                         val = tu.get(key)
                         if isinstance(val, (int, float)):
-                            best_effort(f"mlflow.log_metric.{key}", mlf.log_metric, key, val)
+                            _metric(key, val)
                 # Per-statement parse cost as a RUN METRIC so it appears as a
                 # column in the MLflow experiment Runs table. The span attribute
                 # ``mlflow.llm.cost`` (set in _apply_attributes) is only visible in
@@ -445,16 +535,16 @@ class MLflowTraceSink(TraceSink):
                     ):
                         cval = cost.get(ckey)
                         if isinstance(cval, (int, float)):
-                            best_effort(f"mlflow.log_metric.{mkey}", mlf.log_metric, mkey, cval)
+                            _metric(mkey, cval)
                 latency = extract_evt.attributes.get("latency_ms")
                 if isinstance(latency, (int, float)):
-                    best_effort("mlflow.log_metric.latency_ms", mlf.log_metric, "latency_ms", latency)
+                    _metric("latency_ms", latency)
             # Transaction count from root attributes.
             n_txn = root.attributes.get("n_transactions")
             if isinstance(n_txn, (int, float)):
-                best_effort("mlflow.log_metric.n_transactions", mlf.log_metric, "n_transactions", n_txn)
+                _metric("n_transactions", n_txn)
 
-        best_effort("mlflow.run_params_metrics_do", _do)
+        self._timed("mlflow.run_params_metrics_do", _do)
 
     def _flush(self, ops: list[SpanOp], request_id: str) -> None:
         _LOGGER.debug("tracing flush: %d spans for %s", len(ops), request_id)
@@ -487,6 +577,13 @@ class MLflowTraceSink(TraceSink):
                         "tracing: root span '%s' created, trace_id=%s",
                         op.event.name, root_trace_id,
                     )
+                    # Bind the trace to ITS run explicitly (the run is not the
+                    # fluent active run, so mlflow will not auto-set sourceRun).
+                    # Done while the trace is still in-memory (before the root
+                    # span ends and the trace exports).
+                    run_id = self._run_ids.get(request_id)
+                    if root_trace_id and run_id:
+                        self._link_trace_to_run(root_trace_id, run_id)
             # Reverse pre-order: end children before the root, with explicit times.
             for op in reversed(ops):
                 live = live_by_span.get(op.event.span_id)
@@ -502,7 +599,7 @@ class MLflowTraceSink(TraceSink):
             if root_trace_id:
                 self._set_trace_id(request_id, root_trace_id)
 
-        best_effort("mlflow.flush", _do)
+        self._timed("mlflow.flush", _do)
 
     def _apply_attributes(self, live: Any, event: TraceEvent) -> None:
         # Redacted caller-provided attributes (counts/hashes/paths/bools, never PII).
@@ -622,7 +719,7 @@ class MLflowTraceSink(TraceSink):
                 metadata=payload["metadata"],
             )
 
-        best_effort("mlflow.log_judge_verdict", _do)
+        self._timed("mlflow.log_judge_verdict", _do)
 
     # Convenience for WS6/WS3: also return metrics for run-side logging if desired.
     def judge_metrics(self, verdict: JudgeVerdict) -> dict[str, float]:
@@ -634,25 +731,38 @@ class MLflowTraceSink(TraceSink):
         return self._guard("tracing.judge_metrics", verdict_to_metrics, verdict) or {}
 
     # --- artifact logging (PDF persistence on the trace) ---
-    def log_artifact(self, data: bytes, path: str) -> None:
-        """Log a binary artifact (e.g. the source PDF) on the current trace.
+    def log_artifact(self, data: bytes, path: str, request_id: str | None = None) -> None:
+        """Log a binary artifact (e.g. the source PDF) on a parse's MLflow run.
 
-        Writes ``data`` to a temporary file and calls ``mlflow.log_artifact``
-        so the post-hoc judge can download the PDF from the trace later.
+        Writes ``data`` to a temporary file and calls
+        ``MlflowClient.log_artifact(run_id, ...)`` so the post-hoc judge can
+        download the PDF from the run later. ``request_id`` identifies WHICH
+        parse's run to log to — required now that runs are explicit (there is no
+        process-global active run to fall back on, which under concurrency could
+        attach the artifact to the wrong parse's run). ``_ProgressTraceSink``
+        supplies it from its per-request context.
         Best-effort (review B1): a failure here only disables telemetry.
         """
         if not self._config.enabled:
             return
-        self._guard("tracing.log_artifact", self._log_artifact_impl, data, path)
+        self._guard("tracing.log_artifact", self._log_artifact_impl, data, path, request_id)
 
-    def _log_artifact_impl(self, data: bytes, path: str) -> None:
+    def _log_artifact_impl(self, data: bytes, path: str, request_id: str | None) -> None:
         import tempfile
         from pathlib import Path
 
         self._ensure_configured()
+        run_id = self._run_ids.get(request_id) if request_id else None
+        if run_id is None:
+            # No run to attach to (unknown request, or create_run failed/skipped).
+            # Skipping keeps the parse whole — the artifact is telemetry only.
+            _LOGGER.warning(
+                "tracing: no run for %s; skipping artifact %s", request_id, path,
+            )
+            return
 
         def _do() -> None:
-            mlf = self._mlflow()
+            client = self._get_client()
             # log_artifact takes a local file path and uses the FILENAME as the
             # artifact name. Write bytes to a temp dir with the correct name so
             # the artifact is stored as "statement.pdf" (not a random temp name).
@@ -662,9 +772,9 @@ class MLflowTraceSink(TraceSink):
             with tempfile.TemporaryDirectory() as tmpdir:
                 filepath = Path(tmpdir) / filename
                 filepath.write_bytes(data)
-                mlf.log_artifact(str(filepath), artifact_path=artifact_dir)
+                client.log_artifact(run_id, str(filepath), artifact_path=artifact_dir)
 
-        best_effort("mlflow.log_artifact", _do)
+        self._timed("mlflow.log_artifact", _do)
 
 
 def build_trace_sink(config: TracingConfig | None = None) -> MLflowTraceSink:

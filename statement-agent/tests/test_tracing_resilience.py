@@ -55,6 +55,10 @@ class _RaisingMLflow:
 
     start_span_no_context = start_span = set_tracking_uri = set_experiment = tracing = _RaisingAttr()
     log_feedback = _RaisingAttr()
+    # The explicit-client path: obtaining the client raises, so every run-scoped
+    # write fails and is swallowed (proving a raising MLflow client never breaks
+    # record()/the sink).
+    MlflowClient = _RaisingAttr()
 
     class tracing:  # noqa: N801 - mimic mlflow.tracing namespace
         enable = staticmethod(lambda: (_ for _ in ()).throw(RuntimeError("tracing.enable broken")))

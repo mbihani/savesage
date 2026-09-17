@@ -88,6 +88,25 @@ def _is_valid_request_id(request_id: str) -> bool:
 # single uvicorn event loop.
 _BLOCKING_TIMEOUT = 15.0
 
+# Hard bound (seconds) the graph thread will EVER wait on the wrapped MLflow
+# trace sink per event/artifact. The production hang was a synchronous MLflow
+# call with no timeout freezing the graph thread inside the ROUTE trace
+# callback. The telemetry sink is best-effort (WS4), so if it does not return
+# within this bound the graph thread abandons it and proceeds — a parse must
+# never be held hostage by telemetry. Env-overridable (tests set it low).
+def _sink_call_timeout() -> float:
+    """Return the per-call wrapped-sink timeout (seconds), env-overridable.
+
+    A malformed / non-positive value falls back to the default (never raises —
+    a config typo must not break parsing).
+    """
+    raw = os.getenv("TELEMETRY_SINK_TIMEOUT_SECONDS", "5.0")
+    try:
+        val = float(raw)
+    except (TypeError, ValueError):
+        return 5.0
+    return val if val > 0 else 5.0
+
 # Cache for the most recent judge evaluation result (populated by
 # ``POST /api/run-judge`` and returned by ``GET /api/judge-results``).
 # Process-scoped: a restart clears it, which is fine for a demo.
@@ -469,8 +488,44 @@ class _ProgressTraceSink(TraceSink):
         self._wrapped = wrapped
         self._ctx = ctx
         self._state = state
+        # Latch: once the wrapped MLflow sink has stalled (timed out) on this
+        # request, stop calling it for the rest of the request. This bounds the
+        # graph thread's total telemetry wait to ONE timeout even when MLflow is
+        # hung for every event, so the parse still finishes in a few seconds.
+        self._wrapped_degraded = False
+
+    def _call_wrapped(self, action: str, fn_name: str, *args: Any) -> None:
+        """Invoke a wrapped-sink method under a hard timeout; never block the graph.
+
+        The SSE/progress event has ALREADY been pushed by the caller before this
+        runs, so the frontend is never held up by MLflow. The wrapped call runs
+        in a worker thread bounded by ``_sink_call_timeout()``; if it does not
+        return in time we abandon it, latch ``_wrapped_degraded`` (skip further
+        wrapped calls for this request), and return control to the graph thread.
+        """
+        if self._wrapped is None or self._wrapped_degraded:
+            return
+        from harness.tracing_safe import call_bounded
+
+        sentinel = object()
+        fn = getattr(self._wrapped, fn_name, None)
+        if fn is None:
+            return
+        result = call_bounded(action, _sink_call_timeout(), lambda: (fn(*args), sentinel)[1])
+        if result is not sentinel:
+            # Timed out (abandoned) or raised — degrade so we don't pay the
+            # timeout again on every subsequent event of this request.
+            self._wrapped_degraded = True
+            _LOGGER.warning(
+                "telemetry sink degraded for %s (call [%s] did not complete in %.1fs); "
+                "skipping further telemetry for this request",
+                self._ctx.request_id, action, _sink_call_timeout(),
+            )
 
     def record(self, event: TraceEvent) -> None:
+        # Push the SSE/progress event FIRST and UNCONDITIONALLY — the frontend
+        # stream must never wait on MLflow (this is the fix for the production
+        # hang, which froze the graph thread inside the route trace callback).
         stage = _STAGE_MAP.get(event.name, event.name)
         self._ctx.push("progress", {
             "stage": stage,
@@ -482,16 +537,19 @@ class _ProgressTraceSink(TraceSink):
         if event.name == "extract" and not event.error:
             self._push_extraction_items()
 
-        if self._wrapped is not None:
-            self._wrapped.record(event)
+        # Only now invoke the wrapped MLflow sink — under a hard timeout so a
+        # hung/blocked tracking-server call can never stall the graph thread.
+        self._call_wrapped(f"sink.record.{event.name}", "record", event)
 
-    def log_artifact(self, data: bytes, path: str) -> None:
-        """Delegate artifact logging to the wrapped sink (best-effort)."""
-        if self._wrapped is not None:
-            try:
-                self._wrapped.log_artifact(data, path)
-            except Exception:
-                pass  # artifact logging must never break the SSE stream
+    def log_artifact(self, data: bytes, path: str, request_id: str | None = None) -> None:
+        """Delegate artifact logging to the wrapped sink under a hard timeout.
+
+        Passes THIS request's id so the MLflow sink attaches the artifact to the
+        correct parse run (runs are explicit — there is no active-run fallback).
+        Never blocks the graph thread: artifact logging must never break the SSE
+        stream or the parse.
+        """
+        self._call_wrapped("sink.log_artifact", "log_artifact", data, path, self._ctx.request_id)
 
     def _push_extraction_items(self) -> None:
         """Push one ``extraction_item`` SSE event per card / transaction / reward."""
@@ -749,10 +807,35 @@ def _run_single_judge_bg(request_id: str, run_id: str) -> None:
 # on a fixed interval so verdicts populate without a manual trigger)
 # ---------------------------------------------------------------------------
 
-# How long the synchronous /api/v1/parse endpoint waits for the full pipeline
-# before returning a 504. Luna extraction typically takes 15-30s; 300s gives a
-# wide margin for a slow first-call cold start without hanging forever.
-_SYNC_PARSE_TIMEOUT = 300.0
+# Margin (seconds) added on top of the extraction retry budget to derive the
+# synchronous /api/v1/parse timeout. Covers routing/validation/finalize
+# overhead beyond the Luna call itself. Kept small so the API timeout stays just
+# ABOVE the worker's own bounded retry budget — the worker thread then always
+# finishes (success or ExtractionError) BEFORE the API gives up, so there is no
+# orphaned thread still retrying after the caller returned a 504.
+_SYNC_PARSE_MARGIN = 30.0
+
+# Absolute floor for the sync timeout so a tiny/misconfigured retry budget still
+# leaves room for graph overhead.
+_SYNC_PARSE_MIN_TIMEOUT = 45.0
+
+
+def _sync_parse_timeout() -> float:
+    """Compute the synchronous-parse timeout from the effective retry budget.
+
+    Aligns the API wait with the extraction adapter's own bounded retry ladder
+    (``REQUEST_TIMEOUT_SECONDS`` x ``MAX_ATTEMPTS`` + backoffs) plus a fixed
+    margin, so the worker cannot outlive the wait. Never raises — a config
+    problem falls back to the floor.
+    """
+    try:
+        from config import get_settings
+        from harness.policy import RetryPolicy
+
+        budget = RetryPolicy.from_settings(get_settings()).total_budget_seconds()
+        return max(_SYNC_PARSE_MIN_TIMEOUT, budget + _SYNC_PARSE_MARGIN)
+    except Exception:  # noqa: BLE001 - never break the request over a config read
+        return max(_SYNC_PARSE_MIN_TIMEOUT, 120.0)
 
 # Default cadence (hours) and sample size for the background judge scheduler.
 _JUDGE_INTERVAL_DEFAULT = 6
@@ -1092,34 +1175,56 @@ def create_app():
             _REQUESTS.pop(next(iter(_REQUESTS)), None)
 
         # Run the full pipeline synchronously in a worker thread with a bounded
-        # wait so a hung extraction returns a 504 rather than blocking the single
-        # uvicorn event loop. _run_parse never raises (it stores errors on ctx),
-        # so a timeout is the only failure mode that reaches the except below;
-        # the orphaned worker thread is left to complete (Python can't kill it).
+        # wait so a hung extraction returns a structured 504 rather than blocking
+        # the single uvicorn event loop. _run_parse never raises (it stores
+        # errors on ctx), so a timeout is the only failure mode that reaches the
+        # except below. The wait is derived from the extraction retry budget
+        # (+margin) so the worker's own bounded ladder finishes BEFORE we give
+        # up — no orphaned thread keeps retrying past the 504.
+        sync_timeout = _sync_parse_timeout()
         loop = asyncio.get_running_loop()
+        t_start = datetime.now(UTC)
+        _LOGGER.info(
+            "parse_v1[%s]: starting sync parse (bank=%s, timeout=%.0fs)",
+            request_id, bank_name, sync_timeout,
+        )
         try:
             await asyncio.wait_for(
                 loop.run_in_executor(
                     None, _run_parse, ctx, pdf_bytes,
                     file.filename or "statement.pdf", bank_name,
                 ),
-                timeout=_SYNC_PARSE_TIMEOUT,
+                timeout=sync_timeout,
             )
         except asyncio.TimeoutError:
+            # FAIL LOUD: the pipeline exceeded even the retry budget + margin.
+            # Signal the worker to stop (best-effort) and return a clear 504 —
+            # never a silent hang. The worker's retry ladder is bounded below
+            # this timeout, so it is finishing/finished rather than looping.
+            ctx.done.set()
+            elapsed = (datetime.now(UTC) - t_start).total_seconds()
+            _LOGGER.error(
+                "parse_v1[%s]: sync parse timed out after %.0fs (budget=%.0fs); "
+                "returning 504", request_id, elapsed, sync_timeout,
+            )
             return JSONResponse(
                 status_code=504,
                 content={
                     "request_id": request_id,
                     "bank": bank_name,
-                    "status": "EXTRACTION_FAILED",
+                    "status": "TIMEOUT",
                     "extraction": None,
                     "error": (
-                        f"parse did not complete within "
-                        f"{_SYNC_PARSE_TIMEOUT:.0f}s"
+                        f"parse did not complete within {sync_timeout:.0f}s "
+                        f"(extraction retry budget exceeded)"
                     ),
                     "verdict": None,
                 },
             )
+        _LOGGER.info(
+            "parse_v1[%s]: sync parse finished in %.1fs (outcome=%s)",
+            request_id, (datetime.now(UTC) - t_start).total_seconds(), ctx.outcome,
+        )
 
         # Build the response from the context the graph populated (pure helper).
         status_code, body = _build_v1_response(ctx, request_id, bank_name)

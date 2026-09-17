@@ -82,32 +82,51 @@ class _RecordingMLflow:
     class langchain:
         autolog = staticmethod(lambda **kw: None)
 
-    def start_run(self):
+    def MlflowClient(self):
+        return _FakeClient(self)
+
+    def start_span_no_context(self, *, name, span_type, parent_span=None, start_time_ns=None):
+        span = _RecordingSpan(name, self._trace_id)
+        self.spans.append(span)
+        return span
+
+
+class _FakeExperiment:
+    experiment_id = "exp-test-001"
+
+
+class _FakeClient:
+    """Explicit MlflowClient stand-in; delegates run writes to the fake module
+    so the existing ``fake.params`` / ``fake.metrics`` / ``fake.tags`` /
+    ``fake.end_run_calls`` assertions keep working under the client-based path."""
+
+    def __init__(self, outer):
+        self.outer = outer
+
+    def get_experiment_by_name(self, name):
+        return _FakeExperiment()
+
+    def create_run(self, experiment_id, tags=None, run_name=None, start_time=None):
         class _Info:
             run_id = "run-test-001"
         class _Run:
             info = _Info()
         return _Run()
 
-    def end_run(self):
-        self.end_run_calls += 1
+    def set_terminated(self, run_id, status=None, end_time=None):
+        self.outer.end_run_calls += 1
 
-    def log_param(self, key, value):
-        self.params[key] = value
+    def log_param(self, run_id, key, value):
+        self.outer.params[key] = value
 
-    def log_metric(self, key, value):
-        self.metrics[key] = value
+    def log_metric(self, run_id, key, value):
+        self.outer.metrics[key] = value
 
-    def set_tag(self, key, value):
-        self.tags[key] = value
+    def set_tag(self, run_id, key, value):
+        self.outer.tags[key] = value
 
-    def log_artifact(self, path, artifact_path=None):
+    def log_artifact(self, run_id, local_path, artifact_path=None):
         pass
-
-    def start_span_no_context(self, *, name, span_type, parent_span=None, start_time_ns=None):
-        span = _RecordingSpan(name, self._trace_id)
-        self.spans.append(span)
-        return span
 
 
 def _config():

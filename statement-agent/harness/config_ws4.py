@@ -76,6 +76,13 @@ class TracingConfig:
     # allowed through even if it exceeds the cap (it triggers a flush, so no
     # accumulation). CONFIGURE(ws4-max-events-per-request)
     max_events_per_request: int = 100  # CONFIGURE(ws4-max-events-per-request)
+    # Hard per-operation timeout (seconds) for EVERY MLflow call the sink makes
+    # (create_run, set_tag, log_param/metric, flush spans, log_artifact,
+    # set_terminated, log_feedback). A tracking-server call that hangs must never
+    # freeze the parse graph thread — each op runs under this bound and is
+    # abandoned past it (the parse always completes, even with zero telemetry).
+    # CONFIGURE(ws4-op-timeout)
+    op_timeout_seconds: float = 5.0  # CONFIGURE(ws4-op-timeout)
 
 
 def _env_bool(name: str, default: bool) -> bool:
@@ -83,6 +90,31 @@ def _env_bool(name: str, default: bool) -> bool:
     if raw is None:
         return default
     return raw.strip().lower() in ("1", "true", "yes", "on")
+
+
+def _env_float(name: str, default: float) -> float:
+    """Fail-safe float env-var parse: returns default on non-numeric/non-finite values.
+
+    A malformed ``WS4_OP_TIMEOUT`` must not prevent app startup — it degrades to
+    the default with a warning, never a raise (review B1).
+    """
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        val = float(raw)
+    except (ValueError, TypeError):
+        logging.getLogger("statement-agent.tracing").warning(
+            "invalid WS4 config %s=%r; using default %s", name, raw, default,
+        )
+        return default
+    if not math.isfinite(val) or val < 0:
+        logging.getLogger("statement-agent.tracing").warning(
+            "invalid WS4 config %s=%r (must be finite, >= 0); using default %s",
+            name, raw, default,
+        )
+        return default
+    return val
 
 
 def _env_int(name: str, default: int) -> int:
@@ -193,6 +225,7 @@ def get_tracing_config() -> TracingConfig:
         max_trace_ids=_env_int("WS4_MAX_TRACE_IDS", 1024),
         max_flushed=_env_int("WS4_MAX_FLUSHED", 2048),
         max_events_per_request=_env_int("WS4_MAX_EVENTS_PER_REQUEST", 100),
+        op_timeout_seconds=_env_float("WS4_OP_TIMEOUT", 5.0),
     )
 
 

@@ -40,10 +40,12 @@ class TraceSink(ABC):
     def record(self, event: TraceEvent) -> None:
         raise NotImplementedError
 
-    def log_artifact(self, data: bytes, path: str) -> None:
-        """Log a binary artifact (e.g. the source PDF) on the current trace.
+    def log_artifact(self, data: bytes, path: str, request_id: str | None = None) -> None:
+        """Log a binary artifact (e.g. the source PDF) on a parse's MLflow run.
 
         Default no-op; the MLflow sink overrides this to call
-        ``mlflow.log_artifact``. Best-effort: must never raise.
+        ``MlflowClient.log_artifact(run_id, ...)``. ``request_id`` selects which
+        parse's run to attach to (runs are explicit — there is no active run to
+        fall back on). Best-effort: must never raise.
         """
         pass
