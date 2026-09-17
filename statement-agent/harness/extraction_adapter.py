@@ -25,6 +25,7 @@ Design notes
 from __future__ import annotations
 
 import json
+import logging
 import re
 import time
 import urllib.error
@@ -43,11 +44,22 @@ from rules.routing import PROMPT_BY_BANK, load_schema_for_bank
 # harness.policy separately (keeps the adapter the single integration point).
 DefaultRetryPolicy = RetryPolicy
 
+_LOGGER = logging.getLogger("statement-agent.extraction")
+
 _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 
 
 class ExtractionError(RuntimeError):
     """Raised when the endpoint cannot be reached after all retries."""
+
+
+class ExtractionCancelled(ExtractionError):
+    """Raised when a parse is cancelled (an endpoint gave up) mid-extraction.
+
+    A subclass of :class:`ExtractionError` so existing callers that treat
+    extraction failure as terminal keep working, while ``_run_parse`` can tell a
+    cancellation apart from a real endpoint failure if it needs to.
+    """
 
 
 def _extract_text(resp: dict[str, Any]) -> str:
@@ -188,25 +200,96 @@ class LunaExtractionAdapter(ExtractionAdapter):
         urlopen=urllib.request.urlopen,
         prompt_override: str | None = None,
         schema_override: dict[str, Any] | None = None,
+        cancel_event: Any = None,
+        token_timeout_seconds: float = 30.0,
     ) -> None:
-        self._policy = retry_policy or RetryPolicy()
+        # Store the caller-supplied policy (may be None). When None, the policy
+        # is derived LAZILY from config.Settings in ``_policy_obj`` so
+        # REQUEST_TIMEOUT_SECONDS / MAX_ATTEMPTS actually govern the retry
+        # ladder. An explicitly-passed policy is used verbatim (tests, and any
+        # caller that wants full control — it must NOT be overridden by config).
+        self._retry_policy = retry_policy
+        self._policy_cache: RetryPolicy | None = retry_policy
         self._settings = settings  # lazily fetched in extract() if None
         self._token_provider = token_provider
         self._urlopen = urlopen
         self._prompt_override = prompt_override
         self._schema_override = schema_override
+        # Cooperative-cancellation signal (a ``threading.Event`` or None). Checked
+        # before token acquisition, before each attempt, and during each backoff
+        # sleep so a zombie worker stops promptly after an endpoint gives up.
+        self._cancel_event = cancel_event
+        # Own timeout for token acquisition (OAuth/SDK) so a hung credential call
+        # cannot stall extraction unbounded, independent of the per-attempt HTTP
+        # timeout on the Luna call itself.
+        self._token_timeout_seconds = token_timeout_seconds
+
+    def _check_cancelled(self, request_id: str) -> None:
+        """Raise :class:`ExtractionCancelled` if this parse was cancelled."""
+        if self._cancel_event is not None and self._cancel_event.is_set():
+            raise ExtractionCancelled(f"extraction cancelled for {request_id}")
+
+    def _cancellable_sleep(self, seconds: float, request_id: str) -> None:
+        """Sleep, but wake early and raise if cancellation fires mid-backoff."""
+        if self._cancel_event is not None:
+            # Event.wait returns True only if the event is set within the window.
+            if self._cancel_event.wait(seconds):
+                self._check_cancelled(request_id)  # raises ExtractionCancelled
+        else:
+            time.sleep(seconds)
+
+    def _acquire_token(self, request_id: str) -> str:
+        """Acquire an auth token under a bounded timeout (never unbounded).
+
+        Checks cancellation first, then runs the token provider under
+        ``token_timeout_seconds`` so a hung OAuth/SDK credential call is
+        abandoned rather than stalling the extraction worker forever.
+        """
+        self._check_cancelled(request_id)
+        from harness.tracing_safe import call_bounded
+
+        t_tok = time.perf_counter()
+        # Wrap the result in a tuple so a provider returning a falsy value is
+        # distinguishable from call_bounded's None-on-timeout/failure sentinel.
+        boxed = call_bounded(
+            "extract.token.acquire", self._token_timeout_seconds,
+            lambda: ("ok", self._token_provider()),
+        )
+        if boxed is None:
+            raise ExtractionError(
+                f"token acquisition timed out or failed after "
+                f"{self._token_timeout_seconds:.0f}s for {request_id}"
+            )
+        _LOGGER.info(
+            "extract[%s]: token acquired in %.0fms", request_id,
+            (time.perf_counter() - t_tok) * 1000.0,
+        )
+        return boxed[1]
 
     def _settings_obj(self):
         if self._settings is None:
             self._settings = get_settings()
         return self._settings
 
+    def _policy_obj(self) -> RetryPolicy:
+        """Return the effective retry policy, deriving it from config if unset.
+
+        An explicit policy passed at construction wins. Otherwise the policy is
+        built from ``config.Settings`` (``REQUEST_TIMEOUT_SECONDS`` /
+        ``MAX_ATTEMPTS``) and cached — previously the adapter used a hardcoded
+        ``RetryPolicy()`` default, so those config values were silently ignored.
+        """
+        if self._policy_cache is None:
+            self._policy_cache = RetryPolicy.from_settings(self._settings_obj())
+        return self._policy_cache
+
     def _build_request(self, request: ParseRequest, prompt: str, schema: dict[str, Any]) -> urllib.request.Request:
         settings = self._settings_obj()
         url = settings.endpoint_url(settings.extraction_endpoint)
         pdf = _read_pdf(request)
         body = json.dumps(extraction_payload(pdf, request.filename, prompt, schema)).encode()
-        token = self._token_provider()
+        _LOGGER.info("extract[%s]: acquiring SP/token for %s", request.request_id, url)
+        token = self._acquire_token(request.request_id)
         req = urllib.request.Request(
             url,
             data=body,
@@ -229,6 +312,9 @@ class LunaExtractionAdapter(ExtractionAdapter):
         what is retried. The timeout is the policy's ``timeout_seconds``
         (single source -- no settings timeout).
         """
+        rid = request.request_id
+        # Early-out before any network work if the parse was already cancelled.
+        self._check_cancelled(rid)
         if self._prompt_override is not None:
             prompt = self._prompt_override
         else:
@@ -236,36 +322,67 @@ class LunaExtractionAdapter(ExtractionAdapter):
             prompt = resolve_prompt(request.bank)
         schema = self._schema_override if self._schema_override is not None else load_schema_for_bank(request.bank)
         req = self._build_request(request, prompt, schema)
-        timeout = self._policy.timeout_seconds
+        policy = self._policy_obj()
+        timeout = policy.timeout_seconds
 
         last_error = ""
         t0 = time.perf_counter()
-        for attempt in range(1, self._policy.max_attempts + 1):
+        for attempt in range(1, policy.max_attempts + 1):
+            # Cooperative cancellation: stop before spending another attempt if
+            # an endpoint has given up on this parse.
+            self._check_cancelled(rid)
+            _LOGGER.info(
+                "extract[%s]: Luna attempt %d/%d (per-attempt timeout %.0fs)",
+                rid, attempt, policy.max_attempts, timeout,
+            )
+            t_att = time.perf_counter()
             try:
                 with self._urlopen(req, timeout=timeout) as r:
                     raw = r.read().decode()
                 resp = json.loads(raw)
                 latency_ms = (time.perf_counter() - t0) * 1000.0
+                _LOGGER.info(
+                    "extract[%s]: Luna response received on attempt %d in %.0fms",
+                    rid, attempt, (time.perf_counter() - t_att) * 1000.0,
+                )
                 return map_response(resp, request, latency_ms)
             except urllib.error.HTTPError as exc:
                 last_error = f"HTTP {exc.code}: {self._read_err(exc)[:500]}"
-                if exc.code in self._policy.retry_statuses and attempt < self._policy.max_attempts:
-                    time.sleep(self._policy.backoff_for_attempt(attempt))
+                if exc.code in policy.retry_statuses and attempt < policy.max_attempts:
+                    backoff = policy.backoff_for_attempt(attempt)
+                    _LOGGER.warning(
+                        "extract[%s]: attempt %d failed (%s); retrying after %.1fs",
+                        rid, attempt, last_error, backoff,
+                    )
+                    self._cancellable_sleep(backoff, rid)
                     # re-acquire token on auth failures; tokens expire ~1h
                     if exc.code in (401, 403):
-                        token = self._token_provider()
+                        token = self._acquire_token(rid)
                         req.add_header("Authorization", f"Bearer {token}")
                     continue
+                _LOGGER.warning("extract[%s]: attempt %d failed (%s); no retry",
+                                rid, attempt, last_error)
                 break
+            except ExtractionCancelled:
+                # Cancellation raised from a cancellable backoff sleep — propagate
+                # immediately; it is NOT a retryable transport error.
+                raise
             except Exception as exc:  # timeout / socket reset
                 last_error = f"{type(exc).__name__}: {exc}"
-                if attempt < self._policy.max_attempts:
-                    time.sleep(self._policy.backoff_for_attempt(attempt))
+                if attempt < policy.max_attempts:
+                    backoff = policy.backoff_for_attempt(attempt)
+                    _LOGGER.warning(
+                        "extract[%s]: attempt %d errored (%s); retrying after %.1fs",
+                        rid, attempt, last_error, backoff,
+                    )
+                    self._cancellable_sleep(backoff, rid)
                     continue
+                _LOGGER.warning("extract[%s]: attempt %d errored (%s); no retry",
+                                rid, attempt, last_error)
                 break
         raise ExtractionError(
             f"extraction failed for {request.request_id} after "
-            f"{self._policy.max_attempts} attempts: {last_error}"
+            f"{policy.max_attempts} attempts: {last_error}"
         )
 
     @staticmethod

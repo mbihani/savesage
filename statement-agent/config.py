@@ -15,8 +15,8 @@ class Settings:
     results_table: str = "statement_results"
     feedback_table: str = "field_feedback"
     cdf_table: str = "statement_results_cdf"
-    request_timeout_seconds: float = 180.0
-    max_attempts: int = 4
+    request_timeout_seconds: float = 60.0  # per-attempt Luna timeout (seconds)
+    max_attempts: int = 2  # total extraction attempts (1 retry)
 
     def endpoint_url(self, endpoint: str) -> str:
         return f"{self.workspace_host.rstrip('/')}/serving-endpoints/{endpoint}/invocations"

@@ -66,14 +66,13 @@ class _RecordingMLflow:
         autolog = staticmethod(lambda **kw: None)
 
     def start_span_no_context(self, **kw): return _FakeLiveSpan()
-    def start_run(self):
-        class _Info:
-            run_id = "run-fake-cost"
-        class _Run:
-            info = _Info()
-        return _Run()
 
-    def end_run(self): pass
+    def MlflowClient(self):
+        return _FakeClient(self)
+
+    # Recording hooks the fake client delegates to (so a subclass can override
+    # log_metric to raise — see _RaisingOnCostMLflow — and the override still
+    # takes effect through the client path).
     def set_tag(self, key, value): pass
 
     def log_param(self, key, value):
@@ -81,6 +80,41 @@ class _RecordingMLflow:
 
     def log_metric(self, key, value):
         self.metrics[key] = value
+
+
+class _FakeExperiment:
+    experiment_id = "exp-fake-cost"
+
+
+class _FakeClient:
+    """Explicit MlflowClient stand-in delegating to the fake module's recorders."""
+
+    def __init__(self, outer):
+        self.outer = outer
+
+    def get_experiment_by_name(self, name):
+        return _FakeExperiment()
+
+    def create_run(self, experiment_id, tags=None, run_name=None, start_time=None):
+        class _Info:
+            run_id = "run-fake-cost"
+        class _Run:
+            info = _Info()
+        return _Run()
+
+    def set_terminated(self, run_id, status=None, end_time=None): pass
+
+    def set_tag(self, run_id, key, value):
+        self.outer.set_tag(key, value)
+
+    def log_param(self, run_id, key, value):
+        self.outer.log_param(key, value)
+
+    def log_metric(self, run_id, key, value):
+        # Delegate so _RaisingOnCostMLflow.log_metric's raise-on-cost applies.
+        self.outer.log_metric(key, value)
+
+    def log_artifact(self, run_id, local_path, artifact_path=None): pass
 
 
 class _RaisingOnCostMLflow(_RecordingMLflow):

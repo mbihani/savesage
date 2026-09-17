@@ -538,7 +538,14 @@ class ProgressTraceSinkTest(unittest.TestCase):
         self.assertEqual(events[0]["event"], "progress")
 
     def test_wrapped_sink_receives_event(self) -> None:
-        """The wrapped (real) sink must still receive every trace event."""
+        """The wrapped (real) sink must still receive every trace event.
+
+        Delivery is now ASYNCHRONOUS via the background telemetry dispatcher (the
+        graph thread never blocks on MLflow), so we drain the dispatcher before
+        asserting the wrapped sink saw the event.
+        """
+        from harness.telemetry_dispatch import TelemetryDispatcher
+
         ctx = RequestContext("req-6")
         received = []
 
@@ -546,11 +553,14 @@ class ProgressTraceSinkTest(unittest.TestCase):
             def record(self, event: TraceEvent) -> None:
                 received.append(event)
 
-        sink = _ProgressTraceSink(_CapturingSink(), ctx, None)
+        dispatcher = TelemetryDispatcher(maxsize=8)
+        sink = _ProgressTraceSink(_CapturingSink(), ctx, None, dispatcher=dispatcher)
         ev = self._make_event("route")
         sink.record(ev)
+        self.assertTrue(dispatcher.join(timeout=5.0))
         self.assertEqual(len(received), 1)
         self.assertIs(received[0], ev)
+        dispatcher.stop()
 
     def test_no_state_no_extraction_items(self) -> None:
         """When state is None, extract/judge traces push only progress."""
