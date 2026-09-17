@@ -26,11 +26,13 @@ from __future__ import annotations
 
 import json
 import logging
+import queue as _queue
 import re
+import threading
 import time
 import urllib.error
 import urllib.request
-from typing import Any
+from typing import Any, Callable
 
 from config import get_settings
 from contracts.models import ExtractionResult, ParseRequest, TokenUsage
@@ -47,6 +49,65 @@ DefaultRetryPolicy = RetryPolicy
 _LOGGER = logging.getLogger("statement-agent.extraction")
 
 _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
+
+
+# ---------------------------------------------------------------------------
+# Shared, bounded, DAEMON worker pool for token acquisition.
+#
+# Token acquisition (OAuth/SDK) can hang on a credential outage. Round 2 ran it
+# via ``call_bounded``, which spawned a FRESH daemon thread per call and
+# abandoned it on timeout — under a sustained outage those unkillable threads
+# accumulated without bound. This pool caps the number of OS threads at
+# ``_TOKEN_POOL_MAX_WORKERS`` no matter how many acquisitions hang: excess work
+# QUEUES behind the busy workers rather than spawning more threads. The workers
+# are DAEMON so a task blocked forever never wedges interpreter shutdown (a plain
+# ``ThreadPoolExecutor``'s atexit join WOULD hang on such a task). A caller waits
+# on its task with a bounded, CANCELLATION-AWARE poll so it can give up promptly.
+# ---------------------------------------------------------------------------
+
+# CONFIGURE(token-pool-workers): OS-thread cap for concurrent token acquisitions.
+_TOKEN_POOL_MAX_WORKERS = 4
+# Poll granularity while waiting for a token task — small enough that a
+# cancellation or deadline is honoured promptly, large enough to avoid a busy
+# spin.
+_TOKEN_POLL_INTERVAL = 0.2
+
+_token_pool_queue: "_queue.Queue[Any]" = _queue.Queue()
+_token_pool_lock = threading.Lock()
+_token_pool_workers = 0
+
+
+def _token_pool_worker() -> None:
+    """Drain the shared token-acquisition queue forever (one per pool thread)."""
+    while True:
+        fn, box, done = _token_pool_queue.get()
+        try:
+            box["value"] = fn()
+        except BaseException as exc:  # noqa: BLE001 - worker records; caller inspects box
+            box["error"] = exc
+        finally:
+            done.set()
+
+
+def _submit_token_task(fn: Callable[[], Any]) -> "tuple[dict, threading.Event]":
+    """Enqueue ``fn`` on the shared pool; return (result-box, done-event).
+
+    Lazily starts up to ``_TOKEN_POOL_MAX_WORKERS`` daemon workers. Never spawns
+    a thread per call — a saturated pool queues the task instead."""
+    global _token_pool_workers
+    if _token_pool_workers < _TOKEN_POOL_MAX_WORKERS:
+        with _token_pool_lock:
+            while _token_pool_workers < _TOKEN_POOL_MAX_WORKERS:
+                threading.Thread(
+                    target=_token_pool_worker,
+                    name=f"token-acquire-{_token_pool_workers}",
+                    daemon=True,
+                ).start()
+                _token_pool_workers += 1
+    box: dict[str, Any] = {}
+    done = threading.Event()
+    _token_pool_queue.put((fn, box, done))
+    return box, done
 
 
 class ExtractionError(RuntimeError):
@@ -239,32 +300,42 @@ class LunaExtractionAdapter(ExtractionAdapter):
             time.sleep(seconds)
 
     def _acquire_token(self, request_id: str) -> str:
-        """Acquire an auth token under a bounded timeout (never unbounded).
+        """Acquire an auth token under a bounded, cancellation-aware wait.
 
-        Checks cancellation first, then runs the token provider under
-        ``token_timeout_seconds`` so a hung OAuth/SDK credential call is
-        abandoned rather than stalling the extraction worker forever.
+        Runs the token provider on the shared bounded DAEMON pool (never a fresh
+        thread per call — see ``_submit_token_task``) and waits at most
+        ``token_timeout_seconds`` for it. The wait polls at ``_TOKEN_POLL_INTERVAL``
+        so a cancellation (an endpoint gave up) SHORT-CIRCUITS it immediately
+        rather than blocking to the deadline, and a hung credential call is
+        abandoned at the deadline instead of stalling extraction forever. A hung
+        task keeps occupying its pool worker, but the worker count is capped, so a
+        credential outage can never leak an unbounded pile of threads.
         """
         self._check_cancelled(request_id)
-        from harness.tracing_safe import call_bounded
-
         t_tok = time.perf_counter()
-        # Wrap the result in a tuple so a provider returning a falsy value is
-        # distinguishable from call_bounded's None-on-timeout/failure sentinel.
-        boxed = call_bounded(
-            "extract.token.acquire", self._token_timeout_seconds,
-            lambda: ("ok", self._token_provider()),
-        )
-        if boxed is None:
+        box, done = _submit_token_task(self._token_provider)
+        deadline = t_tok + self._token_timeout_seconds
+        while True:
+            remaining = deadline - time.perf_counter()
+            if remaining <= 0:
+                raise ExtractionError(
+                    f"token acquisition timed out after "
+                    f"{self._token_timeout_seconds:.0f}s for {request_id}"
+                )
+            # Cancellation short-circuits the wait (raises ExtractionCancelled).
+            self._check_cancelled(request_id)
+            if done.wait(min(remaining, _TOKEN_POLL_INTERVAL)):
+                break
+        err = box.get("error")
+        if err is not None:
             raise ExtractionError(
-                f"token acquisition timed out or failed after "
-                f"{self._token_timeout_seconds:.0f}s for {request_id}"
+                f"token acquisition failed for {request_id}: {err}"
             )
         _LOGGER.info(
             "extract[%s]: token acquired in %.0fms", request_id,
             (time.perf_counter() - t_tok) * 1000.0,
         )
-        return boxed[1]
+        return box["value"]
 
     def _settings_obj(self):
         if self._settings is None:

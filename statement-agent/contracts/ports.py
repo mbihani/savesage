@@ -49,3 +49,24 @@ class TraceSink(ABC):
         fall back on). Best-effort: must never raise.
         """
         pass
+
+    def record_lifecycle(
+        self,
+        events: "list[TraceEvent]",
+        artifacts: "list[tuple[bytes, str]] | tuple" = (),
+    ) -> None:
+        """Handle a request's WHOLE telemetry (all events + artifacts) as ONE unit.
+
+        The background telemetry dispatcher submits exactly one of these per
+        request, so a queue-overflow drop drops the request's telemetry as a whole
+        rather than half a run lifecycle. Default: replay the buffered events
+        through ``record`` and then log the artifacts — adequate for sinks with no
+        explicit run lifecycle. The MLflow sink overrides this to run
+        ``create_run → … → set_terminated`` as a single ordered, drop-safe unit.
+        Best-effort: must never raise.
+        """
+        for event in events:
+            self.record(event)
+        request_id = events[0].request_id if events else None
+        for data, path in artifacts:
+            self.log_artifact(data, path, request_id)

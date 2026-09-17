@@ -119,6 +119,20 @@ class _RecordingClient:
         self.artifacts.append((run_id, local_path, artifact_path))
 
 
+class _FakeTraceManager:
+    """Stand-in for mlflow's ``InMemoryTraceManager`` that RECORDS the actual
+    trace-metadata mutation, so a test can assert the SOURCE_RUN metadata a trace
+    ends up carrying — not merely that ``_link_trace_to_run`` was invoked (the
+    real linkage is swallowed by best-effort when mlflow is absent, so a
+    call-only spy proves nothing about linkage)."""
+
+    def __init__(self):
+        self.metadata: dict[str, dict[str, str]] = {}
+
+    def set_trace_metadata(self, trace_id, key, value):
+        self.metadata.setdefault(trace_id, {})[key] = value
+
+
 def _config():
     return TracingConfig(
         enabled=True, tracking_uri="databricks", databricks_profile="fevm-stable",
@@ -127,21 +141,17 @@ def _config():
     )
 
 
-def _sink(client, *, link_spy=None):
-    sink = MLflowTraceSink(
+def _sink(client, *, trace_manager=None):
+    """Build a sink writing through the explicit ``client`` fake. When
+    ``trace_manager`` is given, SOURCE_RUN linkage writes to it (the real,
+    observable metadata store) so linkage can be asserted on the STORED metadata
+    rather than on whether the linkage method was called."""
+    return MLflowTraceSink(
         _config(),
         mlflow_factory=lambda: _FakeMLflowModule(),
         client_factory=lambda: client,
+        trace_manager_factory=(lambda: trace_manager) if trace_manager is not None else None,
     )
-    if link_spy is not None:
-        orig = sink._link_trace_to_run
-
-        def _spy(trace_id, run_id):
-            link_spy.append((trace_id, run_id))
-            return orig(trace_id, run_id)
-
-        sink._link_trace_to_run = _spy  # record SOURCE_RUN linkage attempts
-    return sink
 
 
 def _evt(name, sid, parent=None, attrs=None, rid="req-1", offset=0):
@@ -170,8 +180,8 @@ class TelemetryNeverBlocksGraphTest(unittest.TestCase):
 
         gate = threading.Event()  # kept closed → consumer blocks in create_run
         client = _RecordingClient(gate=gate)
-        linked: list = []
-        wrapped = _sink(client, link_spy=linked)
+        trace_mgr = _FakeTraceManager()  # observable SOURCE_RUN metadata store
+        wrapped = _sink(client, trace_manager=trace_mgr)
         dispatcher = TelemetryDispatcher(maxsize=64)
 
         def _fake_build_deps(ctx, state, prompt_override=None, schema_override=None):
@@ -242,8 +252,13 @@ class TelemetryNeverBlocksGraphTest(unittest.TestCase):
         self.assertEqual(client.terminated, ["run-blockfix-1"],
                          "the run the consumer created was not terminated")
         self.assertNotIn("req-000000000abc", wrapped._run_ids)  # slot freed
-        # Trace linked to its own run exactly once (SOURCE_RUN linkage).
-        self.assertEqual(linked, [("tr-fake-blockfix", "run-blockfix-1")])
+        # The trace's OWN metadata carries SOURCE_RUN = its run_id — assert the
+        # ACTUAL exported metadata, not that the linkage method was called (the
+        # judge join key is genuinely established).
+        self.assertEqual(
+            trace_mgr.metadata.get("tr-fake-blockfix", {}).get("mlflow.sourceRun"),
+            "run-blockfix-1",
+        )
         # The source PDF + extraction.json artifacts were attached to that run.
         self.assertTrue(client.artifacts)
         self.assertTrue(all(rid == "run-blockfix-1" for rid, _, _ in client.artifacts))
@@ -419,8 +434,8 @@ class _FakeSettings:
 class ExplicitRunIdPathTest(unittest.TestCase):
     def test_run_created_and_tagged_and_terminated_via_client(self):
         client = _RecordingClient()
-        linked: list = []
-        sink = _sink(client, link_spy=linked)
+        trace_mgr = _FakeTraceManager()
+        sink = _sink(client, trace_manager=trace_mgr)
         with patch.dict(os.environ, {"MLFLOW_EXPERIMENT_ID": "exp-777"}):
             sink.record(_evt("extract", "s-extract", parent="s-parse",
                              attrs={"model_id": "m", "token_usage": TokenUsage(1, 1, 2)}))
@@ -441,8 +456,12 @@ class ExplicitRunIdPathTest(unittest.TestCase):
         # Run finalized via set_terminated (not fluent end_run) and slot freed.
         self.assertEqual(client.terminated, ["run-blockfix-1"])
         self.assertNotIn("req-1", sink._run_ids)
-        # Happy-path: the trace is linked to its own run (SOURCE_RUN) exactly once.
-        self.assertEqual(linked, [("tr-fake-blockfix", "run-blockfix-1")])
+        # Happy-path: the trace's OWN metadata carries SOURCE_RUN = its run_id
+        # (assert the stored metadata, not that the linkage method was called).
+        self.assertEqual(
+            trace_mgr.metadata.get("tr-fake-blockfix", {}).get("mlflow.sourceRun"),
+            "run-blockfix-1",
+        )
 
     def test_no_duplicate_run_when_create_run_first_fails(self):
         # If the first create_run does not land a run_id, a LATER event must not
@@ -485,6 +504,82 @@ class ExplicitRunIdPathTest(unittest.TestCase):
             sink.record(_evt("extract", "s-e", parent="s-parse", attrs={"model_id": "m"}))
             sink.record(_evt("parse", "s-parse", parent=None, attrs={"bank": "HDFC"}))
             sink.log_artifact(b"x", "statement.pdf", request_id="req-1")
+
+
+# ---------------------------------------------------------------------------
+# 5. Queue OVERFLOW never leaves a run RUNNING (atomic lifecycle unit, issue #1)
+# ---------------------------------------------------------------------------
+
+class _UniqueRunClient(_RecordingClient):
+    """Client that mints a UNIQUE run_id per ``create_run`` and records the set
+    of created vs. terminated run_ids, so a test can prove that every run that
+    was created was also terminated (none left RUNNING)."""
+
+    def __init__(self):
+        super().__init__()
+        self._n = 0
+        self.created_run_ids: list[str] = []
+        self.terminated_run_ids: list[str] = []
+        self._id_lock = threading.Lock()
+
+    def create_run(self, experiment_id, tags=None, run_name=None, start_time=None):
+        with self._id_lock:
+            self._n += 1
+            rid = f"run-{self._n}"
+            self.created_run_ids.append(rid)
+
+        class _Info:
+            run_id = rid
+
+        class _Run:
+            info = _Info()
+        return _Run()
+
+    def set_terminated(self, run_id, status=None, end_time=None):
+        self.terminated_run_ids.append(run_id)
+
+
+class QueueOverflowLifecycleTest(unittest.TestCase):
+    def test_dropped_requests_never_leave_a_run_running(self):
+        # Flood the bounded queue while the consumer is blocked so MANY whole
+        # request lifecycles are dropped. Because each request's telemetry is ONE
+        # atomic task (create_run … set_terminated in a finally), a drop drops the
+        # WHOLE request — a run is NEVER created-but-not-terminated. So every run
+        # that was created must also have been terminated: no orphaned RUNNING run.
+        client = _UniqueRunClient()
+        wrapped = _sink(client)
+        dispatcher = TelemetryDispatcher(maxsize=2)  # tiny → easy to overflow
+
+        gate = threading.Event()
+        dispatcher.submit(lambda: gate.wait())  # occupy the consumer → queue fills
+
+        def _events(rid: str):
+            return [
+                _evt("extract", f"{rid}:e", parent=f"{rid}:parse", rid=rid,
+                     attrs={"model_id": "m"}),
+                _evt("parse", f"{rid}:parse", parent=None, rid=rid,
+                     attrs={"bank": "HDFC"}),
+            ]
+
+        with patch.dict(os.environ, {"MLFLOW_EXPERIMENT_ID": "exp-777"}):
+            # 60 whole-request lifecycle submissions; with maxsize=2 and the
+            # consumer gated, most are dropped (non-blocking put).
+            for i in range(60):
+                dispatcher.submit(wrapped.record_lifecycle, _events(f"req-{i}"), [])
+            # Drops actually happened (otherwise the test proves nothing).
+            self.assertGreaterEqual(dispatcher.dropped, 1)
+
+            gate.set()  # release the consumer; it drains the survivors
+            self.assertTrue(dispatcher.join(timeout=5.0))
+
+        # Every run that was created was also terminated — no half lifecycle.
+        self.assertEqual(
+            sorted(client.created_run_ids), sorted(client.terminated_run_ids),
+            "a created run was left RUNNING (create without terminate) after a drop",
+        )
+        # And a drop really did shed whole requests (fewer ran than were offered).
+        self.assertLess(len(client.created_run_ids), 60)
+        dispatcher.stop()
 
 
 if __name__ == "__main__":

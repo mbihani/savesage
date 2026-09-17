@@ -172,6 +172,16 @@ class RequestContext:
         # checks it before publishing/caching so a late worker cannot overwrite
         # the context (or push events) after the caller already gave up.
         self.cancelled = threading.Event()
+        # Terminal-state ownership: exactly ONE of {worker-success, worker-error,
+        # timeout} may publish the request's terminal result. The worker
+        # (``_run_parse``) and the timeout owners (the async watchdog / the
+        # synchronous /api/v1/parse 504 handler) race to finish; without a claim
+        # the watchdog could emit TIMEOUT after the worker already published a
+        # success (or vice-versa). ``claim_terminal`` is an atomic compare-and-set
+        # so the FIRST caller wins and publishes; every later caller publishes
+        # nothing.
+        self._terminal_lock = threading.Lock()
+        self._terminal_state: Optional[str] = None
         self.outcome: Optional[str] = None
         self.error: Optional[str] = None
         self.started_at = datetime.now(UTC)
@@ -191,6 +201,22 @@ class RequestContext:
         """Signal that no more events will arrive (sentinel = ``None``)."""
         self.events.put_nowait(None)
         self.done.set()
+
+    def claim_terminal(self, state: str) -> bool:
+        """Atomically claim the sole right to publish this request's outcome.
+
+        Returns True to the FIRST caller (which then owns publishing the terminal
+        result / closing the stream) and False to every later caller (which must
+        publish nothing). This is the single compare-and-set that resolves the
+        worker-success vs. watchdog-timeout race: whichever reaches here first
+        wins, the loser is silent — so a success is never clobbered by a late
+        TIMEOUT, nor a TIMEOUT by a late success.
+        """
+        with self._terminal_lock:
+            if self._terminal_state is not None:
+                return False
+            self._terminal_state = state
+            return True
 
 
 # ---------------------------------------------------------------------------
@@ -490,6 +516,14 @@ class _ProgressTraceSink(TraceSink):
         # the process-wide singleton. Resolved lazily (and only when there IS a
         # wrapped MLflow sink) so a stdlib-only import path never touches it.
         self._dispatcher = dispatcher
+        # Per-request telemetry buffer. Trace events AND artifact blobs accumulate
+        # here and are handed to the wrapped sink as ONE atomic lifecycle task
+        # (``record_lifecycle``) when the root ("parse") event arrives. Buffering
+        # per request (this sink is constructed once per parse) is what makes a
+        # queue-overflow drop drop the WHOLE request's telemetry — never half a
+        # run lifecycle (create_run enqueued, set_terminated dropped).
+        self._events: list[TraceEvent] = []
+        self._artifacts: list[tuple[bytes, str]] = []
 
     def _get_dispatcher(self) -> Any:
         if self._dispatcher is None:
@@ -498,38 +532,52 @@ class _ProgressTraceSink(TraceSink):
         return self._dispatcher
 
     def record(self, event: TraceEvent) -> None:
-        # Push the SSE/progress event FIRST and UNCONDITIONALLY — the frontend
-        # stream must never wait on MLflow (this is the fix for the production
-        # hang, which froze the graph thread inside the route trace callback).
-        stage = _STAGE_MAP.get(event.name, event.name)
-        self._ctx.push("progress", {
-            "stage": stage,
-            "trace_name": event.name,
-            "error": event.error,
-        })
+        # Suppress ALL user-facing publication once this request has been
+        # cancelled — a 504 / watchdog TIMEOUT has already won terminal ownership
+        # and closed the stream, so a late-finishing worker must NOT keep pushing
+        # progress/extraction events onto a stream the client stopped reading.
+        # (Telemetry buffering below is unaffected: it is best-effort MLflow work,
+        # not publication, and is still submitted as one atomic lifecycle unit.)
+        if not self._ctx.cancelled.is_set():
+            # Push the SSE/progress event FIRST — the frontend stream must never
+            # wait on MLflow (this is the fix for the production hang, which froze
+            # the graph thread inside the route trace callback).
+            stage = _STAGE_MAP.get(event.name, event.name)
+            self._ctx.push("progress", {
+                "stage": stage,
+                "trace_name": event.name,
+                "error": event.error,
+            })
+            # Stream individual extraction items when the extract node finishes.
+            if event.name == "extract" and not event.error:
+                self._push_extraction_items()
 
-        # Stream individual extraction items when the extract node finishes.
-        if event.name == "extract" and not event.error:
-            self._push_extraction_items()
-
-        # Hand the MLflow work to the background consumer with a NON-BLOCKING
-        # enqueue and return immediately — the graph thread never waits on
-        # telemetry. Dropped if the consumer is backed up (best-effort).
+        # Buffer the event for the atomic MLflow lifecycle. When the declared root
+        # ("parse", parent_span_id is None) arrives, the request's telemetry is
+        # complete — hand the WHOLE buffer (events + artifacts) to the background
+        # consumer as ONE non-blocking task and return immediately. A drop here
+        # drops the whole request's telemetry, never a half lifecycle.
         if self._wrapped is not None:
-            self._get_dispatcher().submit(self._wrapped.record, event)
+            self._events.append(event)
+            if event.parent_span_id is None and event.name == "parse":
+                events, self._events = self._events, []
+                artifacts, self._artifacts = self._artifacts, []
+                self._get_dispatcher().submit(
+                    self._wrapped.record_lifecycle, events, artifacts,
+                )
 
     def log_artifact(self, data: bytes, path: str, request_id: str | None = None) -> None:
-        """Enqueue artifact logging onto the background telemetry consumer.
+        """Buffer an artifact for the atomic per-request telemetry lifecycle.
 
-        Passes THIS request's id so the MLflow sink attaches the artifact to the
-        correct parse run (runs are explicit — there is no active-run fallback).
-        Non-blocking: artifact logging must never stall the graph thread or the
-        SSE stream.
+        The blob is NOT submitted on its own — it is carried with the request's
+        trace events into the single ``record_lifecycle`` task (submitted on the
+        root event) so it is logged AFTER the run is created and BEFORE it is
+        terminated, and so a queue-overflow drop drops it together with the run
+        (no artifact ever races ahead of / outlives its run). Non-blocking: never
+        stalls the graph thread or the SSE stream.
         """
         if self._wrapped is not None:
-            self._get_dispatcher().submit(
-                self._wrapped.log_artifact, data, path, self._ctx.request_id,
-            )
+            self._artifacts.append((data, path))
 
     def _push_extraction_items(self) -> None:
         """Push one ``extraction_item`` SSE event per card / transaction / reward."""
@@ -666,15 +714,17 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str,
         from graph.graph import run_graph
         final_state = run_graph(deps, state)
 
-        # FAIL-LOUD / freeze: if an endpoint already gave up on this parse
-        # (504 timeout or the async watchdog set ``cancelled``), a late-finishing
-        # worker must NOT publish or cache its result — the caller has moved on
-        # and the timeout response is authoritative. Discard silently: the
-        # sentinel in ``finally`` still closes any open SSE stream.
-        if ctx.cancelled.is_set():
+        # FAIL-LOUD / freeze: claim terminal ownership. If a timeout owner (the
+        # async watchdog or the synchronous /api/v1/parse 504 handler) already
+        # won, this worker LOSES the claim and must NOT publish or cache its
+        # result — the caller has moved on and the timeout response is
+        # authoritative. Discard silently: the sentinel in ``finally`` still
+        # closes any open SSE stream. Winning the claim is what makes exactly one
+        # of {success, timeout} publish.
+        if not ctx.claim_terminal("success"):
             _LOGGER.warning(
-                "parse[%s]: completed AFTER cancellation; discarding result "
-                "(not published/cached)", ctx.request_id,
+                "parse[%s]: completed AFTER a timeout won terminal ownership; "
+                "discarding result (not published/cached)", ctx.request_id,
             )
             return
 
@@ -707,8 +757,17 @@ def _run_parse(ctx: RequestContext, pdf_bytes: bytes, filename: str, bank: str,
         ctx.push("complete", ctx.complete_data)
 
     except Exception as exc:
-        ctx.error = str(exc)
-        ctx.push("error", {"message": str(exc), "request_id": ctx.request_id})
+        # Publish the failure only if this worker still owns the terminal state.
+        # If a timeout already won, the stream is closed and the TIMEOUT response
+        # is authoritative — a late error event would be publication after cancel.
+        if ctx.claim_terminal("error"):
+            ctx.error = str(exc)
+            ctx.push("error", {"message": str(exc), "request_id": ctx.request_id})
+        else:
+            _LOGGER.warning(
+                "parse[%s]: errored AFTER a timeout won terminal ownership; "
+                "discarding error (not published)", ctx.request_id,
+            )
     finally:
         ctx.push_sentinel()
 
@@ -730,6 +789,15 @@ def _start_parse_watchdog(ctx: RequestContext, timeout: float) -> None:
     def _watch() -> None:
         if ctx.done.wait(timeout):
             return  # parse finished (or errored) normally — nothing to do
+        # Claim terminal ownership BEFORE emitting anything. If the worker already
+        # published a success/error in the window between ``done.wait`` timing out
+        # and here, we LOSE the claim and stay silent — no TIMEOUT after a result.
+        if not ctx.claim_terminal("timeout"):
+            _LOGGER.info(
+                "parse[%s]: watchdog fired but the worker already published; "
+                "suppressing TIMEOUT", ctx.request_id,
+            )
+            return
         ctx.cancelled.set()
         _LOGGER.error(
             "parse[%s]: exceeded %.0fs; cancelling worker and closing stream "
@@ -1236,10 +1304,12 @@ def create_app():
             )
         except asyncio.TimeoutError:
             # FAIL LOUD: the pipeline exceeded even the retry budget + margin.
-            # Cancel the worker (cooperative: the extraction adapter checks
-            # ``cancelled`` before its next attempt/backoff, and ``_run_parse``
-            # checks it before publishing so a late worker cannot overwrite this
-            # request's context after we return the 504) and close any stream.
+            # Claim terminal ownership so a worker that finishes moments later
+            # LOSES the claim and discards its result instead of overwriting this
+            # request's context after we return the 504. Then cancel the worker
+            # (cooperative: the extraction adapter checks ``cancelled`` before its
+            # next attempt/backoff) and close any stream.
+            ctx.claim_terminal("timeout")
             ctx.cancelled.set()
             ctx.done.set()
             elapsed = (datetime.now(UTC) - t_start).total_seconds()

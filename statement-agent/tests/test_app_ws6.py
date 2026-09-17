@@ -537,29 +537,35 @@ class ProgressTraceSinkTest(unittest.TestCase):
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0]["event"], "progress")
 
-    def test_wrapped_sink_receives_event(self) -> None:
-        """The wrapped (real) sink must still receive every trace event.
+    def test_wrapped_sink_receives_events_as_one_lifecycle(self) -> None:
+        """The wrapped (real) sink receives a request's events as ONE atomic unit.
 
         Delivery is now ASYNCHRONOUS via the background telemetry dispatcher (the
-        graph thread never blocks on MLflow), so we drain the dispatcher before
-        asserting the wrapped sink saw the event.
+        graph thread never blocks on MLflow) AND batched: the producer buffers a
+        request's events and hands them to the wrapped sink via a SINGLE
+        ``record_lifecycle`` call on the root ("parse") event, so a queue drop
+        drops the whole request's telemetry rather than half a run lifecycle. We
+        drain the dispatcher before asserting the wrapped sink saw the batch.
         """
         from harness.telemetry_dispatch import TelemetryDispatcher
 
         ctx = RequestContext("req-6")
-        received = []
+        lifecycles = []
 
         class _CapturingSink:
-            def record(self, event: TraceEvent) -> None:
-                received.append(event)
+            def record_lifecycle(self, events, artifacts=()):
+                lifecycles.append((list(events), list(artifacts)))
 
         dispatcher = TelemetryDispatcher(maxsize=8)
         sink = _ProgressTraceSink(_CapturingSink(), ctx, None, dispatcher=dispatcher)
-        ev = self._make_event("route")
-        sink.record(ev)
+        route = self._make_event("route")
+        root = self._make_event("parse")  # parent_span_id is None → terminal
+        sink.record(route)   # buffered, not yet submitted (no root)
+        sink.record(root)    # root arrived → the whole buffer is submitted as one
         self.assertTrue(dispatcher.join(timeout=5.0))
-        self.assertEqual(len(received), 1)
-        self.assertIs(received[0], ev)
+        self.assertEqual(len(lifecycles), 1)          # exactly one lifecycle task
+        events, _artifacts = lifecycles[0]
+        self.assertEqual([e.name for e in events], ["route", "parse"])
         dispatcher.stop()
 
     def test_no_state_no_extraction_items(self) -> None:
@@ -572,6 +578,42 @@ class ProgressTraceSinkTest(unittest.TestCase):
         # Two progress events, no extraction_item or field_verdict
         self.assertEqual(len(events), 2)
         self.assertTrue(all(e["event"] == "progress" for e in events))
+
+    def test_no_publication_after_cancellation(self) -> None:
+        """Once a request is cancelled (a timeout won), a late worker's trace
+        events must NOT keep publishing progress/extraction onto the closed
+        stream (issue #3: suppress publication after cancellation)."""
+        class _MockExtraction:
+            model_id = "luna-test"
+            schema_valid = True
+            payload = {"cards": [{"cardMeta": {"cardDisplayName": "X"}}]}
+
+        class _MockState:
+            extraction = _MockExtraction()
+            verdict = None
+
+        ctx = RequestContext("req-cancel-pub")
+        ctx.cancelled.set()  # a timeout already won and closed the stream
+        sink = _ProgressTraceSink(None, ctx, _MockState())
+        sink.record(self._make_event("extract"))  # would normally push items
+        self.assertTrue(ctx.events.empty())  # nothing published post-cancel
+
+
+# ---------------------------------------------------------------------------
+# Terminal-state ownership (issue #3: exactly one of {success, timeout} wins)
+# ---------------------------------------------------------------------------
+
+class ClaimTerminalTest(unittest.TestCase):
+    def test_only_first_caller_wins(self) -> None:
+        ctx = RequestContext("req-claim")
+        self.assertTrue(ctx.claim_terminal("success"))   # first wins
+        self.assertFalse(ctx.claim_terminal("timeout"))  # loser publishes nothing
+        self.assertFalse(ctx.claim_terminal("success"))  # idempotently loses
+
+    def test_timeout_can_win_before_worker(self) -> None:
+        ctx = RequestContext("req-claim-2")
+        self.assertTrue(ctx.claim_terminal("timeout"))   # watchdog fired first
+        self.assertFalse(ctx.claim_terminal("success"))  # late worker discards
 
 
 # ---------------------------------------------------------------------------

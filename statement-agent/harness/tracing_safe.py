@@ -22,7 +22,6 @@ spam warnings on every subsequent request.
 """
 
 import logging
-import threading
 from typing import Any, Callable
 
 _LOGGER = logging.getLogger("statement-agent.tracing")
@@ -47,53 +46,3 @@ def best_effort(action: str, fn: Callable[..., Any], *args: Any, **kwargs: Any) 
     except BaseException as exc:  # noqa: BLE001 - telemetry must never break the parse
         _LOGGER.warning("telemetry best-effort swallow [%s]: %s", action, exc)
         return None
-
-
-def call_bounded(
-    action: str, timeout_seconds: float, fn: Callable[..., Any], *args: Any, **kwargs: Any
-) -> Any:
-    """Run ``fn`` in a daemon worker thread and RETURN WITHIN ``timeout_seconds``.
-
-    This is the hard time bound the production hang taught us telemetry needs:
-    a synchronous MLflow / tracking-server call with no timeout froze the graph
-    thread forever. Here the call runs off the caller's thread; if it does not
-    finish within ``timeout_seconds`` the caller stops waiting, logs a WARNING,
-    and returns ``None`` — the orphaned worker thread is abandoned (Python cannot
-    kill a thread) but it can no longer stall the caller.
-
-    Failures are swallowed like :func:`best_effort` (telemetry must never break
-    the caller). Because the work runs on a separate thread, an in-worker control
-    exception cannot cross back to the caller, so it is logged rather than
-    re-raised — the caller's own Ctrl-C handling is unaffected.
-
-    When ``timeout_seconds`` is falsy (``None``/``<= 0``) the call runs inline via
-    :func:`best_effort` (no worker thread, no bound) — used by tests/paths that
-    explicitly disable the bound.
-    """
-    if not timeout_seconds or timeout_seconds <= 0:
-        return best_effort(action, fn, *args, **kwargs)
-
-    box: dict[str, Any] = {}
-    done = threading.Event()
-
-    def _runner() -> None:
-        try:
-            box["value"] = fn(*args, **kwargs)
-        except BaseException as exc:  # noqa: BLE001 - worker thread swallows everything
-            box["error"] = exc
-        finally:
-            done.set()
-
-    worker = threading.Thread(target=_runner, name=f"telemetry-{action}"[:80], daemon=True)
-    worker.start()
-    if not done.wait(timeout_seconds):
-        _LOGGER.warning(
-            "telemetry op [%s] exceeded %.1fs; abandoning worker, caller continues",
-            action, timeout_seconds,
-        )
-        return None
-    err = box.get("error")
-    if err is not None:
-        _LOGGER.warning("telemetry best-effort swallow [%s]: %s", action, err)
-        return None
-    return box.get("value")

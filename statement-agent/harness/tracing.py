@@ -178,6 +178,7 @@ class MLflowTraceSink(TraceSink):
         *,
         mlflow_factory: Callable[[], Any] | None = None,
         client_factory: Callable[[], Any] | None = None,
+        trace_manager_factory: Callable[[], Any] | None = None,
     ) -> None:
         self._config = config or get_tracing_config()
         self._builder = SpanTreeBuilder(
@@ -221,6 +222,11 @@ class MLflowTraceSink(TraceSink):
         # from the (function-local) mlflow module.
         self._client_factory = client_factory
         self._client: Any = None
+        # Test seam for the trace metadata store used by ``_link_trace_to_run``.
+        # Production leaves it None and uses the real ``InMemoryTraceManager``;
+        # tests inject a fake so they can assert the ACTUAL SOURCE_RUN metadata
+        # mutation (not merely that the linkage method was invoked).
+        self._trace_manager_factory = trace_manager_factory
         self._configured = False
         self._disabled = False  # set by _guard after repeated consecutive hard failures
         # Circuit-breaker state: a SINGLE hard failure must not permanently kill
@@ -327,13 +333,33 @@ class MLflowTraceSink(TraceSink):
         the run's ``request_id`` tag (set reliably at ``create_run``).
         """
         def _do() -> None:
-            from mlflow.tracing.constant import TraceMetadataKey  # function-local
-            from mlflow.tracing.trace_manager import InMemoryTraceManager
-
-            tm = InMemoryTraceManager().get_instance()
-            tm.set_trace_metadata(trace_id, TraceMetadataKey.SOURCE_RUN, run_id)
+            tm = self._trace_manager()
+            tm.set_trace_metadata(trace_id, self._source_run_key(), run_id)
 
         best_effort("mlflow.link_trace_to_run", _do)
+
+    def _trace_manager(self) -> Any:
+        """Return the trace-metadata store (injected fake, else the real one)."""
+        if self._trace_manager_factory is not None:
+            return self._trace_manager_factory()
+        from mlflow.tracing.trace_manager import InMemoryTraceManager  # function-local
+
+        return InMemoryTraceManager().get_instance()
+
+    @staticmethod
+    def _source_run_key() -> str:
+        """The trace-metadata key that binds a trace to its backing run.
+
+        Prefers mlflow's own ``TraceMetadataKey.SOURCE_RUN`` constant; falls back
+        to its literal value (``"mlflow.sourceRun"`` — the exact key the scorer's
+        ``search_traces(run_id=...)`` resolution and the scorer tests rely on) so
+        the linkage is exercisable without mlflow installed (stdlib gate)."""
+        try:
+            from mlflow.tracing.constant import TraceMetadataKey  # function-local
+
+            return TraceMetadataKey.SOURCE_RUN
+        except BaseException:  # noqa: BLE001 - constant unavailable → literal fallback
+            return "mlflow.sourceRun"
 
     def _ensure_configured(self) -> None:
         if self._configured or not self._config.enabled:
@@ -391,16 +417,60 @@ class MLflowTraceSink(TraceSink):
             # request_id -> run_id via ``search_runs(tags.request_id=...)``, so
             # setting the tag here (rather than on a racy fluent active run)
             # makes that fast-path resolution reliable per parse.
-            run = client.create_run(
-                experiment_id=experiment_id, tags={"request_id": request_id},
-            )
-            run_id = getattr(getattr(run, "info", None), "run_id", None)
-            if run_id is None:
-                run_id = str(getattr(run, "run_id", "")) or None
+            run_id: str | None = None
+            try:
+                run = client.create_run(
+                    experiment_id=experiment_id, tags={"request_id": request_id},
+                )
+                run_id = getattr(getattr(run, "info", None), "run_id", None)
+                if run_id is None:
+                    run_id = str(getattr(run, "run_id", "")) or None
+            except _CONTROL_EXCEPTIONS:
+                raise
+            except BaseException as exc:  # noqa: BLE001 - create_run failed AMBIGUOUSLY
+                # The server may have CREATED the run before the HTTP response was
+                # lost (e.g. a transport timeout on create_run). We hold no run_id,
+                # so the lifecycle could never terminate that server-side run — it
+                # would leak RUNNING. Do ONE bounded best-effort search for a run
+                # carrying this request's unique tag and adopt it so
+                # ``set_terminated`` still finds it. No retry loop, no daemon.
+                _LOGGER.warning(
+                    "tracing: create_run failed for %s (%s); searching once to "
+                    "adopt any orphaned server-side run", request_id, exc,
+                )
+                run_id = self._adopt_orphaned_run(client, experiment_id, request_id)
             if run_id is not None:
                 self._set_run_id(request_id, run_id)
 
         best_effort("mlflow.create_run", _do)
+
+    def _adopt_orphaned_run(
+        self, client: Any, experiment_id: str, request_id: str,
+    ) -> str | None:
+        """Best-effort: find a run tagged with ``request_id`` and return its id.
+
+        Called ONLY after an ambiguous ``create_run`` failure, so a run the server
+        created-but-did-not-acknowledge can still be terminated by the lifecycle
+        rather than leaking RUNNING. Bounded to a single search (max_results=1),
+        never retried — returns None if nothing is found or the search itself
+        fails (the request then simply has no telemetry run)."""
+        def _search() -> str | None:
+            runs = client.search_runs(
+                experiment_ids=[experiment_id],
+                filter_string=f"tags.request_id = '{request_id}'",
+                max_results=1,
+            )
+            if not runs:
+                return None
+            adopted = getattr(getattr(runs[0], "info", None), "run_id", None)
+            if adopted:
+                _LOGGER.warning(
+                    "tracing: adopted orphaned run %s for %s (create_run response "
+                    "was lost but the server had created it)", adopted, request_id,
+                )
+            return adopted
+
+        return best_effort("mlflow.adopt_orphaned_run", _search)
 
     def _mark_run_attempted(self, request_id: str) -> None:
         self._run_attempted[request_id] = True
@@ -472,6 +542,63 @@ class MLflowTraceSink(TraceSink):
         # were logged during the graph run (before the root arrived). Finalize
         # the MLflow run (RUNNING → ENDED) and free the run_id slot.
         self._end_run(event.request_id)
+
+    # --- atomic per-request lifecycle (the dispatcher's unit of work) ---
+    def record_lifecycle(
+        self, events: list[TraceEvent], artifacts: "list[tuple[bytes, str]] | tuple" = (),
+    ) -> None:
+        """Run a request's WHOLE MLflow lifecycle as ONE atomic unit.
+
+        The producer (``_ProgressTraceSink``) buffers a request's trace events
+        AND artifact blobs and hands them here as a SINGLE background task, so the
+        full lifecycle — create_run → flush spans → log params/metrics → link
+        trace (SOURCE_RUN) → log artifacts → set_terminated — runs on ONE consumer
+        drain, in order. This is what makes telemetry drop-safe: a queue-overflow
+        drop drops this whole task, so a run is NEVER created-but-not-terminated
+        (the half-lifecycle the per-event path could leave under backpressure).
+        Kept separate from per-event ``record`` (still used by direct callers and
+        tests); a raising body can never propagate — it is inside ``_guard``.
+        """
+        if not self._config.enabled:
+            return
+        if not events:
+            return
+        self._guard("tracing.record_lifecycle", self._record_lifecycle_impl, events, artifacts)
+
+    def _record_lifecycle_impl(
+        self, events: list[TraceEvent], artifacts: "list[tuple[bytes, str]] | tuple",
+    ) -> None:
+        request_id = events[0].request_id
+        self._ensure_configured()
+        # Create the run ONCE, up front, so the finally can ALWAYS terminate it —
+        # even if span flush / param logging / artifact logging raise.
+        self._ensure_run(request_id)
+        try:
+            ops_final: list[SpanOp] | None = None
+            for event in events:
+                ops = self._builder.feed(event)
+                if ops:  # the tree completed on this event (the declared root)
+                    ops_final = ops
+            if ops_final:
+                self._flush(ops_final, request_id)
+                if request_id in self._run_ids:
+                    best_effort(
+                        "mlflow.run_params_metrics",
+                        self._log_run_params_metrics, ops_final,
+                    )
+            # Artifacts are logged AFTER the run exists and BEFORE it is
+            # terminated (log_artifact resolves request_id -> the live run_id).
+            for data, path in artifacts:
+                best_effort(
+                    "tracing.log_artifact",
+                    self._log_artifact_impl, data, path, request_id,
+                )
+        finally:
+            # ALWAYS terminate a run that was created (belt-and-suspenders: the
+            # inner calls are best-effort, but the finally is the guarantee that a
+            # created run is never left RUNNING). Idempotent: a no-op when no run
+            # was created, and it pops the run_id slot exactly once.
+            self._end_run(request_id)
 
     def _log_run_params_metrics(self, ops: list[SpanOp]) -> None:
         """Log params and metrics on the current MLflow run (best-effort).
